@@ -1,0 +1,37 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.FRC5010.Impl;
+
+import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
+import frc.robot.FRC5010.GenericGyro;
+
+/** Add your docs here. */
+public class SimulatedGyro implements GenericGyro {
+    private final AnalogGyro gyro = new AnalogGyro(0);
+    public AnalogGyroSim m_gyroSim = new AnalogGyroSim(gyro);
+
+    @Override
+    public void reset() {
+        gyro.reset();
+        m_gyroSim.resetData();
+    }
+
+    @Override
+    public double getAngle() {
+        return m_gyroSim.getAngle();
+    }
+
+    @Override
+    public double getRate() {
+        return m_gyroSim.getRate();
+    }
+
+    @Override
+    public void setAngle(double angle) {
+        m_gyroSim.setAngle(angle);
+    }
+
+}
