@@ -1,0 +1,17 @@
+{
+  "NetworkTables": {
+    "photonvision": {
+      "open": true,
+      "photonvision": {
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo"
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client",
+    "serverTeam": "5010"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "SysId": {
+    "Analysis Type": "Romi",
+    "NetworkTables Settings": {
+      "serverTeam": "10.0.0.2"
+    },
+    "mode": "Client",
+    "serverTeam": "localhost"
+  }
+}
