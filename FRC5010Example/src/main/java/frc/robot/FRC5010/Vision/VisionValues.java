@@ -16,57 +16,31 @@ public class VisionValues {
     // TODO: If you ever get rid of a networkentry variable in opensight, update
     // vision classes
 
-    private boolean valid = false;
-    private double centerX = 0.0;
-    private double centerY = 0.0;
-
-    private double angleX = 0.0;
-    private double angleY = 0.0;
+    protected boolean valid = false;
+    protected double latency = 0.0;
+    protected double angleX = 0.0;
+    protected double angleY = 0.0;
     // distance
-    private double distance = 0.0;
+    protected double distance = 0.0;
     
-    // boundaries
-    private double horizontal = 0.0;
-    private double vertical = 0.0;
+    protected double area = 0.0;
 
-    private double area = 0.0;
-
-    private int count = 0;
+    protected int count = 0;
 
     public VisionValues() {        
     }
 
-    public VisionValues(boolean valid, double centerX, double centerY, double angleX, double angleY, double distance) {
-        this.valid = valid;
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.angleX = angleX;
-        this.angleY = angleY;
-        this.distance = distance;
-    }
-
-    public VisionValues(boolean valid, double centerX, double centerY, double angleX, double angleY, double area,
-        double distance, double horizontal, double vertical) {
-        this.valid = valid;
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.angleX = angleX;
-        this.angleY = angleY;
-        this.distance = distance;
-        this.horizontal = horizontal;
-        this.vertical = vertical;
+    public void averageValues(VisionValues rawValues, int maxCount) {
+        count++;
+        count = Math.min(count, maxCount);
+        valid = count >= maxCount;
+        angleX = ((count - 1) * angleX + rawValues.getAngleX()) / count;
+        angleY = ((count - 1) * angleY + rawValues.getAngleY()) / count;
+        distance = ((count - 1) * distance + rawValues.getDistance()) / count;
     }
 
     public boolean getValid() {
         return valid;
-    }
-
-    public double getCenterX() {
-        return centerX;
-    }
-
-    public double getCenterY() {
-        return centerY;
     }
 
     public double getAngleX() {
@@ -80,30 +54,46 @@ public class VisionValues {
     public double getDistance() {
         return distance;
     }
+    
     public double getDistanceViaArea() {
         return 0;
-    }
-
-    public double getHorizontal() {
-        return horizontal;
-    }
-
-    public double getVertical() {
-        return vertical;
     }
 
     public double getArea() {
         return area;
     }
     
-    public void averageValues(VisionValues rawValues, int maxCount) {
-        count++;
-        count = Math.min(count, maxCount);
-        valid = count >= maxCount;
-        angleX = ((count - 1) * angleX + rawValues.getAngleX()) / count;
-        angleY = ((count - 1) * angleY + rawValues.getAngleY()) / count;
-        distance = ((count - 1) * distance + rawValues.getDistance()) / count;
-        horizontal = rawValues.getHorizontal();
-        vertical = rawValues.getVertical();
+    public double getLatency() {
+        return latency;
+    }
+
+    public VisionValues setArea(double area) {
+        this.area = area;
+        return this;
+    }
+
+    public VisionValues setPitch(double pitch) {
+        this.angleY = pitch;
+        return this;
+    }
+
+    public VisionValues setYaw(double yaw) {
+        this.angleX = yaw;
+        return this;
+    }
+
+    public VisionValues setDistance(double distance) {
+        this.distance = distance;
+        return this;
+    }
+
+    public VisionValues setLatency(double latency) {
+        this.latency = latency;
+        return this;
+    }
+
+    public VisionValues setValid(boolean valid) {
+        this.valid = valid;
+        return this;
     }
 }

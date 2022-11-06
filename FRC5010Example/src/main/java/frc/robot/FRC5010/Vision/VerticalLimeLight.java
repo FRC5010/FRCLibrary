@@ -25,13 +25,15 @@ public class VerticalLimeLight extends VisionLimeLight {
 
   @Override
   public void updateViaNetworkTable(String path) {
+    VisionValuesLimeLight rawValues = new VisionValuesLimeLight();
+    rawValues.setHorizontal(table.getTable(path).getEntry("thor").getDouble(0))
+    .setVertical(table.getTable(path).getEntry("tvert").getDouble(0));
     // essential variables from NetworkTables
-    updateValues(
+    updateValues(rawValues,
       () -> table.getTable(path).getEntry("ty").getDouble(0),
       () -> table.getTable(path).getEntry("tx").getDouble(0), 
       () -> table.getTable(path).getEntry("ta").getDouble(0),
-      () -> table.getTable(path).getEntry("thor").getDouble(0),
-      () -> table.getTable(path).getEntry("tvert").getDouble(0),
-      () ->  table.getTable(path).getEntry("tv").getDouble(0) == 1.0);
+      () ->  table.getTable(path).getEntry("tv").getDouble(0) == 1.0,
+      () -> table.getTable(path).getEntry("tl").getDouble(0) + 0.011);
   }
 }
