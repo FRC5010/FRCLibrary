@@ -5,11 +5,14 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems.vision;
+package frc.robot.FRC5010.Vision;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.FRC5010.VisionSystem;
 
 public class VisionLimeLight extends VisionSystem {
+  protected NetworkTableInstance table;
+
   /**
    * Creates a new LimeLightVision.
    */
@@ -17,46 +20,32 @@ public class VisionLimeLight extends VisionSystem {
    // makes a new limelight that is vertical, portrait
   public VisionLimeLight(String name, int colIndex) {
     super(name, colIndex);
+    init();
   }
 
-  public VisionLimeLight(String name, double camHeight, double camAngle, double targetHeight, int colIndex) {
-    super(name, camHeight, camAngle, targetHeight, colIndex);
+  public VisionLimeLight(String name, double camHeight, double camAngle, double targetHeight, int colIndex,String driverTabeName) {
+    super(name, camHeight, camAngle, targetHeight, colIndex, driverTabeName);
+    init();
   }
 
-  @Override
-  public void periodic() {
-    updateViaNetworkTable(name);
-    System.out.println("table updating");
+  protected void init() {
+    table = NetworkTableInstance.getDefault();
   }
 
   public void updateViaNetworkTable(String path) {
-    // essential variables from NetworkTables
-    boolean valid = table.getTable(path).getEntry("tv").getDouble(0) == 1.0;
-    
-    if (valid) {
-      // LL is mounted sideways, thus we need to reverse values
-      double angleX = -table.getTable(path).getEntry("ty").getDouble(0);
-      double angleY = -table.getTable(path).getEntry("tx").getDouble(0);
-      double area = table.getTable(path).getEntry("ta").getDouble(0);
-      double vertical = table.getTable(path).getEntry("thor").getDouble(0);
-      double horizontal = table.getTable(path).getEntry("tvert").getDouble(0);
+    VisionValuesLimeLight rawValues = new VisionValuesLimeLight();
+    rawValues.setHorizontal(table.getTable(path).getEntry("thor").getDouble(0))
+    .setVertical(table.getTable(path).getEntry("tvert").getDouble(0));
 
-
-      // calculating distance
-      // removed radians function
-      double distance = (targetHeight - camHeight) / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
-      rawValues = new VisionValues(valid, 0, 0, angleX, angleY, distance, horizontal, vertical);
-    
-      smoothedValues.averageValues(rawValues, 5);
-    } else {
-      rawValues = new VisionValues();
-      smoothedValues = new VisionValues();
-    }
+    updateValues(rawValues,
+      () -> table.getTable(path).getEntry("tx").getDouble(0),
+      () -> table.getTable(path).getEntry("ty").getDouble(0), 
+      () -> table.getTable(path).getEntry("ta").getDouble(0),
+      () -> table.getTable(path).getEntry("tv").getDouble(0) == 1.0,
+      () -> table.getTable(path).getEntry("tl").getDouble(0) + 0.011,
+      () -> null);
   }
 
-  public void setPipeline(double pipeline){
-    NetworkTableInstance.getDefault().getTable(name).getEntry("pipeline").setNumber(pipeline);
-  }
   //name is assigned in the constructor, and will give you the correct limelight table
   //aka use name whenever you use getTable()
 
@@ -83,5 +72,9 @@ public class VisionLimeLight extends VisionSystem {
   public void toggleLight() {
     Number lightVal = table.getTable(name).getEntry("ledMode").getNumber(1);
     table.getTable(name).getEntry("ledMode").setNumber(lightVal.intValue() == 3 ? 1 : 3);
+  }
+
+  public void setPipeline(int pipeline){
+    NetworkTableInstance.getDefault().getTable(name).getEntry("pipeline").setNumber(pipeline);
   }
 }

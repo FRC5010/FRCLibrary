@@ -5,23 +5,26 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems.vision;
+package frc.robot.FRC5010;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.constants.ControlConstants;
+import frc.robot.FRC5010.Vision.VisionConstants;
+import frc.robot.FRC5010.Vision.VisionValues;
 
 // base vision code, can be extended to more specific vision systems.
 public abstract class VisionSystem extends SubsystemBase {
 
   protected String name;
   protected double camHeight, camAngle, targetHeight;
-  protected NetworkTableInstance table;
   protected VisionValues rawValues, smoothedValues;
   protected ShuffleboardLayout visionLayout;
   protected boolean updateValues = false;
@@ -30,19 +33,18 @@ public abstract class VisionSystem extends SubsystemBase {
   // variables needed to process new variables, plus the new variables
   // angles
 
-
-  //giant list of values from camera "table" and is saved into vision values
+  // giant list of values from camera "table" and is saved into vision values
   public VisionSystem(String name, int colIndex) {
-    table = NetworkTableInstance.getDefault();
     this.name = name;
     rawValues = new VisionValues();
     smoothedValues = new VisionValues();
-    ShuffleboardTab driverTab = Shuffleboard.getTab(ControlConstants.SBTabVisionDisplay);
+    ShuffleboardTab driverTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
     visionLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex, 0).withSize(3, 5);
   }
 
-  //more specific values to define the camera
-  public VisionSystem(String name, double camHeight, double camAngle, double targetHeight, int colIndex) {
+  // more specific values to define the camera
+  public VisionSystem(String name, double camHeight, double camAngle, double targetHeight, int colIndex,
+      String driverTabeName) {
     this.name = name;
     rawValues = new VisionValues();
     smoothedValues = new VisionValues();
@@ -51,38 +53,73 @@ public abstract class VisionSystem extends SubsystemBase {
     this.targetHeight = targetHeight;
     updateValues = true;
     CAMERA_CAL_ANGLE = Math.toDegrees(Math.tanh((targetHeight - camHeight) / VisionConstants.CAMERA_CAL_DISTANCE));
-    ShuffleboardTab visionTab = Shuffleboard.getTab(ControlConstants.SBTabVisionDisplay);
+    ShuffleboardTab visionTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
     visionLayout = visionTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex, 0).withSize(3, 5);
-    table = NetworkTableInstance.getDefault();
-
 
     visionLayout.addNumber(name + " Distance", this::getDistance).withSize(1, 1);
     visionLayout.addBoolean(name + " Has Target", this::isValidTarget).withSize(1, 1);
     visionLayout.addNumber(name + " X Angle", this::getAngleX).withSize(1, 1);
     visionLayout.addNumber(name + " Y Angle", this::getAngleY).withSize(1, 1);
-    //visionLayout.addNumber(name + " Horizontal", this::getHorizontal).withSize(1, 1);
-    //visionLayout.addNumber(name + " Vertical", this::getVertical).withSize(1, 1);
-    //visionLayout.addNumber(name + " Cal Angle", this::getCalAngle).withSize(1, 1);
-    //visionLayout.addBoolean(name + " Driver Mode", RobotContainer::getDriverMode).withSize(1, 1);
+    // visionLayout.addNumber(name + " Horizontal", this::getHorizontal).withSize(1,
+    // 1);
+    // visionLayout.addNumber(name + " Vertical", this::getVertical).withSize(1, 1);
+    // visionLayout.addNumber(name + " Cal Angle", this::getCalAngle).withSize(1,
+    // 1);
+    // visionLayout.addBoolean(name + " Driver Mode",
+    // RobotContainer::getDriverMode).withSize(1, 1);
 
-    ShuffleboardTab driverTab = Shuffleboard.getTab(ControlConstants.SBTabDriverDisplay);
-    driverLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex + 1, 0).withSize(1, 1);
+    ShuffleboardTab driverTab = Shuffleboard.getTab(driverTabeName);
+    driverLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex + 1, 0).withSize(1,
+        1);
     driverLayout.addBoolean("Limelight On", this::isLightOn);
-    
-    
   }
-  public abstract void setPipeline(double pipeline);
+
+  public abstract void updateViaNetworkTable(String path);
+
+  public abstract void setPipeline(int pipeline);
+
+  public abstract void setLight(boolean on);
+
+  public abstract boolean isLightOn();
+
+  public abstract void flashLight();
+
+  public abstract void setSnapshotMode(int snapVal);
 
   public VisionValues getRawValues() {
     return rawValues;
   }
 
-  public abstract void updateViaNetworkTable(String path);
+  @Override
+  public void periodic() {
+    updateViaNetworkTable(name);
+  }
 
-  public abstract void setLight(boolean on);
-  public abstract boolean isLightOn();
-  public abstract void flashLight();
-  public abstract void setSnapshotMode(int snapVal);
+  protected void updateValues(VisionValues rawValues,
+      DoubleSupplier angleXSup, DoubleSupplier angleYSup,
+      DoubleSupplier areaSup, BooleanSupplier validSup, DoubleSupplier latencySup,
+      Supplier<Pose3d> cameraPoseSupplier) {
+    boolean valid = validSup.getAsBoolean();
+    if (valid) {
+      // calculating distance
+      double angleX = angleXSup.getAsDouble();
+      double angleY = angleYSup.getAsDouble();
+      double distance = (targetHeight - camHeight) / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
+      this.rawValues = rawValues;
+      rawValues
+          .setValid(valid)
+          .setLatency(latencySup.getAsDouble())
+          .setYaw(angleX)
+          .setPitch(angleY)
+          .setArea(areaSup.getAsDouble())
+          .setDistance(distance)
+          .setCameraPose(cameraPoseSupplier.get());
+      //smoothedValues.averageValues(rawValues, 5);
+    } else {
+      rawValues = new VisionValues();
+      smoothedValues = new VisionValues();
+    }
+  }
 
   public void setCamAngle(double a) {
     camAngle = a;
@@ -116,22 +153,6 @@ public abstract class VisionSystem extends SubsystemBase {
     return smoothedValues.getAngleY();
   }
 
-  public double getHorizontal() {
-    return smoothedValues.getHorizontal();
-  }
-
-  public double getVertical() {
-    return smoothedValues.getVertical();
-  }
-
-  public double getRawHorizontal() {
-    return rawValues.getHorizontal();
-  }
-
-  public double getRawVertical() {
-    return rawValues.getVertical();
-  }
-
   public double getCalAngle() {
     return CAMERA_CAL_ANGLE;
   }
@@ -139,7 +160,7 @@ public abstract class VisionSystem extends SubsystemBase {
   public boolean isRawValidTarget() {
     return rawValues.getValid();
   }
-  
+
   public boolean isValidTarget() {
     return smoothedValues.getValid();
   }
