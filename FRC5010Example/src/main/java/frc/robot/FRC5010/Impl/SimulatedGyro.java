@@ -34,4 +34,19 @@ public class SimulatedGyro implements GenericGyro {
         m_gyroSim.setAngle(angle);
     }
 
+    @Override
+    public double getAngleX() {
+        return 0;
+    }
+
+    @Override
+    public double getAngleY() {
+        return 0;
+    }
+
+    @Override
+    public double getAngleZ() {
+        return getAngle();
+    }
+
 }

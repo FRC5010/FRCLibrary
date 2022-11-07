@@ -47,14 +47,16 @@ public class VisionPhotonCamera extends VisionSystem {
       ((VisionValuesPhotonCamera) rawValues).setFiducialId(target.getFiducialId());
       Pose3d camPose = null;
       for (PhotonTrackedTarget photonTgt : result.getTargets()) {
-        Transform3d cam2Tgt = photonTgt.getCameraToTarget();
-        int fiducialId = photonTgt.getFiducialId();
-        if (fiducialId >= 0 && fiducialId < AprilTags.aprilTagPoses.size()) {
-          Pose3d camPoseTmp = AprilTags.aprilTagPoses.get(fiducialId).pose.transformBy(cam2Tgt.inverse());
-          if (null == camPose) {
-            camPose = camPoseTmp;
-          } else {
-            camPose = camPose.transformBy(camPose.minus(camPoseTmp).times(0.5));
+        if (0.2 > photonTgt.getPoseAmbiguity() && -1 != photonTgt.getPoseAmbiguity()) {
+          Transform3d cam2Tgt = photonTgt.getBestCameraToTarget();
+          int fiducialId = photonTgt.getFiducialId();
+          if (fiducialId >= 0 && fiducialId < AprilTags.aprilTagPoses.size()) {
+            Pose3d camPoseTmp = AprilTags.aprilTagPoses.get(fiducialId).pose.transformBy(cam2Tgt.inverse());
+            if (null == camPose) {
+              camPose = camPoseTmp;
+            } else {
+              camPose = camPose.transformBy(camPose.minus(camPoseTmp).times(0.5));
+            }
           }
         }
       }

@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.FRC5010.Vision.AprilTags;
+import frc.robot.FRC5010.Vision.VisionConstants;
 import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
 import frc.robot.FRC5010.Vision.AprilTags.AprilTag;
 import frc.robot.subsystems.Drivetrain;
@@ -85,7 +85,7 @@ public class DrivetrainPoseEstimator extends SubsystemBase {
     Pose3d camPose = vision.getRawValues().getCameraPose();
     if (null != camPose) {
       System.out.println("CamPose: X: " + camPose.getX() + " Y: " + camPose.getY() + " Z:" + camPose.getZ() + " R: " + Units.radiansToDegrees(camPose.getRotation().getAngle()));
-      Pose2d robotPoseEst = camPose.transformBy(Constants.kCameraToRobot).toPose2d();
+      Pose2d robotPoseEst = camPose.transformBy(VisionConstants.kCameraToRobot).toPose2d();
       double imageCaptureTime = Timer.getFPGATimestamp() - vision.getRawValues().getLatency() / 1000.0;
       
       field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPoseEst);    

@@ -8,6 +8,9 @@ package frc.robot.FRC5010;
 public interface GenericGyro {
     void reset();
     double getAngle();
+    double getAngleX();
+    double getAngleY();
+    double getAngleZ();
     double getRate();
     void setAngle(double angle);
 }

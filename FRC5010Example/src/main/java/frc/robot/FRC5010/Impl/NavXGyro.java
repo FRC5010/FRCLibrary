@@ -33,4 +33,19 @@ public class NavXGyro implements GenericGyro {
     public void setAngle(double angle) {
         gyro.setAngleAdjustment(angle);
     }
+    @Override
+    public double getAngleX() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+    @Override
+    public double getAngleY() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+    @Override
+    public double getAngleZ() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }

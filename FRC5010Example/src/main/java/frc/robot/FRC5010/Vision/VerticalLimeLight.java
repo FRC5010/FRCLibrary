@@ -34,6 +34,7 @@ public class VerticalLimeLight extends VisionLimeLight {
       () -> table.getTable(path).getEntry("tx").getDouble(0), 
       () -> table.getTable(path).getEntry("ta").getDouble(0),
       () ->  table.getTable(path).getEntry("tv").getDouble(0) == 1.0,
-      () -> table.getTable(path).getEntry("tl").getDouble(0) + 0.011);
+      () -> table.getTable(path).getEntry("tl").getDouble(0) + 0.011,
+      () -> null);
   }
 }
