@@ -4,53 +4,26 @@
 
 package frc.robot.FRC5010;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.numbers.N5;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionConstants;
-import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
 import frc.robot.FRC5010.Vision.AprilTags.AprilTag;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
 
 /** Add your docs here. */
 public class DrivetrainPoseEstimator extends SubsystemBase {
-  // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
-  // you trust your
-  // various sensors. Smaller numbers will cause the filter to "trust" the
-  // estimate from that particular
-  // component more than the others. This in turn means the particualr component
-  // will have a stronger
-  // influence on the final pose estimate.
-  Matrix<N5, N1> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5), 0.05, 0.05);
-  Matrix<N3, N1> localMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
-  Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
-  private Drivetrain driveTrain;
   private VisionSystem vision;
   private final Field2d field2d = new Field2d();
+  private final GenericPose poseTracker;
 
-  private final DifferentialDrivePoseEstimator m_poseEstimator;
-  public DrivetrainPoseEstimator(Drivetrain driveTrain, VisionSystem vision) {
-    this.driveTrain = driveTrain;
+  public DrivetrainPoseEstimator(GenericPose poseTracker, VisionSystem vision) {
+    this.poseTracker = poseTracker;
     this.vision = vision;
-    m_poseEstimator = new DifferentialDrivePoseEstimator(
-        driveTrain.getGyroRotation2d(),
-        new Pose2d(),
-        stateStdDevs,
-        localMeasurementStdDevs,
-        visionMeasurementStdDevs);
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
     tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(0, 4);
     tab.addNumber("Pose Degrees", () -> getCurrentPose().getRotation().getDegrees()).withPosition(1, 4);
@@ -71,9 +44,13 @@ public class DrivetrainPoseEstimator extends SubsystemBase {
   }
 
   public Pose2d getCurrentPose() {
-    return m_poseEstimator.getEstimatedPosition();
+    return poseTracker.getCurrentPose();
   }
 
+  public Rotation2d getGyroRotation2d() {
+    return poseTracker.getGyroRotation2d();
+  }
+  
   /**
    * Perform all periodic pose estimation tasks.
    *
@@ -82,22 +59,14 @@ public class DrivetrainPoseEstimator extends SubsystemBase {
    * @param rightDist      Distance (in m) the right wheel has traveled
    */
   public void update() {
-    Pose3d camPose = vision.getRawValues().getCameraPose();
-    if (null != camPose) {
-      System.out.println("CamPose: X: " + camPose.getX() + " Y: " + camPose.getY() + " Z:" + camPose.getZ() + " R: " + Units.radiansToDegrees(camPose.getRotation().getAngle()));
-      Pose2d robotPoseEst = camPose.transformBy(VisionConstants.kCameraToRobot).toPose2d();
-      double imageCaptureTime = Timer.getFPGATimestamp() - vision.getRawValues().getLatency() / 1000.0;
-      
-      field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPoseEst);    
-      System.out.println("RobotPoseEst: X: " + robotPoseEst.getX() + " Y: " + robotPoseEst.getY() + " R: " + robotPoseEst.getRotation().getDegrees());
-      m_poseEstimator.addVisionMeasurement(robotPoseEst, imageCaptureTime);
+    for(Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
+        double imageCaptureTime = vision.getRawValues().getLatency();
+        
+        field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
+        System.out.println("RobotPoseEst: X: " + robotPose.getX() + " Y: " + robotPose.getY() + " R: " + robotPose.getRotation().getDegrees());
+        poseTracker.updateVision(robotPose, imageCaptureTime);
     }
-    DifferentialDriveWheelSpeeds actWheelSpeeds = new DifferentialDriveWheelSpeeds(driveTrain.getLeftEncoderRate(),
-        driveTrain.getRightEncoderRate());
-    double leftDist = driveTrain.getLeftDistance();
-    double rightDist = driveTrain.getRightDistance();
-    m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getGyroRotation2d(), actWheelSpeeds, leftDist, rightDist);
-
+    poseTracker.updatePhysics();
     field2d.setRobotPose(getCurrentPose());
   }
 
@@ -111,12 +80,7 @@ public class DrivetrainPoseEstimator extends SubsystemBase {
    * @param pose
    */
   public void resetToPose(Pose2d pose) {
-    m_poseEstimator.resetPosition(pose, driveTrain.getGyroRotation2d());
-  }
-
-  /** @return The current best-guess at drivetrain position on the field. */
-  public Pose2d getPoseEst() {
-    return m_poseEstimator.getEstimatedPosition();
+    poseTracker.resetToPose(pose);
   }
 
   @Override

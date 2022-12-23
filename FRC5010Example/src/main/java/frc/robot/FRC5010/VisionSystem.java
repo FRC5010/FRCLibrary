@@ -11,6 +11,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -74,8 +75,6 @@ public abstract class VisionSystem extends SubsystemBase {
     driverLayout.addBoolean("Limelight On", this::isLightOn);
   }
 
-  public abstract void updateViaNetworkTable(String path);
-
   public abstract void setPipeline(int pipeline);
 
   public abstract void setLight(boolean on);
@@ -86,19 +85,22 @@ public abstract class VisionSystem extends SubsystemBase {
 
   public abstract void setSnapshotMode(int snapVal);
 
+  public abstract void update();
+
   public VisionValues getRawValues() {
     return rawValues;
   }
 
   @Override
   public void periodic() {
-    updateViaNetworkTable(name);
+    update();
   }
 
   protected void updateValues(VisionValues rawValues,
       DoubleSupplier angleXSup, DoubleSupplier angleYSup,
       DoubleSupplier areaSup, BooleanSupplier validSup, DoubleSupplier latencySup,
-      Supplier<Pose3d> cameraPoseSupplier) {
+      Supplier<Pose3d> cameraPoseSupplier,
+      Supplier<Pose2d> robotPoseSupplier) {
     boolean valid = validSup.getAsBoolean();
     if (valid) {
       // calculating distance
@@ -113,7 +115,8 @@ public abstract class VisionSystem extends SubsystemBase {
           .setPitch(angleY)
           .setArea(areaSup.getAsDouble())
           .setDistance(distance)
-          .setCameraPose(cameraPoseSupplier.get());
+          .addCameraPose(cameraPoseSupplier.get())
+          .addRobotPose(robotPoseSupplier.get());
       //smoothedValues.averageValues(rawValues, 5);
     } else {
       rawValues = new VisionValues();

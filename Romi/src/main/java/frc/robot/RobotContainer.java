@@ -4,12 +4,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.FRC5010.Controller;
 import frc.robot.FRC5010.DrivetrainPoseEstimator;
+import frc.robot.FRC5010.GenericPose;
 import frc.robot.FRC5010.VisionSystem;
-import frc.robot.FRC5010.Vision.VisionPhotonCamera;
+import frc.robot.FRC5010.Vision.VisionConstants;
+import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutonomousDistance;
 import frc.robot.commands.AutonomousTime;
@@ -56,7 +63,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    vision = new VisionPhotonCamera("Pi Camera", 3, -20, 5.5, 1, "driver");
+    vision = new VisionPhotonMultiCam("RobotVision", 1); //3, -20, 5.5,
+    vision.addCamera("Pi Camera", new Transform3d(new Translation3d(3, 0, 3), new Rotation3d(0, Units.degreesToRadians(-20), 0)));
     poseEstimator = new DrivetrainPoseEstimator(m_drivetrain, vision);
     // Configure the button bindings
     configureButtonBindings();

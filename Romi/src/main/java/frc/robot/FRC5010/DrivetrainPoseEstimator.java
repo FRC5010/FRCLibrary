@@ -8,7 +8,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -19,11 +18,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
 import frc.robot.FRC5010.Vision.AprilTags.AprilTag;
-import frc.robot.subsystems.Drivetrain;
 
 /** Add your docs here. */
 public class DrivetrainPoseEstimator extends SubsystemBase {
@@ -37,12 +34,12 @@ public class DrivetrainPoseEstimator extends SubsystemBase {
   Matrix<N5, N1> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5), 0.05, 0.05);
   Matrix<N3, N1> localMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
   Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
-  private Drivetrain driveTrain;
+  private GenericPose driveTrain;
   private VisionSystem vision;
   private final Field2d field2d = new Field2d();
 
   private final DifferentialDrivePoseEstimator m_poseEstimator;
-  public DrivetrainPoseEstimator(Drivetrain driveTrain, VisionSystem vision) {
+  public DrivetrainPoseEstimator(GenericPose driveTrain, VisionSystem vision) {
     this.driveTrain = driveTrain;
     this.vision = vision;
     m_poseEstimator = new DifferentialDrivePoseEstimator(
@@ -82,15 +79,13 @@ public class DrivetrainPoseEstimator extends SubsystemBase {
    * @param rightDist      Distance (in m) the right wheel has traveled
    */
   public void update() {
-    Pose3d camPose = vision.getRawValues().getCameraPose();
-    if (null != camPose) {
-      System.out.println("CamPose: X: " + camPose.getX() + " Y: " + camPose.getY() + " Z:" + camPose.getZ() + " R: " + Units.radiansToDegrees(camPose.getRotation().getAngle()));
-      Pose2d robotPoseEst = camPose.transformBy(Constants.kCameraToRobot).toPose2d();
-      double imageCaptureTime = Timer.getFPGATimestamp() - vision.getRawValues().getLatency() / 1000.0;
-      
-      field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPoseEst);    
-      System.out.println("RobotPoseEst: X: " + robotPoseEst.getX() + " Y: " + robotPoseEst.getY() + " R: " + robotPoseEst.getRotation().getDegrees());
-      m_poseEstimator.addVisionMeasurement(robotPoseEst, imageCaptureTime);
+    for(Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
+        double imageCaptureTime = vision.getRawValues().getLatency();
+        
+        field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
+        System.out.println("RobotPoseEst: X: " + robotPose.getX() + " Y: " + robotPose.getY() + " R: " + robotPose.getRotation().getDegrees());
+        m_poseEstimator.resetPosition(robotPose, robotPose.getRotation());
+        //        m_poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
     }
     DifferentialDriveWheelSpeeds actWheelSpeeds = new DifferentialDriveWheelSpeeds(driveTrain.getLeftEncoderRate(),
         driveTrain.getRightEncoderRate());

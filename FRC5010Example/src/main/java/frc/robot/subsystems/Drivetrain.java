@@ -32,7 +32,7 @@ public class Drivetrain extends SubsystemBase {
   private final DifferentialDrive m_diffDrive = new DifferentialDrive(m_leftMotor, m_rightMotor);
 
   // Set up the RomiGyro
-  private final GenericGyro m_gyro;
+  private final GenericGyro gyro;
 
   // Set up the BuiltInAccelerometer
   private final BuiltInAccelerometer m_accelerometer = new BuiltInAccelerometer();
@@ -47,7 +47,7 @@ public class Drivetrain extends SubsystemBase {
     // Use inches as unit for encoder distances
     m_leftEncoder.setDistancePerPulse((Math.PI * Units.inchesToMeters(kWheelDiameterInch)) / kCountsPerRevolution);
     m_rightEncoder.setDistancePerPulse((Math.PI * Units.inchesToMeters(kWheelDiameterInch)) / kCountsPerRevolution);
-    this.m_gyro = gyro;
+    this.gyro = gyro;
     resetEncoders();
   }
 
@@ -121,7 +121,7 @@ public class Drivetrain extends SubsystemBase {
    * @return The current angle of the Romi in degrees
    */
   public double getGyroAngleX() {
-    return m_gyro.getAngleX();
+    return gyro.getAngleX();
   }
 
   /**
@@ -130,7 +130,7 @@ public class Drivetrain extends SubsystemBase {
    * @return The current angle of the Romi in degrees
    */
   public double getGyroAngleY() {
-    return m_gyro.getAngleY();
+    return gyro.getAngleY();
   }
 
   /**
@@ -139,7 +139,7 @@ public class Drivetrain extends SubsystemBase {
    * @return The current angle of the Romi in degrees
    */
   public double getGyroAngleZ() {
-    return m_gyro.getAngleZ();
+    return gyro.getAngleZ();
   }
 
   public Rotation2d getGyroRotation2d() {
@@ -148,7 +148,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Reset the gyro. */
   public void resetGyro() {
-    m_gyro.reset();
+    gyro.reset();
   }
 
   @Override

@@ -123,13 +123,13 @@ public class AprilTags {
         public String fieldDescriptor;
 
         private AprilTag(double xPos, double yPos, double zPos, double pitch, double yaw) {
-            this.fieldDescriptor = this.name();
+            this.fieldDescriptor = this.name() + " ID:" + this.ordinal();
             pose = new Pose3d(new Translation3d(xPos, yPos, zPos),
                     new Rotation3d(0.0, 0.0, Units.degreesToRadians(yaw)));
         }
 
         private AprilTag(String fieldDescriptor, double xPos, double yPos, double zPos, double pitch, double yaw) {
-            this.fieldDescriptor = fieldDescriptor;
+            this.fieldDescriptor = fieldDescriptor + " ID:" + this.ordinal();
             pose = new Pose3d(new Translation3d(xPos, yPos, zPos),
                     new Rotation3d(0.0, 0.0, Units.degreesToRadians(yaw)));
         }

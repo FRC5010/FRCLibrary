@@ -1,0 +1,42 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "AnalogGyro[0]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/DrivetrainPoseEstimator": "Subsystem",
+      "/LiveWindow/ExampleSubsystem": "Subsystem",
+      "/LiveWindow/SimulatedDrivetrain": "Subsystem",
+      "/LiveWindow/SimulatedPose": "Subsystem",
+      "/LiveWindow/Ungrouped/AnalogGyro[0]": "Gyro",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/VisionLimeLightSim": "Subsystem",
+      "/Shuffleboard/Pose/Field": "Field2d",
+      "/SmartDashboard/Robot Sim": "Mechanism2d"
+    },
+    "windows": {
+      "/Shuffleboard/Pose/Field": {
+        "Robot": {
+          "image": "C:\\Users\\clroz\\Documents\\GitHub\\FRCLibrary\\Pictures\\5010 Robot 21.jpg"
+        },
+        "image": "C:\\Users\\clroz\\Documents\\GitHub\\FRCLibrary\\Pictures\\2022-field.png",
+        "window": {
+          "name": "Rapid React Field",
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Sim": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  }
+}

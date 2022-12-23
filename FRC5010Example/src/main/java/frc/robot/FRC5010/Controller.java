@@ -4,17 +4,20 @@
 
 package frc.robot.FRC5010;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID.HIDType;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 /** Add your docs here. */
 public class Controller {
 
-    Joystick joystick;
-    JoystickButton A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, LEFT_BUMPER, RIGHT_BUMPER, START_BUTTON, BACK_BUTTON, LEFT_STICK_BUTT, RIGHT_STICK_BUTT;
-    POVButton UP, RIGHT, DOWN, LEFT;
-    Axis LEFT_X, LEFT_Y, L_TRIGGER, R_TRIGGER, RIGHT_X, RIGHT_Y;
+    private Joystick joystick;
+    private boolean singleControllerMode;
+    private JoystickButton A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, LEFT_BUMPER, RIGHT_BUMPER, START_BUTTON, BACK_BUTTON, LEFT_STICK_BUTT, RIGHT_STICK_BUTT;
+    private POVButton UP, RIGHT, DOWN, LEFT;
+    private Axis LEFT_X, LEFT_Y, L_TRIGGER, R_TRIGGER, RIGHT_X, RIGHT_Y;
 
     public static class Axis {
         protected int port; 
@@ -51,6 +54,9 @@ public class Controller {
             return new Limit(this, limit);
         }
 
+        public Axis rate(double limit) {
+            return new Rate(this, limit);
+        }
     }
 
     private static class Negate extends Axis{
@@ -83,7 +89,6 @@ public class Controller {
         }
 
         public double get(){
-            System.out.println("deadzone");
             double input = instance.get();
             if (input > -deadzone && input < deadzone) {
                 return 0.0;
@@ -113,6 +118,21 @@ public class Controller {
         }
     }
 
+    
+    public static class Rate extends Axis{
+        SlewRateLimiter rateLimiter; 
+
+        public Rate(Axis axis, double limit){
+            instance = axis;
+            this.rateLimiter = new SlewRateLimiter(limit);
+        }
+
+        public double get(){
+            double input = instance.get();
+            return rateLimiter.calculate(input);
+        }
+    }
+    
     private static enum ButtonNums {
         NO_BUTTON, A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, LEFT_BUMPER, RIGHT_BUMPER, START_BUTTON,
         BACK_BUTTON,LEFT_STICK_BUTT, RIGHT_STICK_BUTT;
@@ -134,9 +154,20 @@ public class Controller {
 
     public Controller(int port){
         joystick = new Joystick(port);
-        
     }
 
+    public boolean isPluggedIn() {
+        return HIDType.kUnknown != joystick.getType();
+    }
+
+    public void setSingleControllerMode(boolean single) {
+        singleControllerMode = single;
+    }
+
+    public boolean isSingleControllerMode() {
+        return singleControllerMode;
+    }
+    
     public void setLeftYAxis(Axis yAxis) {
         LEFT_Y = yAxis;
     }

@@ -7,7 +7,12 @@
 
 package frc.robot.FRC5010.Vision;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
 /**
@@ -27,7 +32,8 @@ public class VisionValues {
     protected double distance = 0.0;
     
     protected double area = 0.0;
-    protected Pose3d cameraPose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+    protected List<Pose3d> cameraToTarget = new ArrayList<>();
+    protected List<Pose2d> robotPoses = new ArrayList<>();
 
     protected int count = 0;
 
@@ -102,10 +108,45 @@ public class VisionValues {
     }
 
     public Pose3d getCameraPose() {
-        return cameraPose;
+        return cameraToTarget.size() > 0? cameraToTarget.get(0) : new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+    } 
+
+    public VisionValues addCameraPose(Pose3d camPose) {
+        cameraToTarget.add(camPose);
+        return this;
     }
 
-    public void setCameraPose(Pose3d camPose) {
-        cameraPose = camPose;
+    public Pose3d getCameraToTarget(int i) {
+        Pose3d pose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+        if (i < cameraToTarget.size()) {
+            if (null != cameraToTarget.get(i)) {
+                pose = cameraToTarget.get(i);
+            }
+        }
+        return pose;
     }
+
+    public Pose2d getRobotPose() {
+        return robotPoses.size() > 0? robotPoses.get(0) : new Pose2d(0, 0, new Rotation2d(0, 0));
+    } 
+
+    public VisionValues addRobotPose(Pose2d robotPose) {
+        robotPoses.add(robotPose);
+        return this;
+    }
+
+    public Pose2d getRobotPose(int i) {
+        Pose2d pose = new Pose2d(0, 0, new Rotation2d(0, 0));
+        if (i < robotPoses.size()) {
+            if (null != robotPoses.get(i)) {
+                pose = robotPoses.get(i);
+            }
+        }
+        return pose;
+    }
+
+    public List<Pose2d> getRobotPoses() {
+        return robotPoses;
+    }
+
 }

@@ -32,6 +32,10 @@ public class VisionLimeLight extends VisionSystem {
     table = NetworkTableInstance.getDefault();
   }
 
+  public void update() {
+    updateViaNetworkTable(name);
+  }
+  
   public void updateViaNetworkTable(String path) {
     VisionValuesLimeLight rawValues = new VisionValuesLimeLight();
     rawValues.setHorizontal(table.getTable(path).getEntry("thor").getDouble(0))
@@ -43,7 +47,7 @@ public class VisionLimeLight extends VisionSystem {
       () -> table.getTable(path).getEntry("ta").getDouble(0),
       () -> table.getTable(path).getEntry("tv").getDouble(0) == 1.0,
       () -> table.getTable(path).getEntry("tl").getDouble(0) + 0.011,
-      () -> null);
+      () -> null, () -> null);
   }
 
   //name is assigned in the constructor, and will give you the correct limelight table
