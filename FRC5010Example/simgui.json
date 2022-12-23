@@ -24,9 +24,9 @@
     "windows": {
       "/Shuffleboard/Pose/Field": {
         "Robot": {
-          "image": "C:\\Users\\clroz\\Documents\\GitHub\\FRCLibrary\\Pictures\\5010 Robot 21.jpg"
+          "image": "..\\Pictures\\5010 Robot 21.jpg"
         },
-        "image": "C:\\Users\\clroz\\Documents\\GitHub\\FRCLibrary\\Pictures\\2022-field.png",
+        "image": "..\\Pictures\\2022-field.png",
         "window": {
           "name": "Rapid React Field",
           "visible": true
