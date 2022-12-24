@@ -76,7 +76,7 @@ public class Drive extends GenericMechanism {
             gyro = new SimulatedGyro();
             poseHandler = new SimulatedPose(gyro);
             poseEstimator = new DrivetrainPoseEstimator(poseHandler, vision);
-            drivetrain = new SimulatedDrivetrain(poseEstimator);
+            drivetrain = new SimulatedDrivetrain(poseEstimator, drivetrainVisual);
         }
     }
 }

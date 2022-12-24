@@ -14,10 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
  *      @function function initRealOrSim()
  */
 public abstract class GenericMechanism {
-    protected Mechanism2d robotMechSim;
-
+    protected Mechanism2d drivetrainVisual;
     public GenericMechanism(Mechanism2d robotMechSim) {
-        this.robotMechSim = robotMechSim;
+        this.drivetrainVisual = robotMechSim;
     }
     /**
      * configureButtonBindings should map button/axis controls to commands
@@ -37,4 +36,11 @@ public abstract class GenericMechanism {
      * initialize its code accordingly
      */
     protected abstract void initRealOrSim();
+
+    /**
+     * setupPreferences should be implemented in place of using Constants files
+     */
+    protected void setupPreferences() {
+
+    }
 }

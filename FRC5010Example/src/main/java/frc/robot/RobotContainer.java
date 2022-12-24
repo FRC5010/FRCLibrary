@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -23,6 +24,9 @@ import frc.robot.FRC5010.GenericMechanism;
 import frc.robot.FRC5010.VisionSystem;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.constants.Constants;
+import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.mechanisms.Drive;
 
 /**
@@ -39,11 +43,23 @@ public class RobotContainer extends GenericMechanism {
   private Drive drive;
   private VisionSystem vision;
   private static Alliance alliance;
+  private Mechanism2d robotVisual;
+
+  // Examples of how to use a persisted constants
+  // These can live in specific constants files, however
+  private static Persisted<Integer> driveVisualH;
+  private static Persisted<Integer> driveVisualV;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Create a Mechanism2d display for simulating robot functions
-    super(new Mechanism2d(60, 60));
+    super(new Mechanism2d(10,10));
+
+    driveVisualH = new Persisted<>(Constants.DRIVE_VISUAL_H, 60);
+    driveVisualV = new Persisted<>(Constants.DRIVE_VISUAL_V, 60);
+    drivetrainVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
+
+    // Setup controllers
     driver = new Controller(Controller.JoystickPorts.ZERO.ordinal());
     operator = new Controller(Controller.JoystickPorts.ONE.ordinal());
     if (!operator.isPluggedIn()) {
@@ -53,13 +69,16 @@ public class RobotContainer extends GenericMechanism {
 
     alliance = determineAllianceColor();
     initRealOrSim();
+
     // Put Mechanism 2d to SmartDashboard
-    SmartDashboard.putData("Robot Sim", robotMechSim);
-    drive = new Drive(driver, vision, robotMechSim);
+    robotVisual = new Mechanism2d(PersistedEnums.ROBOT_VISUAL_H.getInteger(), Constants.robotVisualV.getInteger());
+    SmartDashboard.putData("Drivetrain Visual", drivetrainVisual);
+    SmartDashboard.putData("Robot Visual", robotVisual);
+    drive = new Drive(driver, vision, drivetrainVisual);
 
     /** 
      * TODO: Add other mechanisms 
-     * Pass mech2d to the mechanisms in order to simulate the robot
+     * Pass robotVisual to the mechanisms in order to visualize the robot
      * */
 
     initAutoCommands();

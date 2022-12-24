@@ -19,7 +19,9 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/VisionLimeLightSim": "Subsystem",
       "/Shuffleboard/Pose/Field": "Field2d",
-      "/SmartDashboard/Robot Sim": "Mechanism2d"
+      "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
+      "/SmartDashboard/Robot Sim": "Mechanism2d",
+      "/SmartDashboard/Robot Visual": "Mechanism2d"
     },
     "windows": {
       "/Shuffleboard/Pose/Field": {
@@ -32,11 +34,24 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Robot Sim": {
+      "/SmartDashboard/Drivetrain Visual": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Visual": {
         "window": {
           "visible": true
         }
       }
+    }
+  },
+  "NetworkTables": {
+    "Preferences": {
+      "open": true
+    },
+    "SmartDashboard": {
+      "open": true
     }
   }
 }

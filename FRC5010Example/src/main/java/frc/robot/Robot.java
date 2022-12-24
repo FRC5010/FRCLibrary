@@ -99,7 +99,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-    m_robotContainer.setupDefaultCommands();
   }
 
   /** This function is called periodically whilst in simulation. */

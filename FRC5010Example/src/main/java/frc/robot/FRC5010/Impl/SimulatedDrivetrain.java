@@ -9,14 +9,37 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.FRC5010.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.GenericDrivetrain;
+import frc.robot.FRC5010.constants.Constants;
+import frc.robot.FRC5010.constants.Persisted;
 
 /** Add your docs here. */
 public class SimulatedDrivetrain extends GenericDrivetrain {
-    DrivetrainPoseEstimator poseEstimator;
-    public SimulatedDrivetrain(DrivetrainPoseEstimator poseEstimator) {
+    private DrivetrainPoseEstimator poseEstimator;
+    private MechanismRoot2d unicycle;
+    private MechanismLigament2d wheel;
+    private Persisted<Integer> driveVisualH;
+    private Persisted<Integer> driveVisualV;
+
+    public SimulatedDrivetrain(DrivetrainPoseEstimator poseEstimator, Mechanism2d mechVisual) {
+        super(mechVisual);
         this.poseEstimator = poseEstimator;
+        
+        driveVisualH = new Persisted<>(Constants.DRIVE_VISUAL_H, Integer.class);
+        driveVisualV = new Persisted<>(Constants.DRIVE_VISUAL_V, Integer.class);
+    
+        Integer centerH = driveVisualH.getInteger() / 2;
+        Integer centerV = driveVisualV.getInteger() / 2;
+
+        unicycle = mechVisual.getRoot("unicycle", centerH, centerV);
+        wheel = new MechanismLigament2d("wheel", 1.0, 0.0, 6.0, new Color8Bit(Color.kYellow));
+        unicycle.append(wheel);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -26,6 +49,10 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
             new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
         pose = pose.transformBy(direction);
         poseEstimator.resetToPose(pose);
+
+        // Update visualizaton
+        wheel.setAngle(pose.getRotation());
+        wheel.setLength(direction.getTranslation().getNorm() * 1500);
     }
 
     public Rotation2d getHeading() {
