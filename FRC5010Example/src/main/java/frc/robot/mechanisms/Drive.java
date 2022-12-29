@@ -4,19 +4,24 @@
 
 package frc.robot.mechanisms;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Controller;
-import frc.robot.FRC5010.DrivetrainPoseEstimator;
-import frc.robot.FRC5010.GenericDrivetrain;
-import frc.robot.FRC5010.GenericGyro;
 import frc.robot.FRC5010.GenericMechanism;
-import frc.robot.FRC5010.GenericPose;
 import frc.robot.FRC5010.VisionSystem;
-import frc.robot.FRC5010.Impl.SimulatedDrivetrain;
-import frc.robot.FRC5010.Impl.SimulatedGyro;
-import frc.robot.FRC5010.Impl.SimulatedPose;
 import frc.robot.FRC5010.commands.DefaultDriveCommand;
+import frc.robot.FRC5010.drive.DifferentialDrivetrain;
+import frc.robot.FRC5010.drive.DrivetrainPoseEstimator;
+import frc.robot.FRC5010.drive.GenericDrivetrain;
+import frc.robot.FRC5010.motors.MotorController5010;
+import frc.robot.FRC5010.motors.MotorFactory;
+import frc.robot.FRC5010.sensors.GenericGyro;
+import frc.robot.FRC5010.sensors.SimulatedGyro;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
@@ -31,6 +36,29 @@ public class Drive extends GenericMechanism {
         this.driver = driver;
         this.vision = visionSystem;
         initRealOrSim();
+    }
+
+    @Override
+    protected void initRealOrSim() {
+        /**
+         * TODO: Add real implementation classes here
+         */
+
+        if (Robot.isReal()) {
+            // TODO: replace gyro with a real one
+            gyro = new SimulatedGyro();
+        } else {
+            gyro = new SimulatedGyro();
+            //drivetrain = new SimulatedDrivetrain(gyro, vision, drivetrainVisual);
+        }
+        MotorController5010 template = MotorFactory.DriveTrainMotor(MotorFactory.NEO(1));
+        List<Integer> motorPorts = new ArrayList<>();
+        
+        // This assumes ports 1 & 2 are left and 3 & 4 are right
+        // This is just an example of how to put a sequence of numbers into a list
+        motorPorts.addAll(IntStream.rangeClosed(1, 4).boxed().collect(Collectors.toList()));
+
+        drivetrain = new DifferentialDrivetrain(template, motorPorts, gyro, vision, drivetrainVisual);
     }
 
     public void setupDefaultCommands() {
@@ -61,22 +89,5 @@ public class Drive extends GenericMechanism {
         driver.setRightXAxis(driver.createRightXAxis()
             .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
-    }
-
-    @Override
-    protected void initRealOrSim() {
-        GenericPose poseHandler = null;
-        /**
-         * TODO: Add real implentation classes here
-         */
-        if (Robot.isReal()) {
-            // TODO: replace poseHandler with a real one
-            poseHandler = new SimulatedPose(gyro);
-        } else {
-            gyro = new SimulatedGyro();
-            poseHandler = new SimulatedPose(gyro);
-            poseEstimator = new DrivetrainPoseEstimator(poseHandler, vision);
-            drivetrain = new SimulatedDrivetrain(poseEstimator, drivetrainVisual);
-        }
     }
 }

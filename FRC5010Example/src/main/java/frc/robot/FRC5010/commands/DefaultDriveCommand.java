@@ -2,15 +2,15 @@ package frc.robot.FRC5010.commands;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.GenericDrivetrain;
+import frc.robot.FRC5010.drive.GenericDrivetrain;
+import frc.robot.mechanisms.DriveConstantsDef;
 
 public class DefaultDriveCommand extends CommandBase {
     private final GenericDrivetrain drivetrainSubsystem;
@@ -22,7 +22,9 @@ public class DefaultDriveCommand extends CommandBase {
     private MechanismLigament2d xAxis;
     private MechanismLigament2d yAxis;
     private MechanismLigament2d heading;
-
+    private double maxChassisVelocity = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15);
+    private double maxChassisRotation = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_ROTATION, 1.5);
+  
     public DefaultDriveCommand(GenericDrivetrain drivetrainSubsystem,
                                DoubleSupplier translationXSupplier,
                                DoubleSupplier translationYSupplier,
@@ -58,7 +60,7 @@ public class DefaultDriveCommand extends CommandBase {
         //     ChassisSpeeds.fromFieldRelativeSpeeds(x, y, r, drivetrainSubsystem.getHeading())
         // );
         drivetrainSubsystem.drive(
-            new ChassisSpeeds(x, y, r)
+            new ChassisSpeeds(x * maxChassisVelocity, y * maxChassisVelocity, r * maxChassisRotation)
         );
     }
 

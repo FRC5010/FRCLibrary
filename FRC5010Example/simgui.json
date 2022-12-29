@@ -11,11 +11,14 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/DifferentialDrivetrain": "Subsystem",
+      "/LiveWindow/DifferentialPose": "Subsystem",
       "/LiveWindow/DrivetrainPoseEstimator": "Subsystem",
       "/LiveWindow/ExampleSubsystem": "Subsystem",
       "/LiveWindow/SimulatedDrivetrain": "Subsystem",
       "/LiveWindow/SimulatedPose": "Subsystem",
       "/LiveWindow/Ungrouped/AnalogGyro[0]": "Gyro",
+      "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/VisionLimeLightSim": "Subsystem",
       "/Shuffleboard/Pose/Field": "Field2d",
@@ -48,6 +51,15 @@
   },
   "NetworkTables": {
     "Preferences": {
+      "open": true
+    },
+    "Shuffleboard": {
+      "Pose": {
+        "open": true
+      },
+      "Vision": {
+        "open": true
+      },
       "open": true
     },
     "SmartDashboard": {

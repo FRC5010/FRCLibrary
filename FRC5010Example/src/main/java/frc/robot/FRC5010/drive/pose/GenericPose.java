@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010;
+package frc.robot.FRC5010.drive.pose;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -13,10 +13,10 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FRC5010.sensors.GenericGyro;
 
 /** Add your docs here. */
-public abstract class GenericPose extends SubsystemBase {
+public abstract class GenericPose {
   protected Matrix<N5, N1> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5), 0.05, 0.05);
   protected Matrix<N3, N1> localMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
   protected Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
@@ -27,7 +27,7 @@ public abstract class GenericPose extends SubsystemBase {
     this.gyro = gyro;
   }
   public abstract void resetEncoders();
-      
+  
   public double getAccelX() {
       // TODO Auto-generated method stub
       return 0;
@@ -64,8 +64,8 @@ public abstract class GenericPose extends SubsystemBase {
     gyro.reset();
   };
 
-  public abstract void updateVision(Pose2d robotPose, double imageCaptureTime);
-  public abstract void updatePhysics();
+  public abstract void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime);
+  public abstract void updateLocalMeasurements();
   public abstract Pose2d getCurrentPose();
   public abstract void resetToPose(Pose2d pose);
 }

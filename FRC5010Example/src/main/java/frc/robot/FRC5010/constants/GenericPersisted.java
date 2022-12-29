@@ -6,12 +6,16 @@ package frc.robot.FRC5010.constants;
 
 /** Add your docs here. */
 public class GenericPersisted {
-    protected final String type;
+    protected String type;
     protected final String name;
+    public GenericPersisted(String name) {
+        this.name = name;
+    }
     public GenericPersisted(String name, String type) {
         this.name = name;
         this.type = type;
     }
+    public void setType(String type) { this.type = type; }
     public String getType() { return type; }
     public String getName() { return name; }
 }

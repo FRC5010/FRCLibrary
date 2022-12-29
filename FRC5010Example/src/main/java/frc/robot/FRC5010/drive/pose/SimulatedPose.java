@@ -2,11 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.Impl;
+package frc.robot.FRC5010.drive.pose;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.FRC5010.GenericGyro;
-import frc.robot.FRC5010.GenericPose;
+import frc.robot.FRC5010.sensors.GenericGyro;
 
 /** Add your docs here. */
 public class SimulatedPose extends GenericPose {
@@ -20,12 +19,12 @@ public class SimulatedPose extends GenericPose {
     }
 
     @Override
-    public void updateVision(Pose2d robotPose, double imageCaptureTime) {
+    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
         pose = robotPose;
     }
 
     @Override
-    public void updatePhysics() {
+    public void updateLocalMeasurements() {
     }
 
     @Override

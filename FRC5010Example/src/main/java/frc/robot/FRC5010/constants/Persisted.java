@@ -91,6 +91,10 @@ public class Persisted<T> extends GenericPersisted {
         init();
     }
 
+    public T get() {
+        return initGet();
+    }
+    
     private void init() {
         switch (getType()) {
             case "Double": {

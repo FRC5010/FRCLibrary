@@ -2,16 +2,15 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.Impl;
+package frc.robot.FRC5010.drive.pose;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.FRC5010.GenericGyro;
-import frc.robot.FRC5010.GenericPose;
-import frc.robot.FRC5010.GenericSwerveModule;
+import frc.robot.FRC5010.drive.GenericSwerveModule;
+import frc.robot.FRC5010.sensors.GenericGyro;
 
 /** Add your docs here. */
 public class SwervePose extends GenericPose {
@@ -42,13 +41,13 @@ public class SwervePose extends GenericPose {
     }
 
     @Override
-    public void updateVision(Pose2d robotPose, double imageCaptureTime) {
+    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
         poseEstimator.resetPosition(robotPose, robotPose.getRotation());
         // m_poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
     }
 
     @Override
-    public void updatePhysics() {
+    public void updateLocalMeasurements() {
         poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroRotation2d(), 
             frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState());
     }

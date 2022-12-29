@@ -11,7 +11,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -24,9 +23,9 @@ import frc.robot.FRC5010.GenericMechanism;
 import frc.robot.FRC5010.VisionSystem;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.constants.Constants;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.PersistedEnums;
+import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.mechanisms.Drive;
 
 /**
@@ -44,6 +43,7 @@ public class RobotContainer extends GenericMechanism {
   private VisionSystem vision;
   private static Alliance alliance;
   private Mechanism2d robotVisual;
+  public static Constants constants;
 
   // Examples of how to use a persisted constants
   // These can live in specific constants files, however
@@ -54,9 +54,10 @@ public class RobotContainer extends GenericMechanism {
   public RobotContainer() {
     // Create a Mechanism2d display for simulating robot functions
     super(new Mechanism2d(10,10));
+    constants = new Constants();
 
-    driveVisualH = new Persisted<>(Constants.DRIVE_VISUAL_H, 60);
-    driveVisualV = new Persisted<>(Constants.DRIVE_VISUAL_V, 60);
+    driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, 60);
+    driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
     drivetrainVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
 
     // Setup controllers
@@ -71,7 +72,7 @@ public class RobotContainer extends GenericMechanism {
     initRealOrSim();
 
     // Put Mechanism 2d to SmartDashboard
-    robotVisual = new Mechanism2d(PersistedEnums.ROBOT_VISUAL_H.getInteger(), Constants.robotVisualV.getInteger());
+    robotVisual = new Mechanism2d(PersistedEnums.ROBOT_VISUAL_H.getInteger(), RobotConstantsDef.robotVisualV.getInteger());
     SmartDashboard.putData("Drivetrain Visual", drivetrainVisual);
     SmartDashboard.putData("Robot Visual", robotVisual);
     drive = new Drive(driver, vision, drivetrainVisual);

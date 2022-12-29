@@ -2,58 +2,48 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.Impl;
+package frc.robot.FRC5010.sensors;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import frc.robot.FRC5010.GenericEncoder;
 
 /** Add your docs here. */
-public class SimulatedEncoder implements GenericEncoder {
+public class WpiEncoder implements GenericEncoder {
     Encoder encoder;
-    EncoderSim encoderSim;
 
-    public SimulatedEncoder(Encoder encoder) {
+    public WpiEncoder(Encoder encoder) {
         this.encoder = encoder;
-        init();
-    }
-
-    public SimulatedEncoder(int port1, int port2) {
-        this.encoder = new Encoder(port1, port2);
-        init();
-    }
-
-    private void init() {
-        encoderSim = new EncoderSim(encoder); 
     }
 
     @Override
     public double getPosition() {
-        return encoderSim.getDistance();
+        return encoder.getDistance();
     }
 
     @Override
     public double getVelocity() {
-        return encoderSim.getRate();
+        return encoder.getRate();
     }
 
     @Override
     public void reset() {
-        encoderSim.resetData();
+        encoder.reset();
     }
+
     @Override
     public void setPosition(double position) {
-       encoderSim.setDistance(position);
     }
+
     @Override
     public void setRate(double rate) {
-        encoderSim.setRate(rate);
     }
+
     @Override
     public void setPositionConversion(double conversion) {
         encoder.setDistancePerPulse(conversion);
     }
+
     @Override
-    public void setVelocityConversion(double conversion) {     
+    public void setVelocityConversion(double conversion) {
+        encoder.setDistancePerPulse(conversion);
     }
 }

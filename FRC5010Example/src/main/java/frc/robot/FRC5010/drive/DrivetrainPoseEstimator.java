@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010;
+package frc.robot.FRC5010.drive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,13 +10,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FRC5010.VisionSystem;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.AprilTags.AprilTag;
 import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
+import frc.robot.FRC5010.drive.pose.GenericPose;
 
 /** Add your docs here. */
-public class DrivetrainPoseEstimator extends SubsystemBase {
+public class DrivetrainPoseEstimator {
   private VisionSystem vision;
   private final Field2d field2d = new Field2d();
   private final GenericPose poseTracker;
@@ -64,9 +65,9 @@ public class DrivetrainPoseEstimator extends SubsystemBase {
         
         field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
         System.out.println("RobotPoseEst: X: " + robotPose.getX() + " Y: " + robotPose.getY() + " R: " + robotPose.getRotation().getDegrees());
-        poseTracker.updateVision(robotPose, imageCaptureTime);
+        poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
     }
-    poseTracker.updatePhysics();
+    poseTracker.updateLocalMeasurements();
     field2d.setRobotPose(getCurrentPose());
   }
 
@@ -81,10 +82,5 @@ public class DrivetrainPoseEstimator extends SubsystemBase {
    */
   public void resetToPose(Pose2d pose) {
     poseTracker.resetToPose(pose);
-  }
-
-  @Override
-  public void periodic() {
-    update();
   }
 }

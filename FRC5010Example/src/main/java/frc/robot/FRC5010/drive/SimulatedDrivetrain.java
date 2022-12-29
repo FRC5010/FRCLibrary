@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.Impl;
+package frc.robot.FRC5010.drive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,25 +14,25 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.FRC5010.DrivetrainPoseEstimator;
-import frc.robot.FRC5010.GenericDrivetrain;
-import frc.robot.FRC5010.constants.Constants;
+import frc.robot.FRC5010.VisionSystem;
+import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.drive.pose.SimulatedPose;
+import frc.robot.FRC5010.sensors.GenericGyro;
 
 /** Add your docs here. */
 public class SimulatedDrivetrain extends GenericDrivetrain {
-    private DrivetrainPoseEstimator poseEstimator;
     private MechanismRoot2d unicycle;
     private MechanismLigament2d wheel;
     private Persisted<Integer> driveVisualH;
     private Persisted<Integer> driveVisualV;
 
-    public SimulatedDrivetrain(DrivetrainPoseEstimator poseEstimator, Mechanism2d mechVisual) {
+    public SimulatedDrivetrain(GenericGyro gyro, VisionSystem vision, Mechanism2d mechVisual) {
         super(mechVisual);
-        this.poseEstimator = poseEstimator;
-        
-        driveVisualH = new Persisted<>(Constants.DRIVE_VISUAL_H, Integer.class);
-        driveVisualV = new Persisted<>(Constants.DRIVE_VISUAL_V, Integer.class);
+        setDrivetrainPoseEstimator(new DrivetrainPoseEstimator(new SimulatedPose(gyro), vision));
+
+        driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, Integer.class);
+        driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, Integer.class);
     
         Integer centerH = driveVisualH.getInteger() / 2;
         Integer centerV = driveVisualV.getInteger() / 2;

@@ -2,51 +2,47 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.Impl;
+package frc.robot.FRC5010.sensors;
 
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
-import frc.robot.FRC5010.GenericGyro;
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 /** Add your docs here. */
-public class SimulatedGyro implements GenericGyro {
-    private final AnalogGyro gyro = new AnalogGyro(0);
-    public AnalogGyroSim m_gyroSim = new AnalogGyroSim(gyro);
-
+public class NavXGyro implements GenericGyro {
+    AHRS gyro;
+    public NavXGyro(Port sPort) {
+        gyro = new AHRS(sPort);
+    }
     @Override
     public void reset() {
         gyro.reset();
-        m_gyroSim.resetData();
     }
 
     @Override
     public double getAngle() {
-        return m_gyroSim.getAngle();
+        return gyro.getAngle();
     }
 
     @Override
     public double getRate() {
-        return m_gyroSim.getRate();
+        return getRate();
     }
-
     @Override
     public void setAngle(double angle) {
-        m_gyroSim.setAngle(angle);
+        gyro.setAngleAdjustment(angle);
     }
 
     @Override
     public double getAngleX() {
-        return 0;
+        return gyro.getRoll();
     }
-
     @Override
     public double getAngleY() {
-        return 0;
+        return gyro.getPitch();
     }
-
     @Override
     public double getAngleZ() {
-        return getAngle();
+        return gyro.getYaw();
     }
-
 }
