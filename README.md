@@ -25,7 +25,7 @@ To use Persisted, you will need to do 3 things:
   </li>
   <li> Instantiate the value during the initialization phase of the robot code. This can be done in a Constants file that is instantiated.<p>
   <code>public class Constants {
-        public Persisted<Double> nameOfAConstantValue;
+        public Persisted&lt;Double&gt; nameOfAConstantValue;
         public Constants() {
           nameOfAConstantValue = new Persisted<>(ConstantsDef.NAME_OF_A_CONSTANT_VALUE, 12.345);
         }
@@ -37,7 +37,7 @@ To use Persisted, you will need to do 3 things:
     // To use the value with direct get/set functions, declare it as a Persisted<TYPE> again and instantiate as below
     private Persisted&lt;Double&gt; nameOfAConstantValue;
     public RobotSubsystem() {
-      nameOfAConstantValue = new Persisted<Double>(ConstantsDef.NAME_OF_A_CONSTANT_VALUE, Double.class);
+      nameOfAConstantValue = new Persisted&lt;Double&gt;(ConstantsDef.NAME_OF_A_CONSTANT_VALUE, Double.class);
       nameOfAConstantValue.get(); // To use it, call the getter. Do not store this in another class variable.
       nameOfAConstantValue.set(123.45); // To set it
       // To use the value directly from a static function
