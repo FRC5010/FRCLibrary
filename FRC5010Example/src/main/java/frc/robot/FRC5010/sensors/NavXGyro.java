@@ -17,6 +17,7 @@ public class NavXGyro implements GenericGyro {
     @Override
     public void reset() {
         gyro.reset();
+        gyro.setAngleAdjustment(0);
     }
 
     @Override
@@ -43,6 +44,6 @@ public class NavXGyro implements GenericGyro {
     }
     @Override
     public double getAngleZ() {
-        return gyro.getYaw();
+        return gyro.getAngle();
     }
 }

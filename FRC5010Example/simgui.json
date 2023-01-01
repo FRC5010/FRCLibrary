@@ -5,6 +5,11 @@
         "header": {
           "open": true
         }
+      },
+      "navX-Sensor[0]": {
+        "header": {
+          "open": true
+        }
       }
     }
   },
@@ -20,6 +25,7 @@
       "/LiveWindow/Ungrouped/AnalogGyro[0]": "Gyro",
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/navX-Sensor[1]": "Gyro",
       "/LiveWindow/VisionLimeLightSim": "Subsystem",
       "/Shuffleboard/Pose/Field": "Field2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
