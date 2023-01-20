@@ -38,17 +38,23 @@ public abstract class GenericSwerveModule extends SubsystemBase {
                 new MechanismLigament2d(moduleKey + "Exp", 10, 90, 6, new Color8Bit(Color.kRed)));     
     }
 
+    public abstract void resetEncoders();
+
     public abstract SwerveModuleState getState();
 
-    public abstract void resetEncoders();
+    public abstract double getDrivePosition();
 
     public abstract double getTurningPosition();
 
     public abstract double getAbsoluteEncoderRad();
 
-    public abstract double getTurningMotor();
+    public abstract double getTurningVelocity();
 
-    public abstract double getDriveMotor();
+    public abstract double getDriveVelocity();
+
+    public abstract boolean setState(SwerveModuleState state);
+    
+    public abstract void stop();
 
     @Override
     public void periodic() {
@@ -60,8 +66,10 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         // This method will be called once per scheduler run
         absEncDial.setAngle(absEncDeg);
         motorDial.setAngle(turningDeg);
-        motorDial.setLength(50 * getTurningMotor());
-        expectDial.setLength(50 * getDriveMotor());
+        motorDial.setLength(50 * getTurningVelocity());
+        expectDial.setLength(50 * getDriveVelocity());
         expectDial.setAngle(state.angle.getDegrees() + 90);
     }
+
+    
 }

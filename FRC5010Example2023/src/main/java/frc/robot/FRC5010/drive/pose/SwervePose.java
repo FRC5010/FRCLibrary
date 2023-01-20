@@ -26,7 +26,7 @@ public class SwervePose extends GenericPose {
         GenericSwerveModule frontLeft, GenericSwerveModule frontRight, 
         GenericSwerveModule backLeft, GenericSwerveModule backRight) {
         super(gyro);
-        
+
          modulePositions = new SwerveModulePosition[] {
             new SwerveModulePosition(0, new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
             new SwerveModulePosition(0, new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
@@ -53,10 +53,10 @@ public class SwervePose extends GenericPose {
     @Override
     public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
         SwerveModulePosition[] newPositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeft.getDriveMotor(), new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(frontRight.getDriveMotor(), new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(backLeft.getDriveMotor(), new Rotation2d(backLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(backRight.getDriveMotor(), new Rotation2d(backRight.getAbsoluteEncoderRad()))
+            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
+            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
+            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getAbsoluteEncoderRad())), 
+            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getAbsoluteEncoderRad()))
           };
 
         poseEstimator.resetPosition(robotPose.getRotation(),newPositions, robotPose);
@@ -66,10 +66,10 @@ public class SwervePose extends GenericPose {
     @Override
     public void updateLocalMeasurements() {
         SwerveModulePosition[] newPositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeft.getDriveMotor(), new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(frontRight.getDriveMotor(), new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(backLeft.getDriveMotor(), new Rotation2d(backLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(backRight.getDriveMotor(), new Rotation2d(backRight.getAbsoluteEncoderRad()))
+            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
+            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
+            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getAbsoluteEncoderRad())), 
+            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getAbsoluteEncoderRad()))
           };
 
         poseEstimator.update(getGyroRotation2d(), newPositions);
