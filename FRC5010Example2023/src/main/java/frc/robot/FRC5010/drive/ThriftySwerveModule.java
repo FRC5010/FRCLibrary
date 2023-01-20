@@ -21,12 +21,10 @@ import frc.robot.FRC5010.sensors.RevEncoder;
 /** Add your docs here. */
 public class ThriftySwerveModule extends GenericSwerveModule{
 
-    private GenericEncoder absoluteEncoder;
-
     private ProfiledPIDController turningController;
 
     private MotorController5010 drive, turn;
-    private GenericEncoder turnEncoder, driveEncoder;
+    private GenericEncoder turnEncoder, driveEncoder, absoluteEncoder;
 
     private double radOffset;
 
@@ -65,11 +63,11 @@ public class ThriftySwerveModule extends GenericSwerveModule{
     public static final int neo550CurrentLimit = 30;
     
 
-    public ThriftySwerveModule(MechanismRoot2d visualRoot, String key, MotorController5010 drive, MotorController5010 turn, double radOffset, GenericEncoder genericEncoder) {
+    public ThriftySwerveModule(MechanismRoot2d visualRoot, String key, MotorController5010 drive, MotorController5010 turn, double radOffset, GenericEncoder analogEncoder) {
         super(visualRoot, key);
         this.turnEncoder = turn.getMotorEncoder();
         this.driveEncoder = drive.getMotorEncoder();
-        this.absoluteEncoder = genericEncoder;
+        this.absoluteEncoder = analogEncoder;
 
         this.radOffset = radOffset;
 

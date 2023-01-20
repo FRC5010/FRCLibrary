@@ -10,7 +10,9 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.Controller;
 import frc.robot.FRC5010.drive.SwerveDrivetrain;
 import frc.robot.mechanisms.SwerveDriveMech;
 
@@ -45,15 +47,16 @@ public class JoystickToSwerve extends CommandBase {
   @Override
   public void execute() {
     // get values on sticks and deadzone them
-    double xSpeed = SwerveModule.deadzone(xSpdFunction.get());
-    double ySpeed = SwerveModule.deadzone(ySpdFunction.get());
+    
+    double xSpeed = (xSpdFunction.get());
+    double ySpeed = (ySpdFunction.get());
 
-    double turnSpeed = SwerveModule.deadzone(turnSpdFunction.get());
+    double turnSpeed = (turnSpdFunction.get());
 
     // limit power
-    xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-    ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-    turnSpeed = turnLimiter.calculate(turnSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+    xSpeed = xLimiter.calculate(xSpeed) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond;
+    ySpeed = yLimiter.calculate(ySpeed) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond;
+    turnSpeed = turnLimiter.calculate(turnSpeed) * SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
     // convert to chassis speed class
     ChassisSpeeds chassisSpeeds;
@@ -63,24 +66,24 @@ public class JoystickToSwerve extends CommandBase {
         xSpeed, 
         ySpeed, 
         turnSpeed, 
-        swerveSubsystem.getRotation2d()
+        swerveDrive.getHeading()
       );
     }else{
       chassisSpeeds = new ChassisSpeeds(xSpeed,ySpeed,turnSpeed);
     }
 
     // convert chassis speed into modules speeds
-    SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+    SwerveModuleState[] moduleStates = SwerveDrivetrain.m_kinematics.toSwerveModuleStates(chassisSpeeds);
 
     // output each module speed into subsystem
-    swerveSubsystem.setModuleStates(moduleStates);
+    swerveDrive.setModuleStates(moduleStates);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    swerveSubsystem.stopModules();
+    swerveDrive.stop();
   }
 
   // Returns true when the command should end.

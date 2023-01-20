@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 
 /** Add your docs here. */
-public class AnalogEncoder implements GenericEncoder{
+public class AnalogInput5010 implements GenericEncoder{
 
     AnalogInput analogInput;
 
-    public AnalogEncoder(int port){
+    public AnalogInput5010(int port){
         analogInput = new AnalogInput(port);
     }
 
