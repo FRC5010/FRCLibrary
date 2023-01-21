@@ -23,10 +23,9 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     private final MechanismLigament2d absEncDial;
     private final MechanismLigament2d expectDial;
     private final String moduleKey;
-    protected SwerveModuleState state;
-    protected GenericEncoder driveEncoder = new SimulatedEncoder(0, 1); 
-    protected GenericEncoder turnEncoder = new SimulatedEncoder(2, 3);
-    protected GenericGyro gyro = new SimulatedGyro();
+    // protected GenericEncoder driveEncoder = new SimulatedEncoder(0, 1); 
+    // protected GenericEncoder turnEncoder = new SimulatedEncoder(2, 3);
+    // protected GenericGyro gyro = new SimulatedGyro();
 
     public GenericSwerveModule(MechanismRoot2d visualRoot, String key) {
         this.moduleKey = key;
@@ -56,6 +55,10 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     
     public abstract void stop();
 
+    public String getKey(){
+        return moduleKey; 
+    }
+
     @Override
     public void periodic() {
         double turningDeg = Units.radiansToDegrees(getTurningPosition()) + 90;
@@ -66,9 +69,9 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         // This method will be called once per scheduler run
         absEncDial.setAngle(absEncDeg);
         motorDial.setAngle(turningDeg);
-        motorDial.setLength(50 * getTurningVelocity());
-        expectDial.setLength(50 * getDriveVelocity());
-        expectDial.setAngle(state.angle.getDegrees() + 90);
+        motorDial.setLength(20 * getTurningVelocity());
+        expectDial.setLength(20 * getDriveVelocity());
+        expectDial.setAngle(getState().angle.getDegrees() + 90);
     }
 
     

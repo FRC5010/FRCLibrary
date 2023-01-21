@@ -6,13 +6,14 @@ package frc.robot.FRC5010.sensors;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SPI.Port;
 
 /** Add your docs here. */
 public class NavXGyro implements GenericGyro {
     AHRS gyro;
-    public NavXGyro(Port sPort) {
-        gyro = new AHRS(sPort);
+    public NavXGyro(SPI.Port kmxp) {
+        gyro = new AHRS(kmxp);
     }
     @Override
     public void reset() {

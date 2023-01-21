@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Controller;
@@ -19,12 +19,10 @@ import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.drive.DifferentialDrivetrain;
 import frc.robot.FRC5010.drive.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
-import frc.robot.FRC5010.drive.SimulatedDrivetrain;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.GenericGyro;
 import frc.robot.FRC5010.sensors.NavXGyro;
-import frc.robot.FRC5010.sensors.PigeonGyro;
 import frc.robot.FRC5010.sensors.SimulatedGyro;
 
 /** Add your docs here. */
@@ -52,9 +50,9 @@ public class Drive extends GenericMechanism {
 
         if (Robot.isReal()) {
             // TODO: replace gyro with a real one
-            gyro = new NavXGyro(Port.kMXP);
+            gyro = new NavXGyro(SPI.Port.kMXP);
         } else {
-            gyro = new SimulatedGyro();
+            // gyro = new SimulatedGyro();
             //drivetrain = new SimulatedDrivetrain(gyro, vision, drivetrainVisual);
         }
         MotorController5010 template = MotorFactory.DriveTrainMotor(MotorFactory.NEO(1));

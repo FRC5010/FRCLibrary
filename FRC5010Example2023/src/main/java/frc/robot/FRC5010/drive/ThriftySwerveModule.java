@@ -65,6 +65,8 @@ public class ThriftySwerveModule extends GenericSwerveModule{
 
     public ThriftySwerveModule(MechanismRoot2d visualRoot, String key, MotorController5010 drive, MotorController5010 turn, double radOffset, GenericEncoder analogEncoder) {
         super(visualRoot, key);
+        this.drive = drive; 
+        this.turn = turn;
         this.turnEncoder = turn.getMotorEncoder();
         this.driveEncoder = drive.getMotorEncoder();
         this.absoluteEncoder = analogEncoder;
@@ -142,7 +144,7 @@ public class ThriftySwerveModule extends GenericSwerveModule{
         // getTurningPosition()
         // adding ks to get swerve moving
         turn.set(turnPow + (Math.signum(turnPow) * kS));
-        SmartDashboard.putString("Swerve [" + getTurningPosition() + "] state", 
+        SmartDashboard.putString("Swerve [" + super.getKey()  + "] state", 
         "Angle: " + state.angle.getDegrees() + " Speed m/s: " + state.speedMetersPerSecond);
         return true;
     }

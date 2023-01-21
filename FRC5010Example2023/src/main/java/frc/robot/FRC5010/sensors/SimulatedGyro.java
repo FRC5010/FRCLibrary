@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
 
 /** Add your docs here. */
 public class SimulatedGyro implements GenericGyro {
-    private final AnalogGyro gyro = new AnalogGyro(0);
+    private final AnalogGyro gyro = new AnalogGyro(100);
     public AnalogGyroSim m_gyroSim = new AnalogGyroSim(gyro);
 
     @Override

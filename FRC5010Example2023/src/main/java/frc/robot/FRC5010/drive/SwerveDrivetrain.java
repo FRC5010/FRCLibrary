@@ -13,6 +13,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import frc.robot.FRC5010.VisionSystem;
+import frc.robot.FRC5010.drive.pose.SwervePose;
 import frc.robot.FRC5010.sensors.GenericGyro;
 
 /** Add your docs here. */
@@ -24,23 +26,26 @@ public class SwerveDrivetrain extends GenericDrivetrain{
 
     private GenericGyro gyro;
 
+    private DrivetrainPoseEstimator drivetrainPoseEstimator; 
+
     // public variables
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.76835;
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.635;
 
+    public static final double kFrontLeftAbsoluteOffsetRad =  2.873; // 2.884; 
+    public static final double kFrontRightAbsoluteOffsetRad = 0.086; // 0;
+    public static final double kBackLeftAbsoluteOffsetRad = 2.075; // 5.224; 
+    public static final double kBackRightAbsoluteOffsetRad =  2.923; // 6.074;
 
-    public static final double kFrontLeftAbsoluteOffsetRad = 2.884; 
-    public static final double kFrontRightAbsoluteOffsetRad = 0;
-    public static final double kBackLeftAbsoluteOffsetRad = 5.224; 
-    public static final double kBackRightAbsoluteOffsetRad = 6.074;
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 15;
+    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
 
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 0.05;
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = .08;
-
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond;
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = 5;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 1;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = .4;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = Math.PI;
+
+    
 
     public static final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
         // Front left
@@ -51,13 +56,9 @@ public class SwerveDrivetrain extends GenericDrivetrain{
         new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
         // Back right
         new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
-);
+    );
 
-    private SwerveDriveOdometry odometry;
-
-    private SwerveModulePosition[] modulePositions;
-
-    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro) {
+    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro, VisionSystem visonSystem) {
         super(mechVisual);
 
         this.frontLeft = frontLeft;
@@ -66,17 +67,10 @@ public class SwerveDrivetrain extends GenericDrivetrain{
         this.backRight = backRight;
 
         this.gyro = genericGyro;
+        this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+        this.drivetrainPoseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, SwerveDrivetrain.m_kinematics, frontLeft, frontRight, backLeft, backRight), visonSystem);
 
-        setDrivetrainPoseEstimator(poseEstimator);
-
-
-
-        modulePositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(0, new Rotation2d(Units.radiansToDegrees(this.frontLeft.getAbsoluteEncoderRad()))), 
-            new SwerveModulePosition(0, new Rotation2d(Units.radiansToDegrees(this.frontRight.getAbsoluteEncoderRad()))), 
-            new SwerveModulePosition(0, new Rotation2d(Units.radiansToDegrees(this.backLeft.getAbsoluteEncoderRad()))), 
-            new SwerveModulePosition(0, new Rotation2d(Units.radiansToDegrees(this.backRight.getAbsoluteEncoderRad())))
-        };
+        setDrivetrainPoseEstimator(drivetrainPoseEstimator);
 
         new Thread(() -> {
             try{
@@ -96,23 +90,29 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     public void zeroGyroscope() {
         gyro.setAngle(0);
       }
-
+    
 
     public void setModuleStates(SwerveModuleState[] setDesiredStates){
         SwerveModuleState[] states = setDesiredStates;
         SwerveDriveKinematics.desaturateWheelSpeeds(states, kPhysicalMaxSpeedMetersPerSecond);
         
-        if(states[0].speedMetersPerSecond > 0.0001){
-                frontLeft.setState(states[0]);
-                frontRight.setState(states[1]);
-                backLeft.setState(states[2]);
-                backRight.setState(states[3]);
-        }else{
-                frontLeft.setState(new SwerveModuleState(0, new Rotation2d(45*5)));
-                frontRight.setState(new SwerveModuleState(0, new Rotation2d(45*7)));
-                backLeft.setState(new SwerveModuleState(0, new Rotation2d(45*3)));
-                backRight.setState(new SwerveModuleState(0, new Rotation2d(45)));
-        }
+
+        frontLeft.setState(states[0]);
+        frontRight.setState(states[1]);
+        backLeft.setState(states[2]);
+        backRight.setState(states[3]);
+
+        // if(states[0].speedMetersPerSecond > 0.0001){
+        //         frontLeft.setState(states[0]);
+        //         frontRight.setState(states[1]);
+        //         backLeft.setState(states[2]);
+        //         backRight.setState(states[3]);
+        // }else{
+        //         frontLeft.setState(new SwerveModuleState(0, new Rotation2d(45*5)));
+        //         frontRight.setState(new SwerveModuleState(0, new Rotation2d(45*7)));
+        //         backLeft.setState(new SwerveModuleState(0, new Rotation2d(45*3)));
+        //         backRight.setState(new SwerveModuleState(0, new Rotation2d(45)));
+        // }
     }
 
     public void stop(){
@@ -126,15 +126,7 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(states);
-
-        SwerveModulePosition[] newPositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(Units.radiansToDegrees(this.frontLeft.getAbsoluteEncoderRad()))), 
-            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(Units.radiansToDegrees(this.frontRight.getAbsoluteEncoderRad()))), 
-            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(Units.radiansToDegrees(this.backLeft.getAbsoluteEncoderRad()))), 
-            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(Units.radiansToDegrees(this.backRight.getAbsoluteEncoderRad())))
-        };
-
-        odometry.update(new Rotation2d(gyro.getAngle()), newPositions);
+        drivetrainPoseEstimator.update();
     }
     
 

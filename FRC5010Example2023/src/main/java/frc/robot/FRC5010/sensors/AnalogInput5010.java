@@ -19,7 +19,7 @@ public class AnalogInput5010 implements GenericEncoder{
     @Override
     public double getPosition() {
         // TODO Auto-generated method stub
-        return analogInput.getVoltage() / RobotController.getVoltage5V();
+        return (analogInput.getVoltage() / RobotController.getVoltage5V()) * Math.PI * 2;
     }
 
     @Override

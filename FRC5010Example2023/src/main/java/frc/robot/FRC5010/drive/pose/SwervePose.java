@@ -4,6 +4,7 @@
 
 package frc.robot.FRC5010.drive.pose;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -15,7 +16,7 @@ import frc.robot.FRC5010.sensors.GenericGyro;
 
 /** Add your docs here. */
 public class SwervePose extends GenericPose {
-    private final SwerveDriveOdometry poseEstimator;
+    private final SwerveDrivePoseEstimator poseEstimator;
     private final GenericSwerveModule frontLeft;
     private final GenericSwerveModule frontRight;
     private final GenericSwerveModule backLeft;
@@ -38,8 +39,7 @@ public class SwervePose extends GenericPose {
         this.frontRight = frontRight;
         this.backLeft = backLeft;
         this.backRight = backRight;
-        poseEstimator = new SwerveDriveOdometry(
-        kDriveKinematics, new Rotation2d(0), modulePositions);
+        poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, new Rotation2d(0), modulePositions, new Pose2d());
     }
 
     @Override
@@ -52,15 +52,7 @@ public class SwervePose extends GenericPose {
 
     @Override
     public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
-        SwerveModulePosition[] newPositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getAbsoluteEncoderRad()))
-          };
-
-        poseEstimator.resetPosition(robotPose.getRotation(),newPositions, robotPose);
-        // m_poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
+        poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
     }
 
     @Override
@@ -77,7 +69,7 @@ public class SwervePose extends GenericPose {
 
     @Override
     public Pose2d getCurrentPose() {
-        return poseEstimator.getPoseMeters();
+        return poseEstimator.getEstimatedPosition();
     }
 
     public void resetToPose(Pose2d pose) {

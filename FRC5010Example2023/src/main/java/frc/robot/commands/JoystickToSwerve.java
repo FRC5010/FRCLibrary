@@ -30,10 +30,6 @@ public class JoystickToSwerve extends CommandBase {
     this.ySpdFunction = ySpdFunction;
     this.turnSpdFunction = turnSpdFunction;
     this.fieldOrientedDrive = fieldOrientedDrive;
-
-    this.xLimiter = new SlewRateLimiter(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond);
-    this.yLimiter = new SlewRateLimiter(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond);
-    this.turnLimiter = new SlewRateLimiter(SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     
     addRequirements(this.swerveDrive);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -54,9 +50,9 @@ public class JoystickToSwerve extends CommandBase {
     double turnSpeed = (turnSpdFunction.get());
 
     // limit power
-    xSpeed = xLimiter.calculate(xSpeed) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond;
-    ySpeed = yLimiter.calculate(ySpeed) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond;
-    turnSpeed = turnLimiter.calculate(turnSpeed) * SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+    xSpeed = xSpeed * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond;
+    ySpeed = ySpeed * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond;
+    turnSpeed = turnSpeed * SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
     // convert to chassis speed class
     ChassisSpeeds chassisSpeeds;
@@ -73,10 +69,10 @@ public class JoystickToSwerve extends CommandBase {
     }
 
     // convert chassis speed into modules speeds
-    SwerveModuleState[] moduleStates = SwerveDrivetrain.m_kinematics.toSwerveModuleStates(chassisSpeeds);
+    //SwerveModuleState[] moduleStates = SwerveDrivetrain.m_kinematics.toSwerveModuleStates(chassisSpeeds);
 
     // output each module speed into subsystem
-    swerveDrive.setModuleStates(moduleStates);
+    swerveDrive.drive(chassisSpeeds);
 
   }
 

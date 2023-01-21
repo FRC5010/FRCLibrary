@@ -1,0 +1,29 @@
+{
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Pose/Field": "Field2d",
+      "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
+      "/SmartDashboard/Robot Visual": "Mechanism2d"
+    },
+    "windows": {
+      "/SmartDashboard/Drivetrain Visual": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "5010"
+  }
+}

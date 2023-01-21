@@ -4,10 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -21,12 +18,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Controller;
 import frc.robot.FRC5010.GenericMechanism;
 import frc.robot.FRC5010.VisionSystem;
-import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.mechanisms.Drive;
+import frc.robot.mechanisms.SwerveDriveMech;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -40,10 +37,11 @@ public class RobotContainer extends GenericMechanism {
   private Controller driver;
   private Controller operator;
   private Drive drive;
-  private VisionSystem vision;
+  private VisionPhotonMultiCam vision;
   private static Alliance alliance;
   private Mechanism2d robotVisual;
   public static Constants constants;
+  private SwerveDriveMech swerve; 
 
   // Examples of how to use a persisted constants
   // These can live in specific constants files, however
@@ -60,6 +58,8 @@ public class RobotContainer extends GenericMechanism {
     driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
     drivetrainVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
 
+    vision = new VisionPhotonMultiCam("Vision System ", 1);
+    vision.addPhotonCamera("Arducam_OV9281_USB_Camera", new Transform3d());
     // Setup controllers
     driver = new Controller(Controller.JoystickPorts.ZERO.ordinal());
     operator = new Controller(Controller.JoystickPorts.ONE.ordinal());
@@ -76,7 +76,8 @@ public class RobotContainer extends GenericMechanism {
     SmartDashboard.putData("Drivetrain Visual", drivetrainVisual);
     SmartDashboard.putData("Robot Visual", robotVisual);
 
-    drive = new Drive(driver, vision, drivetrainVisual, Persisted.doubleVal("trackWidth"));
+    // drive = new Drive(driver, vision, drivetrainVisual, Persisted.doubleVal("trackWidth"));
+    swerve = new SwerveDriveMech(drivetrainVisual, vision);
 
     /** 
      * TODO: Add other mechanisms 
@@ -95,7 +96,7 @@ public class RobotContainer extends GenericMechanism {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   public void configureButtonBindings(Controller driver, Controller operator) {
-    drive.configureButtonBindings(driver, operator);
+    swerve.configureButtonBindings(driver, operator);
     if (driver.isSingleControllerMode()) {
       // TODO: Add code to handle single driver mode
     } else {
@@ -112,15 +113,17 @@ public class RobotContainer extends GenericMechanism {
       /**
        * TODO: Initialize expected vision subsystem
        */
-      VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1);
+      //VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1);
+      /*
       multiVision.addPhotonCamera("photonvision", 
         new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
           new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
           new Rotation3d(0, Units.degreesToRadians(-20), 0)
         )
       );
+      */
     } else {
-      vision = new VisionLimeLightSim("limelight-sim", 1);
+      // vision = new VisionLimeLightSim("limelight-sim", 1);
     }
   }
   
@@ -147,7 +150,7 @@ public class RobotContainer extends GenericMechanism {
   // Just sets up defalt commands (setUpDeftCom)
   public void setupDefaultCommands() {
     if (!DriverStation.isTest()) {
-      drive.setupDefaultCommands();
+      swerve.setupDefaultCommands();
       /**
        * TODO: Call setupDefaultCommands for other mechanisms
        */
