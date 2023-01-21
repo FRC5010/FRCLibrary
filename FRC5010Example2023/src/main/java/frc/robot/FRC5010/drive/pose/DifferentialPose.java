@@ -14,14 +14,12 @@ import frc.robot.FRC5010.sensors.GenericGyro;
 
 /** Add your docs here. */
 public class DifferentialPose extends GenericPose {
-    private DifferentialDriveKinematics kinematics;
     private GenericEncoder leftEncoder;
     private GenericEncoder rightEncoder;
     private final DifferentialDrivePoseEstimator poseEstimator;
 
     public DifferentialPose(DifferentialDriveKinematics kinematics, GenericGyro gyro, GenericEncoder leftEncoder, GenericEncoder rightEncoder) {
         super(gyro);
-        this.kinematics = kinematics;
         this.leftEncoder = leftEncoder;
         this.rightEncoder = rightEncoder;
         poseEstimator = new DifferentialDrivePoseEstimator(

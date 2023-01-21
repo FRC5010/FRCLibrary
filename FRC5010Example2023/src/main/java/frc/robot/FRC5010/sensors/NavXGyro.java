@@ -7,7 +7,6 @@ package frc.robot.FRC5010.sensors;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SPI.Port;
 
 /** Add your docs here. */
 public class NavXGyro implements GenericGyro {

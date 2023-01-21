@@ -23,7 +23,6 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.GenericGyro;
 import frc.robot.FRC5010.sensors.NavXGyro;
-import frc.robot.FRC5010.sensors.SimulatedGyro;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {

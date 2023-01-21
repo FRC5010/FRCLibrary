@@ -12,10 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.FRC5010.sensors.GenericEncoder;
-import frc.robot.FRC5010.sensors.GenericGyro;
-import frc.robot.FRC5010.sensors.SimulatedEncoder;
-import frc.robot.FRC5010.sensors.SimulatedGyro;
 
 /** Add your docs here. */
 public abstract class GenericSwerveModule extends SubsystemBase {

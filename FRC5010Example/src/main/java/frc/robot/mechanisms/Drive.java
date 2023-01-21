@@ -19,11 +19,11 @@ import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.drive.DifferentialDrivetrain;
 import frc.robot.FRC5010.drive.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
+import frc.robot.FRC5010.drive.SimulatedDrivetrain;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.GenericGyro;
 import frc.robot.FRC5010.sensors.NavXGyro;
-import frc.robot.FRC5010.sensors.SimulatedGyro;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
@@ -51,7 +51,7 @@ public class Drive extends GenericMechanism {
             gyro = new NavXGyro(Port.kMXP);
         } else {
             gyro = new NavXGyro(Port.kMXP);
-            //drivetrain = new SimulatedDrivetrain(gyro, vision, drivetrainVisual);
+            drivetrain = new SimulatedDrivetrain(gyro, vision, drivetrainVisual);
         }
         MotorController5010 template = MotorFactory.DriveTrainMotor(MotorFactory.NEO(1));
         List<Integer> motorPorts = new ArrayList<>();

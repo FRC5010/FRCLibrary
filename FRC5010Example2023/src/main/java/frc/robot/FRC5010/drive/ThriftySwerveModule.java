@@ -9,14 +9,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AnalogEncoder;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.GenericEncoder;
-import frc.robot.FRC5010.sensors.RevEncoder;
 
 /** Add your docs here. */
 public class ThriftySwerveModule extends GenericSwerveModule{

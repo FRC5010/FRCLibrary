@@ -5,9 +5,31 @@
       "/Shuffleboard/Pose/Field": "Field2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
       "/SmartDashboard/Robot Visual": "Mechanism2d"
+    },
+    "windows": {
+      "/Shuffleboard/Pose/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Drivetrain Visual": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Visual": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
+    "persistent": {
+      "Preferences": {
+        "open": true
+      }
+    },
     "transitory": {
       "FMSInfo": {
         "open": true
