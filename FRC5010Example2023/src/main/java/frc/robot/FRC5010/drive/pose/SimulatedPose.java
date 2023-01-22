@@ -5,7 +5,7 @@
 package frc.robot.FRC5010.drive.pose;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.FRC5010.sensors.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class SimulatedPose extends GenericPose {

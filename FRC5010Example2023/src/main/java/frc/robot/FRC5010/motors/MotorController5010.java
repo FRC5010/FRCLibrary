@@ -7,7 +7,7 @@ package frc.robot.FRC5010.motors;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import frc.robot.FRC5010.sensors.GenericEncoder;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
 public interface MotorController5010 extends MotorController {

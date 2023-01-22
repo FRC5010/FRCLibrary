@@ -18,7 +18,6 @@ public class JoystickToSwerve extends CommandBase {
   private Joystick driver;
   private Supplier<Double> xSpdFunction, ySpdFunction, turnSpdFunction;
   private Supplier<Boolean> fieldOrientedDrive;
-  private SlewRateLimiter xLimiter, yLimiter, turnLimiter; 
 
   public JoystickToSwerve(SwerveDrivetrain swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turnSpdFunction, Supplier<Boolean> fieldOrientedDrive) {
     this.swerveDrive = swerveSubsystem;

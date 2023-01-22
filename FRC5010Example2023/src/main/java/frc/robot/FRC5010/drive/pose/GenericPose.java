@@ -13,7 +13,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 import edu.wpi.first.math.util.Units;
-import frc.robot.FRC5010.sensors.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public abstract class GenericPose {

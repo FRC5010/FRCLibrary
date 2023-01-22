@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.drive;
+package frc.robot.FRC5010.drive.pose;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,11 +10,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.FRC5010.VisionSystem;
 import frc.robot.FRC5010.Vision.AprilTags;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.Vision.AprilTags.AprilTag;
 import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
-import frc.robot.FRC5010.drive.pose.GenericPose;
 
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {

@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.FRC5010.drive.GenericSwerveModule;
-import frc.robot.FRC5010.sensors.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class SwervePose extends GenericPose {

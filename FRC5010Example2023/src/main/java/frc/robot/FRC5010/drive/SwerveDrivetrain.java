@@ -4,14 +4,19 @@
 
 package frc.robot.FRC5010.drive;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import frc.robot.FRC5010.VisionSystem;
+import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
-import frc.robot.FRC5010.sensors.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class SwerveDrivetrain extends GenericDrivetrain{
@@ -21,8 +26,6 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     private GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
 
     private GenericGyro gyro;
-
-    private DrivetrainPoseEstimator drivetrainPoseEstimator; 
 
     // public variables
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.76835;
@@ -64,9 +67,7 @@ public class SwerveDrivetrain extends GenericDrivetrain{
 
         this.gyro = genericGyro;
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-        this.drivetrainPoseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, SwerveDrivetrain.m_kinematics, frontLeft, frontRight, backLeft, backRight), visonSystem);
-
-        setDrivetrainPoseEstimator(drivetrainPoseEstimator);
+        poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, SwerveDrivetrain.m_kinematics, frontLeft, frontRight, backLeft, backRight), visonSystem);
 
         new Thread(() -> {
             try{
@@ -80,7 +81,6 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     @Override
     public void drive(ChassisSpeeds direction) {
         this.chassisSpeeds = direction;
-        
     }
 
     public void zeroGyroscope() {
@@ -92,7 +92,6 @@ public class SwerveDrivetrain extends GenericDrivetrain{
         SwerveModuleState[] states = setDesiredStates;
         SwerveDriveKinematics.desaturateWheelSpeeds(states, kPhysicalMaxSpeedMetersPerSecond);
         
-
         frontLeft.setState(states[0]);
         frontRight.setState(states[1]);
         backLeft.setState(states[2]);
@@ -122,8 +121,16 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(states);
-        drivetrainPoseEstimator.update();
+        super.periodic();
     }
-    
 
+    @Override
+    public void simulationPeriodic() {
+        Pose2d pose = poseEstimator.getCurrentPose();
+        Transform2d direction = new Transform2d(
+            new Translation2d(chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02), 
+            new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
+        pose = pose.transformBy(direction);
+        poseEstimator.resetToPose(pose);
+    }
 }

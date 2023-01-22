@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.mechanisms;
+package frc.robot.FRC5010.mechanisms;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,19 +14,18 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
-import frc.robot.FRC5010.Controller;
-import frc.robot.FRC5010.GenericMechanism;
-import frc.robot.FRC5010.VisionSystem;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.drive.DifferentialDrivetrain;
-import frc.robot.FRC5010.drive.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
+import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
-import frc.robot.FRC5010.sensors.GenericGyro;
-import frc.robot.FRC5010.sensors.NavXGyro;
+import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
@@ -115,7 +114,10 @@ public class Drive extends GenericMechanism {
         // Put commands that can be both real and simulation afterwards
 
         defaultDriveCommand = new DefaultDriveCommand(drivetrain, 
-            () -> driver.getLeftYAxis(), () -> driver.getLeftXAxis(), () -> driver.getRightXAxis());
+            () -> driver.getLeftYAxis(), 
+            () -> driver.getLeftXAxis(), 
+            () -> driver.getRightXAxis(),
+            () -> driver.createAButton().getAsBoolean());
     }
 
     private void initializeDifferentialDrive() {

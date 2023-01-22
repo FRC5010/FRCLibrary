@@ -8,7 +8,6 @@
 package frc.robot.FRC5010.Vision;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.robot.FRC5010.VisionSystem;
 
 public class VisionLimeLight extends VisionSystem {
   protected NetworkTableInstance table;

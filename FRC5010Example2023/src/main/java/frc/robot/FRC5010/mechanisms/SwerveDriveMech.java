@@ -2,14 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.mechanisms;
+package frc.robot.FRC5010.mechanisms;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.FRC5010.Controller;
-import frc.robot.FRC5010.GenericMechanism;
-import frc.robot.FRC5010.VisionSystem;
+import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.drive.GenericSwerveModule;
@@ -17,7 +16,8 @@ import frc.robot.FRC5010.drive.SwerveDrivetrain;
 import frc.robot.FRC5010.drive.ThriftySwerveModule;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.AnalogInput5010;
-import frc.robot.FRC5010.sensors.NavXGyro;
+import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 import frc.robot.commands.JoystickToSwerve;
 
 /** Add your docs here. */
@@ -58,7 +58,7 @@ public class SwerveDriveMech extends GenericMechanism {
         driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond));
         driver.setRightXAxis(driver.createRightXAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond));
 
-        swerveDrive.setDefaultCommand(new JoystickToSwerve(swerveDrive, 
+        swerveDrive.setDefaultCommand(new DefaultDriveCommand(swerveDrive, 
         () -> driver.getLeftYAxis(), 
         () -> driver.getLeftXAxis(), 
         () -> driver.getRightXAxis(), 

@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.FRC5010;
+package frc.robot.FRC5010.Vision;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -18,8 +18,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.FRC5010.Vision.VisionConstants;
-import frc.robot.FRC5010.Vision.VisionValues;
 
 // base vision code, can be extended to more specific vision systems.
 public abstract class VisionSystem extends SubsystemBase {

@@ -12,7 +12,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.sensors.GenericEncoder;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
 public class ThriftySwerveModule extends GenericSwerveModule{

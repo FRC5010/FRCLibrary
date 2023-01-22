@@ -18,14 +18,15 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import frc.robot.FRC5010.VisionSystem;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.drive.pose.DifferentialPose;
+import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
+import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.sensors.GenericEncoder;
-import frc.robot.FRC5010.sensors.GenericGyro;
-import frc.robot.FRC5010.sensors.SimulatedEncoder;
-import frc.robot.mechanisms.DriveConstantsDef;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
+import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 public class DifferentialDrivetrain extends GenericDrivetrain {
   private List<MotorController5010> motorList;

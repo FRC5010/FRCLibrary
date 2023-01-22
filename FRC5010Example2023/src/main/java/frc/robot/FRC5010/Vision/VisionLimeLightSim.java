@@ -4,8 +4,6 @@
 
 package frc.robot.FRC5010.Vision;
 
-import frc.robot.FRC5010.VisionSystem;
-
 /** Add your docs here. */
 public class VisionLimeLightSim extends VisionSystem {
 

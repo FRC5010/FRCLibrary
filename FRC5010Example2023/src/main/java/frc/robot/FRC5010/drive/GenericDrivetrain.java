@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 
 /** Add your docs here. */
 public abstract class GenericDrivetrain extends SubsystemBase {
@@ -20,8 +21,10 @@ public abstract class GenericDrivetrain extends SubsystemBase {
         this.poseEstimator = poseEstimator;
     }
     public Mechanism2d getMechVisual() { assert(null != poseEstimator); return mechVisual; }
-    public abstract void drive(ChassisSpeeds direction);
     public Rotation2d getHeading() { assert(null != poseEstimator); return poseEstimator.getGyroRotation2d(); };
+
+    public abstract void drive(ChassisSpeeds direction);
+
     @Override
     public void periodic() {
         poseEstimator.update();

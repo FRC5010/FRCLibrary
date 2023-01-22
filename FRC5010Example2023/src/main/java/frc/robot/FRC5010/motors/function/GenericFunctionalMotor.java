@@ -8,7 +8,7 @@ import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.sensors.GenericEncoder;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
 public class GenericFunctionalMotor implements MotorController5010 {

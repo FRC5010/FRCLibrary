@@ -6,6 +6,7 @@ package frc.robot.FRC5010.sensors;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
 public class AnalogInput5010 implements GenericEncoder{

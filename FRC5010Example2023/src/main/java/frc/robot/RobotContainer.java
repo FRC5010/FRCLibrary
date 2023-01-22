@@ -14,12 +14,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.FRC5010.Controller;
-import frc.robot.FRC5010.GenericMechanism;
-import frc.robot.FRC5010.VisionSystem;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
+import frc.robot.FRC5010.mechanisms.GenericMechanism;
+import frc.robot.FRC5010.robots.RobotFactory;
+import frc.robot.FRC5010.sensors.Controller;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a

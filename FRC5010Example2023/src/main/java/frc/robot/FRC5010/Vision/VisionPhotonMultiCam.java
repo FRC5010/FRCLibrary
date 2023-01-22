@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.FRC5010.VisionSystem;
 
 /** Add your docs here. */
 public class VisionPhotonMultiCam extends VisionSystem {

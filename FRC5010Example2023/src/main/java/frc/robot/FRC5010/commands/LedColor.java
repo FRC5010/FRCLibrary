@@ -5,7 +5,7 @@
 package frc.robot.FRC5010.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.*;
+import frc.robot.FRC5010.subsystems.LedSubsystem;
 
 public class LedColor extends CommandBase {
   /** Creates a new LedColor. */

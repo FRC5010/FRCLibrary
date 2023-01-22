@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.FRC5010.sensors.GenericEncoder;
-import frc.robot.FRC5010.sensors.GenericGyro;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class DifferentialPose extends GenericPose {

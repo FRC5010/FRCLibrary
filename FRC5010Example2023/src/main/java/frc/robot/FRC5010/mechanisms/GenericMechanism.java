@@ -2,9 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010;
+package frc.robot.FRC5010.mechanisms;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import frc.robot.FRC5010.sensors.Controller;
 
 /** 
  * GenericMechanism should be used as the parent class of any mechanism

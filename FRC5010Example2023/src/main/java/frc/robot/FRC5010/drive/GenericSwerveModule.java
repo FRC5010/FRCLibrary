@@ -25,6 +25,10 @@ public abstract class GenericSwerveModule extends SubsystemBase {
 
     public GenericSwerveModule(MechanismRoot2d visualRoot, String key) {
         this.moduleKey = key;
+        visualRoot.append(
+            new MechanismLigament2d(moduleKey + "vert", 10, 90, 6.0, new Color8Bit(50, 50, 50)));
+        visualRoot.append(
+            new MechanismLigament2d(moduleKey + "hori", 10, 0, 6.0, new Color8Bit(50, 50, 50)));
         motorDial = visualRoot.append(
                 new MechanismLigament2d(moduleKey, 10.0, 90, 6.0, new Color8Bit(Color.kYellow)));
         absEncDial = visualRoot.append(
