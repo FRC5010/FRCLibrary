@@ -11,11 +11,15 @@ import java.util.stream.IntStream;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Controller;
 import frc.robot.FRC5010.GenericMechanism;
 import frc.robot.FRC5010.VisionSystem;
 import frc.robot.FRC5010.commands.DefaultDriveCommand;
+import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.drive.DifferentialDrivetrain;
 import frc.robot.FRC5010.drive.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
@@ -27,41 +31,59 @@ import frc.robot.FRC5010.sensors.NavXGyro;
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
     private VisionSystem vision;
-    private Controller driver;
-    DrivetrainPoseEstimator poseEstimator;
-    GenericDrivetrain drivetrain;
-    GenericGyro gyro;
-    double trackWidth;
+    private DrivetrainPoseEstimator poseEstimator;
+    private GenericDrivetrain drivetrain;
+    private GenericGyro gyro;
+    private double trackWidth;
+    private double wheelBase;
+    private Command defaultDriveCommand;
+    private String type;
 
-    public Drive(Controller driver, VisionSystem visionSystem, Mechanism2d robotMechSim, double trackWidth) {
-        super(robotMechSim);
-        this.driver = driver;
+    public static class Type {
+        public static final String DIFF_DRIVE = "DifferentialDrive";
+        public static final String THRIFTY_SWERVE_DRIVE = "ThriftySwerveDrive";
+        public static final String MK4_SWERVE_DRIVE = "MK4SwerveDrive";
+        public static final String MK4I_SWERVE_DRIVE = "MK4ISwerveDrive";
+    }
+
+    // Examples of how to use a persisted constants
+    // These can live in specific constants files, however
+    private static Persisted<Integer> driveVisualH;
+    private static Persisted<Integer> driveVisualV;
+
+    public Drive(VisionSystem visionSystem, GenericGyro gyro, String type, double trackWidth, double wheelBase) {
         this.vision = visionSystem;
+        this.gyro = gyro;
         this.trackWidth = trackWidth;
+        this.wheelBase = wheelBase;
+        driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, 60);
+        driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
+        mechVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
+        SmartDashboard.putData("Drivetrain Visual", mechVisual);
+
         initRealOrSim();
     }
 
     @Override
     protected void initRealOrSim() {
-        /**
-         * TODO: Add real implementation classes here
-         */
-
-        if (Robot.isReal()) {
-            // TODO: replace gyro with a real one
-            gyro = new NavXGyro(SPI.Port.kMXP);
-        } else {
-            // gyro = new SimulatedGyro();
-            //drivetrain = new SimulatedDrivetrain(gyro, vision, drivetrainVisual);
+        switch(type) {
+            case Type.DIFF_DRIVE: {
+                initializeDifferentialDrive();
+                break;
+            }
+            case Type.THRIFTY_SWERVE_DRIVE: {
+                break;
+            }
+            case Type.MK4_SWERVE_DRIVE: {
+                break;
+            }
+            case Type.MK4I_SWERVE_DRIVE: {
+                break;
+            }
+            default: {
+                break;
+            }
         }
-        MotorController5010 template = MotorFactory.DriveTrainMotor(MotorFactory.NEO(1));
-        List<Integer> motorPorts = new ArrayList<>();
-        
-        // This assumes ports 1 & 2 are left and 3 & 4 are right
-        // This is just an example of how to put a sequence of numbers into a list
-        motorPorts.addAll(IntStream.rangeClosed(1, 4).boxed().collect(Collectors.toList()));
-
-        drivetrain = new DifferentialDrivetrain(template, motorPorts, gyro, vision, drivetrainVisual, trackWidth);
     }
 
     public void setupDefaultCommands() {
@@ -71,8 +93,7 @@ public class Drive extends GenericMechanism {
         } else {
             
         }
-        drivetrain.setDefaultCommand(new DefaultDriveCommand(drivetrain, 
-            () -> driver.getLeftYAxis(), () -> driver.getLeftXAxis(), () -> driver.getRightXAxis()));
+        drivetrain.setDefaultCommand(defaultDriveCommand);
     }
 
     @Override
@@ -92,5 +113,19 @@ public class Drive extends GenericMechanism {
         driver.setRightXAxis(driver.createRightXAxis()
             .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
+
+        defaultDriveCommand = new DefaultDriveCommand(drivetrain, 
+            () -> driver.getLeftYAxis(), () -> driver.getLeftXAxis(), () -> driver.getRightXAxis());
+    }
+
+    private void initializeDifferentialDrive() {
+        MotorController5010 template = MotorFactory.DriveTrainMotor(MotorFactory.NEO(1));
+        List<Integer> motorPorts = new ArrayList<>();
+        
+        // This assumes ports 1 & 2 are left and 3 & 4 are right
+        // This is just an example of how to put a sequence of numbers into a list
+        motorPorts.addAll(IntStream.rangeClosed(1, 4).boxed().collect(Collectors.toList()));
+
+        drivetrain = new DifferentialDrivetrain(template, motorPorts, gyro, vision, mechVisual, trackWidth);
     }
 }

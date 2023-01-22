@@ -110,13 +110,5 @@
     "properties": {
       "persistent": true
     }
-  },
-  {
-    "name": "/Preferences/WhoAmI",
-    "type": "string",
-    "value": "BabySwerve",
-    "properties": {
-      "persistent": true
-    }
   }
 ]

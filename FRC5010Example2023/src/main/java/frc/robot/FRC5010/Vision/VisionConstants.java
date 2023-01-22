@@ -16,4 +16,7 @@ public class VisionConstants {
     public static final double cameraHeight = Units.inchesToMeters(3);
     public static final double cameraAngle = Units.degreesToRadians(-20);
     public static final Transform3d kCameraToRobot = new Transform3d(new Translation3d(-0.06, 0.0, 0.09), new Rotation3d(0.0, Units.degreesToRadians(-20), Units.degreesToRadians(180)));
+
+    public VisionConstants() {
+    }
 }
