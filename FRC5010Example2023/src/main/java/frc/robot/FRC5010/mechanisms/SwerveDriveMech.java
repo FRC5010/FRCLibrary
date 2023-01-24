@@ -14,6 +14,7 @@ import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.drive.GenericSwerveModule;
 import frc.robot.FRC5010.drive.SwerveDrivetrain;
 import frc.robot.FRC5010.drive.ThriftySwerveModule;
+import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.AnalogInput5010;
 import frc.robot.FRC5010.sensors.Controller;
@@ -26,6 +27,21 @@ public class SwerveDriveMech extends GenericMechanism {
     GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
     SwerveDrivetrain swerveDrive;
     VisionSystem visonSystem; 
+
+    MotorController5010 motor5 = new NEO(5).invert(true);
+    MotorController5010 motor3 = new NEO(3).invert(true); 
+    MotorController5010 motor1 = new NEO(1).invert(true);
+    MotorController5010 motor7 = new NEO(7).invert(true); 
+
+
+
+    MotorController5010 motor2 = new NEO(2).invert(true); 
+    MotorController5010 motor8 = new NEO(8).invert(true); 
+    MotorController5010 motor4 = new NEO(4).invert(true); 
+    MotorController5010 motor6 = new NEO(6).invert(true); 
+
+
+
     private static Persisted<Integer> driveVisualH;
     private static Persisted<Integer> driveVisualV;
     NavXGyro gyro = new NavXGyro(SPI.Port.kMXP);
@@ -37,13 +53,15 @@ public class SwerveDriveMech extends GenericMechanism {
         SmartDashboard.putData("Drivetrain Visual", mechVisual);
         this.visonSystem = visonSystem; 
 
-        frontLeft = new ThriftySwerveModule(mechVisual.getRoot("frontleft", 45, 15), "frontleft", new NEO(1), new NEO(2), SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, new AnalogInput5010(0));  
 
-        frontRight = new ThriftySwerveModule(mechVisual.getRoot("frontright", 45, 45), "frontright", new NEO(7), new NEO(8), SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, new AnalogInput5010(1));
 
-        backLeft = new ThriftySwerveModule(mechVisual.getRoot("backleft", 15, 15), "backleft", new NEO(3), new NEO(4), SwerveDrivetrain.kBackLeftAbsoluteOffsetRad, new AnalogInput5010(2));
+        frontLeft = new ThriftySwerveModule(mechVisual.getRoot("frontleft", 45, 15), "frontleft", motor1, motor2, SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, new AnalogInput5010(0));  
 
-        backRight = new ThriftySwerveModule(mechVisual.getRoot("backright", 15, 45), "backright", new NEO(5), new NEO(6), SwerveDrivetrain.kBackRightAbsoluteOffsetRad, new AnalogInput5010(3));
+        frontRight = new ThriftySwerveModule(mechVisual.getRoot("frontright", 45, 45), "frontright", motor7, motor8, SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, new AnalogInput5010(1));
+
+        backLeft = new ThriftySwerveModule(mechVisual.getRoot("backleft", 15, 15), "backleft", motor3, motor4, SwerveDrivetrain.kBackLeftAbsoluteOffsetRad, new AnalogInput5010(2));
+
+        backRight = new ThriftySwerveModule(mechVisual.getRoot("backright", 15, 45), "backright", motor5, motor6, SwerveDrivetrain.kBackRightAbsoluteOffsetRad, new AnalogInput5010(3));
 
         swerveDrive = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, visonSystem);
 
@@ -58,7 +76,7 @@ public class SwerveDriveMech extends GenericMechanism {
         driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond));
         driver.setRightXAxis(driver.createRightXAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond));
 
-        swerveDrive.setDefaultCommand(new DefaultDriveCommand(swerveDrive, 
+        swerveDrive.setDefaultCommand(new JoystickToSwerve(swerveDrive, 
         () -> driver.getLeftYAxis(), 
         () -> driver.getLeftXAxis(), 
         () -> driver.getRightXAxis(), 

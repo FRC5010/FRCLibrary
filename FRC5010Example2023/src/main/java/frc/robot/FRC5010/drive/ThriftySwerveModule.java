@@ -85,7 +85,13 @@ public class ThriftySwerveModule extends GenericSwerveModule{
 
         turningController.enableContinuousInput(-Math.PI, Math.PI);
 
-        resetEncoders();
+        
+        new Thread(() -> {
+            try{
+              Thread.sleep(1000);
+            }catch(Exception e){}
+            resetEncoders();
+          }).start();
     }
 
     

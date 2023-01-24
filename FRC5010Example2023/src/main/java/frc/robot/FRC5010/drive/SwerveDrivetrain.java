@@ -40,9 +40,9 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = 5;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 1;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 6;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = .4;
-    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = Math.PI;
+    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5 * Math.PI;
 
     
 

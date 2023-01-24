@@ -12,7 +12,8 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pose/Field": "Field2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
-      "/SmartDashboard/Robot Visual": "Mechanism2d"
+      "/SmartDashboard/Robot Visual": "Mechanism2d",
+      "/SmartDashboard/Swerve Sim": "Mechanism2d"
     },
     "windows": {
       "/SmartDashboard/Drivetrain Visual": {
