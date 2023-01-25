@@ -6,37 +6,35 @@ package frc.robot.FRC5010.mechanisms;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.DefaultDriveCommand;
+import frc.robot.FRC5010.constants.DrivePorts;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
+import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.DifferentialDrivetrain;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
-import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
+import frc.robot.FRC5010.drive.GenericSwerveModule;
+import frc.robot.FRC5010.drive.SwerveDrivetrain;
+import frc.robot.FRC5010.drive.ThriftySwerveModule;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
     private VisionSystem vision;
-    private DrivetrainPoseEstimator poseEstimator;
     private GenericDrivetrain drivetrain;
     private GenericGyro gyro;
-    private double trackWidth;
-    private double wheelBase;
     private Command defaultDriveCommand;
     private String type;
+    private List<? extends DrivePorts> motorPorts;
 
     public static class Type {
         public static final String DIFF_DRIVE = "DifferentialDrive";
@@ -50,11 +48,11 @@ public class Drive extends GenericMechanism {
     private static Persisted<Integer> driveVisualH;
     private static Persisted<Integer> driveVisualV;
 
-    public Drive(VisionSystem visionSystem, GenericGyro gyro, String type, double trackWidth, double wheelBase) {
+    public Drive(VisionSystem visionSystem, GenericGyro gyro, String type, List<? extends DrivePorts> drivePorts) {
         this.vision = visionSystem;
         this.gyro = gyro;
-        this.trackWidth = trackWidth;
-        this.wheelBase = wheelBase;
+        this.type = type;
+        motorPorts = drivePorts;
         driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, 60);
         driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
         mechVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
@@ -71,6 +69,7 @@ public class Drive extends GenericMechanism {
                 break;
             }
             case Type.THRIFTY_SWERVE_DRIVE: {
+                initializeThriftySwerveDrive();
                 break;
             }
             case Type.MK4_SWERVE_DRIVE: {
@@ -120,14 +119,34 @@ public class Drive extends GenericMechanism {
             () -> driver.createAButton().getAsBoolean());
     }
 
+    private void initializeThriftySwerveDrive() {
+        GenericSwerveModule frontLeft = new ThriftySwerveModule(
+            mechVisual.getRoot("frontleft", 45, 15), "frontleft", 
+            SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, (SwervePorts)motorPorts.get(0));  
+        GenericSwerveModule frontRight = new ThriftySwerveModule(
+            mechVisual.getRoot("frontright", 45, 45), "frontright", 
+            SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, (SwervePorts)motorPorts.get(1));
+        GenericSwerveModule backLeft = new ThriftySwerveModule(
+            mechVisual.getRoot("backleft", 15, 15), "backleft", 
+            SwerveDrivetrain.kBackLeftAbsoluteOffsetRad, (SwervePorts)motorPorts.get(2));
+        GenericSwerveModule backRight = new ThriftySwerveModule(
+            mechVisual.getRoot("backright", 15, 45), "backright", 
+            SwerveDrivetrain.kBackRightAbsoluteOffsetRad, (SwervePorts)motorPorts.get(3));
+
+        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision);
+    }
+
     private void initializeDifferentialDrive() {
         MotorController5010 template = MotorFactory.DriveTrainMotor(MotorFactory.NEO(1));
-        List<Integer> motorPorts = new ArrayList<>();
+        List<DrivePorts> motorPorts = new ArrayList<>();
         
         // This assumes ports 1 & 2 are left and 3 & 4 are right
         // This is just an example of how to put a sequence of numbers into a list
-        motorPorts.addAll(IntStream.rangeClosed(1, 4).boxed().collect(Collectors.toList()));
+        motorPorts.add(new DrivePorts(1));
+        motorPorts.add(new DrivePorts(2));
+        motorPorts.add(new DrivePorts(3));
+        motorPorts.add(new DrivePorts(4));
 
-        drivetrain = new DifferentialDrivetrain(template, motorPorts, gyro, vision, mechVisual, trackWidth);
+        drivetrain = new DifferentialDrivetrain(template, motorPorts, gyro, vision, mechVisual);
     }
 }

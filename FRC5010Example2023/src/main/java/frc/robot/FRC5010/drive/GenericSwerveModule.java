@@ -54,13 +54,6 @@ public abstract class GenericSwerveModule extends SubsystemBase {
                 
         this.radOffset = radOffset;
 
-        // set units drive encoder to meters and meters/sec
-        driveEncoder.setPositionConversion(moduleConstants.getkDriveEncoderRot2Meter());
-        driveEncoder.setVelocityConversion(moduleConstants.getkDriveEncoderRPM2MeterPerSec());
-        // set units turning encoder to radians and radians/sec
-        turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
-        turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
-        
         turningController = new ProfiledPIDController(
             pid.getkP(), 
             pid.getkI(), 
@@ -69,7 +62,6 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         );
 
         turningController.enableContinuousInput(-Math.PI, Math.PI);
-
         
         new Thread(() -> {
             try{
@@ -77,6 +69,19 @@ public abstract class GenericSwerveModule extends SubsystemBase {
             }catch(Exception e){}
             resetEncoders();
             }).start();
+    }
+
+    public void setupSwerveEncoders() {
+        turnEncoder = turn.getMotorEncoder();
+        driveEncoder = drive.getMotorEncoder();
+
+        // set units drive encoder to meters and meters/sec
+        driveEncoder.setPositionConversion(moduleConstants.getkDriveEncoderRot2Meter());
+        driveEncoder.setVelocityConversion(moduleConstants.getkDriveEncoderRPM2MeterPerSec());
+        // set units turning encoder to radians and radians/sec
+        turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
+        turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
+        resetEncoders();
     }
 
     public void resetEncoders() {

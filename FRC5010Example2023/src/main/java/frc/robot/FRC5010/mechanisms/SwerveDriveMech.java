@@ -16,9 +16,6 @@ import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.GenericSwerveModule;
 import frc.robot.FRC5010.drive.SwerveDrivetrain;
 import frc.robot.FRC5010.drive.ThriftySwerveModule;
-import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.motors.hardware.NEO;
-import frc.robot.FRC5010.sensors.AnalogInput5010;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 import frc.robot.commands.JoystickToSwerve;
@@ -29,20 +26,6 @@ public class SwerveDriveMech extends GenericMechanism {
     GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
     SwerveDrivetrain swerveDrive;
     VisionSystem visonSystem; 
-
-    MotorController5010 motor5 = new NEO(5).invert(true);
-    MotorController5010 motor3 = new NEO(3).invert(true); 
-    MotorController5010 motor1 = new NEO(1).invert(true);
-    MotorController5010 motor7 = new NEO(7).invert(true); 
-
-
-
-    MotorController5010 motor2 = new NEO(2).invert(true); 
-    MotorController5010 motor8 = new NEO(8).invert(true); 
-    MotorController5010 motor4 = new NEO(4).invert(true); 
-    MotorController5010 motor6 = new NEO(6).invert(true); 
-
-
 
     private static Persisted<Integer> driveVisualH;
     private static Persisted<Integer> driveVisualV;
@@ -55,8 +38,6 @@ public class SwerveDriveMech extends GenericMechanism {
         SmartDashboard.putData("Drivetrain Visual", mechVisual);
         this.visonSystem = visonSystem; 
 
-
-
         frontLeft = new ThriftySwerveModule(mechVisual.getRoot("frontleft", 45, 15), "frontleft", SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, swervePorts.get(0));  
 
         frontRight = new ThriftySwerveModule(mechVisual.getRoot("frontright", 45, 45), "frontright", SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, swervePorts.get(1));
@@ -66,7 +47,6 @@ public class SwerveDriveMech extends GenericMechanism {
         backRight = new ThriftySwerveModule(mechVisual.getRoot("backright", 15, 45), "backright", SwerveDrivetrain.kBackRightAbsoluteOffsetRad, swervePorts.get(3));
 
         swerveDrive = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, visonSystem);
-
         
         //TODO Auto-generated constructor stub
     }

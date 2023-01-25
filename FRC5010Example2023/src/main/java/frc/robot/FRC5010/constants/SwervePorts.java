@@ -5,24 +5,16 @@
 package frc.robot.FRC5010.constants;
 
 /** Add your docs here. */
-public class SwervePorts {
-
-    private int drivePort;
+public class SwervePorts extends DrivePorts {
     private int turnPort;
     private int encoderPort;
 
     public SwervePorts(int drivePort, int turnPort, int encoderPort) {
-        this.drivePort = drivePort;
+        super(drivePort);
         this.turnPort = turnPort;
         this.encoderPort = encoderPort;
     }
     
-    public int getDrivePort() {
-        return drivePort;
-    }
-    public void setDrivePort(int drivePort) {
-        this.drivePort = drivePort;
-    }
     public int getTurnPort() {
         return turnPort;
     }

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.constants.DrivePorts;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.drive.pose.DifferentialPose;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
@@ -32,7 +33,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
   private List<MotorController5010> motorList;
   private DifferentialDrive diffDrive;
   private DifferentialDriveKinematics diffKinematics;
-  private List<Integer> motorPorts;
+  private List<DrivePorts> motorPorts;
   private MotorController5010 left, right;
   private GenericEncoder leftEncoder, rightEncoder;
   private GenericGyro gyro;
@@ -43,8 +44,8 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
    * @param left  - requires the left motor as a template for the others
    * @param ports - a list of ports (assumes all ports are given)
    */
-  public DifferentialDrivetrain(MotorController5010 left, List<Integer> ports,
-      GenericGyro gyro, VisionSystem vision, Mechanism2d mechVisual, double kTrackwidthMeters) {
+  public DifferentialDrivetrain(MotorController5010 left, List<DrivePorts> ports,
+      GenericGyro gyro, VisionSystem vision, Mechanism2d mechVisual) {
     super(mechVisual);
     assert (ports.size() == 4);
     this.motorPorts = ports;
@@ -53,20 +54,20 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     motorList = new ArrayList<>();
     this.left = left;
     motorList.add(left);
-    MotorController5010 lMotor = left.duplicate(motorPorts.get(1));
+    MotorController5010 lMotor = left.duplicate(motorPorts.get(1).getDrivePort());
     lMotor.setFollow(left);
     motorList.add(lMotor);
 
-    this.right = left.duplicate(motorPorts.get(2));
+    this.right = left.duplicate(motorPorts.get(2).getDrivePort());
     right.invert(true);
-    MotorController5010 rMotor = right.duplicate(motorPorts.get(3));
+    MotorController5010 rMotor = right.duplicate(motorPorts.get(3).getDrivePort());
     rMotor.setFollow(right);
     motorList.add(rMotor);
 
     leftEncoder = left.getMotorEncoder();
     rightEncoder = right.getMotorEncoder();
 
-    diffKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
+    diffKinematics = new DifferentialDriveKinematics(Persisted.doubleVal(DriveConstantsDef.TRACK_WIDTH));
 
     if (RobotBase.isSimulation()) {
       initSimulation();

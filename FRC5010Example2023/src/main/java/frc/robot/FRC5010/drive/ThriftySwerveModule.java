@@ -10,7 +10,7 @@ import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.motors.hardware.NEO;
+import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.AnalogInput5010;
 
 /** Add your docs here. */
@@ -26,19 +26,10 @@ public class ThriftySwerveModule extends GenericSwerveModule{
         super.pid = this.pid;
         super.motorConstants = this.motorConstants;
         super.moduleConstants = this.moduleConstants;
-        drive = new NEO(swervePorts.getDrivePort()).invert(moduleConstants.isDrivingInv());
-        turn = new NEO(swervePorts.getTurnPort()).invert(moduleConstants.isTurningInv());
+        drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(moduleConstants.isTurningInv());
+        turn = MotorFactory.NEO(swervePorts.getTurnPort());
         absoluteEncoder = new AnalogInput5010(swervePorts.getEncoderPort());
-        turnEncoder = turn.getMotorEncoder();
-        driveEncoder = drive.getMotorEncoder();
-
-        // set units drive encoder to meters and meters/sec
-        driveEncoder.setPositionConversion(moduleConstants.getkDriveEncoderRot2Meter());
-        driveEncoder.setVelocityConversion(moduleConstants.getkDriveEncoderRPM2MeterPerSec());
-        // set units turning encoder to radians and radians/sec
-        turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
-        turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
-
+        setupSwerveEncoders();
     }    
 
 }
