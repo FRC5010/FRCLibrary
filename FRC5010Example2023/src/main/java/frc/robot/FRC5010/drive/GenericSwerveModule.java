@@ -54,15 +54,6 @@ public abstract class GenericSwerveModule extends SubsystemBase {
                 
         this.radOffset = radOffset;
 
-        turningController = new ProfiledPIDController(
-            pid.getkP(), 
-            pid.getkI(), 
-            pid.getkD(),
-            new TrapezoidProfile.Constraints(SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond, SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond)
-        );
-
-        turningController.enableContinuousInput(-Math.PI, Math.PI);
-        
         new Thread(() -> {
             try{
                 Thread.sleep(1000);
@@ -81,7 +72,15 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         // set units turning encoder to radians and radians/sec
         turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
         turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
-        resetEncoders();
+
+        turningController = new ProfiledPIDController(
+            pid.getkP(), 
+            pid.getkI(), 
+            pid.getkD(),
+            new TrapezoidProfile.Constraints(SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond, SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond)
+        );
+
+        turningController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     public void resetEncoders() {
@@ -90,32 +89,26 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     }
 
     public double getDrivePosition() {
-        // TODO Auto-generated method stub
         return driveEncoder.getPosition();
     }
 
     public double getTurningPosition() {
-        // TODO Auto-generated method stub
         return turnEncoder.getPosition();
     }
 
     public double getAbsoluteEncoderRad() {
-        // TODO Auto-generated method stub
         return absoluteEncoder.getPosition() - radOffset;
     }
 
     public double getTurningVelocity() {
-        // TODO Auto-generated method stub
         return turnEncoder.getVelocity();
     }
 
     public double getDriveVelocity() {
-        // TODO Auto-generated method stub
         return driveEncoder.getVelocity();
     }
 
     public boolean setState(SwerveModuleState state) {
-        // TODO Auto-generated method stub
         if(Math.abs(state.speedMetersPerSecond) < 0.001){
             stop();
             return false;
@@ -123,13 +116,11 @@ public abstract class GenericSwerveModule extends SubsystemBase {
       
         state = SwerveModuleState.optimize(state, getState().angle);
         drive.set(state.speedMetersPerSecond / SwerveDrivetrain.kPhysicalMaxSpeedMetersPerSecond);
-        //expectDial.setLength(50 * drive.get());
         double turnPow = turningController.calculate(getTurningPosition(),state.angle.getRadians());
-        // getTurningPosition()
-        // adding ks to get swerve moving
         turn.set(turnPow + (Math.signum(turnPow) * motorConstants.getkS()));
         SmartDashboard.putString("Swerve [" + getKey()  + "] state", 
-        "Angle: " + state.angle.getDegrees() + " Speed m/s: " + state.speedMetersPerSecond);
+        " Angle: " + state.angle.getDegrees() + 
+        " Speed m/s: " + state.speedMetersPerSecond);
         return true;
     }
 

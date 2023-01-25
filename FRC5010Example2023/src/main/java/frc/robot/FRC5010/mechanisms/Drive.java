@@ -102,14 +102,17 @@ public class Drive extends GenericMechanism {
         } else {
             
         }
+        driver.setLeftXAxis(driver.createLeftXAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond));
+        driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond));
+        driver.setRightXAxis(driver.createRightXAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond));
 
         // Example of setting up axis for driving omnidirectional
-        driver.setLeftXAxis(driver.createLeftXAxis()
-            .negate().deadzone(0.07).limit(1).rate(2).cubed());
-        driver.setLeftYAxis(driver.createLeftYAxis()
-            .negate().deadzone(0.07).limit(1).rate(2).cubed());
-        driver.setRightXAxis(driver.createRightXAxis()
-            .negate().deadzone(0.07).limit(1).rate(4).cubed());
+        // driver.setLeftXAxis(driver.createLeftXAxis()
+        //     .negate().deadzone(0.07).limit(1).rate(2).cubed());
+        // driver.setLeftYAxis(driver.createLeftYAxis()
+        //     .negate().deadzone(0.07).limit(1).rate(2).cubed());
+        // driver.setRightXAxis(driver.createRightXAxis()
+        //     .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
 
         defaultDriveCommand = new DefaultDriveCommand(drivetrain, 

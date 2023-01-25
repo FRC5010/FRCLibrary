@@ -44,7 +44,6 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5 * Math.PI;
 
     
-
     public static final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
         // Front left
         new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),

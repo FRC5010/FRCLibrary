@@ -9,6 +9,7 @@ import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
+import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.encoder.CanCoderEncoder;
 
@@ -47,8 +48,8 @@ public class MK4iSwerveModule extends GenericSwerveModule {
         super.pid = this.pid;
         super.motorConstants = this.motorConstants;
         super.moduleConstants = this.moduleConstants;
-        drive = new NEO(swervePorts.getDrivePort()).invert(moduleConstants.isDrivingInv());
-        turn = new NEO(swervePorts.getTurnPort()).invert(moduleConstants.isTurningInv());
+        drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(moduleConstants.isDrivingInv());
+        turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(moduleConstants.isTurningInv());
         absoluteEncoder = new CanCoderEncoder(swervePorts.getEncoderPort());
         turnEncoder = turn.getMotorEncoder();
         driveEncoder = drive.getMotorEncoder();

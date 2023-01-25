@@ -63,7 +63,7 @@ public class DrivetrainPoseEstimator {
         double imageCaptureTime = vision.getRawValues().getLatency();
         
         field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
-        System.out.println("RobotPoseEst: X: " + robotPose.getX() + " Y: " + robotPose.getY() + " R: " + robotPose.getRotation().getDegrees());
+        //System.out.println("RobotPoseEst: X: " + robotPose.getX() + " Y: " + robotPose.getY() + " R: " + robotPose.getRotation().getDegrees());
         poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
     }
     poseTracker.updateLocalMeasurements();

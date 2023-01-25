@@ -27,7 +27,7 @@ public class ThriftySwerveModule extends GenericSwerveModule{
         super.motorConstants = this.motorConstants;
         super.moduleConstants = this.moduleConstants;
         drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(moduleConstants.isTurningInv());
-        turn = MotorFactory.NEO(swervePorts.getTurnPort());
+        turn = MotorFactory.NEO550(swervePorts.getTurnPort());
         absoluteEncoder = new AnalogInput5010(swervePorts.getEncoderPort());
         setupSwerveEncoders();
     }    
