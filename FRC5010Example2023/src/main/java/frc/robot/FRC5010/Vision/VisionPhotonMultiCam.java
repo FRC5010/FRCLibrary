@@ -43,13 +43,13 @@ public class VisionPhotonMultiCam extends VisionSystem {
   
     @Override
     public void update() {
+      rawValues = new VisionValuesPhotonCamera();
         for(int i = 0; i < cameras.size(); ++i) {
             updateViaNetworkTable(cameras.get(i), poses.get(i), names.get(i));
         }
     }
 
     public void updateViaNetworkTable(PhotonCamera camera, Transform3d c2rPose, String path) {
-      rawValues = new VisionValuesPhotonCamera();
       var result = camera.getLatestResult();
       if (result.hasTargets()) {
         var target = result.getBestTarget();
