@@ -1,8 +1,5 @@
 {
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
     "transitory": {
       "Shuffleboard": {
         "open": true
@@ -19,6 +16,11 @@
       "/SmartDashboard/Swerve Sim": "Mechanism2d"
     },
     "windows": {
+      "/Shuffleboard/Pose/Field": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Drivetrain Visual": {
         "window": {
           "visible": true
@@ -28,6 +30,7 @@
   },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
-    "serverTeam": "5010"
+    "serverTeam": "5010",
+    "visible": false
   }
 }

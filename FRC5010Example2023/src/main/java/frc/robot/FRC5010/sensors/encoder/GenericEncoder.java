@@ -13,4 +13,5 @@ public interface GenericEncoder {
     void setVelocityConversion(double conversion);
     void setPosition(double position);
     void setRate(double rate);
+    void setInverted(boolean inverted);
 }

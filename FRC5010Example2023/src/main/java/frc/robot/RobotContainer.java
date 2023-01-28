@@ -20,6 +20,7 @@ import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.robots.RobotFactory;
+import frc.robot.FRC5010.robots.RobotFactory.Parts;
 import frc.robot.FRC5010.sensors.Controller;
 
 /**
@@ -141,6 +142,8 @@ public class RobotContainer extends GenericMechanism {
      * TODO: Add actual auto commands
      */
     command.addOption("Do nothing", new InstantCommand());
+
+    robotFactory.getParts().get(Parts.DRIVE);
   }
 
   /**

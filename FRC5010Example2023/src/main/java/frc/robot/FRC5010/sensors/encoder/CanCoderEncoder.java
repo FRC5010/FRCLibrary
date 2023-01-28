@@ -58,4 +58,10 @@ public class CanCoderEncoder implements GenericEncoder{
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public void setInverted(boolean inverted) {
+        // TODO Auto-generated method stub
+        
+    }
 }

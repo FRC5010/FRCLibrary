@@ -38,15 +38,15 @@ public class SwerveDriveMech extends GenericMechanism {
         SmartDashboard.putData("Drivetrain Visual", mechVisual);
         this.visonSystem = visonSystem; 
 
-        frontLeft = new ThriftySwerveModule(mechVisual.getRoot("frontleft", 45, 15), "frontleft", SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, swervePorts.get(0));  
+        // frontLeft = new ThriftySwerveModule(mechVisual.getRoot("frontleft", 45, 15), "frontleft", SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, swervePorts.get(0));  
 
-        frontRight = new ThriftySwerveModule(mechVisual.getRoot("frontright", 45, 45), "frontright", SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, swervePorts.get(1));
+        // frontRight = new ThriftySwerveModule(mechVisual.getRoot("frontright", 45, 45), "frontright", SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, swervePorts.get(1));
 
-        backLeft = new ThriftySwerveModule(mechVisual.getRoot("backleft", 15, 15), "backleft", SwerveDrivetrain.kBackLeftAbsoluteOffsetRad, swervePorts.get(2));
+        // backLeft = new ThriftySwerveModule(mechVisual.getRoot("backleft", 15, 15), "backleft", SwerveDrivetrain.kBackLeftAbsoluteOffsetRad, swervePorts.get(2));
 
-        backRight = new ThriftySwerveModule(mechVisual.getRoot("backright", 15, 45), "backright", SwerveDrivetrain.kBackRightAbsoluteOffsetRad, swervePorts.get(3));
+        // backRight = new ThriftySwerveModule(mechVisual.getRoot("backright", 15, 45), "backright", SwerveDrivetrain.kBackRightAbsoluteOffsetRad, swervePorts.get(3));
 
-        swerveDrive = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, visonSystem);
+        // swerveDrive = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, visonSystem);
         
         //TODO Auto-generated constructor stub
     }

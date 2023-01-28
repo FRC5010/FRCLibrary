@@ -55,4 +55,10 @@ public class SimulatedEncoder implements GenericEncoder {
     @Override
     public void setVelocityConversion(double conversion) {     
     }
+
+    @Override
+    public void setInverted(boolean inverted) {
+        // TODO Auto-generated method stub
+        
+    }
 }

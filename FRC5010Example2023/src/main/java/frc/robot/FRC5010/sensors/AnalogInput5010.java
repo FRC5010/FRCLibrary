@@ -12,15 +12,17 @@ import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 public class AnalogInput5010 implements GenericEncoder{
 
     AnalogInput analogInput;
+    boolean inverted;
 
     public AnalogInput5010(int port){
         analogInput = new AnalogInput(port);
+        inverted = false;
     }
 
     @Override
     public double getPosition() {
         // TODO Auto-generated method stub
-        return (analogInput.getVoltage() / RobotController.getVoltage5V()) * (Math.PI * 2) - Math.PI;
+        return (inverted ? -1.0 : 1.0) * ((analogInput.getVoltage() / RobotController.getVoltage5V()) * (Math.PI * 2) - Math.PI);
     }
 
     @Override
@@ -57,4 +59,11 @@ public class AnalogInput5010 implements GenericEncoder{
     public void setRate(double rate) {
         // TODO Auto-generated method stub
         
-    }}
+    }
+
+    @Override
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
+        
+    }
+}

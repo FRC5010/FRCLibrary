@@ -10,7 +10,6 @@ import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.motors.MotorFactory;
-import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.encoder.CanCoderEncoder;
 
 /** Add your docs here. */
@@ -21,6 +20,7 @@ public class MK4iSwerveModule extends GenericSwerveModule {
                 (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
                 true,
                 (14.0 / 50.0) * (10.0 / 60.0),
+                false,
                 false
         );
         public static final GenericSwerveModuleConstants MK4I_L2 = new GenericSwerveModuleConstants(
@@ -28,6 +28,7 @@ public class MK4iSwerveModule extends GenericSwerveModule {
                 (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
                 true,
                 (14.0 / 50.0) * (10.0 / 60.0),
+                false,
                 false
         );
         public static final GenericSwerveModuleConstants MK4I_L3 = new GenericSwerveModuleConstants(
@@ -35,6 +36,7 @@ public class MK4iSwerveModule extends GenericSwerveModule {
                 (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0),
                 true,
                 (14.0 / 50.0) * (10.0 / 60.0),
+                false,
                 false
         );
 

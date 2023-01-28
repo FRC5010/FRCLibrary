@@ -33,7 +33,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     protected GenericEncoder turnEncoder, driveEncoder, absoluteEncoder;
     protected GenericPID pid = new GenericPID(0, 0, 0); 
     protected GenericMotorConstants motorConstants = new GenericMotorConstants(0, 0, 0);
-    protected GenericSwerveModuleConstants moduleConstants = new GenericSwerveModuleConstants(Units.inchesToMeters(0), 0, false, 0, false); 
+    protected GenericSwerveModuleConstants moduleConstants = new GenericSwerveModuleConstants(Units.inchesToMeters(0), 0, false, 0, false, false); 
     private double radOffset;
     // protected GenericEncoder driveEncoder = new SimulatedEncoder(0, 1); 
     // protected GenericEncoder turnEncoder = new SimulatedEncoder(2, 3);

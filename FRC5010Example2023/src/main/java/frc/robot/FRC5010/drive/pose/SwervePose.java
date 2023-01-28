@@ -38,6 +38,7 @@ public class SwervePose extends GenericPose {
         this.backLeft = backLeft;
         this.backRight = backRight;
         poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, new Rotation2d(0), modulePositions, new Pose2d());
+        // poseEstimator.
     }
 
     @Override
@@ -50,7 +51,9 @@ public class SwervePose extends GenericPose {
 
     @Override
     public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
-        poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
+        // System.out.println("Pose:" + robotPose.toString() + "\nCapture Time: " + imageCaptureTime);
+        // poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
+        // System.out.println("Updated Vison Mesaurement");
     }
 
     @Override

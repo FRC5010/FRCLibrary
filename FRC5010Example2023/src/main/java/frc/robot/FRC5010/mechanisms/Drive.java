@@ -14,6 +14,7 @@ import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.constants.DrivePorts;
+import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -56,7 +57,6 @@ public class Drive extends GenericMechanism {
         driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, 60);
         driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
         mechVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
-        SmartDashboard.putData("Drivetrain Visual", mechVisual);
 
         initRealOrSim();
     }
@@ -123,18 +123,23 @@ public class Drive extends GenericMechanism {
     }
 
     private void initializeThriftySwerveDrive() {
+        GenericSwerveModuleConstants frontLeftConstants = new GenericSwerveModuleConstants(0, 0, false, 0, true, true);
+        GenericSwerveModuleConstants frontRightConstants = new GenericSwerveModuleConstants(0, 0, false, 0, true, true);
+        GenericSwerveModuleConstants backLeftConstants = new GenericSwerveModuleConstants(0, 0, true, 0, true, true);
+        GenericSwerveModuleConstants backRightConstants = new GenericSwerveModuleConstants(0, 0, true, 0, true, true);
+
         GenericSwerveModule frontLeft = new ThriftySwerveModule(
             mechVisual.getRoot("frontleft", 45, 15), "frontleft", 
-            SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, (SwervePorts)motorPorts.get(0));  
+            SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, (SwervePorts)motorPorts.get(0), frontLeftConstants);  
         GenericSwerveModule frontRight = new ThriftySwerveModule(
             mechVisual.getRoot("frontright", 45, 45), "frontright", 
-            SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, (SwervePorts)motorPorts.get(1));
+            SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, (SwervePorts)motorPorts.get(1), frontRightConstants);
         GenericSwerveModule backLeft = new ThriftySwerveModule(
             mechVisual.getRoot("backleft", 15, 15), "backleft", 
-            SwerveDrivetrain.kBackLeftAbsoluteOffsetRad, (SwervePorts)motorPorts.get(2));
+            SwerveDrivetrain.kBackLeftAbsoluteOffsetRad, (SwervePorts)motorPorts.get(2), backLeftConstants);
         GenericSwerveModule backRight = new ThriftySwerveModule(
             mechVisual.getRoot("backright", 15, 45), "backright", 
-            SwerveDrivetrain.kBackRightAbsoluteOffsetRad, (SwervePorts)motorPorts.get(3));
+            SwerveDrivetrain.kBackRightAbsoluteOffsetRad, (SwervePorts)motorPorts.get(3), backRightConstants);
 
         drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision);
     }
@@ -151,5 +156,6 @@ public class Drive extends GenericMechanism {
         motorPorts.add(new DrivePorts(4));
 
         drivetrain = new DifferentialDrivetrain(template, motorPorts, gyro, vision, mechVisual);
+
     }
 }

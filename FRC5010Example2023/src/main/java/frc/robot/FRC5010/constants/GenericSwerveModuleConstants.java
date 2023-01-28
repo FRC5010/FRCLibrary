@@ -15,15 +15,17 @@ public class GenericSwerveModuleConstants {
     private double kDriveEncoderRPM2MeterPerSec; // = kDriveEncoderRot2Meter / 60;
     private double kTurningEncoderRPM2RadPerSec; // = kTurningEncoderRot2Rad / 60;
     private boolean drivingInv;
-    private boolean turningInv; 
+    private boolean turningInv;
+    private boolean encoderInv;
     
-    public GenericSwerveModuleConstants(double kWheelDiameterMeters, double kDriveMotorGearRatio,boolean drivingInv, double kTurningMotorGearRatio, boolean turningInv) {
+    public GenericSwerveModuleConstants(double kWheelDiameterMeters, double kDriveMotorGearRatio,boolean drivingInv, double kTurningMotorGearRatio, boolean turningInv, boolean encoderInv) {
         
         this.kWheelDiameterMeters = kWheelDiameterMeters;
         this.kDriveMotorGearRatio = kDriveMotorGearRatio;
         this.drivingInv = drivingInv;
         this.kTurningMotorGearRatio = kTurningMotorGearRatio;
         this.turningInv = turningInv;
+        this.encoderInv = encoderInv;
         kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
         kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
         kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
@@ -41,6 +43,12 @@ public class GenericSwerveModuleConstants {
     }
     public void setTurningInv(boolean turningInv) {
         this.turningInv = turningInv;
+    }
+    public boolean isEncoderInv() {
+        return encoderInv;
+    }
+    public void setEncoderInv(boolean encoderInv) {
+        this.encoderInv = encoderInv;
     }
     public double getkWheelDiameterMeters() {
         return kWheelDiameterMeters;

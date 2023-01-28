@@ -15,25 +15,27 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
+import frc.robot.FRC5010.mechanisms.Drive;
+import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
-public class SwerveDrivetrain extends GenericDrivetrain{
+public class    SwerveDrivetrain extends GenericDrivetrain{
 
     private ChassisSpeeds chassisSpeeds;
 
     private GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
 
-    private GenericGyro gyro;
+    private GenericGyro gyro; 
 
     // public variables
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.76835;
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.635;
 
-    public static final double kFrontLeftAbsoluteOffsetRad =  2.873; // 2.884; 
-    public static final double kFrontRightAbsoluteOffsetRad = 0.086; // 0;
-    public static final double kBackLeftAbsoluteOffsetRad = 2.075; // 5.224; 
-    public static final double kBackRightAbsoluteOffsetRad =  2.923; // 6.074;
+    public static final double kFrontLeftAbsoluteOffsetRad = 0.26; // 2.884; // 0.26;
+    public static final double kFrontRightAbsoluteOffsetRad = -3.14; // 0; // -0.03;
+    public static final double kBackLeftAbsoluteOffsetRad = 1.0+Math.PI; // 5.224; // 1.04; 
+    public static final double kBackRightAbsoluteOffsetRad = 0.21+Math.PI; // 6.074; // -2.96;
 
     public static final double kPhysicalMaxSpeedMetersPerSecond = 15;
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
@@ -119,7 +121,9 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(states);
-        super.periodic();
+        poseEstimator.update();
+        // super.periodic();
+
     }
 
     @Override

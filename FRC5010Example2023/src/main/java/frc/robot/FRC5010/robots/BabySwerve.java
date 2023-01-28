@@ -7,11 +7,14 @@ package frc.robot.FRC5010.robots;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.photonvision.RobotPoseEstimator.PoseStrategy;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
@@ -23,13 +26,14 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 /** Add your docs here. */
 public class BabySwerve extends RobotType{
     public BabySwerve() {
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1);
+        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.CLOSEST_TO_LAST_POSE);
         multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
           new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
             new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
             new Rotation3d(0, Units.degreesToRadians(-20), 0)
           )
         );
+        multiVision.createRobotPoseEstimator();
         List<SwervePorts> swervePorts = new ArrayList<>();
         swervePorts.add(new SwervePorts(1, 2, 0));
         swervePorts.add(new SwervePorts(7, 8, 1));
@@ -42,4 +46,6 @@ public class BabySwerve extends RobotType{
         robotParts.put(Parts.VISION, multiVision);
         robotParts.put(Parts.DRIVE, drive);
     }
+
+
 }
