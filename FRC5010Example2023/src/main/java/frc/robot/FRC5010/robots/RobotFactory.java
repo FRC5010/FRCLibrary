@@ -19,7 +19,7 @@ public class RobotFactory extends RobotType {
     public static class Robots {
         public static final String COMP_BOT_2023 = "2023CompBot";
         public static final String BABY_SWERVE = "BabySwerve";
-        public static final String PANCAKE_BOT = "PancakeBot";
+        public static final String PRACTICE_BOT = "PracticeBot";
         public static final String SIMULATION = "Simulation";
     }
     //Part types
@@ -40,7 +40,8 @@ public class RobotFactory extends RobotType {
                 robotParts = new BabySwerve().getParts();
                 break;
             }
-            case Robots.PANCAKE_BOT: {
+            case Robots.PRACTICE_BOT: {
+                robotParts = new PracticeBot().getParts();
                 break;
             }
             default: {

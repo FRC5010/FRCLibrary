@@ -21,6 +21,7 @@ import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.DifferentialDrivetrain;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.drive.GenericSwerveModule;
+import frc.robot.FRC5010.drive.MK4SwerveModule;
 import frc.robot.FRC5010.drive.SwerveDrivetrain;
 import frc.robot.FRC5010.drive.ThriftySwerveModule;
 import frc.robot.FRC5010.motors.MotorController5010;
@@ -73,6 +74,7 @@ public class Drive extends GenericMechanism {
                 break;
             }
             case Type.MK4_SWERVE_DRIVE: {
+                initializeMK4SwerveDrive();
                 break;
             }
             case Type.MK4I_SWERVE_DRIVE: {
@@ -157,5 +159,27 @@ public class Drive extends GenericMechanism {
 
         drivetrain = new DifferentialDrivetrain(template, motorPorts, gyro, vision, mechVisual);
 
+    }
+
+    private void initializeMK4SwerveDrive() {
+        GenericSwerveModuleConstants frontLeftConstants = new GenericSwerveModuleConstants(0, 0, false, 0, true, true);
+        GenericSwerveModuleConstants frontRightConstants = new GenericSwerveModuleConstants(0, 0, false, 0, true, true);
+        GenericSwerveModuleConstants backLeftConstants = new GenericSwerveModuleConstants(0, 0, true, 0, true, true);
+        GenericSwerveModuleConstants backRightConstants = new GenericSwerveModuleConstants(0, 0, true, 0, true, true);
+
+        GenericSwerveModule frontLeft = new MK4SwerveModule(
+            mechVisual.getRoot("frontleft", 45, 15), "frontleft", 
+            SwerveDrivetrain.kFrontLeftAbsoluteOffsetRad, (SwervePorts)motorPorts.get(0), frontLeftConstants);  
+        GenericSwerveModule frontRight = new MK4SwerveModule(
+            mechVisual.getRoot("frontright", 45, 45), "frontright", 
+            SwerveDrivetrain.kFrontRightAbsoluteOffsetRad, (SwervePorts)motorPorts.get(1), frontRightConstants);
+        GenericSwerveModule backLeft = new MK4SwerveModule(
+            mechVisual.getRoot("backleft", 15, 15), "backleft", 
+            SwerveDrivetrain.kBackLeftAbsoluteOffsetRad, (SwervePorts)motorPorts.get(2), backLeftConstants);
+        GenericSwerveModule backRight = new MK4SwerveModule(
+            mechVisual.getRoot("backright", 15, 45), "backright", 
+            SwerveDrivetrain.kBackRightAbsoluteOffsetRad, (SwervePorts)motorPorts.get(3), backRightConstants);
+
+        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision);
     }
 }

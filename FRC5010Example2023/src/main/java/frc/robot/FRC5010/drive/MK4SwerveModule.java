@@ -52,7 +52,7 @@ public class MK4SwerveModule extends GenericSwerveModule {
     private GenericMotorConstants motorConstants = new GenericMotorConstants(0.55641, 0.064889, 0.0025381);
     private GenericSwerveModuleConstants moduleConstants = MK4_L1; 
     
-    public MK4SwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts) {
+    public MK4SwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, GenericSwerveModuleConstants individualConstants) {
                 super(visualRoot, key, radOffset);
                 super.pid = this.pid;
                 super.motorConstants = this.motorConstants;

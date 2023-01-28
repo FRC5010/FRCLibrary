@@ -1,5 +1,10 @@
 {
   "NetworkTables": {
+    "persistent": {
+      "Preferences": {
+        "open": true
+      }
+    },
     "transitory": {
       "Shuffleboard": {
         "open": true
