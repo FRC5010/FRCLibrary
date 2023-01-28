@@ -4,12 +4,8 @@
 
 package frc.robot.FRC5010.drive.pose;
 
-import java.util.Arrays;
-import java.util.List;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -17,8 +13,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.Vision.AprilTags.AprilTag;
 import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
+import frc.robot.FRC5010.Vision.AprilTags.AprilTag5010;
 
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
@@ -35,9 +31,15 @@ public class DrivetrainPoseEstimator {
     tab.addNumber("Pose Degrees", () -> getCurrentPose().getRotation().getDegrees()).withPosition(1, 4);
     tab.add(field2d);
 
-    for (AprilTag at: AprilTags.aprilTagPoses) {
+    for (AprilTag at: AprilTags.aprilTagFieldLayout.getTags()) {
       if (at.pose.getX() != 0 && at.pose.getY() != 0 && at.pose.getZ() != 0) {
-        field2d.getObject(at.fieldDescriptor).setPose(at.pose.toPose2d());
+        field2d.getObject("Field Tag " + at.ID).setPose(at.pose.toPose2d());
+      }
+    }
+    for (AprilTag at: AprilTags.aprilTagRoomLayout.getTags()) {
+      if (at.pose.getX() != 0 && at.pose.getY() != 0 && at.pose.getZ() != 0) {
+        field2d.getObject(AprilTag5010.valueOf(Integer.valueOf(at.ID).toString()).fieldDescriptor)
+          .setPose(at.pose.toPose2d());
       }
     }
   }
