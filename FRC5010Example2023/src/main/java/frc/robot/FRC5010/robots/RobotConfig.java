@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Add your docs here. */
-public class RobotType {
+public class RobotConfig {
     protected Map<String, Object> robotParts = new HashMap<>();
     public Map<String, Object> getParts() { return robotParts; }
 }

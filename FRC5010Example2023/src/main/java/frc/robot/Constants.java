@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
+import frc.robot.FRC5010.robots.RobotFactory;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -33,7 +34,10 @@ public final class Constants {
     public Persisted<Double> kVAngular;
     public Persisted<Double> kAAngular;
 
+    public Persisted<String> whoAmI;
+
     public Constants() {
+        whoAmI = new Persisted<>(RobotFactory.WHO_AM_I, "");
         // ****** Actual persisted values - use camelCaseNamingStyle ************
         maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15.0);
         maxChassisRotation = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION, 1.5);

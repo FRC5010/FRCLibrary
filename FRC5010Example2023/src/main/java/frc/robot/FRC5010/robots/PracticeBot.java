@@ -7,18 +7,16 @@ package frc.robot.FRC5010.robots;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.wpilibj.SPI;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 
 /** Add your docs here. */
-public class PracticeBot extends RobotType {
+public class PracticeBot extends RobotConfig {
     public PracticeBot() {
         VisionLimeLightSim multiVision = new VisionLimeLightSim("simulation", 0);
         // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.CLOSEST_TO_LAST_POSE);

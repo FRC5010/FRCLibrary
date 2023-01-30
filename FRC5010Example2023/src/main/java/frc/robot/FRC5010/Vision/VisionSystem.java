@@ -29,6 +29,7 @@ public abstract class VisionSystem extends SubsystemBase {
   protected boolean updateValues = false;
   protected double CAMERA_CAL_ANGLE = 0;
   protected ShuffleboardLayout driverLayout;
+  protected VisionConstants constants;
   // variables needed to process new variables, plus the new variables
   // angles
 
@@ -37,6 +38,7 @@ public abstract class VisionSystem extends SubsystemBase {
     this.name = name;
     rawValues = new VisionValues();
     smoothedValues = new VisionValues();
+    constants = new VisionConstants();
     ShuffleboardTab driverTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
     visionLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex, 0).withSize(3, 5);
   }
@@ -50,6 +52,7 @@ public abstract class VisionSystem extends SubsystemBase {
     this.camHeight = camHeight;
     this.camAngle = camAngle;
     this.targetHeight = targetHeight;
+    constants = new VisionConstants();
     updateValues = true;
     CAMERA_CAL_ANGLE = Math.toDegrees(Math.tanh((targetHeight - camHeight) / VisionConstants.CAMERA_CAL_DISTANCE));
     ShuffleboardTab visionTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);

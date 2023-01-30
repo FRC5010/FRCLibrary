@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -14,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
@@ -90,17 +90,22 @@ public class RobotContainer extends GenericMechanism {
    * For things being initialized in RobotContainer, provide a simulation version
    */
   protected void initRealOrSim() {
-    robotFactory = new RobotFactory();
-    vision = (VisionSystem)robotFactory.getParts().get(RobotFactory.Parts.VISION);
-    drive = (GenericMechanism)robotFactory.getParts().get(RobotFactory.Parts.DRIVE);
-
     if (RobotBase.isReal()) {
       /**
        * TODO: Initialize expected vision subsystem
        */
     } else {
-      vision = new VisionLimeLightSim("limelight-sim", 1);
+      NetworkTableInstance instance = NetworkTableInstance.getDefault();
+      instance.stopServer();
+      // set the NT server if simulating this code.
+      // "localhost" for photon on desktop, or "photonvision.local" / "[ip-address]" for coprocessor
+      instance.setServer("localhost");
+      instance.startClient4("myRobot");
     }
+
+    robotFactory = new RobotFactory();
+    vision = (VisionSystem)robotFactory.getParts().get(RobotFactory.Parts.VISION);
+    drive = (GenericMechanism)robotFactory.getParts().get(RobotFactory.Parts.DRIVE);
   }
   
   public Alliance determineAllianceColor() {

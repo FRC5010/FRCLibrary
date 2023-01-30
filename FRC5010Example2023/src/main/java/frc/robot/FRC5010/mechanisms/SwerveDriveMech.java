@@ -15,7 +15,6 @@ import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.GenericSwerveModule;
 import frc.robot.FRC5010.drive.SwerveDrivetrain;
-import frc.robot.FRC5010.drive.ThriftySwerveModule;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 import frc.robot.commands.JoystickToSwerve;

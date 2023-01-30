@@ -25,6 +25,9 @@
     }
   },
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "persistent": {
       "Preferences": {
         "open": true
@@ -45,10 +48,24 @@
           "open": true
         },
         "open": true
+      },
+      "photonvision": {
+        "HP_Wide_Vision_HD": {
+          "open": true
+        },
+        "open": true
       }
     }
   },
   "NetworkTables Info": {
-    "visible": true
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    }
   }
 }

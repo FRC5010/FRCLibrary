@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
-import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */

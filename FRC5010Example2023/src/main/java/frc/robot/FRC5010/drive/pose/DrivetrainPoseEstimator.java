@@ -68,10 +68,12 @@ public class DrivetrainPoseEstimator {
    */
   public void update() {
     for(Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
-        double imageCaptureTime = vision.getRawValues().getLatency();
-        field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
-        //System.out.println("RobotPoseEst: X: " + robotPose.getX() + " Y: " + robotPose.getY() + " R: " + robotPose.getRotation().getDegrees());
-        poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
+        if (null != robotPose) {
+          double imageCaptureTime = vision.getRawValues().getLatency();
+          field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
+          //System.out.println("RobotPoseEst: X: " + robotPose.getX() + " Y: " + robotPose.getY() + " R: " + robotPose.getRotation().getDegrees());
+          poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
+        }
     }
     poseTracker.updateLocalMeasurements();
     field2d.setRobotPose(getCurrentPose());
