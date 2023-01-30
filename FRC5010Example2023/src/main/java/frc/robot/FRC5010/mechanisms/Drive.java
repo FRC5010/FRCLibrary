@@ -157,7 +157,6 @@ public class Drive extends GenericMechanism {
         motorPorts.add(new DrivePorts(4));
 
         drivetrain = new DifferentialDrivetrain(template, motorPorts, gyro, vision, mechVisual);
-
     }
 
     private void initializeMK4SwerveDrive() {

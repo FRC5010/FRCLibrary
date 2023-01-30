@@ -25,11 +25,19 @@ import frc.robot.FRC5010.robots.RobotFactory.Parts;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
-/** Add your docs here. */
+/** To setup a copy of this class
+ * Copy to a new class and rename the constructor
+ * In RobotFactory add constants and a switch-case for your class
+ * Start PhotonVision and get the camera name (java -jar photonvision.jar)
+ * Start the robot simulation
+ * In Glass - find the NetworkTables->Preferences->WhoAmI and set it to your robot name
+ * Also change the LaptopCamera name from photon vision
+ * Stop the simulator, restart and it should start your robot code
+ */
 public class CurtsLaptopSimulator extends RobotConfig {
     public CurtsLaptopSimulator() {
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout,
-                PoseStrategy.AVERAGE_BEST_TARGETS);
+        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, 
+            AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
         multiVision.addPhotonCamera(Persisted.stringVal(VisionConstantDefs.LAPTOP_CAMERA),
                 new Transform3d( 
             // This describes the vector between the camera lens to the robot center on the ground

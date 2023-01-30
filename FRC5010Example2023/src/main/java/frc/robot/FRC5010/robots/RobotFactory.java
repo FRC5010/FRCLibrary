@@ -20,7 +20,6 @@ public class RobotFactory extends RobotConfig {
         public static final String COMP_BOT_2023 = "2023CompBot";
         public static final String BABY_SWERVE = "BabySwerve";
         public static final String PRACTICE_BOT = "PracticeBot";
-        public static final String SIMULATION = "Simulation";
         public static final String CURTS_LAPTOP_SIM = "CurtsLaptop";
     }
     //Part types
@@ -51,7 +50,7 @@ public class RobotFactory extends RobotConfig {
                 break;
             }
             default: {
-                robotParts = new CurtsLaptopSimulator().getParts();
+                robotParts = new DefaultRobot().getParts();
                 break;
             }
         }
