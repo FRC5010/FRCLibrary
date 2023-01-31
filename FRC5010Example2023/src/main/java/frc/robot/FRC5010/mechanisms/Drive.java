@@ -27,6 +27,7 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.commands.ChaseTag;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
@@ -106,6 +107,8 @@ public class Drive extends GenericMechanism {
         driver.setLeftXAxis(driver.createLeftXAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond));
         driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond));
         driver.setRightXAxis(driver.createRightXAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond));
+
+        driver.createXButton().whileTrue(new ChaseTag(drivetrain, () -> drivetrain.getPoseEstimator().getCurrentPose()));
 
         // Example of setting up axis for driving omnidirectional
         // driver.setLeftXAxis(driver.createLeftXAxis()

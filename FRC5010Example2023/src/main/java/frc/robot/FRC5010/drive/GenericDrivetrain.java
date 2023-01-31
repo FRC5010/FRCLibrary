@@ -20,6 +20,11 @@ public abstract class GenericDrivetrain extends SubsystemBase {
     public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator poseEstimator) {
         this.poseEstimator = poseEstimator;
     }
+
+    public DrivetrainPoseEstimator getPoseEstimator() {
+        return poseEstimator;
+    }
+    
     public Mechanism2d getMechVisual() { assert(null != poseEstimator); return mechVisual; }
     public Rotation2d getHeading() { assert(null != poseEstimator); return poseEstimator.getGyroRotation2d(); };
 

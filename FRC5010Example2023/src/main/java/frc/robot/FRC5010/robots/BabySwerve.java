@@ -26,7 +26,7 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 /** Add your docs here. */
 public class BabySwerve extends RobotConfig{
     public BabySwerve() {
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.CLOSEST_TO_LAST_POSE);
+        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
         multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
           new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
             new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
