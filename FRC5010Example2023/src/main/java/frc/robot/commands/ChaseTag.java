@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.drive.SwerveDrivetrain;
@@ -25,29 +27,33 @@ import frc.robot.FRC5010.drive.SwerveDrivetrain;
 
 public class ChaseTag extends CommandBase {
   
-  private final GenericPID pidTranslation = new GenericPID(1, 0, 0);
-  private final GenericPID thetaTranslation = new GenericPID(.25, 0, 0);
+  private final GenericPID pidTranslation = new GenericPID(.5, 0, 0);
+  private final GenericPID thetaTranslation = new GenericPID(.025, 0, 0);
 
   /** Creates a new ChaseTag. */
+
   private final TrapezoidProfile.Constraints xConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxSpeedMetersPerSecond, SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond); 
   private final TrapezoidProfile.Constraints yConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxSpeedMetersPerSecond, SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond); 
   private final TrapezoidProfile.Constraints thetaConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxAngularSpeedRadiansPerSecond, SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond); 
 
-  private final ProfiledPIDController xController = new ProfiledPIDController(pidTranslation.getkP(), 0, 0, xConstraints);
-  private final ProfiledPIDController yController = new ProfiledPIDController(pidTranslation.getkP(), 0, 0, yConstraints);
-  private final ProfiledPIDController thetaController = new ProfiledPIDController(thetaTranslation.getkP(), 0, 0, thetaConstraints);
+  private final ProfiledPIDController xController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), xConstraints);
+  private final ProfiledPIDController yController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), yConstraints);
+  private final ProfiledPIDController thetaController = new ProfiledPIDController(thetaTranslation.getkP(), thetaTranslation.getkI(), thetaTranslation.getkD(), thetaConstraints);
 
 
-  private final Transform3d tagToGoal = new Transform3d(
-    new Translation3d(0.5, 0.0, 0.0),
+  private final Pose3d tagToGoal = new Pose3d(
+    new Translation3d(1.5, 0.0, 0.0),
     new Rotation3d(0.0, 0.0, 0));
 
     
   private GenericDrivetrain swerveSubsystem; 
   private Supplier<Pose2d> poseProvider; 
-  
-  public ChaseTag(GenericDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider) {
 
+  private VisionPhotonMultiCam vision;
+  
+  public ChaseTag(GenericDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider, VisionSystem vision) {
+    this.vision = (VisionPhotonMultiCam) vision;
+    
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = swerveSubsystem;
     this.poseProvider = poseProvider;
@@ -69,34 +75,58 @@ public class ChaseTag extends CommandBase {
     thetaController.reset(robotPose.getRotation().getRadians());
     xController.reset(robotPose.getX());
     yController.reset(robotPose.getY());
+
+    xController.setGoal(tagToGoal.getX());
+    yController.setGoal(tagToGoal.getY());
+    thetaController.setGoal(tagToGoal.getRotation().getAngle());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     var robotPose2d = poseProvider.get();
+    
+    //System.out.println(robotPose2d);
     var robotPose = 
         new Pose3d(
             robotPose2d.getX(),
             robotPose2d.getY(),
             0.0, 
             new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
+    
+    System.out.println(robotPose);
+    var xSpeed = xController.calculate(robotPose.getX()) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond * 1.15; 
+    var ySpeed = yController.calculate(robotPose.getY()) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond * 1.15; 
+    var thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians()) * SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+
+
+    if (xController.atGoal()){
+      xSpeed = 0;
+    }
+
+    if (yController.atGoal()){
+      ySpeed = 0;
+    }
+
+    if (thetaController.atGoal()){
+      thetaSpeed = 0;
+    }
             
       // // Transform the tag's pose to set our goal
-      var goalPose = robotPose.transformBy(tagToGoal.inverse()).toPose2d();
-      System.out.println(goalPose); 
+      
+      var goalPose = vision.getRawValues().getCameraPose().toPose2d();
+      // System.out.println(goalPose); 
 
       // // Drive
-      xController.setGoal(goalPose.getX());
-      yController.setGoal(goalPose.getY());
-      thetaController.setGoal(goalPose.getRotation().getRadians());
+      xController.setGoal(tagToGoal.getX());
+      yController.setGoal(tagToGoal.getY());
+      thetaController.setGoal(0);
 
-      System.out.println("xSpeed: " + xController.calculate(robotPose.getX()) + "\nySpeed: " + yController.calculate(robotPose.getY()) + 
-      "\nTheta: " + thetaController.calculate(robotPose2d.getRotation().getRadians())); 
-    swerveSubsystem.drive(new ChassisSpeeds(
-    xController.calculate(robotPose.getX()) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond, 
-    yController.calculate(robotPose.getY()) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond
-    ,thetaController.calculate(robotPose2d.getRotation().getRadians()) * SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond));
+      // System.out.println("xSpeed: " + xController.calculate(robotPose.getX()) + "\nySpeed: " + yController.calculate(robotPose.getY()) + 
+      // "\nTheta: " + thetaController.calculate(robotPose2d.getRotation().getRadians())); 
+
+      //System.out.println(thetaSpeed);
+    swerveSubsystem.drive(new ChassisSpeeds(-xSpeed, -ySpeed, -thetaSpeed));
   }
 
 

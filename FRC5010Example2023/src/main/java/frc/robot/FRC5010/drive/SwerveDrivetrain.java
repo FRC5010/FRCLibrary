@@ -36,7 +36,7 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
     public static final double kBackRightAbsoluteOffsetRad = 0.21+Math.PI; // 6.074; // -2.96;
 
     public static final double kPhysicalMaxSpeedMetersPerSecond = 15;
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
+    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 4 * Math.PI;
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = 5;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 6;

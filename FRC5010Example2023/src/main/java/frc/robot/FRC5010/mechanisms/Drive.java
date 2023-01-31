@@ -108,7 +108,7 @@ public class Drive extends GenericMechanism {
         driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond));
         driver.setRightXAxis(driver.createRightXAxis().deadzone(0.075).negate().rate(SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond));
 
-        driver.createXButton().whileTrue(new ChaseTag(drivetrain, () -> drivetrain.getPoseEstimator().getCurrentPose()));
+        driver.createXButton().whileTrue(new ChaseTag(drivetrain, () -> drivetrain.getPoseEstimator().getCurrentPose(), vision));
 
         // Example of setting up axis for driving omnidirectional
         // driver.setLeftXAxis(driver.createLeftXAxis()
