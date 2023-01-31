@@ -51,8 +51,7 @@ public class ChaseTag extends CommandBase {
 
   private VisionPhotonMultiCam vision;
   
-  public ChaseTag(GenericDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider, VisionSystem vision) {
-    this.vision = (VisionPhotonMultiCam) vision;
+  public ChaseTag(GenericDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider) {
     
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = swerveSubsystem;
