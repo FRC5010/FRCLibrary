@@ -49,8 +49,6 @@ public class ChaseTag extends CommandBase {
   private GenericDrivetrain swerveSubsystem; 
   private Supplier<Pose2d> poseProvider; 
 
-  private VisionPhotonMultiCam vision;
-  
   public ChaseTag(GenericDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider) {
     
     // Use addRequirements() here to declare subsystem dependencies.
@@ -113,7 +111,6 @@ public class ChaseTag extends CommandBase {
             
       // // Transform the tag's pose to set our goal
       
-      var goalPose = vision.getRawValues().getCameraPose().toPose2d();
       // System.out.println(goalPose); 
 
       // // Drive
