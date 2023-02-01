@@ -27,11 +27,10 @@ import frc.robot.FRC5010.drive.SwerveDrivetrain;
 
 public class ChaseTag extends CommandBase {
   
-  private final GenericPID pidTranslation = new GenericPID(.5, 0, 0);
-  private final GenericPID thetaTranslation = new GenericPID(.025, 0, 0);
+  private final GenericPID pidTranslation = new GenericPID(1, 0, 0);
+  private final GenericPID thetaTranslation = new GenericPID(.25, 0, 0);
 
   /** Creates a new ChaseTag. */
-
   private final TrapezoidProfile.Constraints xConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxSpeedMetersPerSecond, SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond); 
   private final TrapezoidProfile.Constraints yConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxSpeedMetersPerSecond, SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond); 
   private final TrapezoidProfile.Constraints thetaConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxAngularSpeedRadiansPerSecond, SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond); 
@@ -126,6 +125,13 @@ public class ChaseTag extends CommandBase {
 
       //System.out.println(thetaSpeed);
     swerveSubsystem.drive(new ChassisSpeeds(-xSpeed, -ySpeed, -thetaSpeed));
+      System.out.println("xSpeed: " + xController.calculate(robotPose.getX()) + "\nySpeed: " + yController.calculate(robotPose.getY()) + 
+      "\nTheta: " + thetaController.calculate(robotPose2d.getRotation().getRadians())); 
+
+    swerveSubsystem.drive(new ChassisSpeeds(
+    xController.calculate(robotPose.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(), 
+    yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()
+    ,thetaController.calculate(robotPose2d.getRotation().getRadians()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond()));
   }
 
 

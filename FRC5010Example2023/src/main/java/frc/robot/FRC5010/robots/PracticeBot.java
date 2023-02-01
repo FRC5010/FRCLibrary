@@ -7,7 +7,9 @@ package frc.robot.FRC5010.robots;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.math.util.Units;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
+import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
@@ -17,7 +19,23 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 
 /** Add your docs here. */
 public class PracticeBot extends RobotConfig {
+
+    GenericSwerveConstants swerveConstants;
+
     public PracticeBot() {
+
+        swerveConstants = new GenericSwerveConstants(0.76835, 0.635);
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(0);
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(0);
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(0);
+        swerveConstants.setkBackRightAbsoluteOffsetRad(0);
+        swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(Units.feetToMeters(12));
+        swerveConstants.setkPhysicalMaxAngularSpeedRadiansPerSecond(2 * Math.PI);
+        swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
+        swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+        swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
+        swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+
         VisionLimeLightSim multiVision = new VisionLimeLightSim("simulation", 0);
         // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.CLOSEST_TO_LAST_POSE);
         // multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
@@ -36,7 +54,7 @@ public class PracticeBot extends RobotConfig {
 
         GenericGyro gyro = new PigeonGyro(0); // TODO: Find CAN value.
 
-        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts);
+        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);
         robotParts.put(Parts.DRIVE, drive);
     }

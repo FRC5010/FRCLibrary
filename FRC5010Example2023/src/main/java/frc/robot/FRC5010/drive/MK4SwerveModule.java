@@ -7,6 +7,7 @@ package frc.robot.FRC5010.drive;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
+import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.motors.MotorFactory;
@@ -52,8 +53,8 @@ public class MK4SwerveModule extends GenericSwerveModule {
     private GenericMotorConstants motorConstants = new GenericMotorConstants(0.55641, 0.064889, 0.0025381);
     private GenericSwerveModuleConstants moduleConstants = MK4_L1; 
     
-    public MK4SwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, GenericSwerveModuleConstants individualConstants) {
-                super(visualRoot, key, radOffset);
+    public MK4SwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, GenericSwerveModuleConstants individualConstants, GenericSwerveConstants swerveConstants) {
+                super(visualRoot, key, radOffset, swerveConstants);
                 super.pid = this.pid;
                 super.motorConstants = this.motorConstants;
                 super.moduleConstants = this.moduleConstants;

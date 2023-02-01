@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -26,36 +27,9 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
 
     private GenericGyro gyro; 
 
-    // public variables
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.76835;
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.635;
+    private GenericSwerveConstants swerveConstants;
 
-    public static final double kFrontLeftAbsoluteOffsetRad = 0.26; // 2.884; // 0.26;
-    public static final double kFrontRightAbsoluteOffsetRad = -3.14; // 0; // -0.03;
-    public static final double kBackLeftAbsoluteOffsetRad = 1.0+Math.PI; // 5.224; // 1.04; 
-    public static final double kBackRightAbsoluteOffsetRad = 0.21+Math.PI; // 6.074; // -2.96;
-
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 15;
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 4 * Math.PI;
-
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = 5;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 6;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSecond = .4;
-    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5 * Math.PI;
-
-    
-    public static final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-        // Front left
-        new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-        // Front right
-        new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
-        // Back left
-        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-        // Back right
-        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
-    );
-
-    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro, VisionSystem visonSystem) {
+    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro, VisionSystem visonSystem, GenericSwerveConstants swerveConstants) {
         super(mechVisual);
 
         this.frontLeft = frontLeft;
@@ -63,9 +37,11 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
         this.backLeft = backLeft;
         this.backRight = backRight;
 
+        this.swerveConstants = swerveConstants;
+
         this.gyro = genericGyro;
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-        poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, SwerveDrivetrain.m_kinematics, frontLeft, frontRight, backLeft, backRight), visonSystem);
+        poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, swerveConstants.getKinematics(), frontLeft, frontRight, backLeft, backRight), visonSystem);
 
         new Thread(() -> {
             try{
@@ -83,12 +59,12 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
 
     public void zeroGyroscope() {
         gyro.setAngle(0);
-      }
+    }
     
 
     public void setModuleStates(SwerveModuleState[] setDesiredStates){
         SwerveModuleState[] states = setDesiredStates;
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, kPhysicalMaxSpeedMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
         
         frontLeft.setState(states[0]);
         frontRight.setState(states[1]);
@@ -115,9 +91,13 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
         backRight.stop();
     }
 
+    public GenericSwerveConstants getSwerveConstants() {
+        return swerveConstants;
+    }
+
     @Override
     public void periodic() {
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState[] states = swerveConstants.getKinematics().toSwerveModuleStates(chassisSpeeds);
         setModuleStates(states);
         poseEstimator.update();
         // super.periodic();

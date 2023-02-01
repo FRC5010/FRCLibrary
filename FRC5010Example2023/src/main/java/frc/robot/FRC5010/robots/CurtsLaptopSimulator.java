@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.SPI;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionConstantDefs;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.constants.GenericDrivetrainConstants;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
@@ -35,7 +36,12 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
  * Stop the simulator, restart and it should start your robot code
  */
 public class CurtsLaptopSimulator extends RobotConfig {
+
+    GenericDrivetrainConstants drivetrainConstants;
+
     public CurtsLaptopSimulator() {
+        drivetrainConstants = new GenericDrivetrainConstants();
+
         VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, 
             AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
         multiVision.addPhotonCamera(Persisted.stringVal(VisionConstantDefs.LAPTOP_CAMERA),
@@ -51,7 +57,7 @@ public class CurtsLaptopSimulator extends RobotConfig {
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts);
+        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, drivetrainConstants);
         robotParts.put(Parts.VISION, multiVision);
         robotParts.put(Parts.DRIVE, drive);
     }

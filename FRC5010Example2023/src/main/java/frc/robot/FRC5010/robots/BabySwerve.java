@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
@@ -25,7 +26,21 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
 public class BabySwerve extends RobotConfig{
+    private GenericSwerveConstants swerveConstants;
+
     public BabySwerve() {
+      swerveConstants = new GenericSwerveConstants(0.76835, 0.635);
+      swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
+      swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
+      swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0+Math.PI);
+      swerveConstants.setkBackRightAbsoluteOffsetRad(0.21+Math.PI);
+      swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(15);
+      swerveConstants.setkPhysicalMaxAngularSpeedRadiansPerSecond(2 * Math.PI);
+      swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
+      swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+      swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
+      swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+
         VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
         multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
           new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
@@ -33,6 +48,7 @@ public class BabySwerve extends RobotConfig{
             new Rotation3d(0, Units.degreesToRadians(-20), 0)
           )
         );
+
         List<SwervePorts> swervePorts = new ArrayList<>();
         swervePorts.add(new SwervePorts(1, 2, 0));
         swervePorts.add(new SwervePorts(7, 8, 1));
@@ -41,10 +57,11 @@ public class BabySwerve extends RobotConfig{
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts);
+        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);
         robotParts.put(Parts.DRIVE, drive);
     }
 
 
 }
+
