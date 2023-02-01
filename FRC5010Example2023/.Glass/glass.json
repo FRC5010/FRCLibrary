@@ -17,6 +17,8 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pose/Field": "Field2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
+      "/SmartDashboard/LED Orange": "Command",
+      "/SmartDashboard/Orange Blink": "Command",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
       "/SmartDashboard/Swerve Sim": "Mechanism2d"
     },
