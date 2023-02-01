@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.SPI;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.DrivePorts;
+import frc.robot.FRC5010.constants.GenericDrivetrainConstants;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
@@ -19,13 +20,16 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
 public class DefaultRobot extends RobotConfig {
+    private GenericDrivetrainConstants driveConstants;
+
     public DefaultRobot() {
+        driveConstants = new GenericDrivetrainConstants();
         VisionSystem vision = new VisionLimeLightSim("Vision", 1);
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
         List<DrivePorts> motorPorts = new ArrayList<>();
 
-        GenericMechanism drive = new Drive(vision, gyro, Drive.Type.DIFF_DRIVE, motorPorts);
+        GenericMechanism drive = new Drive(vision, gyro, Drive.Type.DIFF_DRIVE, motorPorts, driveConstants);
         robotParts.put(Parts.VISION, vision);
         robotParts.put(Parts.DRIVE, drive);
 

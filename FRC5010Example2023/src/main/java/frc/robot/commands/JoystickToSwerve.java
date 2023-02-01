@@ -43,11 +43,11 @@ public class JoystickToSwerve extends CommandBase {
     double ySpeed = (ySpdFunction.get());
 
     double turnSpeed = (turnSpdFunction.get());
-
+    
     // limit power
-    xSpeed = xSpeed * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond;
-    ySpeed = ySpeed * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond;
-    turnSpeed = turnSpeed * SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+    xSpeed = xSpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
+    ySpeed = ySpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
+    turnSpeed = turnSpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
 
     // convert to chassis speed class
     ChassisSpeeds chassisSpeeds;

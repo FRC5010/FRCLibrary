@@ -11,12 +11,12 @@ import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 /** Add your docs here. */
 public class AnalogInput5010 implements GenericEncoder{
 
-    AnalogInput analogInput;
-    boolean inverted;
+    private AnalogInput analogInput;
+    private boolean inverted;
 
     public AnalogInput5010(int port){
-        analogInput = new AnalogInput(port);
-        inverted = false;
+        this.analogInput = new AnalogInput(port);
+        this.inverted = false;
     }
 
     @Override
