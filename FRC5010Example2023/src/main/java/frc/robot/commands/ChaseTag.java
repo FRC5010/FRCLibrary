@@ -26,14 +26,14 @@ import frc.robot.FRC5010.drive.SwerveDrivetrain;
 
 
 public class ChaseTag extends CommandBase {
-  
+  private SwerveDrivetrain swerveSubsystem;
   private final GenericPID pidTranslation = new GenericPID(1, 0, 0);
   private final GenericPID thetaTranslation = new GenericPID(.25, 0, 0);
 
   /** Creates a new ChaseTag. */
-  private final TrapezoidProfile.Constraints xConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxSpeedMetersPerSecond, SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond); 
-  private final TrapezoidProfile.Constraints yConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxSpeedMetersPerSecond, SwerveDrivetrain.kTeleDriveMaxAccelerationUnitsPerSecond); 
-  private final TrapezoidProfile.Constraints thetaConstraints = new TrapezoidProfile.Constraints(SwerveDrivetrain.kPhysicalMaxAngularSpeedRadiansPerSecond, SwerveDrivetrain.kTeleDriveMaxAngularAccelerationUnitsPerSecond); 
+  private final TrapezoidProfile.Constraints xConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
+  private final TrapezoidProfile.Constraints yConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
+  private final TrapezoidProfile.Constraints thetaConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond()); 
 
   private final ProfiledPIDController xController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), xConstraints);
   private final ProfiledPIDController yController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), yConstraints);
@@ -45,13 +45,13 @@ public class ChaseTag extends CommandBase {
     new Rotation3d(0.0, 0.0, 0));
 
     
-  private GenericDrivetrain swerveSubsystem; 
+ 
   private Supplier<Pose2d> poseProvider; 
 
   public ChaseTag(GenericDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider) {
     
     // Use addRequirements() here to declare subsystem dependencies.
-    this.swerveSubsystem = swerveSubsystem;
+    this.swerveSubsystem = (SwerveDrivetrain) swerveSubsystem;
     this.poseProvider = poseProvider;
 
     xController.setTolerance(0.2);
@@ -91,9 +91,9 @@ public class ChaseTag extends CommandBase {
             new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
     
     System.out.println(robotPose);
-    var xSpeed = xController.calculate(robotPose.getX()) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond * 1.15; 
-    var ySpeed = yController.calculate(robotPose.getY()) * SwerveDrivetrain.kTeleDriveMaxSpeedMetersPerSecond * 1.15; 
-    var thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians()) * SwerveDrivetrain.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+    var xSpeed = xController.calculate(robotPose.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 1.15; 
+    var ySpeed = yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 1.15; 
+    var thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
 
 
     if (xController.atGoal()){

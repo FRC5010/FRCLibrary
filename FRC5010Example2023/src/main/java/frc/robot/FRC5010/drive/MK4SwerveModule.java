@@ -11,6 +11,7 @@ import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.motors.MotorFactory;
+import frc.robot.FRC5010.sensors.AnalogInput5010;
 import frc.robot.FRC5010.sensors.encoder.CanCoderEncoder;
 
 /** Add your docs here. */
@@ -49,18 +50,17 @@ public class MK4SwerveModule extends GenericSwerveModule {
             false
     );
     
-    private GenericPID pid = new GenericPID(1.0, 0.0, 0.1); 
+    private GenericPID pid = new GenericPID(0.0002, 0.0, 0.0000001); 
     private GenericMotorConstants motorConstants = new GenericMotorConstants(0.55641, 0.064889, 0.0025381);
     private GenericSwerveModuleConstants moduleConstants = MK4_L1; 
     
     public MK4SwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, GenericSwerveModuleConstants individualConstants, GenericSwerveConstants swerveConstants) {
                 super(visualRoot, key, radOffset, swerveConstants);
                 super.pid = this.pid;
-                super.motorConstants = this.motorConstants;
-                super.moduleConstants = this.moduleConstants;
+                super.motorConstants = this.motorConstants;                                                                                                                  super.moduleConstants = this.moduleConstants;
                 drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(moduleConstants.isDrivingInv());
                 turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(moduleConstants.isTurningInv());
-                absoluteEncoder = new CanCoderEncoder(swervePorts.getEncoderPort());
+                absoluteEncoder = new AnalogInput5010(swervePorts.getEncoderPort());
                 turnEncoder = turn.getMotorEncoder();
                 driveEncoder = drive.getMotorEncoder();
         
@@ -70,5 +70,7 @@ public class MK4SwerveModule extends GenericSwerveModule {
                 // set units turning encoder to radians and radians/sec
                 turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
                 turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
+
+                setupSwerveEncoders();
     }
 }

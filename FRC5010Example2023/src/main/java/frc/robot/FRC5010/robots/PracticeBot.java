@@ -24,11 +24,11 @@ public class PracticeBot extends RobotConfig {
 
     public PracticeBot() {
 
-        swerveConstants = new GenericSwerveConstants(0.76835, 0.635);
-        swerveConstants.setkFrontLeftAbsoluteOffsetRad(0);
-        swerveConstants.setkFrontRightAbsoluteOffsetRad(0);
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(0);
-        swerveConstants.setkBackRightAbsoluteOffsetRad(0);
+        swerveConstants = new GenericSwerveConstants(Units.inchesToMeters(24.25), Units.inchesToMeters(20.5));
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(3.14);
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(3.09);
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(-3.229);
+        swerveConstants.setkBackRightAbsoluteOffsetRad(-0.04);
         swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(Units.feetToMeters(12));
         swerveConstants.setkPhysicalMaxAngularSpeedRadiansPerSecond(2 * Math.PI);
         swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
@@ -52,7 +52,7 @@ public class PracticeBot extends RobotConfig {
         swervePorts.add(new SwervePorts(5, 4, 2));
         swervePorts.add(new SwervePorts(2, 7, 3));
 
-        GenericGyro gyro = new PigeonGyro(0); // TODO: Find CAN value.
+        GenericGyro gyro = new PigeonGyro(11);
 
         GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);

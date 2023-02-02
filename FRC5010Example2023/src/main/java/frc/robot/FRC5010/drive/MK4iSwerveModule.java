@@ -63,5 +63,7 @@ public class MK4iSwerveModule extends GenericSwerveModule {
         // set units turning encoder to radians and radians/sec
         turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
         turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
+
+        setupSwerveEncoders();
     }
 }
