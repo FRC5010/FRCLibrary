@@ -25,10 +25,10 @@ public class PracticeBot extends RobotConfig {
     public PracticeBot() {
 
         swerveConstants = new GenericSwerveConstants(Units.inchesToMeters(24.25), Units.inchesToMeters(20.5));
-        swerveConstants.setkFrontLeftAbsoluteOffsetRad(3.14);
-        swerveConstants.setkFrontRightAbsoluteOffsetRad(3.09);
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(-3.229);
-        swerveConstants.setkBackRightAbsoluteOffsetRad(-0.04);
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(-2.416);
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(-2.789);
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(0.772);
+        swerveConstants.setkBackRightAbsoluteOffsetRad(3.11);
         swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(Units.feetToMeters(12));
         swerveConstants.setkPhysicalMaxAngularSpeedRadiansPerSecond(2 * Math.PI);
         swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
