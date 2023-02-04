@@ -4,6 +4,12 @@
 
 package frc.robot.FRC5010.drive;
 
+import java.util.HashMap;
+
+import com.pathplanner.lib.auto.BaseAutoBuilder;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -11,7 +17,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
@@ -66,22 +74,24 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
         SwerveModuleState[] states = setDesiredStates;
         SwerveDriveKinematics.desaturateWheelSpeeds(states, swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
         
-        frontLeft.setState(states[0]);
-        frontRight.setState(states[1]);
-        backLeft.setState(states[2]);
-        backRight.setState(states[3]);
+        // frontLeft.setState(states[0]);
+        // frontRight.setState(states[1]);
+        // backLeft.setState(states[2]);
+        // backRight.setState(states[3]);
 
-        // if(states[0].speedMetersPerSecond > 0.0001){
-        //         frontLeft.setState(states[0]);
-        //         frontRight.setState(states[1]);
-        //         backLeft.setState(states[2]);
-        //         backRight.setState(states[3]);
-        // }else{
-        //         frontLeft.setState(new SwerveModuleState(0, new Rotation2d(45*5)));
-        //         frontRight.setState(new SwerveModuleState(0, new Rotation2d(45*7)));
-        //         backLeft.setState(new SwerveModuleState(0, new Rotation2d(45*3)));
-        //         backRight.setState(new SwerveModuleState(0, new Rotation2d(45)));
-        // }
+
+        // TODO add the isReady function so wheels won't move till turned close enough
+        if(states[0].speedMetersPerSecond > 0.001){
+                frontLeft.setState(states[0]);
+                frontRight.setState(states[1]);
+                backLeft.setState(states[2]);
+                backRight.setState(states[3]);
+        }else{
+                frontLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5))));
+                frontRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*7))));
+                backLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*3))));
+                backRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45))));
+        }
     }
 
     public void stop(){
@@ -112,5 +122,19 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
             new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
         pose = pose.transformBy(direction);
         poseEstimator.resetToPose(pose);
+    }
+
+    public BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap){ 
+        return new SwerveAutoBuilder(
+            () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
+            (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the beginning of auto
+            getSwerveConstants().getKinematics(), // SwerveDriveKinematics
+            new PIDConstants(5.0, 0.0, 0.0),// PID constants to correct for translation error (used to create the X and Y PID controllers)
+            new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+            this::setModuleStates, // Module states consumer used to output to the drive subsystem
+            eventMap,
+            true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+            this // The drive subsystem. Used to properly set the requirements of path following commands
+        );        
     }
 }

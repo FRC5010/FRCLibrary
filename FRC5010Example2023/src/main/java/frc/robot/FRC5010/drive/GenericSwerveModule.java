@@ -58,12 +58,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         this.radOffset = radOffset;
         this.swerveConstants = swerveConstants;
 
-        new Thread(() -> {
-            try{
-                Thread.sleep(1000);
-            }catch(Exception e){}
-            resetEncoders();
-            }).start();
+        
     }
 
     public void setupSwerveEncoders() {
@@ -85,6 +80,8 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         );
 
         turningController.enableContinuousInput(-Math.PI, Math.PI);
+
+        resetEncoders();
     }
 
     public void resetEncoders() {
@@ -113,14 +110,17 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     }
 
     public boolean setState(SwerveModuleState state) {
-        if(Math.abs(state.speedMetersPerSecond) < 0.001){
+        state = SwerveModuleState.optimize(state, getState().angle);
+        double turnPow = turningController.calculate(getTurningPosition(),state.angle.getRadians());
+
+
+        if(Math.abs(state.speedMetersPerSecond) < 0.001 && Math.abs(turnPow) < .01){
             stop();
             return false;
-          }
+        }
       
-        state = SwerveModuleState.optimize(state, getState().angle);
         drive.set(state.speedMetersPerSecond / swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
-        double turnPow = turningController.calculate(getTurningPosition(),state.angle.getRadians());
+        
         turn.set(turnPow + (Math.signum(turnPow) * motorConstants.getkS()));
         SmartDashboard.putString("Swerve [" + getKey()  + "] state", 
         " Angle: " + state.angle.getDegrees() + 
@@ -152,8 +152,8 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         // This method will be called once per scheduler run
         absEncDial.setAngle(absEncDeg);
         motorDial.setAngle(turningDeg);
-        motorDial.setLength(20 * getTurningVelocity());
-        expectDial.setLength(20 * getDriveVelocity());
+        motorDial.setLength(20 * getTurningVelocity() + 5);
+        expectDial.setLength(20 * getDriveVelocity() + 5);
         expectDial.setAngle(getState().angle.getDegrees() + 90);
     }
 

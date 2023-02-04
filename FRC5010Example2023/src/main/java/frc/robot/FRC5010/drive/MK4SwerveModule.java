@@ -50,7 +50,7 @@ public class MK4SwerveModule extends GenericSwerveModule {
             false
     );
     
-    private GenericPID pid = new GenericPID(0.0002, 0.0, 0.0000001); 
+    private GenericPID pid = new GenericPID(0.5, 0.0, 0.0000001); 
     private GenericMotorConstants motorConstants = new GenericMotorConstants(0.23727, 0.0016156, 4.2354e-05);
     private GenericSwerveModuleConstants moduleConstants = MK4_L1; 
     
@@ -58,10 +58,11 @@ public class MK4SwerveModule extends GenericSwerveModule {
                 super(visualRoot, key, radOffset, swerveConstants);
                 super.pid = this.pid;
                 super.motorConstants = this.motorConstants;
-                super.moduleConstants = MK4_L1;                                                                                                                  super.moduleConstants = this.moduleConstants;
-                drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(moduleConstants.isDrivingInv());
-                turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(moduleConstants.isTurningInv());
+                super.moduleConstants = MK4_L1;                                                                                                                  
+                drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(individualConstants.isDrivingInv());
+                turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(individualConstants.isTurningInv());
                 absoluteEncoder = new AnalogInput5010(swervePorts.getEncoderPort());
+                absoluteEncoder.setInverted(individualConstants.isEncoderInv());
                 turnEncoder = turn.getMotorEncoder();
                 driveEncoder = drive.getMotorEncoder();
         

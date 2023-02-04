@@ -4,6 +4,10 @@
 
 package frc.robot.FRC5010.drive;
 
+import java.util.HashMap;
+
+import com.pathplanner.lib.auto.BaseAutoBuilder;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -14,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.Persisted;
@@ -58,5 +63,11 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
 
     public Rotation2d getHeading() {
         return poseEstimator.getGyroRotation2d();
+    }
+
+    @Override
+    public BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

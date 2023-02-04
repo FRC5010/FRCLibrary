@@ -5,9 +5,14 @@
 package frc.robot.FRC5010.mechanisms;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.BaseAutoBuilder;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
@@ -29,7 +34,6 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.commands.ChaseTag;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
@@ -39,7 +43,6 @@ public class Drive extends GenericMechanism {
     private Command defaultDriveCommand;
     private String type;
     private GenericDrivetrainConstants driveConstants;
-
     private List<? extends DrivePorts> motorPorts;
 
     public static class Type {
@@ -63,7 +66,7 @@ public class Drive extends GenericMechanism {
         driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, 60);
         driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
         mechVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
-
+        SmartDashboard.putData("Drive Visual", mechVisual);
         initRealOrSim();
     }
 
@@ -168,13 +171,13 @@ public class Drive extends GenericMechanism {
     }
 
     private void initializeMK4SwerveDrive() {
-        GenericSwerveModuleConstants frontLeftConstants = new GenericSwerveModuleConstants(0, 0, false, 0, true, true);
-        GenericSwerveModuleConstants frontRightConstants = new GenericSwerveModuleConstants(0, 0, false, 0, true, true);
-        GenericSwerveModuleConstants backLeftConstants = new GenericSwerveModuleConstants(0, 0, true, 0, true, true);
-        GenericSwerveModuleConstants backRightConstants = new GenericSwerveModuleConstants(0, 0, true, 0, true, true);
+        GenericSwerveModuleConstants frontLeftConstants = new GenericSwerveModuleConstants(0, 0, true, 0, false, false);
+        GenericSwerveModuleConstants frontRightConstants = new GenericSwerveModuleConstants(0, 0, true, 0, false, false);
+        GenericSwerveModuleConstants backLeftConstants = new GenericSwerveModuleConstants(0, 0, true, 0, false, false);
+        GenericSwerveModuleConstants backRightConstants = new GenericSwerveModuleConstants(0, 0, true, 0, false, false);
 
         GenericSwerveModule frontLeft = new MK4SwerveModule(
-            mechVisual.getRoot("frontleft", 45, 15), "frontleft", 
+            mechVisual.getRoot("frontleft", 15, 45), "frontleft", 
             ((GenericSwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(0), frontLeftConstants, (GenericSwerveConstants) driveConstants);  
         GenericSwerveModule frontRight = new MK4SwerveModule(
             mechVisual.getRoot("frontright", 45, 45), "frontright", 
@@ -183,9 +186,20 @@ public class Drive extends GenericMechanism {
             mechVisual.getRoot("backleft", 15, 15), "backleft", 
             ((GenericSwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(2), backLeftConstants, (GenericSwerveConstants) driveConstants);
         GenericSwerveModule backRight = new MK4SwerveModule(
-            mechVisual.getRoot("backright", 15, 45), "backright", 
+            mechVisual.getRoot("backright", 45, 15), "backright", 
             ((GenericSwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(3), backRightConstants, (GenericSwerveConstants) driveConstants);
 
         drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (GenericSwerveConstants) driveConstants);
     }
-}
+
+    public List<Command> setAutoCommands(List<List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap){ 
+        List<Command> commands = new ArrayList<>(); 
+        BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(eventMap);
+
+        for (List<PathPlannerTrajectory> path: paths){
+            commands.add(autoBuilder.fullAuto(path)); 
+        }
+
+        return commands;
+    }
+}  
