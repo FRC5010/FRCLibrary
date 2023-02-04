@@ -5,7 +5,10 @@
 package frc.robot.FRC5010.drive;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import com.pathplanner.lib.auto.BaseAutoBuilder;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -18,6 +21,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.DrivePorts;
 import frc.robot.FRC5010.constants.Persisted;
@@ -156,5 +160,11 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     rightEncoder.setPosition(driveSim.getRightPositionMeters());
     rightEncoder.setRate(driveSim.getRightVelocityMetersPerSecond());
     gyro.setAngle(-driveSim.getHeading().getDegrees());
+  }
+
+  @Override
+  public BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

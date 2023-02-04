@@ -26,6 +26,7 @@ public class RobotFactory extends RobotConfig {
     public static class Parts {
         public static final String VISION = "Vision";
         public static final String DRIVE = "Drive";
+        public static final String AUTO = "Auto"; 
     }
     
     public RobotFactory() {

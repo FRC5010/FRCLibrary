@@ -16,6 +16,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pose/Field": "Field2d",
+      "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
       "/SmartDashboard/LED Orange": "Command",
       "/SmartDashboard/Orange Blink": "Command",
@@ -28,12 +29,7 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Drivetrain Visual": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Robot Visual": {
+      "/SmartDashboard/Drive Visual": {
         "window": {
           "visible": true
         }

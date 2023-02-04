@@ -4,37 +4,23 @@
 
 package frc.robot.FRC5010.drive;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import frc.robot.FRC5010.constants.GenericMotorConstants;
+import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.AnalogInput5010;
-import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
 public class ThriftySwerveModule extends GenericSwerveModule{
-
-    private ProfiledPIDController turningController;
-
-    private MotorController5010 drive, turn;
-    private GenericEncoder turnEncoder, driveEncoder, absoluteEncoder;
-
-    private double radOffset;
-
-    // SWERVE CONSTANTS
     
     // neo 550 sysid values
     public static final double kSC = 0.55641;
     public static final double kVC = 0.064889;
     public static final double kAC = 0.0025381;
-
-    public static double kS = kSC / 12;
-    public static double kV = kVC / 60 / 1 / (12 - kS);
-    public static double kA = kAC / 60 / 1 / (12 - kS);
 
     // pid values for the neo 550
     public static final double kPTurning = 0.052037 * 4;
@@ -59,12 +45,17 @@ public class ThriftySwerveModule extends GenericSwerveModule{
     public static final int neoCurrentLimit = 60;
     public static final int neo550CurrentLimit = 30;
     
+    public static final GenericPID pid = new GenericPID(kPTurning, kITurning, kDTurning); 
+    public static final GenericMotorConstants motorsConstants = new GenericMotorConstants(kSC, kVC, kAC);  
+    public static final GenericSwerveModuleConstants moduleConstants = new GenericSwerveModuleConstants(
+        kWheelDiameterMeters, kDriveMotorGearRatio, 
+        false, kTurningMotorGearRatio, false, false);
 
     public ThriftySwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, GenericSwerveModuleConstants swerveConstants, GenericSwerveConstants swerveConstants2) {
         super(visualRoot, key, radOffset, swerveConstants2);
-                super.pid = this.pid;
-                super.motorConstants = this.motorConstants;
-                super.moduleConstants = this.moduleConstants;
+                super.pid = pid;
+                super.motorConstants = motorConstants;
+                super.moduleConstants = moduleConstants;
                 drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(moduleConstants.isDrivingInv());
                 turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(moduleConstants.isTurningInv());
                 absoluteEncoder = new AnalogInput5010(swervePorts.getEncoderPort());
