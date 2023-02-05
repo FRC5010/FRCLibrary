@@ -19,6 +19,8 @@ import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
+import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.sensors.AnalogInput5010;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
@@ -33,7 +35,10 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     
     protected MotorController5010 drive, turn;
     protected GenericEncoder turnEncoder, driveEncoder, absoluteEncoder;
-    protected GenericPID pid = new GenericPID(0, 0, 0); 
+    protected GenericPID pid = new GenericPID(0, 0, 0);
+    protected Persisted<Double> swerveTurnP;
+    protected Persisted<Double> swerveTurnI;
+    protected Persisted<Double> swerveTurnD;
     protected GenericMotorConstants motorConstants = new GenericMotorConstants(0, 0, 0);
     protected GenericSwerveModuleConstants moduleConstants = new GenericSwerveModuleConstants(Units.inchesToMeters(0), 0, false, 0, false, false); 
     private double radOffset;
@@ -57,8 +62,6 @@ public abstract class GenericSwerveModule extends SubsystemBase {
                 
         this.radOffset = radOffset;
         this.swerveConstants = swerveConstants;
-
-        
     }
 
     public void setupSwerveEncoders() {
@@ -72,10 +75,13 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
         turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
 
+        swerveTurnP = new Persisted<>(DriveConstantsDef.SWERVE_TURN_P, pid.getkP());
+        swerveTurnI = new Persisted<>(DriveConstantsDef.SWERVE_TURN_I, pid.getkI());
+        swerveTurnD = new Persisted<>(DriveConstantsDef.SWERVE_TURN_D, pid.getkD());
         turningController = new ProfiledPIDController(
-            pid.getkP(), 
-            pid.getkI(), 
-            pid.getkD(),
+            swerveTurnP.get(), 
+            swerveTurnI.get(), 
+            swerveTurnD.get(),
             new TrapezoidProfile.Constraints(swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond(), swerveConstants.getkTeleDriveMaxAngularAccelerationUnitsPerSecond())
         );
 
@@ -111,8 +117,8 @@ public abstract class GenericSwerveModule extends SubsystemBase {
 
     public boolean setState(SwerveModuleState state) {
         state = SwerveModuleState.optimize(state, getState().angle);
+        turningController.setPID(swerveTurnP.get(), swerveTurnI.get(), swerveTurnD.get());
         double turnPow = turningController.calculate(getTurningPosition(),state.angle.getRadians());
-
 
         if(Math.abs(state.speedMetersPerSecond) < 0.001 && Math.abs(turnPow) < .01){
             stop();
