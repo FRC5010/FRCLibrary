@@ -4,7 +4,13 @@
 
 package frc.robot.FRC5010.mechanisms;
 
+import java.util.HashMap;
+import java.util.List;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.sensors.Controller;
 
 /** 
@@ -48,4 +54,6 @@ public abstract class GenericMechanism {
     protected void setupPreferences() {
 
     }
+
+    public abstract List<Command> setAutoCommands(List<List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap);
 }

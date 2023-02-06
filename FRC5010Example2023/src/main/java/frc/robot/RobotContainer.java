@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.List;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -143,12 +148,13 @@ public class RobotContainer extends GenericMechanism {
 
   }
   private void initAutoCommands() {
-    /**
-     * TODO: Add actual auto commands
-     */
-    command.addOption("Do nothing", new InstantCommand());
-
-    robotFactory.getParts().get(Parts.DRIVE);
+    List<Command> parts = (List<Command>) robotFactory.getParts().get(Parts.AUTO);
+    
+    if (null != parts){
+      for (int i = 0; i < parts.size(); i++){
+          command.addOption("Blue Cone " + i + "Start", parts.get(i));
+      }
+    }
   }
 
   /**
@@ -159,5 +165,11 @@ public class RobotContainer extends GenericMechanism {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return command.getSelected();
+  }
+
+  @Override
+  public List<Command> setAutoCommands(List<List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

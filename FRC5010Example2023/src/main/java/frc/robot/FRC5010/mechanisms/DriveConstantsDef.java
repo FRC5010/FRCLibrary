@@ -20,4 +20,8 @@ public class DriveConstantsDef {
 
     public static final String KV_DRIVE_ANGULAR = "kVAngular";
     public static final String KA_DRIVE_ANGULAR = "kAAngular";
+
+    public static final String SWERVE_TURN_P = "SwerveTurnP";
+    public static final String SWERVE_TURN_I = "SwerveTurnI";
+    public static final String SWERVE_TURN_D = "SwerveTurnD";
 }

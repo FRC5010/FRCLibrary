@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.Vision.VisionLimeLightLib;
 import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
@@ -41,13 +42,14 @@ public class BabySwerve extends RobotConfig{
       swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
       swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
 
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
-        multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
+        //VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
+        VisionLimeLightLib limelightVision = new VisionLimeLightLib("orange", 0, 0, 0, 0, "Driver");
+        /*multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
           new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
             new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
             new Rotation3d(0, Units.degreesToRadians(-20), 0)
           )
-        );
+        );*/
 
         List<SwervePorts> swervePorts = new ArrayList<>();
         swervePorts.add(new SwervePorts(1, 2, 0));
@@ -57,8 +59,8 @@ public class BabySwerve extends RobotConfig{
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
-        robotParts.put(Parts.VISION, multiVision);
+        GenericMechanism drive = new Drive(limelightVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
+        robotParts.put(Parts.VISION, limelightVision);
         robotParts.put(Parts.DRIVE, drive);
     }
 
