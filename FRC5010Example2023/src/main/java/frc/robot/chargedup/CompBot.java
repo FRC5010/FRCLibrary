@@ -63,7 +63,7 @@ public class CompBot extends RobotConfig {
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
         maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, swerveConstants.getkTeleDriveMaxSpeedMetersPerSecond());
         maxChassisRotation = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION, swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond());
-        autoMaps = new AutoMaps(new PathConstraints(3, 2));
+        
         // Will need to be changed for 2023 field
         VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
         multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
@@ -82,6 +82,8 @@ public class CompBot extends RobotConfig {
 
 
         GenericGyro gyro = new PigeonGyro(11);
+
+        autoMaps = new AutoMaps(new PathConstraints(3, 2));
 
         GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);

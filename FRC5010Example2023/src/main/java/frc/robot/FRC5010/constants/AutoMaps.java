@@ -22,8 +22,8 @@ public class AutoMaps {
 
     public AutoMaps(PathConstraints pathConstraints) {
         this.pathConstraints = pathConstraints;
-        eventMap = new HashMap<>();
-        paths = new HashMap<>();
+        eventMap = new HashMap<String,Command>();
+        paths = new HashMap<String,List<PathPlannerTrajectory>>();
     }
     
     public HashMap<String, Command> getEventMap() {

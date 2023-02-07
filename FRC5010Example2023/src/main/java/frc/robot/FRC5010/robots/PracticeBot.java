@@ -6,18 +6,21 @@ package frc.robot.FRC5010.robots;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import com.pathplanner.lib.PathConstraints;
+
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.MK4SwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
@@ -27,7 +30,9 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 /** Add your docs here. */
 public class PracticeBot extends RobotConfig {
 
-    SwerveConstants swerveConstants;
+    private SwerveConstants swerveConstants;
+    private AutoMaps autoMaps;
+    private GenericMechanism drive;
 
     public PracticeBot() {
 
@@ -66,8 +71,17 @@ public class PracticeBot extends RobotConfig {
 
         GenericGyro gyro = new PigeonGyro(11);
 
-        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
+        autoMaps = new AutoMaps(new PathConstraints(3, 2));
+        // TODO causes errors idk help
+        //autoMaps.addPath("Blue Cone 1 Start");
+
+        drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);
         robotParts.put(Parts.DRIVE, drive);
+        robotParts.put(Parts.AUTO, setAutoCommands()); 
     }
+
+    public Map<String,Command> setAutoCommands(){
+        return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap()); 
+      }
 }
