@@ -51,7 +51,7 @@ public class VisionPhotonMultiCam extends VisionSystem {
   }
 
   protected void init() {
-    visionLayout.addNumber(name + " FidId", this::getTargetFiducial).withSize(1, 1);
+    //visionLayout.addNumber(name + " FidId", this::getTargetFiducial).withSize(1, 1);
   }
 
   @Override
