@@ -47,11 +47,11 @@ public class VisionPhotonMultiCam extends VisionSystem {
     names.add(name);
     poseEstimators.add(
       new PhotonPoseEstimator(fieldLayout, strategy, cameras.get(cameras.size() - 1), cameraToRobot));
-    init();
+    init(name);
   }
 
-  protected void init() {
-    //visionLayout.addNumber(name + " FidId", this::getTargetFiducial).withSize(1, 1);
+  protected void init(String name) {
+      visionLayout.addNumber(name + " FidId", this::getTargetFiducial).withSize(1, 1);
   }
 
   @Override
@@ -77,7 +77,7 @@ public class VisionPhotonMultiCam extends VisionSystem {
       if (result.isPresent() && result.get().estimatedPose != null) {
         robotPoseEstInit = result.get().estimatedPose.toPose2d();
         deltaTimeInit = result.get().timestampSeconds;
-        referencePose = robotPoseEstInit; 
+        referencePose = robotPoseEstInit;
       } else {
         robotPoseEstInit = null;
       }
@@ -91,9 +91,8 @@ public class VisionPhotonMultiCam extends VisionSystem {
         () -> target.getArea(),
         () -> camResult.hasTargets(),
         () -> deltaTime,
-        () -> trackedTargetPose, // This could eventually be a robot to target pose or turret pose
+        () -> fieldLayout.getTagPose(target.getFiducialId()).orElse(trackedTargetPose),
         () -> robotPoseEst);
-
   }
 
   // name is assigned in the constructor, and will give you the correct limelight

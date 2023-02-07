@@ -12,7 +12,6 @@ import frc.robot.FRC5010.constants.SwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.AnalogInput5010;
-import frc.robot.FRC5010.sensors.encoder.CanCoderEncoder;
 
 /** Add your docs here. */
 public class MK4SwerveModule extends GenericSwerveModule {
@@ -52,7 +51,7 @@ public class MK4SwerveModule extends GenericSwerveModule {
     //0.0000001
     private GenericPID pid = new GenericPID(1, 0.0, 2); 
     private GenericMotorConstants motorConstants = new GenericMotorConstants(0, 0.0016156, 4.2354e-05);
-    private SwerveModuleConstants moduleConstants = MK4_L1; 
+
     // 0.23727 kSC
     public MK4SwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, SwerveModuleConstants individualConstants, SwerveConstants swerveConstants) {
                 super(visualRoot, key, radOffset, swerveConstants);

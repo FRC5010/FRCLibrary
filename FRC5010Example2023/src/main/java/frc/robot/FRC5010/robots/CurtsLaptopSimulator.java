@@ -17,11 +17,15 @@ import edu.wpi.first.wpilibj.SPI;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionConstantDefs;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.constants.GenericDrivetrainConstants;
 import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
+import frc.robot.FRC5010.drive.ThriftySwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
+import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
+import frc.robot.FRC5010.motors.hardware.NEO;
+import frc.robot.FRC5010.motors.hardware.NEO550;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
@@ -37,10 +41,20 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
  */
 public class CurtsLaptopSimulator extends RobotConfig {
 
-    GenericDrivetrainConstants drivetrainConstants;
+    SwerveConstants swerveConstants;
 
     public CurtsLaptopSimulator() {
-        drivetrainConstants = new GenericDrivetrainConstants();
+        swerveConstants = new SwerveConstants(0.76835, 0.635);
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0+Math.PI);
+        swerveConstants.setkBackRightAbsoluteOffsetRad(0.21+Math.PI);
+        swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
+        swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+        swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
+        swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+        swerveConstants.setSwerveModuleConstants(ThriftySwerveModule.moduleConstants);
+        swerveConstants.configureSwerve(NEO.MAXRPM, NEO550.MAXRPM);
 
         VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, 
             AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
@@ -57,7 +71,7 @@ public class CurtsLaptopSimulator extends RobotConfig {
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, drivetrainConstants);
+        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);
         robotParts.put(Parts.DRIVE, drive);
     }

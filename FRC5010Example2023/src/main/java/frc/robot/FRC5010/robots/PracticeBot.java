@@ -9,9 +9,6 @@ import java.util.List;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
@@ -32,9 +29,6 @@ public class PracticeBot extends RobotConfig {
 
     SwerveConstants swerveConstants;
 
-    private Persisted<Double>maxChassisVelocity;
-    private Persisted<Double>maxChassisRotation;
-
     public PracticeBot() {
 
         swerveConstants = new SwerveConstants(Units.inchesToMeters(24.25), Units.inchesToMeters(20.5));
@@ -47,9 +41,7 @@ public class PracticeBot extends RobotConfig {
         swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
         swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
         swerveConstants.setSwerveModuleConstants(MK4SwerveModule.MK4_L1);
-        swerveConstants.configureSwerve(NEO.MAXRPM);
-        maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, swerveConstants.getkTeleDriveMaxSpeedMetersPerSecond());
-        maxChassisRotation = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION, swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond());
+        swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
         
         VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.CLOSEST_TO_LAST_POSE);
         // multiVision.addPhotonCamera("FrontCamera", 

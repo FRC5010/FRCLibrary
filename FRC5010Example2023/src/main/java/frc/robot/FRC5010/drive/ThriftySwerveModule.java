@@ -31,10 +31,6 @@ public class ThriftySwerveModule extends GenericSwerveModule{
     public static final double kWheelDiameterMeters = Units.inchesToMeters(3);
     public static final double kDriveMotorGearRatio = 1/5.25;
     public static final double kTurningMotorGearRatio = 1/((5.33) * 10.5); // not 12:1 but 10.5 for gearbox, ultraplanetaries are not nominal
-    public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-    public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-    public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
-    public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
 
     // conversions
     public static final double maxAbsEncoderVolts = 4.815;
