@@ -17,17 +17,18 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
+import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
+import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
-public class    SwerveDrivetrain extends GenericDrivetrain{
+public class SwerveDrivetrain extends GenericDrivetrain{
 
     private ChassisSpeeds chassisSpeeds;
 
@@ -35,9 +36,12 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
 
     private GenericGyro gyro; 
 
-    private GenericSwerveConstants swerveConstants;
+    private SwerveConstants swerveConstants;
 
-    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro, VisionSystem visonSystem, GenericSwerveConstants swerveConstants) {
+    private boolean ready = false;
+    private Persisted<Double> maxChassisVelocity;
+
+    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro, VisionSystem visonSystem, SwerveConstants swerveConstants) {
         super(mechVisual);
 
         this.frontLeft = frontLeft;
@@ -50,13 +54,12 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
         this.gyro = genericGyro;
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, swerveConstants.getKinematics(), frontLeft, frontRight, backLeft, backRight), visonSystem);
+        maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
 
-        new Thread(() -> {
-            try{
-              Thread.sleep(1000);
-            }catch(Exception e){}
-            zeroGyroscope();
-          }).start();
+        setDrivetrainPoseEstimator(poseEstimator);
+
+        gyro.reset();
+          
         //TODO Auto-generated constructor stub
     }
 
@@ -64,34 +67,27 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
     public void drive(ChassisSpeeds direction) {
         this.chassisSpeeds = direction;
     }
-
-    public void zeroGyroscope() {
-        gyro.setAngle(0);
-    }
     
 
     public void setModuleStates(SwerveModuleState[] setDesiredStates){
         SwerveModuleState[] states = setDesiredStates;
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, maxChassisVelocity.get());
         
-        // frontLeft.setState(states[0]);
-        // frontRight.setState(states[1]);
-        // backLeft.setState(states[2]);
-        // backRight.setState(states[3]);
-
+        // TODO get swerve stop lock working
+        // if(Math.abs(states[0].speedMetersPerSecond) < 0.001){
+        //     states[0] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5)));
+        //     states[1] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*7)));
+        //     states[2] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*3)));
+        //     states[3] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5)));
+        // }
 
         // TODO add the isReady function so wheels won't move till turned close enough
-        if(states[0].speedMetersPerSecond > 0.001){
-                frontLeft.setState(states[0]);
-                frontRight.setState(states[1]);
-                backLeft.setState(states[2]);
-                backRight.setState(states[3]);
-        }else{
-                frontLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5))));
-                frontRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*7))));
-                backLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*3))));
-                backRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45))));
-        }
+        boolean isReady = true;
+        isReady &= frontLeft.setState(states[0], ready);
+        isReady &= frontRight.setState(states[1], ready);
+        isReady &= backLeft.setState(states[2], ready);
+        isReady &= backRight.setState(states[3], ready);
+        ready = isReady;
     }
 
     public void stop(){
@@ -101,7 +97,7 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
         backRight.stop();
     }
 
-    public GenericSwerveConstants getSwerveConstants() {
+    public SwerveConstants getSwerveConstants() {
         return swerveConstants;
     }
 

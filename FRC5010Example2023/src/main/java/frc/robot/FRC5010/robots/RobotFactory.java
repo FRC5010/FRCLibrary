@@ -51,7 +51,7 @@ public class RobotFactory extends RobotConfig {
                 break;
             }
             default: {
-                robotParts = new DefaultRobot().getParts();
+                robotParts = new BabySwerve().getParts();
                 break;
             }
         }

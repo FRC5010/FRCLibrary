@@ -7,10 +7,7 @@ package frc.robot.FRC5010.drive;
 import java.util.HashMap;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -35,7 +32,7 @@ public abstract class GenericDrivetrain extends SubsystemBase {
     
     public Mechanism2d getMechVisual() { assert(null != poseEstimator); return mechVisual; }
     public Rotation2d getHeading() { assert(null != poseEstimator); return poseEstimator.getGyroRotation2d(); };
-
+    
     public abstract void drive(ChassisSpeeds direction);
 
     @Override

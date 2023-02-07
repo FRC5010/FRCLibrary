@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -19,7 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
@@ -148,11 +148,11 @@ public class RobotContainer extends GenericMechanism {
 
   }
   private void initAutoCommands() {
-    List<Command> parts = (List<Command>) robotFactory.getParts().get(Parts.AUTO);
+    Map<String,Command> parts = (Map<String,Command>) robotFactory.getParts().get(Parts.AUTO);
     
     if (null != parts){
-      for (int i = 0; i < parts.size(); i++){
-          command.addOption("Blue Cone " + i + "Start", parts.get(i));
+      for (String name : parts.keySet()){
+          command.addOption(name, parts.get(name));
       }
     }
   }
@@ -167,4 +167,9 @@ public class RobotContainer extends GenericMechanism {
     return command.getSelected();
   }
 
+  @Override
+  public Map<String,Command> setAutoCommands(Map<String,List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

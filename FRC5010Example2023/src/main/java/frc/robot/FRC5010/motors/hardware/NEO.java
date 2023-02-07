@@ -8,10 +8,13 @@ import frc.robot.FRC5010.motors.MotorConstants;
 
 /** Add your docs here. */
 public class NEO extends GenericRevBrushlessMotor {
+    public static final double MAXRPM = 5676;
+
     public NEO(int port){
         super(port, MotorConstants.CurrentLimits.Neo);
     }
     public NEO(int port, int currentLimit){
         super(port, currentLimit);
     }
+
 }

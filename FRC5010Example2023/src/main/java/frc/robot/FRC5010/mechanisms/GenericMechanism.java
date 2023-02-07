@@ -6,6 +6,7 @@ package frc.robot.FRC5010.mechanisms;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -54,4 +55,6 @@ public abstract class GenericMechanism {
     protected void setupPreferences() {
 
     }
+
+    public abstract Map<String,Command> setAutoCommands(Map<String,List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap);
 }

@@ -13,6 +13,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
@@ -29,34 +30,41 @@ public abstract class GenericPose {
   public abstract void resetEncoders();
   
   public double getAccelX() {
-      // TODO Auto-generated method stub
-      return 0;
+    // TODO Auto-generated method stub
+    return 0;
   }
 
   public double getAccelY() {
-      // TODO Auto-generated method stub
-      return 0;
+    // TODO Auto-generated method stub
+    return 0;
   }
 
   public double getAccelZ() {
-      // TODO Auto-generated method stub
-      return 0;
+    // TODO Auto-generated method stub
+    return 0;
   }
 
   public double getGyroAngleX() {
-      return gyro.getAngleX();
+    return gyro.getAngleX();
   }
 
   public double getGyroAngleY() {
-      return gyro.getAngleY();
+    return gyro.getAngleY();
   }
 
   public double getGyroAngleZ() {
-      return gyro.getAngleZ();
+    //System.out.println(gyro.getAngleZ());
+    return gyro.getAngleZ();
   }
-    
+  
+
   public Rotation2d getGyroRotation2d() {
-    return new Rotation3d(getGyroAngleX(), getGyroAngleY(), getGyroAngleZ()).toRotation2d();
+    //return new Rotation3d(getGyroAngleX(), getGyroAngleY(), getGyroAngleZ()).toRotation2d();
+    double angleZ = getGyroAngleZ();
+    double radianZ = Math.toRadians(angleZ);
+    Rotation2d rotation2d = new Rotation2d(radianZ);
+    SmartDashboard.putNumber("Angle", rotation2d.getDegrees());
+    return rotation2d;
   }
     
   /** Reset the gyro. */

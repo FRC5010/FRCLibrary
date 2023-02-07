@@ -7,8 +7,8 @@ package frc.robot.FRC5010.drive;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
-import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
+import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.constants.SwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.encoder.CanCoderEncoder;
@@ -16,7 +16,7 @@ import frc.robot.FRC5010.sensors.encoder.CanCoderEncoder;
 /** Add your docs here. */
 public class MK4iSwerveModule extends GenericSwerveModule {
 
-        public static final GenericSwerveModuleConstants MK4I_L1 = new GenericSwerveModuleConstants(
+        public static final SwerveModuleConstants MK4I_L1 = new SwerveModuleConstants(
                 0.10033,
                 (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
                 true,
@@ -24,7 +24,7 @@ public class MK4iSwerveModule extends GenericSwerveModule {
                 false,
                 false
         );
-        public static final GenericSwerveModuleConstants MK4I_L2 = new GenericSwerveModuleConstants(
+        public static final SwerveModuleConstants MK4I_L2 = new SwerveModuleConstants(
                 0.10033,
                 (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
                 true,
@@ -32,7 +32,7 @@ public class MK4iSwerveModule extends GenericSwerveModule {
                 false,
                 false
         );
-        public static final GenericSwerveModuleConstants MK4I_L3 = new GenericSwerveModuleConstants(
+        public static final SwerveModuleConstants MK4I_L3 = new SwerveModuleConstants(
                 0.10033,
                 (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0),
                 true,
@@ -43,10 +43,10 @@ public class MK4iSwerveModule extends GenericSwerveModule {
 
     private GenericPID pid = new GenericPID(0.1, 0, 0.2); 
     private GenericMotorConstants motorConstants = new GenericMotorConstants(0.55641, 0.064889, 0.0025381);
-    private GenericSwerveModuleConstants moduleConstants = MK4I_L1;; 
+    private SwerveModuleConstants moduleConstants = MK4I_L1;; 
 
 
-    public MK4iSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, GenericSwerveConstants swerveConstants) {
+    public MK4iSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, SwerveConstants swerveConstants) {
         super(visualRoot, key, radOffset, swerveConstants);
         super.pid = this.pid;
         super.motorConstants = this.motorConstants;

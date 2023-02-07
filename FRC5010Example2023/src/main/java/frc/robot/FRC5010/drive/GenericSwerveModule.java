@@ -17,12 +17,11 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
-import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
 import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.constants.SwerveModuleConstants;
 import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.sensors.AnalogInput5010;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
@@ -40,14 +39,14 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     protected Persisted<Double> swerveTurnI;
     protected Persisted<Double> swerveTurnD;
     protected GenericMotorConstants motorConstants = new GenericMotorConstants(0, 0, 0);
-    protected GenericSwerveModuleConstants moduleConstants = new GenericSwerveModuleConstants(Units.inchesToMeters(0), 0, false, 0, false, false); 
+    protected SwerveModuleConstants moduleConstants = new SwerveModuleConstants(Units.inchesToMeters(0), 0, false, 0, false, false); 
     private double radOffset;
-    private GenericSwerveConstants swerveConstants;
+    private SwerveConstants swerveConstants;
     // protected GenericEncoder driveEncoder = new SimulatedEncoder(0, 1); 
     // protected GenericEncoder turnEncoder = new SimulatedEncoder(2, 3);
     // protected GenericGyro gyro = new SimulatedGyro();
 
-    public GenericSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, GenericSwerveConstants swerveConstants) {
+    public GenericSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwerveConstants swerveConstants) {
         this.moduleKey = key;
         visualRoot.append(
             new MechanismLigament2d(moduleKey + "vert", 10, 90, 6.0, new Color8Bit(50, 50, 50)));
@@ -115,23 +114,26 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         return driveEncoder.getVelocity();
     }
 
-    public boolean setState(SwerveModuleState state) {
+    public boolean setState(SwerveModuleState state, boolean ready) {
         state = SwerveModuleState.optimize(state, getState().angle);
         turningController.setPID(swerveTurnP.get(), swerveTurnI.get(), swerveTurnD.get());
         double turnPow = turningController.calculate(getTurningPosition(),state.angle.getRadians());
 
-        if(Math.abs(state.speedMetersPerSecond) < 0.001 && Math.abs(turnPow) < .01){
+        if(Math.abs(state.speedMetersPerSecond) < 0.001){
             stop();
-            return false;
+            return true;
         }
-      
-        drive.set(state.speedMetersPerSecond / swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
-        
+
+        if(ready){
+            drive.set(state.speedMetersPerSecond / swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
+        }
+
         turn.set(turnPow + (Math.signum(turnPow) * motorConstants.getkS()));
         SmartDashboard.putString("Swerve [" + getKey()  + "] state", 
+        " Physical " + swerveConstants.getkPhysicalMaxSpeedMetersPerSecond() + 
         " Angle: " + state.angle.getDegrees() + 
         " Speed m/s: " + state.speedMetersPerSecond);
-        return true;
+        return (Math.abs(turnPow) < 0.03);
     }
 
     public SwerveModuleState getState() {

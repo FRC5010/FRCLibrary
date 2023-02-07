@@ -5,7 +5,7 @@
 package frc.robot.FRC5010.constants;
 
 /** Add your docs here. */
-public class GenericSwerveModuleConstants {
+public class SwerveModuleConstants {
 
     private double kWheelDiameterMeters; // = Units.inchesToMeters(3);
     private double kDriveMotorGearRatio; // = 1/5.25;
@@ -18,7 +18,7 @@ public class GenericSwerveModuleConstants {
     private boolean turningInv;
     private boolean encoderInv;
     
-    public GenericSwerveModuleConstants(double kWheelDiameterMeters, double kDriveMotorGearRatio,boolean drivingInv, double kTurningMotorGearRatio, boolean turningInv, boolean encoderInv) {
+    public SwerveModuleConstants(double kWheelDiameterMeters, double kDriveMotorGearRatio,boolean drivingInv, double kTurningMotorGearRatio, boolean turningInv, boolean encoderInv) {
         
         this.kWheelDiameterMeters = kWheelDiameterMeters;
         this.kDriveMotorGearRatio = kDriveMotorGearRatio;
