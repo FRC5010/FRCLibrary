@@ -7,6 +7,7 @@ package frc.robot.chargedup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -37,7 +38,7 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 public class CompBot extends RobotConfig {
     private SwerveConstants swerveConstants; 
     private GenericMechanism drive; 
-    private List<List<PathPlannerTrajectory>> paths = new ArrayList<>(); 
+    private Map<String,List<PathPlannerTrajectory>> paths = new HashMap<>(); 
     private HashMap<String, Command> eventMap = new HashMap<>();   
 
     private Persisted<Double> maxChassisVelocity;
@@ -85,8 +86,8 @@ public class CompBot extends RobotConfig {
         robotParts.put(Parts.AUTO, setAutoCommands()); 
     } 
 
-    public List<Command> setAutoCommands(){
-        return drive.setAutoCommands(paths, eventMap); 
+    public Map<String,Command> setAutoCommands(){
+      return drive.setAutoCommands(paths, eventMap); 
     }
 
 }

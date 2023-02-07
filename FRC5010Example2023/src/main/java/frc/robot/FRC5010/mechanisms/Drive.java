@@ -7,6 +7,9 @@ package frc.robot.FRC5010.mechanisms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.map.HashedMap;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.BaseAutoBuilder;
@@ -14,6 +17,7 @@ import com.pathplanner.lib.auto.BaseAutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.DefaultDriveCommand;
@@ -135,7 +139,9 @@ public class Drive extends GenericMechanism {
             () -> driver.getLeftYAxis(), 
             () -> driver.getLeftXAxis(), 
             () -> driver.getRightXAxis(),
-            () -> driver.createAButton().getAsBoolean());
+            () -> !driver.createAButton().getAsBoolean());
+
+        driver.createXButton().onTrue(new InstantCommand(() -> gyro.reset()));
     }
 
     private void initializeThriftySwerveDrive() {
@@ -196,12 +202,13 @@ public class Drive extends GenericMechanism {
         drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (SwerveConstants) driveConstants);
     }
 
-    public List<Command> setAutoCommands(List<List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap){ 
-        List<Command> commands = new ArrayList<>(); 
+    public Map<String,Command> setAutoCommands(Map<String,List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap){ 
+        Map<String,Command> commands = new HashMap<>(); 
         BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(eventMap);
 
-        for (List<PathPlannerTrajectory> path: paths){
-            commands.add(autoBuilder.fullAuto(path)); 
+        for (String name : paths.keySet()){
+            List<PathPlannerTrajectory> path = paths.get(name);
+            commands.put(name, autoBuilder.fullAuto(path)); 
         }
 
         return commands;

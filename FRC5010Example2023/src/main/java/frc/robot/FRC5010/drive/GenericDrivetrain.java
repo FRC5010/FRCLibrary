@@ -32,7 +32,7 @@ public abstract class GenericDrivetrain extends SubsystemBase {
     
     public Mechanism2d getMechVisual() { assert(null != poseEstimator); return mechVisual; }
     public Rotation2d getHeading() { assert(null != poseEstimator); return poseEstimator.getGyroRotation2d(); };
-
+    
     public abstract void drive(ChassisSpeeds direction);
 
     @Override

@@ -56,6 +56,7 @@ public class DrivetrainPoseEstimator {
   }
 
   public Rotation2d getGyroRotation2d() {
+    //System.out.println(poseTracker.getGyroRotation2d());
     return poseTracker.getGyroRotation2d();
   }
   

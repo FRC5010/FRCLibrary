@@ -56,22 +56,16 @@ public class SwerveDrivetrain extends GenericDrivetrain{
         poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, swerveConstants.getKinematics(), frontLeft, frontRight, backLeft, backRight), visonSystem);
         maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
 
-        new Thread(() -> {
-            try{
-              Thread.sleep(1000);
-            }catch(Exception e){}
-            zeroGyroscope();
-          }).start();
+        setDrivetrainPoseEstimator(poseEstimator);
+
+        gyro.reset();
+          
         //TODO Auto-generated constructor stub
     }
 
     @Override
     public void drive(ChassisSpeeds direction) {
         this.chassisSpeeds = direction;
-    }
-
-    public void zeroGyroscope() {
-        gyro.setAngle(0);
     }
     
 
