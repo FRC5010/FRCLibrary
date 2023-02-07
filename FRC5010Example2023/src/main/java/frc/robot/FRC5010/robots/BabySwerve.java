@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.SPI;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.Vision.VisionLimeLightLib;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
+import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
@@ -27,10 +27,10 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
 public class BabySwerve extends RobotConfig{
-    private GenericSwerveConstants swerveConstants;
+    private SwerveConstants swerveConstants;
 
     public BabySwerve() {
-      swerveConstants = new GenericSwerveConstants(0.76835, 0.635);
+      swerveConstants = new SwerveConstants(0.76835, 0.635);
       swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
       swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
       swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0+Math.PI);

@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 /** Add your docs here. */
-public class GenericSwerveConstants extends GenericDrivetrainConstants{
+public class SwerveConstants extends GenericDrivetrainConstants{
     // public variables
     private double DRIVETRAIN_TRACKWIDTH_METERS;
     private double DRIVETRAIN_WHEELBASE_METERS;
@@ -30,7 +30,9 @@ public class GenericSwerveConstants extends GenericDrivetrainConstants{
     private double kTeleDriveMaxAccelerationUnitsPerSecond;
     private double kTeleDriveMaxAngularAccelerationUnitsPerSecond;
 
-    public GenericSwerveConstants(double DRIVETRAIN_TRACKWIDTH_METERS, double DRIVETRAIN_WHEELBASE_METERS){
+    private SwerveModuleConstants swerveModuleConstants;
+
+    public SwerveConstants(double DRIVETRAIN_TRACKWIDTH_METERS, double DRIVETRAIN_WHEELBASE_METERS){
         this.DRIVETRAIN_TRACKWIDTH_METERS = DRIVETRAIN_TRACKWIDTH_METERS;
         this.DRIVETRAIN_WHEELBASE_METERS = DRIVETRAIN_WHEELBASE_METERS;
 
@@ -49,6 +51,11 @@ public class GenericSwerveConstants extends GenericDrivetrainConstants{
 
     public SwerveDriveKinematics getKinematics() {
         return kinematics;
+    }
+
+    public void configureSwerve(double motorMaxRPM) {
+        kPhysicalMaxSpeedMetersPerSecond = motorMaxRPM * swerveModuleConstants.getkDriveEncoderRPM2MeterPerSec();
+        kPhysicalMaxAngularSpeedRadiansPerSecond = motorMaxRPM * swerveModuleConstants.getkTurningEncoderRPM2RadPerSec();
     }
 
     public double getkFrontLeftAbsoluteOffsetRad() {
@@ -131,6 +138,12 @@ public class GenericSwerveConstants extends GenericDrivetrainConstants{
         this.kTeleDriveMaxAngularAccelerationUnitsPerSecond = kTeleDriveMaxAngularAccelerationUnitsPerSecond;
     }
 
-    
+    public SwerveModuleConstants getSwerveModuleConstants() {
+        return swerveModuleConstants;
+    }
+
+    public void setSwerveModuleConstants(SwerveModuleConstants swerveModuleConstants) {
+        this.swerveModuleConstants = swerveModuleConstants;
+    }
 
 }

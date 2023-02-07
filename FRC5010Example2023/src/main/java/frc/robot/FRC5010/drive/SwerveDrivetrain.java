@@ -21,7 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
+import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -35,9 +35,11 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
 
     private GenericGyro gyro; 
 
-    private GenericSwerveConstants swerveConstants;
+    private SwerveConstants swerveConstants;
 
-    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro, VisionSystem visonSystem, GenericSwerveConstants swerveConstants) {
+    private boolean ready = false;
+
+    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro, VisionSystem visonSystem, SwerveConstants swerveConstants) {
         super(mechVisual);
 
         this.frontLeft = frontLeft;
@@ -81,17 +83,24 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
 
 
         // TODO add the isReady function so wheels won't move till turned close enough
-        if(states[0].speedMetersPerSecond > 0.001){
-                frontLeft.setState(states[0]);
-                frontRight.setState(states[1]);
-                backLeft.setState(states[2]);
-                backRight.setState(states[3]);
-        }else{
-                frontLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5))));
-                frontRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*7))));
-                backLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*3))));
-                backRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45))));
-        }
+        boolean isReady = true;
+        isReady &= frontLeft.setState(states[0], ready);
+        isReady &= frontRight.setState(states[1], ready);
+        isReady &= backLeft.setState(states[2], ready);
+        isReady &= backRight.setState(states[3], ready);
+        ready = isReady;
+
+        // if(states[0].speedMetersPerSecond > 0.001){
+        //         frontLeft.setState(states[0]);
+        //         frontRight.setState(states[1]);
+        //         backLeft.setState(states[2]);
+        //         backRight.setState(states[3]);
+        // }else{
+        //         frontLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5))));
+        //         frontRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*7))));
+        //         backLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*3))));
+        //         backRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45))));
+        // }
     }
 
     public void stop(){
@@ -101,7 +110,7 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
         backRight.stop();
     }
 
-    public GenericSwerveConstants getSwerveConstants() {
+    public SwerveConstants getSwerveConstants() {
         return swerveConstants;
     }
 

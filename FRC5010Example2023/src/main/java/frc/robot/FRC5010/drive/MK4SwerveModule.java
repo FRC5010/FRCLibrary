@@ -7,8 +7,8 @@ package frc.robot.FRC5010.drive;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
-import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
+import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.constants.SwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.AnalogInput5010;
@@ -17,7 +17,7 @@ import frc.robot.FRC5010.sensors.encoder.CanCoderEncoder;
 /** Add your docs here. */
 public class MK4SwerveModule extends GenericSwerveModule {
 
-    public static final GenericSwerveModuleConstants MK4_L1 = new GenericSwerveModuleConstants(
+    public static final SwerveModuleConstants MK4_L1 = new SwerveModuleConstants(
             0.10033,
             (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
             true,
@@ -25,7 +25,7 @@ public class MK4SwerveModule extends GenericSwerveModule {
             true,
             false
     );
-    public static final GenericSwerveModuleConstants MK4_L2 = new GenericSwerveModuleConstants(
+    public static final SwerveModuleConstants MK4_L2 = new SwerveModuleConstants(
             0.10033,
             (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
             true,
@@ -33,7 +33,7 @@ public class MK4SwerveModule extends GenericSwerveModule {
             true,
             false
     );
-    public static final GenericSwerveModuleConstants MK4_L3 = new GenericSwerveModuleConstants(
+    public static final SwerveModuleConstants MK4_L3 = new SwerveModuleConstants(
             0.10033,
             (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0),
             true,
@@ -41,7 +41,7 @@ public class MK4SwerveModule extends GenericSwerveModule {
             true,
             false
     );
-    public static final GenericSwerveModuleConstants MK4_L4 = new GenericSwerveModuleConstants(
+    public static final SwerveModuleConstants MK4_L4 = new SwerveModuleConstants(
             0.10033,
             (16.0 / 48.0) * (28.0 / 16.0) * (15.0 / 45.0),
             true,
@@ -51,14 +51,14 @@ public class MK4SwerveModule extends GenericSwerveModule {
     );
     
     private GenericPID pid = new GenericPID(0.5, 0.0, 0.0000001); 
-    private GenericMotorConstants motorConstants = new GenericMotorConstants(0.23727, 0.0016156, 4.2354e-05);
-    private GenericSwerveModuleConstants moduleConstants = MK4_L1; 
-    
-    public MK4SwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, GenericSwerveModuleConstants individualConstants, GenericSwerveConstants swerveConstants) {
+    private GenericMotorConstants motorConstants = new GenericMotorConstants(0, 0.0016156, 4.2354e-05);
+    private SwerveModuleConstants moduleConstants = MK4_L1; 
+    // 0.23727 kSC
+    public MK4SwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, SwerveModuleConstants individualConstants, SwerveConstants swerveConstants) {
                 super(visualRoot, key, radOffset, swerveConstants);
                 super.pid = this.pid;
                 super.motorConstants = this.motorConstants;
-                super.moduleConstants = MK4_L1;                                                                                                                  
+                super.moduleConstants = swerveConstants.getSwerveModuleConstants();                                                                                                                  
                 drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(individualConstants.isDrivingInv());
                 turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(individualConstants.isTurningInv());
                 absoluteEncoder = new AnalogInput5010(swervePorts.getEncoderPort());

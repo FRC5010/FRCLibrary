@@ -19,8 +19,8 @@ import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.constants.DrivePorts;
 import frc.robot.FRC5010.constants.GenericDrivetrainConstants;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
-import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
+import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.constants.SwerveModuleConstants;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -112,9 +112,9 @@ public class Drive extends GenericMechanism {
         } else {
             
         }
-        driver.setLeftXAxis(driver.createLeftXAxis().deadzone(0.075).negate().rate(((GenericSwerveConstants) driveConstants).getkTeleDriveMaxAccelerationUnitsPerSecond()));
-        driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.075).negate().rate(((GenericSwerveConstants) driveConstants).getkTeleDriveMaxAccelerationUnitsPerSecond()));
-        driver.setRightXAxis(driver.createRightXAxis().deadzone(0.075).negate().rate(((GenericSwerveConstants) driveConstants).getkTeleDriveMaxAngularAccelerationUnitsPerSecond()));
+        driver.setLeftXAxis(driver.createLeftXAxis().deadzone(0.075).negate());
+        driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.075).negate());
+        driver.setRightXAxis(driver.createRightXAxis().deadzone(0.075).negate());
 
         //driver.createXButton().whileTrue(new ChaseTag((SwerveDrivetrain) drivetrain, () -> drivetrain.getPoseEstimator().getCurrentPose()));
 
@@ -135,25 +135,25 @@ public class Drive extends GenericMechanism {
     }
 
     private void initializeThriftySwerveDrive() {
-        GenericSwerveModuleConstants frontLeftConstants = new GenericSwerveModuleConstants(0, 0, false, 0, true, true);
-        GenericSwerveModuleConstants frontRightConstants = new GenericSwerveModuleConstants(0, 0, false, 0, true, true);
-        GenericSwerveModuleConstants backLeftConstants = new GenericSwerveModuleConstants(0, 0, true, 0, true, true);
-        GenericSwerveModuleConstants backRightConstants = new GenericSwerveModuleConstants(0, 0, true, 0, true, true);
+        SwerveModuleConstants frontLeftConstants = new SwerveModuleConstants(0, 0, false, 0, true, true);
+        SwerveModuleConstants frontRightConstants = new SwerveModuleConstants(0, 0, false, 0, true, true);
+        SwerveModuleConstants backLeftConstants = new SwerveModuleConstants(0, 0, true, 0, true, true);
+        SwerveModuleConstants backRightConstants = new SwerveModuleConstants(0, 0, true, 0, true, true);
 
         GenericSwerveModule frontLeft = new ThriftySwerveModule(
             mechVisual.getRoot("frontleft", 45, 15), "frontleft", 
-            ((GenericSwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(), (SwervePorts) motorPorts.get(0), frontLeftConstants, (GenericSwerveConstants) driveConstants);  
+            ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(), (SwervePorts) motorPorts.get(0), frontLeftConstants, (SwerveConstants) driveConstants);  
         GenericSwerveModule frontRight = new ThriftySwerveModule(
             mechVisual.getRoot("frontright", 45, 45), "frontright", 
-            ((GenericSwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(), (SwervePorts) motorPorts.get(1), frontRightConstants, (GenericSwerveConstants) driveConstants);
+            ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(), (SwervePorts) motorPorts.get(1), frontRightConstants, (SwerveConstants) driveConstants);
         GenericSwerveModule backLeft = new ThriftySwerveModule(
             mechVisual.getRoot("backleft", 15, 15), "backleft", 
-            ((GenericSwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(), (SwervePorts) motorPorts.get(2), backLeftConstants, (GenericSwerveConstants) driveConstants);
+            ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(), (SwervePorts) motorPorts.get(2), backLeftConstants, (SwerveConstants) driveConstants);
         GenericSwerveModule backRight = new ThriftySwerveModule(
             mechVisual.getRoot("backright", 15, 45), "backright", 
-            ((GenericSwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(), (SwervePorts) motorPorts.get(3), backRightConstants, (GenericSwerveConstants) driveConstants);
+            ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(), (SwervePorts) motorPorts.get(3), backRightConstants, (SwerveConstants) driveConstants);
 
-        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (GenericSwerveConstants) driveConstants);
+        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (SwerveConstants) driveConstants);
     }
 
     private void initializeDifferentialDrive() {
@@ -171,25 +171,25 @@ public class Drive extends GenericMechanism {
     }
 
     private void initializeMK4SwerveDrive() {
-        GenericSwerveModuleConstants frontLeftConstants = new GenericSwerveModuleConstants(0, 0, true, 0, false, false);
-        GenericSwerveModuleConstants frontRightConstants = new GenericSwerveModuleConstants(0, 0, true, 0, false, false);
-        GenericSwerveModuleConstants backLeftConstants = new GenericSwerveModuleConstants(0, 0, true, 0, false, false);
-        GenericSwerveModuleConstants backRightConstants = new GenericSwerveModuleConstants(0, 0, true, 0, false, false);
+        SwerveModuleConstants frontLeftConstants = new SwerveModuleConstants(0, 0, true, 0, false, false);
+        SwerveModuleConstants frontRightConstants = new SwerveModuleConstants(0, 0, true, 0, false, false);
+        SwerveModuleConstants backLeftConstants = new SwerveModuleConstants(0, 0, true, 0, false, false);
+        SwerveModuleConstants backRightConstants = new SwerveModuleConstants(0, 0, true, 0, false, false);
 
         GenericSwerveModule frontLeft = new MK4SwerveModule(
             mechVisual.getRoot("frontleft", 15, 45), "frontleft", 
-            ((GenericSwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(0), frontLeftConstants, (GenericSwerveConstants) driveConstants);  
+            ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(0), frontLeftConstants, (SwerveConstants) driveConstants);  
         GenericSwerveModule frontRight = new MK4SwerveModule(
             mechVisual.getRoot("frontright", 45, 45), "frontright", 
-            ((GenericSwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(1), frontRightConstants, (GenericSwerveConstants) driveConstants);
+            ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(1), frontRightConstants, (SwerveConstants) driveConstants);
         GenericSwerveModule backLeft = new MK4SwerveModule(
             mechVisual.getRoot("backleft", 15, 15), "backleft", 
-            ((GenericSwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(2), backLeftConstants, (GenericSwerveConstants) driveConstants);
+            ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(2), backLeftConstants, (SwerveConstants) driveConstants);
         GenericSwerveModule backRight = new MK4SwerveModule(
             mechVisual.getRoot("backright", 45, 15), "backright", 
-            ((GenericSwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(3), backRightConstants, (GenericSwerveConstants) driveConstants);
+            ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(3), backRightConstants, (SwerveConstants) driveConstants);
 
-        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (GenericSwerveConstants) driveConstants);
+        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (SwerveConstants) driveConstants);
     }
 
     public List<Command> setAutoCommands(List<List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap){ 

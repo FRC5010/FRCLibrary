@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
+import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
@@ -31,13 +31,13 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
 public class CompBot extends RobotConfig {
-    private GenericSwerveConstants swerveConstants; 
+    private SwerveConstants swerveConstants; 
     private GenericMechanism drive; 
     private List<List<PathPlannerTrajectory>> paths = new ArrayList<>(); 
     private HashMap<String, Command> eventMap = new HashMap<>();   
     public CompBot(){
         // Needs to be set
-        swerveConstants = new GenericSwerveConstants(0, 0);
+        swerveConstants = new SwerveConstants(0, 0);
 
         // Baby Swerve values need to be changed
         swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
