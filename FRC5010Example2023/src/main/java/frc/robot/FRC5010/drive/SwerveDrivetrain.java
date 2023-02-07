@@ -76,11 +76,13 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
         SwerveModuleState[] states = setDesiredStates;
         SwerveDriveKinematics.desaturateWheelSpeeds(states, swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
         
-        // frontLeft.setState(states[0]);
-        // frontRight.setState(states[1]);
-        // backLeft.setState(states[2]);
-        // backRight.setState(states[3]);
-
+        // TODO get swerve stop lock working
+        // if(Math.abs(states[0].speedMetersPerSecond) < 0.001){
+        //     states[0] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5)));
+        //     states[1] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*7)));
+        //     states[2] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*3)));
+        //     states[3] = new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5)));
+        // }
 
         // TODO add the isReady function so wheels won't move till turned close enough
         boolean isReady = true;
@@ -89,18 +91,6 @@ public class    SwerveDrivetrain extends GenericDrivetrain{
         isReady &= backLeft.setState(states[2], ready);
         isReady &= backRight.setState(states[3], ready);
         ready = isReady;
-
-        // if(states[0].speedMetersPerSecond > 0.001){
-        //         frontLeft.setState(states[0]);
-        //         frontRight.setState(states[1]);
-        //         backLeft.setState(states[2]);
-        //         backRight.setState(states[3]);
-        // }else{
-        //         frontLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*5))));
-        //         frontRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*7))));
-        //         backLeft.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45*3))));
-        //         backRight.setState(new SwerveModuleState(0, new Rotation2d(Units.degreesToRadians(45))));
-        // }
     }
 
     public void stop(){

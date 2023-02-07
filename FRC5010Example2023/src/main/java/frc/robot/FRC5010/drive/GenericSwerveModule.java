@@ -129,14 +129,12 @@ public abstract class GenericSwerveModule extends SubsystemBase {
             drive.set(state.speedMetersPerSecond / swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
         }
 
-        turnPow = Math.max(-0.5, Math.min(0.5, turnPow));
-
         turn.set(turnPow + (Math.signum(turnPow) * motorConstants.getkS()));
         SmartDashboard.putString("Swerve [" + getKey()  + "] state", 
         " Physical " + swerveConstants.getkPhysicalMaxSpeedMetersPerSecond() + 
         " Angle: " + state.angle.getDegrees() + 
         " Speed m/s: " + state.speedMetersPerSecond);
-        return (Math.abs(turnPow) < 0.01);
+        return (Math.abs(turnPow) < 0.03);
     }
 
     public SwerveModuleState getState() {
