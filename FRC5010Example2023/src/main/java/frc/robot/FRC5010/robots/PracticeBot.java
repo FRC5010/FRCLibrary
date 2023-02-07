@@ -50,20 +50,22 @@ public class PracticeBot extends RobotConfig {
         swerveConstants.configureSwerve(NEO.MAXRPM);
         maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, swerveConstants.getkTeleDriveMaxSpeedMetersPerSecond());
         maxChassisRotation = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION, swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond());
+        
         VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.CLOSEST_TO_LAST_POSE);
-        multiVision.addPhotonCamera("FrontCamera", 
-          new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
-            new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)), 
-            new Rotation3d(0, Units.degreesToRadians(-20), 0)
-          )
-        );
-        multiVision.addPhotonCamera("BackCamera", 
-        new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
-          new Translation3d(Units.inchesToMeters(-5.5), 0, Units.inchesToMeters(3.5)), 
-          new Rotation3d(0, Units.degreesToRadians(180), 0)
-        )
-      );
+        // multiVision.addPhotonCamera("FrontCamera", 
+        //   new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
+        //     new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)), 
+        //     new Rotation3d(0, Units.degreesToRadians(-20), 0)
+        //   )
+        // );
+        // multiVision.addPhotonCamera("BackCamera", 
+        // new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
+        //   new Translation3d(Units.inchesToMeters(-5.5), 0, Units.inchesToMeters(3.5)), 
+        //   new Rotation3d(0, Units.degreesToRadians(180), 0)
+        // )
+        // );
         // multiVision.createRobotPoseEstimator();
+
         List<SwervePorts> swervePorts = new ArrayList<>();
         swervePorts.add(new SwervePorts(1, 3, 0));
         swervePorts.add(new SwervePorts(10, 8, 1));

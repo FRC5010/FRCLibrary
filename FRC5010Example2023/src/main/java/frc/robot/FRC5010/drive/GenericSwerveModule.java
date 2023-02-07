@@ -120,9 +120,9 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         turningController.setPID(swerveTurnP.get(), swerveTurnI.get(), swerveTurnD.get());
         double turnPow = turningController.calculate(getTurningPosition(),state.angle.getRadians());
 
-        if(Math.abs(state.speedMetersPerSecond) < 0.001 && Math.abs(turnPow) < .01){
+        if(Math.abs(state.speedMetersPerSecond) < 0.001){
             stop();
-            return false;
+            return true;
         }
 
         if(ready){
@@ -136,7 +136,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         " Physical " + swerveConstants.getkPhysicalMaxSpeedMetersPerSecond() + 
         " Angle: " + state.angle.getDegrees() + 
         " Speed m/s: " + state.speedMetersPerSecond);
-        return (Math.abs(turnPow) < 0.05);
+        return (Math.abs(turnPow) < 0.01);
     }
 
     public SwerveModuleState getState() {
