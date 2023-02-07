@@ -167,9 +167,4 @@ public class RobotContainer extends GenericMechanism {
     return command.getSelected();
   }
 
-  @Override
-  public List<Command> setAutoCommands(List<List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap) {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }

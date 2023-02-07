@@ -54,6 +54,4 @@ public abstract class GenericMechanism {
     protected void setupPreferences() {
 
     }
-
-    public abstract List<Command> setAutoCommands(List<List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap);
 }

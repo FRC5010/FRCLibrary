@@ -7,6 +7,7 @@ package frc.robot.chargedup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -23,7 +24,6 @@ import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.constants.GenericSwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.robots.RobotConfig;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -32,9 +32,9 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 /** Add your docs here. */
 public class CompBot extends RobotConfig {
     private GenericSwerveConstants swerveConstants; 
-    private GenericMechanism drive; 
-    private List<List<PathPlannerTrajectory>> paths = new ArrayList<>(); 
-    private HashMap<String, Command> eventMap = new HashMap<>();   
+    private Drive drive; 
+    // private List<List<PathPlannerTrajectory>> paths = new ArrayList<>(); 
+    private HashMap<String, List<PathPlannerTrajectory>> eventMap = new HashMap<>();   
     public CompBot(){
         // Needs to be set
         swerveConstants = new GenericSwerveConstants(0, 0);
@@ -75,8 +75,8 @@ public class CompBot extends RobotConfig {
         robotParts.put(Parts.AUTO, setAutoCommands()); 
     } 
 
-    public List<Command> setAutoCommands(){
-        return drive.setAutoCommands(paths, eventMap); 
+    public Map<String, Command> setAutoCommands(){
+        return drive.setAutoCommands(eventMap); 
     }
 
 }

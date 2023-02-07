@@ -192,12 +192,12 @@ public class Drive extends GenericMechanism {
         drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (GenericSwerveConstants) driveConstants);
     }
 
-    public List<Command> setAutoCommands(List<List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap){ 
-        List<Command> commands = new ArrayList<>(); 
-        BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(eventMap);
+    public HashMap<String, Command> setAutoCommands(HashMap<String, List<PathPlannerTrajectory>> paths){ 
+        HashMap<String, Command> commands = new HashMap<>(); 
+        BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(commands);
 
-        for (List<PathPlannerTrajectory> path: paths){
-            commands.add(autoBuilder.fullAuto(path)); 
+        for (String autoName: paths.keySet()){
+            commands.put(autoName, autoBuilder.fullAuto(paths.get(autoName))); 
         }
 
         return commands;
