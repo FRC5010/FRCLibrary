@@ -7,20 +7,17 @@ package frc.robot.FRC5010.robots;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
-import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.Vision.VisionLimeLightLib;
+import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
+import frc.robot.FRC5010.drive.ThriftySwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
+import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
+import frc.robot.FRC5010.motors.hardware.NEO;
+import frc.robot.FRC5010.motors.hardware.NEO550;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
@@ -28,19 +25,19 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 /** Add your docs here. */
 public class BabySwerve extends RobotConfig{
     private SwerveConstants swerveConstants;
-
+    
     public BabySwerve() {
       swerveConstants = new SwerveConstants(0.76835, 0.635);
       swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
       swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
       swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0+Math.PI);
       swerveConstants.setkBackRightAbsoluteOffsetRad(0.21+Math.PI);
-      swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(15);
-      swerveConstants.setkPhysicalMaxAngularSpeedRadiansPerSecond(2 * Math.PI);
       swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
       swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
       swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
       swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+      swerveConstants.setSwerveModuleConstants(ThriftySwerveModule.moduleConstants);
+      swerveConstants.configureSwerve(NEO.MAXRPM, NEO550.MAXRPM);
 
         //VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
         VisionLimeLightLib limelightVision = new VisionLimeLightLib("orange", 0, 0, 0, 0, "Driver");

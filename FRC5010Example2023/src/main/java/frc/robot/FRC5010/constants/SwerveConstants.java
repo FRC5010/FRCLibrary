@@ -15,28 +15,17 @@ public class SwerveConstants extends GenericDrivetrainConstants{
 
     private SwerveDriveKinematics kinematics;
 
-    
-
     private double kFrontLeftAbsoluteOffsetRad; 
     private double kFrontRightAbsoluteOffsetRad; 
     private double kBackLeftAbsoluteOffsetRad; 
     private double kBackRightAbsoluteOffsetRad;
 
-    private double kPhysicalMaxSpeedMetersPerSecond;
-    private double kPhysicalMaxAngularSpeedRadiansPerSecond;
-
-    private double kTeleDriveMaxSpeedMetersPerSecond;
-    private double kTeleDriveMaxAngularSpeedRadiansPerSecond;
-    private double kTeleDriveMaxAccelerationUnitsPerSecond;
-    private double kTeleDriveMaxAngularAccelerationUnitsPerSecond;
-
     private SwerveModuleConstants swerveModuleConstants;
 
-    public SwerveConstants(double DRIVETRAIN_TRACKWIDTH_METERS, double DRIVETRAIN_WHEELBASE_METERS){
-        this.DRIVETRAIN_TRACKWIDTH_METERS = DRIVETRAIN_TRACKWIDTH_METERS;
-        this.DRIVETRAIN_WHEELBASE_METERS = DRIVETRAIN_WHEELBASE_METERS;
+    public SwerveConstants(double trackWidth, double wheelBase){
+        this.DRIVETRAIN_TRACKWIDTH_METERS = trackWidth;
+        this.DRIVETRAIN_WHEELBASE_METERS = wheelBase;
 
-    
         kinematics = new SwerveDriveKinematics(
             // Front left
             new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
@@ -53,9 +42,9 @@ public class SwerveConstants extends GenericDrivetrainConstants{
         return kinematics;
     }
 
-    public void configureSwerve(double motorMaxRPM) {
+    public void configureSwerve(double motorMaxRPM, double turnMotorMaxRPM) {
         kPhysicalMaxSpeedMetersPerSecond = motorMaxRPM * swerveModuleConstants.getkDriveEncoderRPM2MeterPerSec();
-        kPhysicalMaxAngularSpeedRadiansPerSecond = motorMaxRPM * swerveModuleConstants.getkTurningEncoderRPM2RadPerSec();
+        kPhysicalMaxAngularSpeedRadiansPerSecond = turnMotorMaxRPM * swerveModuleConstants.getkTurningEncoderRPM2RadPerSec();
     }
 
     public double getkFrontLeftAbsoluteOffsetRad() {
@@ -88,54 +77,6 @@ public class SwerveConstants extends GenericDrivetrainConstants{
 
     public void setkBackRightAbsoluteOffsetRad(double kBackRightAbsoluteOffsetRad) {
         this.kBackRightAbsoluteOffsetRad = kBackRightAbsoluteOffsetRad;
-    }
-
-    public double getkPhysicalMaxSpeedMetersPerSecond() {
-        return kPhysicalMaxSpeedMetersPerSecond;
-    }
-
-    public void setkPhysicalMaxSpeedMetersPerSecond(double kPhysicalMaxSpeedMetersPerSecond) {
-        this.kPhysicalMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
-    }
-
-    public double getkPhysicalMaxAngularSpeedRadiansPerSecond() {
-        return kPhysicalMaxAngularSpeedRadiansPerSecond;
-    }
-
-    public void setkPhysicalMaxAngularSpeedRadiansPerSecond(double kPhysicalMaxAngularSpeedRadiansPerSecond) {
-        this.kPhysicalMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond;
-    }
-
-    public double getkTeleDriveMaxSpeedMetersPerSecond() {
-        return kTeleDriveMaxSpeedMetersPerSecond;
-    }
-
-    public void setkTeleDriveMaxSpeedMetersPerSecond(double kTeleDriveMaxSpeedMetersPerSecond) {
-        this.kTeleDriveMaxSpeedMetersPerSecond = kTeleDriveMaxSpeedMetersPerSecond;
-    }
-
-    public double getkTeleDriveMaxAngularSpeedRadiansPerSecond() {
-        return kTeleDriveMaxAngularSpeedRadiansPerSecond;
-    }
-
-    public void setkTeleDriveMaxAngularSpeedRadiansPerSecond(double kTeleDriveMaxAngularSpeedRadiansPerSecond) {
-        this.kTeleDriveMaxAngularSpeedRadiansPerSecond = kTeleDriveMaxAngularSpeedRadiansPerSecond;
-    }
-
-    public double getkTeleDriveMaxAccelerationUnitsPerSecond() {
-        return kTeleDriveMaxAccelerationUnitsPerSecond;
-    }
-
-    public void setkTeleDriveMaxAccelerationUnitsPerSecond(double kTeleDriveMaxAccelerationUnitsPerSecond) {
-        this.kTeleDriveMaxAccelerationUnitsPerSecond = kTeleDriveMaxAccelerationUnitsPerSecond;
-    }
-
-    public double getkTeleDriveMaxAngularAccelerationUnitsPerSecond() {
-        return kTeleDriveMaxAngularAccelerationUnitsPerSecond;
-    }
-
-    public void setkTeleDriveMaxAngularAccelerationUnitsPerSecond(double kTeleDriveMaxAngularAccelerationUnitsPerSecond) {
-        this.kTeleDriveMaxAngularAccelerationUnitsPerSecond = kTeleDriveMaxAngularAccelerationUnitsPerSecond;
     }
 
     public SwerveModuleConstants getSwerveModuleConstants() {

@@ -17,12 +17,11 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
+import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwerveModuleConstants;
-import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.sensors.AnalogInput5010;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
