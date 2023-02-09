@@ -49,7 +49,7 @@ public class PracticeBot extends RobotConfig {
         swerveConstants.setSwerveModuleConstants(MK4SwerveModule.MK4_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
         
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
+        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
         multiVision.addPhotonCamera("FrontCamera", 
           new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
             new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)), 
