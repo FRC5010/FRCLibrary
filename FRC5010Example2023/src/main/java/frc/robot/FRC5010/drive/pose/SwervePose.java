@@ -51,7 +51,10 @@ public class SwervePose extends GenericPose {
 
     @Override
     public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
-        poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
+        //System.out.println("pose: " + robotPose + " image: " + imageCaptureTime);
+        if (imageCaptureTime < 0.05) {
+            poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
+        }
     }
 
     @Override
@@ -68,6 +71,7 @@ public class SwervePose extends GenericPose {
 
     @Override
     public Pose2d getCurrentPose() {
+        //System.out.println(poseEstimator.getEstimatedPosition());
         return poseEstimator.getEstimatedPosition();
     }
 

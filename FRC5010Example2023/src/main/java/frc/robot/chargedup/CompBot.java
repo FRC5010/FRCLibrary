@@ -83,7 +83,8 @@ public class CompBot extends RobotConfig {
 
         GenericGyro gyro = new PigeonGyro(11);
 
-        autoMaps = new AutoMaps(new PathConstraints(3, 2));
+        autoMaps = new AutoMaps();
+        autoMaps.loadAutoPaths();
 
         GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);

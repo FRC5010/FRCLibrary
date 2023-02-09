@@ -205,8 +205,11 @@ public class Drive extends GenericMechanism {
         BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(eventMap);
 
         for (String name : paths.keySet()){
+
+            
             List<PathPlannerTrajectory> path = paths.get(name);
             commands.put(name, autoBuilder.fullAuto(path)); 
+            
         }
 
         return commands;

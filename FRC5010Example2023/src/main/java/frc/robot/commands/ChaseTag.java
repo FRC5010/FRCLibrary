@@ -90,7 +90,7 @@ public class ChaseTag extends CommandBase {
             0.0, 
             new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
     
-    System.out.println(robotPose);
+    //System.out.println(robotPose);
     var xSpeed = xController.calculate(robotPose.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 1.15; 
     var ySpeed = yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 1.15; 
     var thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();

@@ -10,8 +10,9 @@ import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-import com.pathplanner.lib.PathConstraints;
-
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
@@ -48,20 +49,19 @@ public class PracticeBot extends RobotConfig {
         swerveConstants.setSwerveModuleConstants(MK4SwerveModule.MK4_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
         
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.CLOSEST_TO_LAST_POSE);
-        // multiVision.addPhotonCamera("FrontCamera", 
-        //   new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
-        //     new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)), 
-        //     new Rotation3d(0, Units.degreesToRadians(-20), 0)
-        //   )
-        // );
-        // multiVision.addPhotonCamera("BackCamera", 
-        // new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
-        //   new Translation3d(Units.inchesToMeters(-5.5), 0, Units.inchesToMeters(3.5)), 
-        //   new Rotation3d(0, Units.degreesToRadians(180), 0)
-        // )
-        // );
-        // multiVision.createRobotPoseEstimator();
+        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
+        multiVision.addPhotonCamera("FrontCamera", 
+          new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
+            new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)), 
+            new Rotation3d(0, Units.degreesToRadians(-20), 0)
+          )
+        );
+        multiVision.addPhotonCamera("BackCamera", 
+        new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
+          new Translation3d(Units.inchesToMeters(-5.5), 0, Units.inchesToMeters(3.5)), 
+          new Rotation3d(0, Units.degreesToRadians(180), 0)
+        )
+        );
 
         List<SwervePorts> swervePorts = new ArrayList<>();
         swervePorts.add(new SwervePorts(1, 3, 0));
@@ -71,7 +71,8 @@ public class PracticeBot extends RobotConfig {
 
         GenericGyro gyro = new PigeonGyro(11);
 
-        autoMaps = new AutoMaps(new PathConstraints(3, 2));
+        autoMaps = new AutoMaps();
+        autoMaps.loadAutoPaths();
         // TODO causes errors idk help
         //autoMaps.addPath("Blue Cone 1 Start");
 
@@ -83,5 +84,5 @@ public class PracticeBot extends RobotConfig {
 
     public Map<String,Command> setAutoCommands(){
         return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap()); 
-      }
+    }
 }

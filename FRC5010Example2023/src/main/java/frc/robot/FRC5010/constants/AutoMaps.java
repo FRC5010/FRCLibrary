@@ -18,12 +18,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class AutoMaps {
     private HashMap<String,Command> eventMap;
     private Map<String,List<PathPlannerTrajectory>> paths;
-    private PathConstraints pathConstraints;
+    public static String blueCone1Start = "Blue Cone 1 Start";
+    
 
-    public AutoMaps(PathConstraints pathConstraints) {
-        this.pathConstraints = pathConstraints;
+    public AutoMaps() {   
         eventMap = new HashMap<String,Command>();
         paths = new HashMap<String,List<PathPlannerTrajectory>>();
+    }
+
+    public void loadAutoPaths() {
+        List<PathPlannerTrajectory> examplePath = PathPlanner.loadPathGroup(blueCone1Start, new PathConstraints(1,1));
+        paths.put(blueCone1Start, examplePath);
     }
     
     public HashMap<String, Command> getEventMap() {
@@ -38,7 +43,7 @@ public class AutoMaps {
         eventMap.put(name, command);
     }
 
-    public void addPath(String name){
-        paths.put(name, PathPlanner.loadPathGroup(name, pathConstraints));
+    public void addPath(String name, PathConstraints pathconstraints){
+        paths.put(name, PathPlanner.loadPathGroup(name, pathconstraints));
     }
 }

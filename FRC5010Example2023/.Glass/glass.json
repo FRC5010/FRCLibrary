@@ -38,7 +38,6 @@
   },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
-    "serverTeam": "5010",
-    "visible": false
+    "serverTeam": "5010"
   }
 }
