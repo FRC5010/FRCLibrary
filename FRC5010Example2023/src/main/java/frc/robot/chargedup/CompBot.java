@@ -21,7 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.constants.AutoMaps;
+import frc.robot.FRC5010.commands.AutoMaps;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -83,7 +83,7 @@ public class CompBot extends RobotConfig {
 
         GenericGyro gyro = new PigeonGyro(11);
 
-        autoMaps = new AutoMaps();
+        autoMaps = new ChargedUpAutoMaps();
         autoMaps.loadAutoPaths();
 
         GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);

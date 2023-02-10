@@ -17,7 +17,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.constants.AutoMaps;
+import frc.robot.FRC5010.commands.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.MK4SwerveModule;
@@ -27,6 +27,7 @@ import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
+import frc.robot.chargedup.ChargedUpAutoMaps;
 
 /** Add your docs here. */
 public class PracticeBot extends RobotConfig {
@@ -71,7 +72,7 @@ public class PracticeBot extends RobotConfig {
 
         GenericGyro gyro = new PigeonGyro(11);
 
-        autoMaps = new AutoMaps();
+        autoMaps = new ChargedUpAutoMaps();
         autoMaps.loadAutoPaths();
         // TODO causes errors idk help
         //autoMaps.addPath("Blue Cone 1 Start");
