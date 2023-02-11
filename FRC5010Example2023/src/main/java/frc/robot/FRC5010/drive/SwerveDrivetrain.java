@@ -65,7 +65,8 @@ public class SwerveDrivetrain extends GenericDrivetrain{
 
     @Override
     public void drive(ChassisSpeeds direction) {
-        this.chassisSpeeds = direction;
+        SwerveModuleState[] states = swerveConstants.getKinematics().toSwerveModuleStates(direction);
+        setModuleStates(states);
     }
     
 
@@ -102,15 +103,6 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     }
 
     @Override
-    public void periodic() {
-        SwerveModuleState[] states = swerveConstants.getKinematics().toSwerveModuleStates(chassisSpeeds);
-        setModuleStates(states);
-        poseEstimator.update();
-        // super.periodic();
-
-    }
-
-    @Override
     public void simulationPeriodic() {
         Pose2d pose = poseEstimator.getCurrentPose();
         Transform2d direction = new Transform2d(
@@ -126,7 +118,7 @@ public class SwerveDrivetrain extends GenericDrivetrain{
             (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the beginning of auto
             getSwerveConstants().getKinematics(), // SwerveDriveKinematics
             new PIDConstants(5.0, 0.0, 0.0),// PID constants to correct for translation error (used to create the X and Y PID controllers)
-            new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+            new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
             this::setModuleStates, // Module states consumer used to output to the drive subsystem
             eventMap,
             true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true

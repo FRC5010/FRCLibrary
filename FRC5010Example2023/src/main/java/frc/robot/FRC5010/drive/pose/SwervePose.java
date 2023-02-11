@@ -78,5 +78,6 @@ public class SwervePose extends GenericPose {
 
     public void resetToPose(Pose2d pose) {
         poseEstimator.resetPosition(pose.getRotation(), modulePositions,pose);
+        gyro.setAngle(pose.getRotation().getDegrees());
     }
 }

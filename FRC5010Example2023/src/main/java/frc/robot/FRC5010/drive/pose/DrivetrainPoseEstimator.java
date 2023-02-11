@@ -8,9 +8,13 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
@@ -79,6 +83,9 @@ public class DrivetrainPoseEstimator {
         }
     }
     field2d.setRobotPose(getCurrentPose());
+    // if (DriverStation.isDisabled()) {
+    //   poseTracker.gyro.setAngle(getGyroRotation2d().getDegrees());
+    // }
   }
 
   /**
