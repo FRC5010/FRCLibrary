@@ -4,12 +4,12 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 
@@ -27,8 +27,8 @@ public class DefaultDriveCommand extends CommandBase {
     private MechanismLigament2d xAxis;
     private MechanismLigament2d yAxis;
     private MechanismLigament2d heading;
-    private double maxChassisVelocity = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15);
-    private double maxChassisRotation = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_ROTATION, 1.5);
+    private Persisted<Double>maxChassisVelocity;
+    private Persisted<Double>maxChassisRotation;
   
     public DefaultDriveCommand(GenericDrivetrain drivetrainSubsystem,
                                DoubleSupplier translationXSupplier,
@@ -40,7 +40,8 @@ public class DefaultDriveCommand extends CommandBase {
         this.m_translationYSupplier = translationYSupplier;
         this.m_rotationSupplier = rotationSupplier;
         this.fieldOrientedDrive = fieldOrientedDrive;
-
+        maxChassisVelocity = new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
+        maxChassisRotation = new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_ROTATION, Double.class);
         joystick = drivetrainSubsystem.getMechVisual().getRoot("joystick", 30, 30);
         xAxis = new MechanismLigament2d("xAxis", 1, 90, 6, new Color8Bit(Color.kDarkRed));
         yAxis = new MechanismLigament2d("yAxis", 1, 180, 6, new Color8Bit(Color.kDarkSalmon));
@@ -65,17 +66,17 @@ public class DefaultDriveCommand extends CommandBase {
         if(fieldOrientedDrive.get()){
             drivetrainSubsystem.drive(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
-                    x * maxChassisVelocity, 
-                    y * maxChassisVelocity, 
-                    r * maxChassisRotation, 
+                    x * maxChassisVelocity.get(), 
+                    y * maxChassisVelocity.get(), 
+                    r * maxChassisRotation.get(), 
                     drivetrainSubsystem.getHeading())
             );
           }else{
             drivetrainSubsystem.drive(
                 new ChassisSpeeds(
-                    x * maxChassisVelocity, 
-                    y * maxChassisVelocity, 
-                    r * maxChassisRotation)
+                    x * maxChassisVelocity.get(), 
+                    y * maxChassisVelocity.get(), 
+                    r * maxChassisRotation.get())
             );
         }
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement

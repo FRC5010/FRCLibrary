@@ -67,24 +67,23 @@ public class AprilTags {
         private AprilTag5010(double xPos, double yPos, double zPos, double pitch, double yaw) {
             this.fieldDescriptor = this.name() + " ID:" + this.ordinal();
             pose = new Pose3d(new Translation3d(xPos, yPos, zPos),
-                    new Rotation3d(0.0, 0.0, Units.degreesToRadians(yaw)));
+                    new Rotation3d(0.0, Units.degreesToRadians(pitch), Units.degreesToRadians(yaw)));
         }
 
         private AprilTag5010(String fieldDescriptor, double xPos, double yPos, double zPos, double pitch,
                 double yaw) {
             this.fieldDescriptor = fieldDescriptor + " ID:" + this.ordinal();
             pose = new Pose3d(new Translation3d(xPos, yPos, zPos),
-                    new Rotation3d(0.0, 0.0, Units.degreesToRadians(yaw)));
+                    new Rotation3d(0.0, Units.degreesToRadians(pitch), Units.degreesToRadians(yaw)));
         }
     }
-
 
     static {
         try {
             aprilTagFieldLayout = AprilTagFieldLayout
                     .loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-        
-            List<AprilTag> aprilTagPoses = new ArrayList<>();        
+               
+            List<AprilTag> aprilTagPoses = new ArrayList<>();       
             for (AprilTag5010 aprilTag : AprilTag5010.values()) {
                 aprilTagPoses.add(new AprilTag(aprilTag.ordinal(), aprilTag.pose));
             }

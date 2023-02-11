@@ -10,6 +10,8 @@ import frc.robot.FRC5010.motors.MotorConstants;
  * NEO550 extends CANSparkMax and applies code specific to a NEO550
  */
 public class NEO550 extends GenericRevBrushlessMotor {
+    public static final double MAXRPM = 11000;
+
     public NEO550(int port){
         super(port, MotorConstants.CurrentLimits.Neo550);
     }

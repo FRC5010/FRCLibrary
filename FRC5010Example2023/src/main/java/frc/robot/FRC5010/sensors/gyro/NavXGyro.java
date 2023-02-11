@@ -22,6 +22,7 @@ public class NavXGyro implements GenericGyro {
 
     @Override
     public double getAngle() {
+        
         return gyro.getAngle();
     }
 

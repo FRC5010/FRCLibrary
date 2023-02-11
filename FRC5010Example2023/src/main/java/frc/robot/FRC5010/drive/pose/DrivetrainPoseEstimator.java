@@ -56,6 +56,7 @@ public class DrivetrainPoseEstimator {
   }
 
   public Rotation2d getGyroRotation2d() {
+    //System.out.println(poseTracker.getGyroRotation2d());
     return poseTracker.getGyroRotation2d();
   }
   
@@ -67,6 +68,8 @@ public class DrivetrainPoseEstimator {
    * @param rightDist      Distance (in m) the right wheel has traveled
    */
   public void update() {
+    poseTracker.updateLocalMeasurements();
+
     for(Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
         if (null != robotPose) {
           double imageCaptureTime = vision.getRawValues().getLatency();
@@ -75,7 +78,6 @@ public class DrivetrainPoseEstimator {
           poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
         }
     }
-    poseTracker.updateLocalMeasurements();
     field2d.setRobotPose(getCurrentPose());
   }
 

@@ -1,5 +1,8 @@
 {
   "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
     "persistent": {
       "Preferences": {
         "open": true
@@ -38,7 +41,6 @@
   },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
-    "serverTeam": "5010",
-    "visible": false
+    "serverTeam": "5010"
   }
 }

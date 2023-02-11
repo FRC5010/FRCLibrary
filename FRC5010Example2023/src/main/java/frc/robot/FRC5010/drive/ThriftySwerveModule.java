@@ -8,8 +8,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import frc.robot.FRC5010.constants.GenericMotorConstants;
 import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.constants.GenericSwerveConstants;
-import frc.robot.FRC5010.constants.GenericSwerveModuleConstants;
+import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.constants.SwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.AnalogInput5010;
@@ -31,10 +31,6 @@ public class ThriftySwerveModule extends GenericSwerveModule{
     public static final double kWheelDiameterMeters = Units.inchesToMeters(3);
     public static final double kDriveMotorGearRatio = 1/5.25;
     public static final double kTurningMotorGearRatio = 1/((5.33) * 10.5); // not 12:1 but 10.5 for gearbox, ultraplanetaries are not nominal
-    public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-    public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-    public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
-    public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
 
     // conversions
     public static final double maxAbsEncoderVolts = 4.815;
@@ -47,11 +43,11 @@ public class ThriftySwerveModule extends GenericSwerveModule{
     
     public static final GenericPID pid = new GenericPID(kPTurning, kITurning, kDTurning); 
     public static final GenericMotorConstants motorsConstants = new GenericMotorConstants(kSC, kVC, kAC);  
-    public static final GenericSwerveModuleConstants moduleConstants = new GenericSwerveModuleConstants(
+    public static final SwerveModuleConstants moduleConstants = new SwerveModuleConstants(
         kWheelDiameterMeters, kDriveMotorGearRatio, 
         false, kTurningMotorGearRatio, false, false);
 
-    public ThriftySwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, GenericSwerveModuleConstants swerveConstants, GenericSwerveConstants swerveConstants2) {
+    public ThriftySwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, SwerveModuleConstants swerveConstants, SwerveConstants swerveConstants2) {
         super(visualRoot, key, radOffset, swerveConstants2);
                 super.pid = pid;
                 super.motorConstants = motorConstants;
