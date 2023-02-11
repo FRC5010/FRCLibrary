@@ -32,9 +32,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   private MechanismRoot2d m_mech2dRoot;
   private MechanismLigament2d m_elevatorMech2d;
   private GenericEncoder encoder;
+  private double currentPositionTarget;
   //TODO Implement ElevatorFeefForward
   private ElevatorFeedforward feedforward;
   public ElevatorSubsystem(NEO lift, GenericPID liftconstants, ElevatorConstants elevatorConstants, Mechanism2d mech2d) {
+  this.currentPositionTarget = 0;
   this.lift = lift;
   this.liftController = lift.getPIDController(); 
   this.encoder = lift.getMotorEncoder();
@@ -61,8 +63,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   
   }
   public void setPosition(double position) {
-    liftController.setReference(position, CANSparkMax.ControlType.kSmartMotion, 0);
-    
+    this.currentPositionTarget = position;
+    liftController.setReference(this.currentPositionTarget, CANSparkMax.ControlType.kSmartMotion, 0);
+  }
+
+  public double getPositionTarget() {
+    return this.currentPositionTarget;
   }
 
   @Override
