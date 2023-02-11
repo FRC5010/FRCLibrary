@@ -54,13 +54,13 @@ public class PracticeBot extends RobotConfig {
         multiVision.addPhotonCamera("FrontCamera", 
           new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
             new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)), 
-            new Rotation3d(0, Units.degreesToRadians(-20), 0)
+            new Rotation3d(0, 0, Units.degreesToRadians(-90))
           )
         );
         multiVision.addPhotonCamera("BackCamera", 
         new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
           new Translation3d(Units.inchesToMeters(-5.5), 0, Units.inchesToMeters(3.5)), 
-          new Rotation3d(0, Units.degreesToRadians(180), 0)
+          new Rotation3d(0, 0, Units.degreesToRadians(90))
         )
         );
 
@@ -74,8 +74,6 @@ public class PracticeBot extends RobotConfig {
 
         autoMaps = new ChargedUpAutoMaps();
         autoMaps.loadAutoPaths();
-        // TODO causes errors idk help
-        //autoMaps.addPath("Blue Cone 1 Start");
 
         drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);

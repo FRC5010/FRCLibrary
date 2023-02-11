@@ -15,7 +15,7 @@ import frc.robot.FRC5010.commands.AutoMaps;
 /** Add your docs here. */
 public class ChargedUpAutoMaps extends AutoMaps{
 
-    public static String blueCone8Start = "Blue Cone 5 Start";
+    public static String blueCone8Start = "Blue Cone 8 Start";
 
     public void loadAutoPaths(){
         List<PathPlannerTrajectory> examplePath = PathPlanner.loadPathGroup(blueCone8Start, new PathConstraints(1,1));

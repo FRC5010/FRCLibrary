@@ -62,6 +62,7 @@ public class Drive extends GenericMechanism {
     private static Persisted<Integer> driveVisualV;
 
     public Drive(VisionSystem visionSystem, GenericGyro gyro, String type, List<? extends DrivePorts> drivePorts, GenericDrivetrainConstants driveConstants) {
+        super(Drive.class.getSimpleName());
         this.vision = visionSystem;
         this.gyro = gyro;
         this.type = type;
@@ -205,11 +206,8 @@ public class Drive extends GenericMechanism {
         BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(eventMap);
 
         for (String name : paths.keySet()){
-
-            
             List<PathPlannerTrajectory> path = paths.get(name);
-            commands.put(name, autoBuilder.fullAuto(path)); 
-            
+            commands.put(name, autoBuilder.fullAuto(path));            
         }
 
         return commands;

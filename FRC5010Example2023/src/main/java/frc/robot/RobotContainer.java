@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
@@ -47,6 +48,7 @@ public class RobotContainer extends GenericMechanism {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    super("Robot");
     // Create a Mechanism2d display for simulating robot functions
     constants = new Constants();
 
@@ -149,11 +151,12 @@ public class RobotContainer extends GenericMechanism {
   }
   private void initAutoCommands() {
     Map<String,Command> parts = (Map<String,Command>) robotFactory.getParts().get(Parts.AUTO);
-    
+    command.setDefaultOption("Do nothing auto", new InstantCommand(() -> System.out.println("Auto Ran")));
     if (null != parts){
       for (String name : parts.keySet()){
           command.addOption(name, parts.get(name));
       }
+      shuffleTab.add("Auto Modes", command).withSize(2,1);
     }
   }
 
@@ -164,6 +167,7 @@ public class RobotContainer extends GenericMechanism {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
+    
     return command.getSelected();
   }
 

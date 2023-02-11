@@ -10,6 +10,8 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.sensors.Controller;
@@ -23,12 +25,19 @@ import frc.robot.FRC5010.sensors.Controller;
  */
 public abstract class GenericMechanism {
     protected Mechanism2d mechVisual;
-    public GenericMechanism() {
+    protected ShuffleboardTab shuffleTab;
+    public GenericMechanism(String tabName) {
         this.mechVisual = new Mechanism2d(10,10);
+        shuffleTab = Shuffleboard.getTab(tabName);
     }
 
-    public GenericMechanism(Mechanism2d robotMechVisual) {
+    public GenericMechanism(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab) {
         this.mechVisual = robotMechVisual;
+        this.shuffleTab = shuffleTab;
+    }
+
+    public ShuffleboardTab getShuffleTab(){
+        return shuffleTab;
     }
     /**
      * configureButtonBindings should map button/axis controls to commands
