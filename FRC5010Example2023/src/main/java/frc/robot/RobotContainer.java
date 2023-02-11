@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -29,6 +30,7 @@ import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
+import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.robots.RobotFactory;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
@@ -55,8 +57,6 @@ public class RobotContainer extends GenericMechanism {
   private RobotFactory robotFactory;
   private ElevatorSubsystem elevatorSubsystem;
 
-  private NEO inOutMotor = new NEO(11);
-  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     super("Robot");
@@ -83,7 +83,9 @@ public class RobotContainer extends GenericMechanism {
      * Pass robotVisual to the mechanisms in order to visualize the robot
      * */
 
-    this.elevatorSubsystem = new ElevatorSubsystem(new NEO(9), new GenericPID(0, 0, 0), new ElevatorConstants(0, 0, 0), mechVisual);
+    this.elevatorSubsystem = new ElevatorSubsystem(MotorFactory.NEO(9), new GenericPID(0, 0, 0), 
+      MotorFactory.NEO(11),
+      new ElevatorConstants(0, 0, 0), mechVisual);
 
     initAutoCommands();
     // Configure the button bindings
@@ -97,14 +99,16 @@ public class RobotContainer extends GenericMechanism {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   public void configureButtonBindings(Controller driver, Controller operator) {
-    driver.createYButton()
-      .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.1));
-    driver.createAButton()
-      .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.1));
-    driver.createBButton() 
-      .onTrue(new ElevatorOut(inOutMotor, () -> -0.1));
-    driver.createXButton()
-      .onTrue(new ElevatorOut(inOutMotor, () -> 0.1));
+    // driver.createYButton()
+    //   .whileTrue(new ElevatorMove(elevatorSubsystem, () -> 0.1));
+    // driver.createAButton()
+    //   .whileTrue(new ElevatorMove(elevatorSubsystem, () -> -0.1));
+    // driver.createBButton() 
+    //   .whileTrue(new ElevatorOut(inOutMotor, () -> -0.1));
+    // driver.createXButton()
+    //   .whileTrue(new ElevatorOut(inOutMotor, () -> 0.1));
+    operator.setRightYAxis(driver.createRightYAxis().deadzone(.07).negate());
+    operator.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07));  
     if (driver.isSingleControllerMode()) {
       // TODO: Add code to handle single driver mode
     } else {
@@ -159,6 +163,18 @@ public class RobotContainer extends GenericMechanism {
   public void setupDefaultCommands() {
     if (!DriverStation.isTest()) {
       drive.setupDefaultCommands();
+      elevatorSubsystem.setDefaultCommand(new FunctionalCommand(
+        ()-> {},
+        () -> {
+          elevatorSubsystem.winch(driver.getRightYAxis());
+          elevatorSubsystem.elevate(driver.getLeftYAxis());
+        },
+        (Boolean interrupted) -> {
+          elevatorSubsystem.winch(0);
+          elevatorSubsystem.elevate(0);
+        }, 
+        () -> false, 
+        elevatorSubsystem));
       /**
        * TODO: Call setupDefaultCommands for other mechanisms
        */

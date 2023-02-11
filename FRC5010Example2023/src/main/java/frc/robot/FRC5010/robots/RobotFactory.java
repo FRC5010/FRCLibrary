@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.chargedup.CompBot;
 
 /** Add your docs here. */
 public class RobotFactory extends RobotConfig {
@@ -36,6 +37,7 @@ public class RobotFactory extends RobotConfig {
 
         switch(whichRobot) {
             case Robots.COMP_BOT_2023: {
+                robotParts = new CompBot().getParts();
                 break;
             }
             case Robots.BABY_SWERVE: {

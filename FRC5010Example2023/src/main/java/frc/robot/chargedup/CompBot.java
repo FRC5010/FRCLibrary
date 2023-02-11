@@ -20,7 +20,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
+import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.AutoMaps;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -65,20 +67,21 @@ public class CompBot extends RobotConfig {
         maxChassisRotation = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION, swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond());
         
         // Will need to be changed for 2023 field
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
-        multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
-          new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
-            new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
-            new Rotation3d(0, Units.degreesToRadians(-20), 0)
-          )
-        );
+        VisionSystem multiVision = new VisionLimeLightSim("Sim", 0);
+        // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
+        // multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
+        //   new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
+        //     new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
+        //     new Rotation3d(0, Units.degreesToRadians(-20), 0)
+        //   )
+        // );
 
         // Ports need to be changed when comp bot is ready
         List<SwervePorts> swervePorts = new ArrayList<>();
-        swervePorts.add(new SwervePorts(1, 2, 0));
-        swervePorts.add(new SwervePorts(7, 8, 1));
-        swervePorts.add(new SwervePorts(3, 4, 2));
-        swervePorts.add(new SwervePorts(5, 6, 3));
+        swervePorts.add(new SwervePorts(1, 2, 10));
+        swervePorts.add(new SwervePorts(7, 8, 11));
+        swervePorts.add(new SwervePorts(3, 4, 12));
+        swervePorts.add(new SwervePorts(5, 6, 9));
 
 
         GenericGyro gyro = new PigeonGyro(11);
@@ -86,7 +89,7 @@ public class CompBot extends RobotConfig {
         autoMaps = new ChargedUpAutoMaps();
         autoMaps.loadAutoPaths();
 
-        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
+        drive = new Drive(multiVision, gyro, Drive.Type.MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         robotParts.put(Parts.VISION, multiVision);
         robotParts.put(Parts.DRIVE, drive);
         robotParts.put(Parts.AUTO, setAutoCommands()); 

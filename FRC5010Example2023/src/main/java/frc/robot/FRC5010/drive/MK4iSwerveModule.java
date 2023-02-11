@@ -45,15 +45,15 @@ public class MK4iSwerveModule extends GenericSwerveModule {
     private GenericMotorConstants motorConstants = new GenericMotorConstants(0.55641, 0.064889, 0.0025381);
     private SwerveModuleConstants moduleConstants = MK4I_L1;; 
 
-
-    public MK4iSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, SwerveConstants swerveConstants) {
+    public MK4iSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, SwerveModuleConstants individualConstants, SwerveConstants swerveConstants) {
         super(visualRoot, key, radOffset, swerveConstants);
         super.pid = this.pid;
         super.motorConstants = this.motorConstants;
-        super.moduleConstants = this.moduleConstants;
-        drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(moduleConstants.isDrivingInv());
-        turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(moduleConstants.isTurningInv());
+        super.moduleConstants = swerveConstants.getSwerveModuleConstants();                                                                                                                  
+        drive = MotorFactory.NEO(swervePorts.getDrivePort()).invert(individualConstants.isDrivingInv());
+        turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(individualConstants.isTurningInv());
         absoluteEncoder = new CanCoderEncoder(swervePorts.getEncoderPort());
+        absoluteEncoder.setInverted(individualConstants.isEncoderInv());
         turnEncoder = turn.getMotorEncoder();
         driveEncoder = drive.getMotorEncoder();
 
@@ -65,5 +65,6 @@ public class MK4iSwerveModule extends GenericSwerveModule {
         turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
 
         setupSwerveEncoders();
-    }
+}
+
 }
