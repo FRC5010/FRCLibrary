@@ -22,13 +22,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.constants.ElevatorConstants;
+import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
+import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.robots.RobotFactory;
 import frc.robot.FRC5010.robots.RobotFactory.Parts;
 import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.subsystems.ElevatorSubsystem;
+import frc.robot.commands.ElevatorMove;
+import frc.robot.commands.ElevatorOut;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,6 +53,9 @@ public class RobotContainer extends GenericMechanism {
   private static Alliance alliance;
   public static Constants constants;
   private RobotFactory robotFactory;
+  private ElevatorSubsystem elevatorSubsystem;
+
+  private NEO inOutMotor = new NEO(11);
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -73,6 +83,8 @@ public class RobotContainer extends GenericMechanism {
      * Pass robotVisual to the mechanisms in order to visualize the robot
      * */
 
+    this.elevatorSubsystem = new ElevatorSubsystem(new NEO(9), new GenericPID(0, 0, 0), new ElevatorConstants(0, 0, 0), mechVisual);
+
     initAutoCommands();
     // Configure the button bindings
     configureButtonBindings(driver, operator);
@@ -85,8 +97,14 @@ public class RobotContainer extends GenericMechanism {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   public void configureButtonBindings(Controller driver, Controller operator) {
-
-    drive.configureButtonBindings(driver, operator);
+    driver.createYButton()
+      .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.1));
+    driver.createAButton()
+      .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.1));
+    driver.createBButton() 
+      .onTrue(new ElevatorOut(inOutMotor, () -> -0.1));
+    driver.createXButton()
+      .onTrue(new ElevatorOut(inOutMotor, () -> 0.1));
     if (driver.isSingleControllerMode()) {
       // TODO: Add code to handle single driver mode
     } else {
