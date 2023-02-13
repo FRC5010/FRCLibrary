@@ -135,13 +135,13 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         if (ready) {
             // Add an adjustment to the overall power calc based on the average over 10
             // cycles.
-            speed += velocityAdjustment.calculate(velAdj);
+            //speed += velocityAdjustment.calculate(velAdj);
             drive.set(speed);
         }
 
         turn.set(turnPow + (Math.signum(turnPow) * motorConstants.getkS()));
         SmartDashboard.putString("Swerve [" + getKey() + "] state",
-                " Vel Adj " + velAdj +
+                " Vel Adj " + velAdj + " Turn " + turnPow +
                         " Angle: " + state.angle.getDegrees() +
                         " Speed m/s: " + state.speedMetersPerSecond);
         return (Math.abs(turnPow) < 0.03);
@@ -162,14 +162,14 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     }
 
     public void periodic() {
-        double turningDeg = Units.radiansToDegrees(getTurningPosition()) + 90;
-        double absEncDeg = Units.radiansToDegrees(getAbsoluteEncoderRad()) + 90;
+        double turningDeg = Units.radiansToDegrees(getTurningPosition());
+        double absEncDeg = Units.radiansToDegrees(getAbsoluteEncoderRad());
         SmartDashboard.putNumber("Motor Ang: " + moduleKey, turningDeg);
         SmartDashboard.putNumber("Abs Angle: " + moduleKey, absEncDeg);
         SmartDashboard.putNumber("Abs Rads: " + moduleKey, getAbsoluteEncoderRad());
         // This method will be called once per scheduler run
-        absEncDial.setAngle(absEncDeg);
-        motorDial.setAngle(turningDeg);
+        absEncDial.setAngle(absEncDeg + 90);
+        motorDial.setAngle(turningDeg + 90);
         motorDial.setLength(20 * getTurningVelocity() + 5);
         expectDial.setLength(20 * getDriveVelocity() + 5);
         expectDial.setAngle(getState().angle.getDegrees() + 90);

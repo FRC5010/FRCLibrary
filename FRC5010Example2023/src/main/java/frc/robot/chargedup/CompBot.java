@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,17 +42,20 @@ public class CompBot extends GenericMechanism {
     public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
       super(visual, displayTab);
         // Needs to be set
-        swerveConstants = new SwerveConstants(0, 0);
+        swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
         // Baby Swerve values need to be changed
-        swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
-        swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0+Math.PI);
-        swerveConstants.setkBackRightAbsoluteOffsetRad(0.21+Math.PI);
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(-1.6383);
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(-.85596);
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(.1656699);
+        swerveConstants.setkBackRightAbsoluteOffsetRad(-.002);
+
         swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
         swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+
         swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
         swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
         maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, swerveConstants.getkTeleDriveMaxSpeedMetersPerSecond());
@@ -69,13 +73,13 @@ public class CompBot extends GenericMechanism {
 
         // Ports need to be changed when comp bot is ready
         List<SwervePorts> swervePorts = new ArrayList<>();
-        swervePorts.add(new SwervePorts(1, 2, 10));
-        swervePorts.add(new SwervePorts(7, 8, 11));
-        swervePorts.add(new SwervePorts(3, 4, 12));
-        swervePorts.add(new SwervePorts(5, 6, 9));
+        swervePorts.add(new SwervePorts(1, 2, 10)); //FL
+        swervePorts.add(new SwervePorts(8, 7, 11)); //FR
+        swervePorts.add(new SwervePorts(3, 4, 12)); //BL
+        swervePorts.add(new SwervePorts(5, 6, 9));  //BR
 
 
-        GenericGyro gyro = new PigeonGyro(11);
+        GenericGyro gyro = new PigeonGyro(13);
 
         autoMaps = new ChargedUpAutoModes();
         autoMaps.loadAutoPaths();
@@ -93,13 +97,13 @@ public class CompBot extends GenericMechanism {
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
       drive.configureButtonBindings(driver, operator);      
-      elevator.configureButtonBindings(driver, operator);
+      //elevator.configureButtonBindings(driver, operator);
     }
 
     @Override
     public void setupDefaultCommands(Controller driver, Controller operator) {
       drive.setupDefaultCommands(driver, operator);
-      elevator.setupDefaultCommands(driver, operator);
+      //elevator.setupDefaultCommands(driver, operator);
     }
 
     @Override
