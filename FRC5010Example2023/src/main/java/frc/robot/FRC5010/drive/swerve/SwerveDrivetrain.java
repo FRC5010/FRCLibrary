@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.drive;
+package frc.robot.FRC5010.drive.swerve;
 
 import java.util.HashMap;
 
@@ -14,14 +14,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
 import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
@@ -59,13 +62,16 @@ public class SwerveDrivetrain extends GenericDrivetrain{
         setDrivetrainPoseEstimator(poseEstimator);
 
         gyro.reset();
-          
-        //TODO Auto-generated constructor stub
     }
 
     @Override
     public void drive(ChassisSpeeds direction) {
-        SwerveModuleState[] states = swerveConstants.getKinematics().toSwerveModuleStates(direction);
+        chassisSpeeds = direction; // for driving in simulation
+        // Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * 0.02, 
+        //     direction.vyMetersPerSecond * 0.02, Rotation2d.fromRadians(direction.omegaRadiansPerSecond * 0.02));
+        // Twist2d twistVel = getPoseEstimator().getCurrentPose().log(robotPoseVel);
+        // chassisSpeeds = new ChassisSpeeds(twistVel.dx / 0.02, twistVel.dy / 0.02, twistVel.dtheta / 0.02);
+        SwerveModuleState[] states = swerveConstants.getKinematics().toSwerveModuleStates(chassisSpeeds);
         setModuleStates(states);
     }
     

@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 
 /** Add your docs here. */
 public class VisionPhotonMultiCam extends VisionSystem {
@@ -30,13 +31,15 @@ public class VisionPhotonMultiCam extends VisionSystem {
   protected PoseStrategy strategy;
   protected AprilTagFieldLayout fieldLayout;
   protected Pose2d referencePose = new Pose2d(0, 0, new Rotation2d(0));
+  protected DrivetrainPoseEstimator drivetrainPoseEstimator = null;
 
   /**
    * Creates a new LimeLightVision.
    */
 
   // makes a new limelight that is vertical, portrait
-  public VisionPhotonMultiCam(String name, int colIndex, AprilTagFieldLayout fieldLayout, PoseStrategy strategy) {
+  public VisionPhotonMultiCam(String name, int colIndex, 
+    AprilTagFieldLayout fieldLayout, PoseStrategy strategy) {
     super(name, colIndex);
     this.fieldLayout = fieldLayout; 
     this.strategy = strategy;
@@ -63,7 +66,14 @@ public class VisionPhotonMultiCam extends VisionSystem {
   }
 
   public void updateViaNetworkTable(PhotonCamera camera, PhotonPoseEstimator poseEstimator, String path) {
-    poseEstimator.setReferencePose(referencePose);
+    if (null != drivetrainPoseEstimator) {
+      if (strategy == PoseStrategy.CLOSEST_TO_REFERENCE_POSE) {
+        poseEstimator.setReferencePose(drivetrainPoseEstimator.getCurrentPose());
+      }
+      if (strategy == PoseStrategy.CLOSEST_TO_LAST_POSE) {
+        poseEstimator.setLastPose(drivetrainPoseEstimator.getCurrentPose());
+      }
+    }
     var camResult = camera.getLatestResult();
     Pose2d robotPoseEstInit = new Pose2d();
     Pose3d trackedTargetPose = new Pose3d();
@@ -93,6 +103,14 @@ public class VisionPhotonMultiCam extends VisionSystem {
         () -> deltaTime,
         () -> fieldLayout.getTagPose(target.getFiducialId()).orElse(trackedTargetPose),
         () -> robotPoseEst);
+  }
+
+  public DrivetrainPoseEstimator getDrivetrainPoseEstimator() {
+    return drivetrainPoseEstimator;
+  }
+
+  public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator drivetrainPoseEstimator) {
+    this.drivetrainPoseEstimator = drivetrainPoseEstimator;
   }
 
   // name is assigned in the constructor, and will give you the correct limelight

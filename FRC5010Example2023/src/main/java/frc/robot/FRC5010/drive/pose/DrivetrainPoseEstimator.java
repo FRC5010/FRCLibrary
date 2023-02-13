@@ -8,17 +8,12 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.RobotContainer;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.Vision.VisionValuesPhotonCamera;
 import frc.robot.FRC5010.Vision.AprilTags.AprilTag5010;
+import frc.robot.FRC5010.Vision.VisionSystem;
 
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
@@ -77,15 +72,11 @@ public class DrivetrainPoseEstimator {
     for(Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
         if (null != robotPose) {
           double imageCaptureTime = vision.getRawValues().getLatency();
-          field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
-          //System.out.println("RobotPoseEst: X: " + robotPose.getX() + " Y: " + robotPose.getY() + " R: " + robotPose.getRotation().getDegrees());
+//          field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
           poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
         }
     }
     field2d.setRobotPose(getCurrentPose());
-    // if (DriverStation.isDisabled()) {
-    //   poseTracker.gyro.setAngle(getGyroRotation2d().getDegrees());
-    // }
   }
 
   /**

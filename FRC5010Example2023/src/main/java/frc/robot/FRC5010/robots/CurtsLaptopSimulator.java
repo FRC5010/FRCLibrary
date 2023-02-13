@@ -5,28 +5,34 @@
 package frc.robot.FRC5010.robots;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionConstantDefs;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.drive.ThriftySwerveModule;
+import frc.robot.FRC5010.drive.swerve.ThriftySwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.motors.hardware.NEO550;
-import frc.robot.FRC5010.robots.RobotFactory.Parts;
+import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
@@ -39,11 +45,12 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
  * Also change the LaptopCamera name from photon vision
  * Stop the simulator, restart and it should start your robot code
  */
-public class CurtsLaptopSimulator extends RobotConfig {
-
+public class CurtsLaptopSimulator extends GenericMechanism {
+    Drive drive;
     SwerveConstants swerveConstants;
 
-    public CurtsLaptopSimulator() {
+    public CurtsLaptopSimulator(Mechanism2d visual, ShuffleboardTab displayTab) {
+        super(visual, displayTab);
         swerveConstants = new SwerveConstants(0.76835, 0.635);
         swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
         swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
@@ -71,8 +78,25 @@ public class CurtsLaptopSimulator extends RobotConfig {
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        GenericMechanism drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
-        robotParts.put(Parts.VISION, multiVision);
-        robotParts.put(Parts.DRIVE, drive);
+        drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
+        multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
+    }
+
+    @Override
+    public void configureButtonBindings(Controller driver, Controller operator) {
+    }
+
+    @Override
+    public void setupDefaultCommands(Controller driver, Controller operator) {
+        drive.setupDefaultCommands(driver, operator);
+    }
+
+    @Override
+    protected void initRealOrSim() {
+    }
+
+    @Override
+    public Map<String, Command> initAutoCommands() {
+        return new HashMap<>();
     }
 }

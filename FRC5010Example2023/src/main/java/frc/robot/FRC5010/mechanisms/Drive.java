@@ -28,11 +28,11 @@ import frc.robot.FRC5010.constants.SwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.DifferentialDrivetrain;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
-import frc.robot.FRC5010.drive.GenericSwerveModule;
-import frc.robot.FRC5010.drive.MK4SwerveModule;
-import frc.robot.FRC5010.drive.MK4iSwerveModule;
-import frc.robot.FRC5010.drive.SwerveDrivetrain;
-import frc.robot.FRC5010.drive.ThriftySwerveModule;
+import frc.robot.FRC5010.drive.swerve.GenericSwerveModule;
+import frc.robot.FRC5010.drive.swerve.MK4SwerveModule;
+import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
+import frc.robot.FRC5010.drive.swerve.ThriftySwerveModule;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
@@ -103,7 +103,7 @@ public class Drive extends GenericMechanism {
         }
     }
 
-    public void setupDefaultCommands() {
+    public void setupDefaultCommands(Controller driver, Controller operator) {
         // Handle real or simulation case for default commands
         if (Robot.isReal()) {
 
@@ -143,6 +143,10 @@ public class Drive extends GenericMechanism {
             () -> !driver.createAButton().getAsBoolean());
 
         driver.createXButton().onTrue(new InstantCommand(() -> gyro.reset()));
+    }
+
+    public GenericDrivetrain getDrivetrain() {
+        return drivetrain;
     }
 
     private void initializeThriftySwerveDrive() {
@@ -223,6 +227,10 @@ public class Drive extends GenericMechanism {
             ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(), (SwervePorts)motorPorts.get(3), backRightConstants, (SwerveConstants) driveConstants);
 
         drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (SwerveConstants) driveConstants);
+    }
+
+    public Map<String, Command> initAutoCommands() {
+        return new HashMap<>();
     }
 
     public Map<String,Command> setAutoCommands(Map<String,List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap){ 

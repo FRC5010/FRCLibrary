@@ -2,9 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.drive;
+package frc.robot.FRC5010.drive.swerve;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -31,34 +32,37 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     private final MechanismLigament2d expectDial;
     private final String moduleKey;
     private ProfiledPIDController turningController;
-    
+
     protected MotorController5010 drive, turn;
     protected GenericEncoder turnEncoder, driveEncoder, absoluteEncoder;
     protected GenericPID pid = new GenericPID(0, 0, 0);
+    protected LinearFilter velocityAdjustment = LinearFilter.movingAverage(5);
     protected Persisted<Double> swerveTurnP;
     protected Persisted<Double> swerveTurnI;
     protected Persisted<Double> swerveTurnD;
     protected GenericMotorConstants motorConstants = new GenericMotorConstants(0, 0, 0);
-    protected SwerveModuleConstants moduleConstants = new SwerveModuleConstants(Units.inchesToMeters(0), 0, false, 0, false, false); 
+    protected SwerveModuleConstants moduleConstants = new SwerveModuleConstants(Units.inchesToMeters(0), 0, false, 0,
+            false, false);
     private double radOffset;
     private SwerveConstants swerveConstants;
-    // protected GenericEncoder driveEncoder = new SimulatedEncoder(0, 1); 
+    // protected GenericEncoder driveEncoder = new SimulatedEncoder(0, 1);
     // protected GenericEncoder turnEncoder = new SimulatedEncoder(2, 3);
     // protected GenericGyro gyro = new SimulatedGyro();
 
-    public GenericSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwerveConstants swerveConstants) {
+    public GenericSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset,
+            SwerveConstants swerveConstants) {
         this.moduleKey = key;
         visualRoot.append(
-            new MechanismLigament2d(moduleKey + "vert", 10, 90, 6.0, new Color8Bit(50, 50, 50)));
+                new MechanismLigament2d(moduleKey + "vert", 10, 90, 6.0, new Color8Bit(50, 50, 50)));
         visualRoot.append(
-            new MechanismLigament2d(moduleKey + "hori", 10, 0, 6.0, new Color8Bit(50, 50, 50)));
+                new MechanismLigament2d(moduleKey + "hori", 10, 0, 6.0, new Color8Bit(50, 50, 50)));
         motorDial = visualRoot.append(
                 new MechanismLigament2d(moduleKey, 10.0, 90, 6.0, new Color8Bit(Color.kYellow)));
         absEncDial = visualRoot.append(
                 new MechanismLigament2d(moduleKey + "Abs", 10, 90, 6, new Color8Bit(Color.kBlue)));
         expectDial = visualRoot.append(
-                new MechanismLigament2d(moduleKey + "Exp", 10, 90, 6, new Color8Bit(Color.kRed)));     
-                
+                new MechanismLigament2d(moduleKey + "Exp", 10, 90, 6, new Color8Bit(Color.kRed)));
+
         this.radOffset = radOffset;
         this.swerveConstants = swerveConstants;
     }
@@ -78,11 +82,11 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         swerveTurnI = new Persisted<>(DriveConstantsDef.SWERVE_TURN_I, pid.getkI());
         swerveTurnD = new Persisted<>(DriveConstantsDef.SWERVE_TURN_D, pid.getkD());
         turningController = new ProfiledPIDController(
-            swerveTurnP.get(), 
-            swerveTurnI.get(), 
-            swerveTurnD.get(),
-            new TrapezoidProfile.Constraints(swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond(), swerveConstants.getkTeleDriveMaxAngularAccelerationUnitsPerSecond())
-        );
+                swerveTurnP.get(),
+                swerveTurnI.get(),
+                swerveTurnD.get(),
+                new TrapezoidProfile.Constraints(swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond(),
+                        swerveConstants.getkTeleDriveMaxAngularAccelerationUnitsPerSecond()));
 
         turningController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -117,22 +121,29 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     public boolean setState(SwerveModuleState state, boolean ready) {
         state = SwerveModuleState.optimize(state, getState().angle);
         turningController.setPID(swerveTurnP.get(), swerveTurnI.get(), swerveTurnD.get());
-        double turnPow = turningController.calculate(getTurningPosition(),state.angle.getRadians());
+        double turnPow = turningController.calculate(getTurningPosition(), state.angle.getRadians());
 
-        if(Math.abs(state.speedMetersPerSecond) < 0.001){
+        if (Math.abs(state.speedMetersPerSecond) < 0.001) {
             stop();
             return true;
         }
 
-        if(ready){
-            drive.set(state.speedMetersPerSecond / swerveConstants.getkPhysicalMaxSpeedMetersPerSecond());
+        double speed = state.speedMetersPerSecond / swerveConstants.getkPhysicalMaxSpeedMetersPerSecond();
+        // calculate the percentage that the velocity is off
+        double velAdj = (state.speedMetersPerSecond - driveEncoder.getVelocity()) /
+                swerveConstants.getkPhysicalMaxSpeedMetersPerSecond();
+        if (ready) {
+            // Add an adjustment to the overall power calc based on the average over 10
+            // cycles.
+            speed += velocityAdjustment.calculate(velAdj);
+            drive.set(speed);
         }
 
         turn.set(turnPow + (Math.signum(turnPow) * motorConstants.getkS()));
-        SmartDashboard.putString("Swerve [" + getKey()  + "] state", 
-        " Physical " + swerveConstants.getkPhysicalMaxSpeedMetersPerSecond() + 
-        " Angle: " + state.angle.getDegrees() + 
-        " Speed m/s: " + state.speedMetersPerSecond);
+        SmartDashboard.putString("Swerve [" + getKey() + "] state",
+                " Vel Adj " + velAdj +
+                        " Angle: " + state.angle.getDegrees() +
+                        " Speed m/s: " + state.speedMetersPerSecond);
         return (Math.abs(turnPow) < 0.03);
     }
 
@@ -141,15 +152,14 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
 
-    public void stop(){
+    public void stop() {
         drive.set(0);
         turn.set(0);
-      }
-
-    public String getKey(){
-        return moduleKey; 
     }
 
+    public String getKey() {
+        return moduleKey;
+    }
 
     public void periodic() {
         double turningDeg = Units.radiansToDegrees(getTurningPosition()) + 90;
@@ -165,5 +175,4 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         expectDial.setAngle(getState().angle.getDegrees() + 90);
     }
 
-    
 }

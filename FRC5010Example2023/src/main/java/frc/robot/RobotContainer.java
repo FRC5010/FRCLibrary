@@ -20,29 +20,24 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.Button;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.constants.ElevatorConstants;
-import frc.robot.FRC5010.constants.GenericPID;
+import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
-import frc.robot.FRC5010.motors.MotorFactory;
-import frc.robot.FRC5010.motors.hardware.NEO;
-import frc.robot.FRC5010.robots.RobotFactory;
-import frc.robot.FRC5010.robots.RobotFactory.Parts;
+import frc.robot.FRC5010.robots.BabySwerve;
+import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
+import frc.robot.FRC5010.robots.PracticeBot;
 import frc.robot.FRC5010.sensors.Controller;
-import frc.robot.FRC5010.subsystems.ElevatorSubsystem;
-import frc.robot.commands.ElevatorMove;
-import frc.robot.commands.ElevatorOut;
+import frc.robot.chargedup.CompBot;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer extends GenericMechanism {
@@ -50,14 +45,13 @@ public class RobotContainer extends GenericMechanism {
   private SendableChooser<Command> command = new SendableChooser<>();
   private Controller driver;
   private Controller operator;
-  private GenericMechanism drive;
-  private VisionSystem vision;
   private static Alliance alliance;
   public static Constants constants;
-  private RobotFactory robotFactory;
-  private ElevatorSubsystem elevatorSubsystem;
+  private GenericMechanism robot;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     super("Robot");
     // Create a Mechanism2d display for simulating robot functions
@@ -72,49 +66,27 @@ public class RobotContainer extends GenericMechanism {
     }
 
     // Put Mechanism 2d to SmartDashboard
-    mechVisual = new Mechanism2d(PersistedEnums.ROBOT_VISUAL_H.getInteger(), RobotConstantsDef.robotVisualV.getInteger());
+    mechVisual = new Mechanism2d(PersistedEnums.ROBOT_VISUAL_H.getInteger(),
+        RobotConstantsDef.robotVisualV.getInteger());
     SmartDashboard.putData("Robot Visual", mechVisual);
 
     alliance = determineAllianceColor();
     initRealOrSim();
-
-    /** 
-     * TODO: Add other mechanisms 
-     * Pass robotVisual to the mechanisms in order to visualize the robot
-     * */
-
-    this.elevatorSubsystem = new ElevatorSubsystem(MotorFactory.NEO(9), new GenericPID(0, 0, 0), 
-      MotorFactory.NEO(11),
-      new ElevatorConstants(0, 0, 0), mechVisual);
 
     initAutoCommands();
     // Configure the button bindings
     configureButtonBindings(driver, operator);
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  public void configureButtonBindings(Controller driver, Controller operator) {
-    // driver.createYButton()
-    //   .whileTrue(new ElevatorMove(elevatorSubsystem, () -> 0.1));
-    // driver.createAButton()
-    //   .whileTrue(new ElevatorMove(elevatorSubsystem, () -> -0.1));
-    // driver.createBButton() 
-    //   .whileTrue(new ElevatorOut(inOutMotor, () -> -0.1));
-    // driver.createXButton()
-    //   .whileTrue(new ElevatorOut(inOutMotor, () -> 0.1));
-    operator.setRightYAxis(driver.createRightYAxis().deadzone(.07).negate());
-    operator.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07));  
-    if (driver.isSingleControllerMode()) {
-      // TODO: Add code to handle single driver mode
-    } else {
-      if (RobotBase.isReal()) {
-      }
-    }
+  public static String WHO_AM_I = "WhoAmI";
+  private Persisted<String> whoAmI;
+
+  // Robot types
+  public static class Robots {
+    public static final String COMP_BOT_2023 = "2023CompBot";
+    public static final String BABY_SWERVE = "BabySwerve";
+    public static final String PRACTICE_BOT = "PracticeBot";
+    public static final String CURTS_LAPTOP_SIM = "CurtsLaptop";
   }
 
   /**
@@ -129,16 +101,99 @@ public class RobotContainer extends GenericMechanism {
       NetworkTableInstance instance = NetworkTableInstance.getDefault();
       instance.stopServer();
       // set the NT server if simulating this code.
-      // "localhost" for photon on desktop, or "photonvision.local" / "[ip-address]" for coprocessor
+      // "localhost" for photon on desktop, or "photonvision.local" / "[ip-address]"
+      // for coprocessor
       instance.setServer("localhost");
       instance.startClient4("myRobot");
     }
 
-    robotFactory = new RobotFactory();
-    vision = (VisionSystem)robotFactory.getParts().get(RobotFactory.Parts.VISION);
-    drive = (GenericMechanism)robotFactory.getParts().get(RobotFactory.Parts.DRIVE);
+    robotFactory();
   }
-  
+
+  private void robotFactory() {
+    whoAmI = new Persisted<>(WHO_AM_I, String.class);
+    String whichRobot = whoAmI.get();
+
+    switch (whichRobot) {
+      case Robots.COMP_BOT_2023: {
+        robot = new CompBot(mechVisual, shuffleTab);
+        break;
+      }
+      case Robots.BABY_SWERVE: {
+        robot = new BabySwerve(mechVisual, shuffleTab);
+        break;
+      }
+      case Robots.PRACTICE_BOT: {
+        robot = new PracticeBot(mechVisual, shuffleTab);
+        break;
+      }
+      case Robots.CURTS_LAPTOP_SIM: {
+        robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
+        break;
+      }
+      default: {
+        robot = new CompBot(mechVisual, shuffleTab);
+        break;
+      }
+    }
+  }
+
+  /**
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   */
+  public void configureButtonBindings(Controller driver, Controller operator) {
+    robot.configureButtonBindings(driver, operator);
+    if (driver.isSingleControllerMode()) {
+      // TODO: Add code to handle single driver mode
+    } else {
+      if (RobotBase.isReal()) {
+      }
+    }
+  }
+
+  @Override
+  public void setupDefaultCommands(Controller driver, Controller operator) {
+    if (!DriverStation.isTest()) {
+      robot.setupDefaultCommands(driver, operator);
+    } else {
+      /**
+       * TODO: Test mode default commands
+       */
+    }
+  }
+
+  // Just sets up defalt commands (setUpDeftCom)
+  public void setupDefaultCommands() {
+    setupDefaultCommands(driver, operator);
+  }
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return command.getSelected();
+  }
+
+  @Override
+  public Map<String, Command> initAutoCommands() {
+    Map<String, Command> autoCommands = robot.initAutoCommands();
+    command.setDefaultOption("Do nothing auto", new InstantCommand(() -> System.out.println("Auto Ran")));
+    if (null != autoCommands) {
+      for (String name : autoCommands.keySet()) {
+        command.addOption(name, autoCommands.get(name));
+      }
+      shuffleTab.add("Auto Modes", command).withSize(2, 1);
+    }
+    return autoCommands;
+  }
+
   public Alliance determineAllianceColor() {
     Alliance color = DriverStation.getAlliance();
     if (Alliance.Red.equals(color)) {
@@ -157,59 +212,8 @@ public class RobotContainer extends GenericMechanism {
     // Return alliance color so that setup functions can also store/pass
     return color;
   }
-  public static Alliance getAlliance() { return alliance; }
-  
-  // Just sets up defalt commands (setUpDeftCom)
-  public void setupDefaultCommands() {
-    if (!DriverStation.isTest()) {
-      drive.setupDefaultCommands();
-      elevatorSubsystem.setDefaultCommand(new FunctionalCommand(
-        ()-> {},
-        () -> {
-          elevatorSubsystem.winch(driver.getRightYAxis());
-          elevatorSubsystem.elevate(driver.getLeftYAxis());
-        },
-        (Boolean interrupted) -> {
-          elevatorSubsystem.winch(0);
-          elevatorSubsystem.elevate(0);
-        }, 
-        () -> false, 
-        elevatorSubsystem));
-      /**
-       * TODO: Call setupDefaultCommands for other mechanisms
-       */
-    } else {
-      /**
-       * TODO: Test mode default commands
-       */
-    }
 
-  }
-  private void initAutoCommands() {
-    Map<String,Command> parts = (Map<String,Command>) robotFactory.getParts().get(Parts.AUTO);
-    command.setDefaultOption("Do nothing auto", new InstantCommand(() -> System.out.println("Auto Ran")));
-    if (null != parts){
-      for (String name : parts.keySet()){
-          command.addOption(name, parts.get(name));
-      }
-      shuffleTab.add("Auto Modes", command).withSize(2,1);
-    }
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    
-    return command.getSelected();
-  }
-
-  @Override
-  public Map<String,Command> setAutoCommands(Map<String,List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap) {
-    // TODO Auto-generated method stub
-    return null;
+  public static Alliance getAlliance() {
+    return alliance;
   }
 }

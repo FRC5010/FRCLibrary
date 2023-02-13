@@ -15,11 +15,11 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** Add your docs here. */
-public abstract class AutoMaps {
+public abstract class AutoModes {
     protected HashMap<String,Command> eventMap;
     protected Map<String,List<PathPlannerTrajectory>> paths;    
 
-    public AutoMaps() {   
+    public AutoModes() {   
         eventMap = new HashMap<String,Command>();
         paths = new HashMap<String,List<PathPlannerTrajectory>>();
     }

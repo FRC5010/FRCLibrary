@@ -5,28 +5,37 @@
 package frc.robot.FRC5010.robots;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionLimeLightLib;
-import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.drive.ThriftySwerveModule;
+import frc.robot.FRC5010.drive.swerve.ThriftySwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.motors.hardware.NEO550;
-import frc.robot.FRC5010.robots.RobotFactory.Parts;
+import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
-public class BabySwerve extends RobotConfig{
+public class BabySwerve extends GenericMechanism {
     private SwerveConstants swerveConstants;
+    private VisionSystem vision;
+    private Drive drive;
     
-    public BabySwerve() {
+    public BabySwerve(Mechanism2d visual, ShuffleboardTab displayTab) {
+      super(visual, displayTab);
       swerveConstants = new SwerveConstants(0.76835, 0.635);
       swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
       swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
@@ -40,7 +49,7 @@ public class BabySwerve extends RobotConfig{
       swerveConstants.configureSwerve(NEO.MAXRPM, NEO550.MAXRPM);
 
         //VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
-        VisionLimeLightLib limelightVision = new VisionLimeLightLib("orange", 0, 0, 0, 0, "Driver");
+        vision = new VisionLimeLightLib("orange", 0, 0, 0, 0, "Driver");
         /*multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
           new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
             new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
@@ -56,11 +65,26 @@ public class BabySwerve extends RobotConfig{
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        GenericMechanism drive = new Drive(limelightVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
-        robotParts.put(Parts.VISION, limelightVision);
-        robotParts.put(Parts.DRIVE, drive);
+        drive = new Drive(vision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
+//        multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
     }
 
+    @Override
+    public void configureButtonBindings(Controller driver, Controller operator) {
+    }
 
+    @Override
+    public void setupDefaultCommands(Controller driver, Controller operator) {
+      drive.setupDefaultCommands(driver, operator);
+    }
+
+    @Override
+    protected void initRealOrSim() {
+    }
+
+    @Override
+    public Map<String, Command> initAutoCommands() {
+          return new HashMap<>();
+    }
 }
 

@@ -12,7 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.drive.SwerveDrivetrain;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 
 public class AutoBalance extends CommandBase {
   /** Creates a new AutoBalance. */

@@ -2,32 +2,32 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.constants;
+package frc.robot.FRC5010.motors.hardware;
 
 /** Add your docs here. */
-public class ElevatorConstants {
+public class MotorModelConstants {
     private double kS;
-    private double kG;
+    private double kF;
     private double kV;
     private double kA;
     
-    public ElevatorConstants(double kS, double kG, double kV) {
+    public MotorModelConstants(double kS, double kG, double kV) {
         this.kS = kS;
-        this.kG = kG;
+        this.kF = kG;
         this.kV = kV;
         this.kA = 0;
     }
-    public ElevatorConstants(double kS, double kG, double kV, double kA) {
+    public MotorModelConstants(double kS, double kG, double kV, double kA) {
         this.kS = kS;
-        this.kG = kG;
+        this.kF = kG;
         this.kV = kV;
         this.kA = kA;
     }
     public double getkS() {
         return kS;
     }
-    public double getkG() {
-        return kG;
+    public double getkF() {
+        return kF;
     }
     public double getkV() {
         return kV;

@@ -10,10 +10,10 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import frc.robot.FRC5010.commands.AutoMaps;
+import frc.robot.FRC5010.commands.AutoModes;
 
 /** Add your docs here. */
-public class ChargedUpAutoMaps extends AutoMaps{
+public class ChargedUpAutoModes extends AutoModes{
 
     public static String blueCone8Start = "Blue Cone 8 Start";
 

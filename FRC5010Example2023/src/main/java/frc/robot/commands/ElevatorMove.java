@@ -3,7 +3,7 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.subsystems.ElevatorSubsystem;
+import frc.robot.chargedup.ElevatorSubsystem;
 
 public class ElevatorMove extends CommandBase {
     private ElevatorSubsystem elevatorSubsystem;

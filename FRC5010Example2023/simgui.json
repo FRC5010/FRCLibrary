@@ -3,12 +3,18 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pose/Field": "Field2d",
+      "/Shuffleboard/Robot/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
       "/SmartDashboard/Robot Visual": "Mechanism2d"
     },
     "windows": {
       "/Shuffleboard/Pose/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Robot/Auto Modes": {
         "window": {
           "visible": true
         }
@@ -48,6 +54,9 @@
         "Pose": {
           "open": true
         },
+        "open": true
+      },
+      "SmartDashboard": {
         "open": true
       },
       "photonvision": {

@@ -50,7 +50,7 @@ public abstract class GenericMechanism {
      * setupDefaultCommands should setup the default commands needed by subsystems
      * It could check for Test mode and enable different commands
      */
-    public abstract void setupDefaultCommands();
+    public abstract void setupDefaultCommands(Controller driver, Controller operator);
 
     /**
      * initRealOrSim should check the real or simulation state of the robot and
@@ -65,5 +65,5 @@ public abstract class GenericMechanism {
 
     }
 
-    public abstract Map<String,Command> setAutoCommands(Map<String,List<PathPlannerTrajectory>> paths, HashMap<String, Command> eventMap);
+    public abstract Map<String,Command> initAutoCommands();
 }
