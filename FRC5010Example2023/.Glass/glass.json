@@ -1,8 +1,5 @@
 {
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
     "persistent": {
       "Preferences": {
         "open": true
@@ -19,6 +16,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pose/Field": "Field2d",
+      "/Shuffleboard/Robot/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
       "/SmartDashboard/LED Orange": "Command",
