@@ -97,7 +97,7 @@ public class CompBot extends GenericMechanism {
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
       drive.configureButtonBindings(driver, operator);      
-      //elevator.configureButtonBindings(driver, operator);
+      elevator.configureButtonBindings(driver, operator);
     }
 
     @Override

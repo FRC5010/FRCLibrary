@@ -5,6 +5,8 @@
 package frc.robot.chargedup;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -31,13 +33,13 @@ public class ElevatorSubsystem extends SubsystemBase {
   private SparkMaxPIDController liftController;
   private MotorModelConstants liftConstants;
   private GenericPID liftPID;
-  private GenericEncoder liftEncoder;
+  private RelativeEncoder liftEncoder;
 
   private MotorController5010 extend;
   private SparkMaxPIDController extendController;
   private MotorModelConstants extendConstants;
   private GenericPID extendPID;
-  private GenericEncoder extendEncoder;
+  private RelativeEncoder extendEncoder;
 
   private double KFF = 0.000156;
   private double kIz = 0;
@@ -61,13 +63,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     this.lift = lift;
     this.liftController = ((CANSparkMax) lift).getPIDController();
-    this.liftEncoder = lift.getMotorEncoder();
+    this.liftEncoder = ((CANSparkMax) lift).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature , 8192);
     this.liftPID = liftPID;
     this.liftConstants = liftConstants;
 
+
     this.extend = extend;
     this.extendController = ((CANSparkMax) extend).getPIDController();
-    this.extendEncoder = extend.getMotorEncoder();
+    this.extendEncoder = ((CANSparkMax) extend).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature , 8192);
     this.extendPID = extendPID;
     this.extendConstants = extendConstants;
 
@@ -109,13 +112,15 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void winch(double pow) {
     SmartDashboard.putNumber("Winch Power", pow);
-    SmartDashboard.putNumber("Winch current", ((CANSparkMax) lift).getOutputCurrent());
+    SmartDashboard.putNumber("Winch Current", ((CANSparkMax) lift).getOutputCurrent());
+    SmartDashboard.putNumber("Winch Rotation", ((CANSparkMax) lift).getEncoder().getPosition());
     lift.set(pow);
   }
 
   public void elevate(double pow) {
     SmartDashboard.putNumber("Elevate Power", pow);
-    SmartDashboard.putNumber("Elevate current", ((CANSparkMax) extend).getOutputCurrent());
+    SmartDashboard.putNumber("Elevate Current", ((CANSparkMax) extend).getOutputCurrent());
+    SmartDashboard.putNumber("Elevate Rotation", ((CANSparkMax) extend).getEncoder().getPosition());
     extend.set(pow);
   }
 
