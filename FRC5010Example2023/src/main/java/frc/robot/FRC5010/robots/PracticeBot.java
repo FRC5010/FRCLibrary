@@ -36,7 +36,7 @@ import frc.robot.commands.ChaseTag;
 
 /** Add your docs here. */
 public class PracticeBot extends GenericMechanism {
-
+  private GenericGyro gyro;
   private SwerveConstants swerveConstants;
   private AutoModes autoMaps;
   private Drive drive;
@@ -74,7 +74,7 @@ public class PracticeBot extends GenericMechanism {
     swervePorts.add(new SwervePorts(5, 4, 2));
     swervePorts.add(new SwervePorts(2, 7, 3));
 
-    GenericGyro gyro = new PigeonGyro(11);
+    gyro = new PigeonGyro(11);
 
     autoMaps = new ChargedUpAutoModes();
     autoMaps.loadAutoPaths();
@@ -90,7 +90,7 @@ public class PracticeBot extends GenericMechanism {
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
-    driver.createYButton().whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createAButton().getAsBoolean())); 
+    driver.createYButton().whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createAButton().getAsBoolean(), gyro)); 
     
     driver.createBButton().whileTrue(new ChaseTag((SwerveDrivetrain) drive.getDrivetrain(), () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose())); 
 

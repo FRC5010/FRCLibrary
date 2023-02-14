@@ -6,30 +6,29 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 public class AutoBalance extends CommandBase {
   /** Creates a new AutoBalance. */
   
   private GenericDrivetrain drivetrain; 
 
-  private int offBalanceThreshold = 10; 
-  private int onBalanceThreshold = 5;
-  private AHRS ahrs = new AHRS(SPI.Port.kMXP); 
+  private int offBalanceThreshold = 7; 
+  private int onBalanceThreshold = 2;
+  private GenericGyro pigeon; 
+  // private AHRS ahrs = new AHRS(SPI.Port.kMXP); 
   private Supplier<Boolean> fieldOrientedDrive; 
 
 
-  public AutoBalance(GenericDrivetrain drivetrain, Supplier<Boolean> fieldOrientedDrive) {
+  public AutoBalance(GenericDrivetrain drivetrain, Supplier<Boolean> fieldOrientedDrive, GenericGyro pigeon) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.drivetrain = drivetrain;
     this.fieldOrientedDrive = fieldOrientedDrive; 
+    this.pigeon = pigeon; 
     
     addRequirements(this.drivetrain);
   } 
@@ -48,8 +47,8 @@ public class AutoBalance extends CommandBase {
     boolean autoBalanceYMode = false;  
   
 
-    double pitchAngleDegrees = ahrs.getPitch() + 90;
-    double rollAngleDegrees  = ahrs.getRoll() + 107;
+    double pitchAngleDegrees = pigeon.getAngleY();
+    double rollAngleDegrees  = pigeon.getAngleX();
 
 
      if ( !autoBalanceXMode && 
@@ -62,13 +61,14 @@ public class AutoBalance extends CommandBase {
                        Math.abs(onBalanceThreshold))) {
                 autoBalanceXMode = false;
             }
+
             if ( !autoBalanceYMode && 
-                 (Math.abs(pitchAngleDegrees) >= 
+                 (Math.abs(rollAngleDegrees) >= 
                   Math.abs(offBalanceThreshold))) {
                 autoBalanceYMode = true;
             }
             else if ( autoBalanceYMode && 
-                      (Math.abs(pitchAngleDegrees) <= 
+                      (Math.abs(rollAngleDegrees) <= 
                        Math.abs(onBalanceThreshold))) {
                 autoBalanceYMode = false;
             }
@@ -79,11 +79,11 @@ public class AutoBalance extends CommandBase {
             
             if ( autoBalanceXMode ) {
                 double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
-                xAxisRate = Math.sin(pitchAngleRadians) * 1;  // Should be max speed constants add it in later
+                xAxisRate = Math.sin(pitchAngleRadians) * -2;  // Should be max speed constants add it in later
             }
             if ( autoBalanceYMode ) {
                 double rollAngleRadians = rollAngleDegrees * (Math.PI / 180.0);
-                yAxisRate = Math.sin(rollAngleRadians) * 1; // Should be max speed constants add it in later
+                yAxisRate = Math.sin(rollAngleRadians) * 2; // Should be max speed constants add it in later
             }
 
             SmartDashboard.putNumber("X-Axis Rate", xAxisRate);
@@ -93,7 +93,9 @@ public class AutoBalance extends CommandBase {
             SmartDashboard.putNumber("Pitch Angle Degrees", pitchAngleDegrees);
 
             System.out.println("Y-Axis: " + yAxisRate + "X-Axis: " + xAxisRate);
-            drivetrain.drive(new ChassisSpeeds(yAxisRate, xAxisRate, 0));
+            System.out.println(drivetrain.getHeading());
+            drivetrain.drive(new ChassisSpeeds(xAxisRate, yAxisRate, 0));
+
 
 
   }
