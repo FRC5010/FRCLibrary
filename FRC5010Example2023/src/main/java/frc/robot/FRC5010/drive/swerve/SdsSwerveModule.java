@@ -52,6 +52,10 @@ public class SdsSwerveModule extends GenericSwerveModule {
         return module.getDriveVelocity();
     }
 
+    public double getDrivePosition() {
+        return module.getDriveDistance();
+    }
+    
     public SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
