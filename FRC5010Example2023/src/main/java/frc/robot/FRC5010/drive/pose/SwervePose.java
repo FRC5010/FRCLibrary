@@ -27,10 +27,10 @@ public class SwervePose extends GenericPose {
         super(gyro);
 
          modulePositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(0, new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(0, new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(0, new Rotation2d(backLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(0, new Rotation2d(backRight.getAbsoluteEncoderRad()))
+            new SwerveModulePosition(0, new Rotation2d(frontLeft.getTurningPosition())), 
+            new SwerveModulePosition(0, new Rotation2d(frontRight.getTurningPosition())), 
+            new SwerveModulePosition(0, new Rotation2d(backLeft.getTurningPosition())), 
+            new SwerveModulePosition(0, new Rotation2d(backRight.getTurningPosition()))
           };
         
         this.frontLeft = frontLeft;

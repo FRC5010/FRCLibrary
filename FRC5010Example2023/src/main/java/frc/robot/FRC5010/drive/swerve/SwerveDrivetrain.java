@@ -44,7 +44,9 @@ public class SwerveDrivetrain extends GenericDrivetrain{
     private boolean ready = false;
     private Persisted<Double> maxChassisVelocity;
 
-    public SwerveDrivetrain(Mechanism2d mechVisual, GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, GenericGyro genericGyro, VisionSystem visonSystem, SwerveConstants swerveConstants) {
+    public SwerveDrivetrain(Mechanism2d mechVisual, 
+        GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft, GenericSwerveModule backRight, 
+        GenericGyro genericGyro, VisionSystem visonSystem, SwerveConstants swerveConstants) {
         super(mechVisual);
 
         this.frontLeft = frontLeft;

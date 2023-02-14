@@ -148,7 +148,6 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     }
 
     public SwerveModuleState getState() {
-        // TODO Auto-generated method stub
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
 
