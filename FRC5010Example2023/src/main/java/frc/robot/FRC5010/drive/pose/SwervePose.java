@@ -27,10 +27,10 @@ public class SwervePose extends GenericPose {
         super(gyro);
 
          modulePositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(0, new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(0, new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(0, new Rotation2d(backLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(0, new Rotation2d(backRight.getAbsoluteEncoderRad()))
+            new SwerveModulePosition(0, new Rotation2d(frontLeft.getTurningPosition())), 
+            new SwerveModulePosition(0, new Rotation2d(frontRight.getTurningPosition())), 
+            new SwerveModulePosition(0, new Rotation2d(backLeft.getTurningPosition())), 
+            new SwerveModulePosition(0, new Rotation2d(backRight.getTurningPosition()))
           };
         
         this.frontLeft = frontLeft;
@@ -61,10 +61,10 @@ public class SwervePose extends GenericPose {
     @Override
     public void updateLocalMeasurements() {
         SwerveModulePosition[] newPositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getAbsoluteEncoderRad())), 
-            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getAbsoluteEncoderRad()))
+            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())), 
+            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())), 
+            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getTurningPosition())), 
+            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getTurningPosition()))
           };
 
         poseEstimator.update(getGyroRotation2d(), newPositions);

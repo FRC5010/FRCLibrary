@@ -4,21 +4,32 @@
 
 package frc.robot.FRC5010.sensors.encoder;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix.sensors.SensorTimeBase;
+
+import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
 public class CanCoderEncoder implements GenericEncoder{
 
     private CANCoder canCoder;
-
+    
     public CanCoderEncoder(int CanID){
         this.canCoder = new CANCoder(CanID);
+        CANCoderConfiguration config = new CANCoderConfiguration();
+        config.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180;
+        config.sensorCoefficient = 360.0 / 4096.0;
+        config.unitString = "degrees";
+        config.sensorTimeBase = SensorTimeBase.PerSecond;
+        canCoder.configAllSettings(config);
     }
 
     @Override
     public double getPosition() {
         // TODO Auto-generated method stub
-        return canCoder.getPosition();
+        return Units.degreesToRadians(canCoder.getAbsolutePosition());
     }
 
     @Override
