@@ -106,6 +106,7 @@ public class Drive extends GenericMechanism {
             }
             case Type.SDS_MK4I_SWERVE_DRIVE: {
                 initializeSDSMk4iSwerveDrive();
+                break;
             }
             default: {
                 break;
