@@ -39,7 +39,12 @@ public class SdsSwerveDrivetrain extends GenericDrivetrain {
             GenericGyro gyro, SwerveConstants constants,
             VisionSystem visionSystem) {
         super(mechVisual);
+        
         this.swerveConstants = constants;
+        this.frontLeft = frontLeft;
+        this.frontRight = frontRight;
+        this.backLeft = backLeft;
+        this.backRight = backRight;
 
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         poseEstimator = new DrivetrainPoseEstimator(

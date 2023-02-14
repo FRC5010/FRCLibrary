@@ -264,15 +264,15 @@ public class Drive extends GenericMechanism {
         ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(0), Mk4iSwerveModuleHelper.GearRatio.L1);
 
         SdsSwerveModule frontRight = new SdsSwerveModule(mechVisual.getRoot("frontRight", 45, 45), "frontRight", 
-        ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
+        ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(),
         ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(1), Mk4iSwerveModuleHelper.GearRatio.L1);
 
         SdsSwerveModule backLeft = new SdsSwerveModule(mechVisual.getRoot("backLeft", 15,15), "backLeft", 
-        ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
+        ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(),
         ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(2), Mk4iSwerveModuleHelper.GearRatio.L1);
 
         SdsSwerveModule backRight = new SdsSwerveModule(mechVisual.getRoot("backRight", 15,15), "backRight", 
-        ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
+        ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(),
         ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(3), Mk4iSwerveModuleHelper.GearRatio.L1);
 
         drivetrain = new SdsSwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, (SwerveConstants)driveConstants, vision);

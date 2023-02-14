@@ -51,7 +51,6 @@ public class SdsSwerveModule extends GenericSwerveModule {
         //         new MechanismLigament2d(getKey() + "Abs", 10, 90, 6, new Color8Bit(Color.kBlue)));
         // expectDial = visualRoot.append(
         //         new MechanismLigament2d(getKey() + "Exp", 10, 90, 6, new Color8Bit(Color.kRed)));
-
     }
 
     public boolean setState(SwerveModuleState state, boolean ready) {
