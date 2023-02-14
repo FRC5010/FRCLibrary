@@ -25,14 +25,13 @@ public class ChaseTag extends CommandBase {
   private final GenericPID pidTranslation = new GenericPID(1, 0, 0);
   private final GenericPID thetaTranslation = new GenericPID(.25, 0, 0);
 
-  /** Creates a new ChaseTag. */
-  private final TrapezoidProfile.Constraints xConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
-  private final TrapezoidProfile.Constraints yConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
-  private final TrapezoidProfile.Constraints thetaConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond()); 
-
-  private final ProfiledPIDController xController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), xConstraints);
-  private final ProfiledPIDController yController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), yConstraints);
-  private final ProfiledPIDController thetaController = new ProfiledPIDController(thetaTranslation.getkP(), thetaTranslation.getkI(), thetaTranslation.getkD(), thetaConstraints);
+  private final TrapezoidProfile.Constraints xConstraints;  
+  private final TrapezoidProfile.Constraints yConstraints;  
+  private final TrapezoidProfile.Constraints thetaConstraints; 
+ 
+  private final ProfiledPIDController xController;
+  private final ProfiledPIDController yController;
+  private final ProfiledPIDController thetaController;
 
 
   private final Pose3d tagToGoal = new Pose3d(
@@ -43,8 +42,15 @@ public class ChaseTag extends CommandBase {
  
   private Supplier<Pose2d> poseProvider; 
 
-  public ChaseTag(GenericDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider) {
-    
+  public ChaseTag(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider) {
+    xConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
+    yConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
+    thetaConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond()); 
+
+    xController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), xConstraints);
+    yController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), yConstraints);
+    thetaController = new ProfiledPIDController(thetaTranslation.getkP(), thetaTranslation.getkI(), thetaTranslation.getkD(), thetaConstraints);
+  
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = (SwerveDrivetrain) swerveSubsystem;
     this.poseProvider = poseProvider;
@@ -86,8 +92,8 @@ public class ChaseTag extends CommandBase {
             new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
     
     //System.out.println(robotPose);
-    var xSpeed = xController.calculate(robotPose.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 1.15; 
-    var ySpeed = yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 1.15; 
+    var xSpeed = xController.calculate(robotPose.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 0.5; 
+    var ySpeed = yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 0.5; 
     var thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
 
 
@@ -112,18 +118,21 @@ public class ChaseTag extends CommandBase {
       yController.setGoal(tagToGoal.getY());
       thetaController.setGoal(0);
 
-      // System.out.println("xSpeed: " + xController.calculate(robotPose.getX()) + "\nySpeed: " + yController.calculate(robotPose.getY()) + 
-      // "\nTheta: " + thetaController.calculate(robotPose2d.getRotation().getRadians())); 
-
-      //System.out.println(thetaSpeed);
-    swerveSubsystem.drive(new ChassisSpeeds(-xSpeed, -ySpeed, -thetaSpeed));
       System.out.println("xSpeed: " + xController.calculate(robotPose.getX()) + "\nySpeed: " + yController.calculate(robotPose.getY()) + 
       "\nTheta: " + thetaController.calculate(robotPose2d.getRotation().getRadians())); 
 
-    swerveSubsystem.drive(new ChassisSpeeds(
-    xController.calculate(robotPose.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(), 
-    yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()
-    ,thetaController.calculate(robotPose2d.getRotation().getRadians()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond()));
+      
+      //System.out.println(thetaSpeed);
+    // swerveSubsystem.drive(new ChassisSpeeds(-xSpeed, -ySpeed, -thetaSpeed));
+    //   System.out.println("xSpeed: " + xController.calculate(robotPose.getX()) + "\nySpeed: " + yController.calculate(robotPose.getY()) + 
+    //   "\nTheta: " + thetaController.calculate(robotPose2d.getRotation().getRadians())); 
+
+    // swerveSubsystem.drive(new ChassisSpeeds(
+    // xController.calculate(robotPose.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(), 
+    // yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()
+    // ,0));
+
+    swerveSubsystem.drive(new ChassisSpeeds(0, 0, -thetaController.calculate(robotPose2d.getRotation().getRadians())));
   }
 
 

@@ -40,6 +40,7 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.commands.AutoBalance;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
@@ -132,9 +133,9 @@ public class Drive extends GenericMechanism {
         } else {
 
         }
-        driver.setLeftXAxis(driver.createLeftXAxis().deadzone(0.075).negate().cubed());
-        driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.075).negate().cubed());
-        driver.setRightXAxis(driver.createRightXAxis().deadzone(0.075).negate());
+        driver.setLeftXAxis(driver.createLeftXAxis().deadzone(0.08).negate().cubed());
+        driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.08).negate().cubed());
+        driver.setRightXAxis(driver.createRightXAxis().deadzone(0.08).negate());
 
         // driver.createXButton().whileTrue(new ChaseTag((SwerveDrivetrain) drivetrain,
         // () -> drivetrain.getPoseEstimator().getCurrentPose()));
@@ -155,6 +156,7 @@ public class Drive extends GenericMechanism {
                 () -> !driver.createAButton().getAsBoolean());
 
         driver.createXButton().onTrue(new InstantCommand(() -> gyro.reset()));
+        
     }
 
     public GenericDrivetrain getDrivetrain() {

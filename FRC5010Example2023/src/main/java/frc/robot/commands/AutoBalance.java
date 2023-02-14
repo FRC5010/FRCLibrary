@@ -12,12 +12,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 
 public class AutoBalance extends CommandBase {
   /** Creates a new AutoBalance. */
   
-  private SwerveDrivetrain swerveSubsystem; 
+  private GenericDrivetrain drivetrain; 
 
   private int offBalanceThreshold = 10; 
   private int onBalanceThreshold = 5;
@@ -25,12 +26,12 @@ public class AutoBalance extends CommandBase {
   private Supplier<Boolean> fieldOrientedDrive; 
 
 
-  public AutoBalance(SwerveDrivetrain swerveSubsystem, Supplier<Boolean> fieldOrientedDrive) {
+  public AutoBalance(GenericDrivetrain drivetrain, Supplier<Boolean> fieldOrientedDrive) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.swerveSubsystem = swerveSubsystem;
+    this.drivetrain = drivetrain;
     this.fieldOrientedDrive = fieldOrientedDrive; 
     
-    addRequirements(this.swerveSubsystem);
+    addRequirements(this.drivetrain);
   } 
 
   // Called when the command is initially scheduled.
@@ -90,7 +91,9 @@ public class AutoBalance extends CommandBase {
 
             SmartDashboard.putNumber("Roll Angle Degrees", rollAngleDegrees);
             SmartDashboard.putNumber("Pitch Angle Degrees", pitchAngleDegrees);
-            swerveSubsystem.drive(new ChassisSpeeds(yAxisRate, xAxisRate, 0));
+
+            System.out.println("Y-Axis: " + yAxisRate + "X-Axis: " + xAxisRate);
+            drivetrain.drive(new ChassisSpeeds(yAxisRate, xAxisRate, 0));
 
 
   }
@@ -98,7 +101,7 @@ public class AutoBalance extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    swerveSubsystem.drive(new ChassisSpeeds(0,0,0));
+    drivetrain.drive(new ChassisSpeeds(0,0,0));
   }
 
   // Returns true when the command should end.

@@ -5,13 +5,10 @@
 package frc.robot.FRC5010.robots;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
-import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -26,6 +23,7 @@ import frc.robot.FRC5010.commands.AutoModes;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.swerve.MK4SwerveModule;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
@@ -33,6 +31,8 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.chargedup.ChargedUpAutoModes;
+import frc.robot.commands.AutoBalance;
+import frc.robot.commands.ChaseTag;
 
 /** Add your docs here. */
 public class PracticeBot extends GenericMechanism {
@@ -90,7 +90,12 @@ public class PracticeBot extends GenericMechanism {
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
+    driver.createYButton().whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createAButton().getAsBoolean())); 
+    
+    driver.createBButton().whileTrue(new ChaseTag((SwerveDrivetrain) drive.getDrivetrain(), () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose())); 
+
     drive.configureButtonBindings(driver, operator);
+    
   }
 
   @Override
