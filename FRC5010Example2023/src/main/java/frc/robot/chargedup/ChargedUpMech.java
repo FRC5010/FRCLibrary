@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
@@ -18,7 +20,7 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.commands.ElevatorMove;
 import frc.robot.commands.ElevatorOut;
-import frc.robot.commands.IntakeToggle;
+import frc.robot.commands.IntakeSpin;
 
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {
@@ -46,13 +48,18 @@ public class ChargedUpMech extends GenericMechanism {
                 .whileTrue(new ElevatorOut(elevatorSubsystem, () -> -0.1));
         driver.createXButton()
                 .whileTrue(new ElevatorOut(elevatorSubsystem, () -> 0.1));
-        //TODO: Add finish intake commands
-        //operator.createBButton()
-                //.onTrue(new IntakeToggle(intakeSubsystem));
-        //operator.createLeftTrigger();
-                //.onTrue(new IntakeSpin(intakeSubsystem, () -> -0.1));
-        //operator.createRightTrigger();
-                //.onTrue(new IntakeSpin(intakeSubsystem, () -> 0.1));
+
+
+        new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
+                .onTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
+ 
+        operator.createRightBumper()
+                .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
+        operator.createLeftBumper()
+                .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
+        operator.createStartButton()
+                .onTrue(new IntakeSpin(intakeSubsystem, () -> -0.1));
+
         operator.setRightYAxis(driver.createRightYAxis().deadzone(.07).negate());
         operator.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07));
     }

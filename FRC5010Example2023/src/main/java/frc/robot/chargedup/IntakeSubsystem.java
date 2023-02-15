@@ -9,6 +9,7 @@ import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -19,6 +20,7 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 public class IntakeSubsystem extends SubsystemBase {
+  private String intakeState;
   private MotorController5010 intake;
   private SparkMaxPIDController intakeController;
   private MotorModelConstants intakeConstants;
@@ -90,29 +92,37 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void toggleIntake(){
     if (intakeSolenoid.isFwdSolenoidDisabled()) {
-      closeIntake();
+      setIntakeCone();
     }
     intakeSolenoid.toggle();
   }
   
-  public void openIntake(){ // Cube
+  public void setIntakeCube(){ // Cube
     intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
   }
 
-  public void closeIntake(){ // Cone
+  public void setIntakeCone(){ // Cone
     intakeSolenoid.set(DoubleSolenoid.Value.kForward);
   }
 
   public void disableIntake(){
     intakeSolenoid.set(DoubleSolenoid.Value.kOff);
   }
-
-  public boolean isIntakeClosed(){
+  
+  public boolean isIntakeCone(){
     return intakeSolenoid.get().equals(DoubleSolenoid.Value.kForward);
   }
 
   @Override
   public void periodic() {
+    if (isIntakeCone()) {
+      intakeState = "Cone";
+    } else {
+      intakeState = "Cube";
+    }
+
     // This method will be called once per scheduler run
+    Shuffleboard.getTab("Robot")
+      .add("Intake State", intakeState);
   }
 }

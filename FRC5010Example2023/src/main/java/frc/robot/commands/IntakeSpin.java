@@ -4,37 +4,44 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.IntakeSubsystem;
 
-public class IntakeToggle extends CommandBase {
+public class IntakeSpin extends CommandBase {
 
+  private Supplier<Double> spinVelocity;
   private IntakeSubsystem intakeSubsystem;
 
-  /** Creates a new IntakeToggle. */
-  public IntakeToggle(IntakeSubsystem intakeSubsystem) {
+  /** Creates a new IntakeSpin. */
+  public IntakeSpin(IntakeSubsystem intakeSubsystem, Supplier<Double> spinVelocity) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.intakeSubsystem = intakeSubsystem;
       addRequirements(this.intakeSubsystem);
+    this.spinVelocity = spinVelocity;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    this.intakeSubsystem.toggleIntake();
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    double velocity = (this.spinVelocity.get());
+    this.intakeSubsystem.setVelocity(velocity);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    this.intakeSubsystem.setVelocity(0);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }
