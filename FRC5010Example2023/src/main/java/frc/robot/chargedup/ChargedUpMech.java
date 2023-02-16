@@ -7,6 +7,13 @@ package frc.robot.chargedup;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.spec.PBEKeySpec;
+
+import com.pathplanner.lib.auto.PIDConstants;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,7 +42,16 @@ public class ChargedUpMech extends GenericMechanism {
                 new MotorModelConstants(1, 1, 1), 
                 new MotorModelConstants(1, 1, 1),
                 mechVisual);
-        // TODO: Set up IntakeSubsystem once built
+
+        this.intakeSubsystem = new IntakeSubsystem(
+                MotorFactory.NEO(18), 
+                MotorFactory.NEO(19), 
+                new MotorModelConstants(0, 0, 0), 
+                new GenericPID(0, 0, 0), 
+                new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1), 
+                robotMechVisual
+        );
+        // TODO: Set up IntakeSubsystem add correct values please
     }
 
     @Override
@@ -50,15 +66,15 @@ public class ChargedUpMech extends GenericMechanism {
                 .whileTrue(new ElevatorOut(elevatorSubsystem, () -> 0.1));
 
 
-        new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
-                .onTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
+        // new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
+        //         .onTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
  
-        operator.createRightBumper()
-                .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
-        operator.createLeftBumper()
-                .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-        operator.createStartButton()
-                .onTrue(new IntakeSpin(intakeSubsystem, () -> -0.1));
+        // operator.createRightBumper()
+        //         .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
+        // operator.createLeftBumper()
+        //         .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
+        // operator.createStartButton()
+        //         .onTrue(new IntakeSpin(intakeSubsystem, () -> -0.1));
 
         operator.setRightYAxis(driver.createRightYAxis().deadzone(.07).negate());
         operator.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07));
@@ -70,7 +86,7 @@ public class ChargedUpMech extends GenericMechanism {
                 () -> {
                 },
                 () -> {
-                    elevatorSubsystem.pivotPow(driver.getRightYAxis());
+                    //elevatorSubsystem.pivotPow(driver.getRightYAxis());
                     //elevatorSubsystem.extendPow(operator.getLeftYAxis());
                 },
                 (Boolean interrupted) -> {

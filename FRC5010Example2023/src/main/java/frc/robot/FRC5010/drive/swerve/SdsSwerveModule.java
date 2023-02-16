@@ -4,8 +4,8 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
+import com.swervedrivespecialties.swervelib.AbsoluteEncoder;
 import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 import com.swervedrivespecialties.swervelib.MotorType;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
@@ -29,6 +29,8 @@ import frc.robot.FRC5010.constants.SwervePorts;
 public class SdsSwerveModule extends GenericSwerveModule {
     private SwerveModule module;
     private SwerveConstants constants;
+    private AbsoluteEncoder absEncoder;
+    private double radOffset;
 
     // private final MechanismLigament2d motorDial;
     // private final MechanismLigament2d absEncDial;
@@ -48,6 +50,9 @@ public class SdsSwerveModule extends GenericSwerveModule {
             .withSteerOffset(radOffset)
             .build()
         ;
+
+        this.radOffset = radOffset;
+        absEncoder = module.getSteerEncoder();
 
 
         // module = Mk4iSwerveModuleHelper.createNeo(
@@ -70,7 +75,8 @@ public class SdsSwerveModule extends GenericSwerveModule {
     }
 
     @Override
-    public boolean setState(SwerveModuleState state, boolean ready) {        module.set(
+    public boolean setState(SwerveModuleState state, boolean ready) {        
+        module.set(
                 state.speedMetersPerSecond / constants.getkPhysicalMaxSpeedMetersPerSecond()
                         * SdsSwerveDrivetrain.MAX_VOLTAGE,
                 state.angle.getRadians());
@@ -98,7 +104,7 @@ public class SdsSwerveModule extends GenericSwerveModule {
     }
     @Override
     public double getAbsoluteEncoderRad() {
-        return module.getSteerEncoder().getAbsoluteAngle();
+        return absEncoder.getAbsoluteAngle();
     }
 
 }

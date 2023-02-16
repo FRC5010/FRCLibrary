@@ -44,10 +44,10 @@ public class CompBot extends GenericMechanism {
         swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
         // Baby Swerve values need to be changed
-        swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(50));
-        swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(0));
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(25));
-        swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(0));
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(4.617); //  
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(5.351); // 
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(3.267); // 
+        swerveConstants.setkBackRightAbsoluteOffsetRad(2.994); //  
 
         swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
         swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
@@ -85,7 +85,7 @@ public class CompBot extends GenericMechanism {
 
         drive = new Drive(multiVision, gyro, Drive.Type.SDS_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         // Uncomment when using PhotonVision
-        // multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
+        //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
         elevator = new ChargedUpMech(mechVisual, shuffleTab);
     } 
 

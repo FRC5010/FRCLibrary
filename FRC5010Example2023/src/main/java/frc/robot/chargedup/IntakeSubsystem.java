@@ -42,8 +42,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2, SparkMaxPIDController intakeController,
-      MotorModelConstants intakeConstants, GenericPID intakePID, GenericEncoder intakeEncoder,
+  public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2,
+      MotorModelConstants intakeConstants, GenericPID intakePID,
       DoubleSolenoid intakeSolenoid, Mechanism2d m_mech2d) {
     this.intake = intake;
     intake2.setInverted(true);
@@ -122,7 +122,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     // This method will be called once per scheduler run
-    Shuffleboard.getTab("Robot")
-      .add("Intake State", intakeState);
+    //Shuffleboard.getTab("Robot").addString("Intake Mode Cone/Cube", () -> intakeState);
   }
 }

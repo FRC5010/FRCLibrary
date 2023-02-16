@@ -18,8 +18,8 @@ public class IntakeSpin extends CommandBase {
   public IntakeSpin(IntakeSubsystem intakeSubsystem, Supplier<Double> spinVelocity) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.intakeSubsystem = intakeSubsystem;
-      addRequirements(this.intakeSubsystem);
     this.spinVelocity = spinVelocity;
+    addRequirements(this.intakeSubsystem);
   }
 
   // Called when the command is initially scheduled.

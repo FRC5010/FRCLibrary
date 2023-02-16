@@ -62,7 +62,7 @@ public abstract class GenericPose {
     double angleZ = getGyroAngleZ();
     double radianZ = Math.toRadians(angleZ);
     Rotation2d rotation2d = new Rotation2d(radianZ);
-    SmartDashboard.putNumber("Angle", rotation2d.getDegrees());
+    SmartDashboard.putNumber("Angle Gyro from Pose", rotation2d.getDegrees());
     return rotation2d;
   }
     
