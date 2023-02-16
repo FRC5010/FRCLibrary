@@ -32,7 +32,9 @@ public class ElevatorMove extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {}
+    public void end(boolean interrupted) {
+        this.elevatorSubsystem.stopPivot();
+    }
 
     @Override
     public boolean isFinished() {

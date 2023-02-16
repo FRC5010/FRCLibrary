@@ -20,12 +20,12 @@ public class ElevatorOut extends CommandBase {
     @Override 
     public void execute() {
         double speed = (this.moveSpeed.get());
-        elevatorSubsystem.elevate(speed);
+        elevatorSubsystem.extendPow(speed);
     }
 
     @Override
     public void end(boolean interrupted) {
-        elevatorSubsystem.elevate(0);
+        elevatorSubsystem.extendPow(0);
     }
 
     @Override

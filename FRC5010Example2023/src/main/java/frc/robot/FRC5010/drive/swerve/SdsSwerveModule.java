@@ -4,7 +4,11 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
+import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
+import com.swervedrivespecialties.swervelib.MotorType;
+import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,21 +29,33 @@ import frc.robot.FRC5010.constants.SwervePorts;
 public class SdsSwerveModule extends GenericSwerveModule {
     private SwerveModule module;
     private SwerveConstants constants;
+
     // private final MechanismLigament2d motorDial;
     // private final MechanismLigament2d absEncDial;
     // private final MechanismLigament2d expectDial;
 
     public SdsSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwerveConstants swerveConstants,
-            SwervePorts swervePorts, Mk4iSwerveModuleHelper.GearRatio gearing) {
+            SwervePorts swervePorts, MechanicalConfiguration gearing) {
         super(visualRoot, key, radOffset, swerveConstants);
         constants = swerveConstants;
         ShuffleboardTab tab = Shuffleboard.getTab("SDS Drive");
-        module = Mk4iSwerveModuleHelper.createNeo(
-                tab.getLayout(getKey(), BuiltInLayouts.kList)
-                        .withSize(2, 4)
-                        .withPosition(0, 0),
-                gearing,
-                swervePorts.getDrivePort(), swervePorts.getTurnPort(), swervePorts.getEncoderPort(), radOffset);
+        module = new MkSwerveModuleBuilder()
+            .withLayout(tab.getLayout(getKey(), BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0))
+            .withGearRatio(gearing)
+            .withDriveMotor(MotorType.NEO, swervePorts.getDrivePort())
+            .withSteerMotor(MotorType.NEO, swervePorts.getTurnPort())
+            .withSteerEncoderPort(swervePorts.getEncoderPort())
+            .withSteerOffset(radOffset)
+            .build()
+        ;
+
+
+        // module = Mk4iSwerveModuleHelper.createNeo(
+        //         tab.getLayout(getKey(), BuiltInLayouts.kList)
+        //                 .withSize(2, 4)
+        //                 .withPosition(0, 0),
+        //         gearing,
+        //         swervePorts.getDrivePort(), swervePorts.getTurnPort(), swervePorts.getEncoderPort(), radOffset);
 
         // visualRoot.append(
         //         new MechanismLigament2d(getKey() + "vert", 10, 90, 6.0, new Color8Bit(50, 50, 50)));
@@ -53,46 +69,36 @@ public class SdsSwerveModule extends GenericSwerveModule {
         //         new MechanismLigament2d(getKey() + "Exp", 10, 90, 6, new Color8Bit(Color.kRed)));
     }
 
-    public boolean setState(SwerveModuleState state, boolean ready) {
-        module.set(
+    @Override
+    public boolean setState(SwerveModuleState state, boolean ready) {        module.set(
                 state.speedMetersPerSecond / constants.getkPhysicalMaxSpeedMetersPerSecond()
                         * SdsSwerveDrivetrain.MAX_VOLTAGE,
                 state.angle.getRadians());
         return true;
     }
-
+    @Override
     public double getTurningPosition() {
         return module.getSteerAngle();
     }
-
+    @Override
+    public double getTurningVelocity(){
+        return 0;
+    }
+    @Override
     public double getDriveVelocity() {
         return module.getDriveVelocity();
     }
-
+    @Override
     public double getDrivePosition() {
         return module.getDriveDistance();
     }
-
+    @Override
     public SwerveModuleState getState() {
-        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
+        return new SwerveModuleState(this.getDriveVelocity(), new Rotation2d(this.getTurningPosition()));
     }
-
+    @Override
     public double getAbsoluteEncoderRad() {
-        return module.getSteerAngle();
-    }
-
-    public void periodic() {
-        // double turningDeg = Units.radiansToDegrees(getTurningPosition());
-        // double absEncDeg = Units.radiansToDegrees(getAbsoluteEncoderRad());
-        // SmartDashboard.putNumber("Motor Ang: " + getKey(), turningDeg);
-        // SmartDashboard.putNumber("Abs Angle: " + getKey(), absEncDeg);
-        // SmartDashboard.putNumber("Abs Rads: " + getKey(), getAbsoluteEncoderRad());
-        // // This method will be called once per scheduler run
-        // absEncDial.setAngle(absEncDeg + 90);
-        // motorDial.setAngle(turningDeg + 90);
-        // motorDial.setLength(20 * getTurningVelocity() + 5);
-        // expectDial.setLength(20 * getDriveVelocity() + 5);
-        // expectDial.setAngle(getState().angle.getDegrees() + 90);
+        return module.getSteerEncoder().getAbsoluteAngle();
     }
 
 }

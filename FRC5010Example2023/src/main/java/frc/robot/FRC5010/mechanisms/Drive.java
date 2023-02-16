@@ -12,6 +12,7 @@ import java.util.Map;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -136,7 +137,7 @@ public class Drive extends GenericMechanism {
         driver.setLeftXAxis(driver.createLeftXAxis().deadzone(0.08).negate().cubed());
         driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.08).negate().cubed());
         driver.setRightXAxis(driver.createRightXAxis().deadzone(0.08).negate());
-
+        driver.createAButton();
         // driver.createXButton().whileTrue(new ChaseTag((SwerveDrivetrain) drivetrain,
         // () -> drivetrain.getPoseEstimator().getCurrentPose()));
 
@@ -153,7 +154,7 @@ public class Drive extends GenericMechanism {
                 () -> driver.getLeftYAxis(),
                 () -> driver.getLeftXAxis(),
                 () -> driver.getRightXAxis(),
-                () -> !driver.createAButton().getAsBoolean());
+                () -> driver.createAButton().getAsBoolean());
 
         driver.createXButton().onTrue(new InstantCommand(() -> gyro.reset()));
         
@@ -261,19 +262,19 @@ public class Drive extends GenericMechanism {
     private void initializeSDSMk4iSwerveDrive() {
         SdsSwerveModule frontLeft = new SdsSwerveModule(mechVisual.getRoot("frontLeft", 15, 45), "frontLeft", 
         ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(0), Mk4iSwerveModuleHelper.GearRatio.L1);
+        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(0), SdsModuleConfigurations.MK4I_L1);
 
         SdsSwerveModule frontRight = new SdsSwerveModule(mechVisual.getRoot("frontRight", 45, 45), "frontRight", 
         ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(1), Mk4iSwerveModuleHelper.GearRatio.L1);
+        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(1), SdsModuleConfigurations.MK4I_L1);
 
         SdsSwerveModule backLeft = new SdsSwerveModule(mechVisual.getRoot("backLeft", 15,15), "backLeft", 
         ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(2), Mk4iSwerveModuleHelper.GearRatio.L1);
+        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(2), SdsModuleConfigurations.MK4I_L1);
 
         SdsSwerveModule backRight = new SdsSwerveModule(mechVisual.getRoot("backRight", 15,15), "backRight", 
         ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(3), Mk4iSwerveModuleHelper.GearRatio.L1);
+        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(3), SdsModuleConfigurations.MK4I_L1);
 
         drivetrain = new SdsSwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, (SwerveConstants)driveConstants, vision);
     }

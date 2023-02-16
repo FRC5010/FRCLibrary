@@ -40,13 +40,13 @@ public class ChargedUpMech extends GenericMechanism {
 
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
-        driver.createYButton()
-                .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.1));
-        driver.createAButton()
-                .onTrue(new ElevatorMove(elevatorSubsystem, () -> -0.1));
-        driver.createBButton()
+        operator.createYButton()
+                .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
+        operator.createAButton()
+                .onTrue(new ElevatorMove(elevatorSubsystem, () -> -0.5));
+        operator.createBButton()
                 .whileTrue(new ElevatorOut(elevatorSubsystem, () -> -0.1));
-        driver.createXButton()
+        operator.createXButton()
                 .whileTrue(new ElevatorOut(elevatorSubsystem, () -> 0.1));
 
 
@@ -70,12 +70,12 @@ public class ChargedUpMech extends GenericMechanism {
                 () -> {
                 },
                 () -> {
-                    elevatorSubsystem.winch(driver.getRightYAxis());
-                    elevatorSubsystem.elevate(driver.getLeftYAxis());
+                    elevatorSubsystem.pivotPow(driver.getRightYAxis());
+                    //elevatorSubsystem.extendPow(operator.getLeftYAxis());
                 },
                 (Boolean interrupted) -> {
-                    elevatorSubsystem.winch(0);
-                    elevatorSubsystem.elevate(0);
+                    elevatorSubsystem.pivotPow(0);
+                    elevatorSubsystem.extendPow(0);
                 },
                 () -> false,
                 elevatorSubsystem));

@@ -44,10 +44,10 @@ public class CompBot extends GenericMechanism {
         swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
         // Baby Swerve values need to be changed
-        swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(9.316));
-        swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(305.771));
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(252.598));
-        swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(201.181));
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(50));
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(0));
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(25));
+        swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(0));
 
         swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
         swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
@@ -96,13 +96,13 @@ public class CompBot extends GenericMechanism {
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
       drive.configureButtonBindings(driver, operator);      
-      //elevator.configureButtonBindings(driver, operator);
+      elevator.configureButtonBindings(driver, operator);
     }
 
     @Override
     public void setupDefaultCommands(Controller driver, Controller operator) {
       drive.setupDefaultCommands(driver, operator);
-      //elevator.setupDefaultCommands(driver, operator);
+      elevator.setupDefaultCommands(driver, operator);
     }
 
     @Override
