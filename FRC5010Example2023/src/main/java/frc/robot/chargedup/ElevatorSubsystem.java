@@ -49,18 +49,22 @@ public class ElevatorSubsystem extends SubsystemBase {
   private MechanismRoot2d m_mech2dRoot;
   private MechanismLigament2d m_elevatorMech2d;
 
-  private double currentPositionTarget;
+  private double currentPivotTarget;
+  private double currentExtendTarget;
+
+  private ElevatorLevel currentLevel = ElevatorLevel.ground; // Unsure of whether this should be stored in subsystem
+
   // TODO Implement ElevatorFeefForward
   private ElevatorFeedforward extendFeedforward;
   private ElevatorSim extendSim;
   private ArmFeedforward pivotFeedforward;
   private SingleJointedArmSim pivotSim;
-
   public ElevatorSubsystem(MotorController5010 pivot, GenericPID pivotPID,
       MotorController5010 extend, GenericPID extendPID,
       MotorModelConstants liftConstants, MotorModelConstants extendConstants,
       Mechanism2d mech2d) {
-    this.currentPositionTarget = 0;
+    this.currentPivotTarget = 0;
+    this.currentExtendTarget = 0;
 
     this.pivotMotor = pivot;
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
@@ -103,13 +107,46 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   }
 
-  public void setPosition(double position) {
-    this.currentPositionTarget = position;
-    pivotController.setReference(this.currentPositionTarget, CANSparkMax.ControlType.kSmartMotion, 0);
+  public void setPivotPosition(double position) {
+    this.currentPivotTarget = position;
+    pivotController.setReference(this.currentPivotTarget, CANSparkMax.ControlType.kSmartMotion, 0);
   }
 
-  public double getPositionTarget() {
-    return this.currentPositionTarget;
+  public void setExtendPosition(double position) {
+    this.currentExtendTarget = position;
+    extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kSmartMotion, 0);
+  }
+
+  public double getPivotPosition() {
+    return pivotEncoder.getPosition();
+  }
+
+  public double getExtendPosition() {
+    return extendEncoder.getPosition();
+  }
+
+  public boolean isPivotAtTarget() {
+    return Math.abs(pivotEncoder.getPosition() - this.currentPivotTarget) < 0.1;
+  }
+
+  public boolean isExtendAtTarget() {
+    return Math.abs(extendEncoder.getPosition() - this.currentExtendTarget) < 0.1;
+  }
+
+  public double getPivotTarget() {
+    return this.currentPivotTarget;
+  }
+
+  public double getExtendTarget() {
+    return this.currentExtendTarget;
+  }
+
+  public ElevatorLevel getElevatorLevel() {
+    return this.currentLevel;
+  }
+
+  public void setElevatorLevel(ElevatorLevel level) {
+    this.currentLevel = level;
   }
 
   public void pivotPow(double pow) {

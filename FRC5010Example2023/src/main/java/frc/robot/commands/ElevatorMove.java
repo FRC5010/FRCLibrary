@@ -20,14 +20,14 @@ public class ElevatorMove extends CommandBase {
 
     @Override 
     public void execute() {
-        double currentPosition = this.elevatorSubsystem.getPositionTarget();
+        double currentPosition = this.elevatorSubsystem.getPivotPosition();
         double speed = (this.moveSpeed.get());
         double newPosition = currentPosition + speed;
 
         if (newPosition > 1.0) {newPosition = 1.0;}
         if (newPosition < -1.0) {newPosition = -1.0;}
 
-        this.elevatorSubsystem.setPosition(newPosition);
+        this.elevatorSubsystem.setPivotPosition(newPosition);
         
     }
 
@@ -38,7 +38,7 @@ public class ElevatorMove extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return this.elevatorSubsystem.isPivotAtTarget();
     }    
     
 }
