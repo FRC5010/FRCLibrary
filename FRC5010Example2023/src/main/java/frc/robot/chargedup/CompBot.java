@@ -44,10 +44,14 @@ public class CompBot extends GenericMechanism {
         swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
         // Baby Swerve values need to be changed
-        swerveConstants.setkFrontLeftAbsoluteOffsetRad(4.617); //  
-        swerveConstants.setkFrontRightAbsoluteOffsetRad(5.351); // 
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(3.267); // 
-        swerveConstants.setkBackRightAbsoluteOffsetRad(2.994); //  
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(271.758)); //  
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(224.912)); // 
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(181.494)); // 
+        swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(186.064)); //  
+        // swerveConstants.setkFrontLeftAbsoluteOffsetRad(0); //  
+        // swerveConstants.setkFrontRightAbsoluteOffsetRad(0); // 
+        // swerveConstants.setkBackLeftAbsoluteOffsetRad(0); // 
+        // swerveConstants.setkBackRightAbsoluteOffsetRad(0);
 
         swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
         swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
