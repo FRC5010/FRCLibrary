@@ -71,7 +71,7 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.getButton(6)
                 .onTrue(new InstantCommand(() -> {speedLimit = 0.5;}))
                 .onFalse(new InstantCommand(() -> {speedLimit = 1.0;}));
-        buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
+        buttonOperator.setYAxis(buttonOperator.createYAxis().deadzone(0.05));
         buttonOperator.setXAxis(buttonOperator.createXAxis().negate().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
         new ElevatorOut(elevatorSubsystem, () -> (buttonOperator.getXAxis() / speedLimit));
         new ElevatorMove(elevatorSubsystem, () -> (buttonOperator.getYAxis() / speedLimit));
