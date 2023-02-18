@@ -11,7 +11,6 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.BaseAutoBuilder;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -33,7 +32,6 @@ import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.drive.swerve.GenericSwerveModule;
 import frc.robot.FRC5010.drive.swerve.MK4SwerveModule;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
-import frc.robot.FRC5010.drive.swerve.SdsSwerveDrivetrain;
 import frc.robot.FRC5010.drive.swerve.SdsSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.drive.swerve.ThriftySwerveModule;
@@ -41,7 +39,6 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.commands.AutoBalance;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
@@ -276,7 +273,9 @@ public class Drive extends GenericMechanism {
         ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(),
         ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(3), SdsModuleConfigurations.MK4I_L1);
 
-        drivetrain = new SdsSwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, (SwerveConstants)driveConstants, vision);
+        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision,
+                (SwerveConstants) driveConstants);
+//        drivetrain = new SdsSwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, (SwerveConstants)driveConstants, vision);
     }
 
     public Map<String, Command> initAutoCommands() {

@@ -7,34 +7,28 @@ package frc.robot.chargedup;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.spec.PBEKeySpec;
-
-import com.pathplanner.lib.auto.PIDConstants;
-
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
+import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.commands.ElevatorMove;
 import frc.robot.commands.ElevatorOut;
-import frc.robot.commands.IntakeSpin;
 
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {
     private ElevatorSubsystem elevatorSubsystem;
     private IntakeSubsystem intakeSubsystem;
+    private ButtonBoard buttonOperator;
 
-    public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab) {
+    public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator) {
         super(robotMechVisual, shuffleTab);
         this.elevatorSubsystem = new ElevatorSubsystem(
                 MotorFactory.NEO(9), new GenericPID(0, 0, 0),
@@ -52,10 +46,16 @@ public class ChargedUpMech extends GenericMechanism {
                 robotMechVisual
         );
         // TODO: Set up IntakeSubsystem add correct values please
+        this.buttonOperator = buttonOperator;
     }
 
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
+        
+        // buttonOperator.getButton(0)
+        //         .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
+        // buttonOperator.getButton(1)
+        //         .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
         operator.createYButton()
                 .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
         operator.createAButton()
@@ -79,6 +79,7 @@ public class ChargedUpMech extends GenericMechanism {
         operator.setRightYAxis(driver.createRightYAxis().deadzone(.07).negate());
         operator.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07));
     }
+    
 
     @Override
     public void setupDefaultCommands(Controller driver, Controller operator) {

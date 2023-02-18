@@ -16,7 +16,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 
 

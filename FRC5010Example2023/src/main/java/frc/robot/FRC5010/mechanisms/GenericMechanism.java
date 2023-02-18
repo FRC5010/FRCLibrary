@@ -4,11 +4,7 @@
 
 package frc.robot.FRC5010.mechanisms;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -27,7 +23,7 @@ public abstract class GenericMechanism {
     protected Mechanism2d mechVisual;
     protected ShuffleboardTab shuffleTab;
     public GenericMechanism(String tabName) {
-        this.mechVisual = new Mechanism2d(10,10);
+        this.mechVisual = new Mechanism2d(100,100);
         shuffleTab = Shuffleboard.getTab(tabName);
     }
 

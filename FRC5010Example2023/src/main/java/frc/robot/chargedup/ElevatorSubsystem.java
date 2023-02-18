@@ -4,17 +4,18 @@
 
 package frc.robot.chargedup;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -27,14 +28,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
-import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 public class ElevatorSubsystem extends SubsystemBase {
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
   private GenericPID pivotPID;
-  private RelativeEncoder pivotEncoder;
+  private AbsoluteEncoder pivotEncoder;
 
   private MotorController5010 extendMotor;
   private SparkMaxPIDController extendController;
@@ -68,7 +68,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     this.pivotMotor = pivot;
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
-    this.pivotEncoder = ((CANSparkMax) pivot).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature , 8192);
+    this.pivotEncoder = ((CANSparkMax) pivot).getAbsoluteEncoder(Type.kDutyCycle);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
 
@@ -176,6 +176,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_elevatorMech2d.setLength(extendEncoder.getPosition());
     m_elevatorMech2d.setAngle(pivotEncoder.getPosition());
 
+    SmartDashboard.putNumber("Elevator Position: ", extendEncoder.getPosition());
+    SmartDashboard.putNumber("Pivot Position: ", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Abs", KFF);
   }
 
@@ -192,8 +194,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // Finally, we set our simulated encoder's readings and simulated battery
     // voltage
-    pivotEncoder.setPosition(extendSim.getPositionMeters());
-    pivotEncoder.setPosition(extendSim.getPositionMeters());
+    extendEncoder.setPosition(extendSim.getPositionMeters());
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(extendSim.getCurrentDrawAmps()));
