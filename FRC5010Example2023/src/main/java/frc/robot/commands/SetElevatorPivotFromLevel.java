@@ -29,6 +29,7 @@ public class SetElevatorPivotFromLevel extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    elevator.setElevatorLevel(level);
     elevator.setPivotPosition(level.getPivotPosition());
   }
 

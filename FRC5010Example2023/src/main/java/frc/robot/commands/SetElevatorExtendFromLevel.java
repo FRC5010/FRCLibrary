@@ -8,11 +8,20 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;
 
-public class SetElevatorLevel extends CommandBase {
+public class SetElevatorExtendFromLevel extends CommandBase {
   ElevatorSubsystem elevator;
   ElevatorLevel targetLevel;
   /** Creates a new SetElevatorLevel. */
-  public SetElevatorLevel(ElevatorSubsystem elevator, ElevatorLevel targetLevel) {
+  public SetElevatorExtendFromLevel(ElevatorSubsystem elevator, ElevatorLevel targetLevel) {
+    this.elevator = elevator;
+    this.targetLevel = targetLevel;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(elevator);
+  }
+
+  public SetElevatorExtendFromLevel(ElevatorSubsystem elevator) {
+    this.elevator = elevator;
+    this.targetLevel = elevator.getElevatorLevel();
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
   }
