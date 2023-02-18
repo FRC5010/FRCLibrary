@@ -7,10 +7,12 @@
 
 package frc.robot.FRC5010.Vision;
 
+import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -30,15 +32,17 @@ public abstract class VisionSystem extends SubsystemBase {
   protected double CAMERA_CAL_ANGLE = 0;
   protected ShuffleboardLayout driverLayout;
   protected VisionConstants constants;
+  protected AprilTagFieldLayout fieldLayout; 
   // variables needed to process new variables, plus the new variables
   // angles
 
   // giant list of values from camera "table" and is saved into vision values
-  public VisionSystem(String name, int colIndex) {
+  public VisionSystem(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
     this.name = name;
     rawValues = new VisionValues();
     smoothedValues = new VisionValues();
     constants = new VisionConstants();
+    this.fieldLayout = fieldLayout; 
     ShuffleboardTab driverTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
     visionLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex, 0).withSize(3, 5);
   }
@@ -87,6 +91,8 @@ public abstract class VisionSystem extends SubsystemBase {
   public abstract void setSnapshotMode(int snapVal);
 
   public abstract void update();
+
+
 
   public VisionValues getRawValues() {
     return rawValues;
@@ -167,6 +173,10 @@ public abstract class VisionSystem extends SubsystemBase {
 
   public boolean isValidTarget() {
     return smoothedValues.getValid();
+  }
+
+  public AprilTagFieldLayout getFieldLayout(){
+    return fieldLayout; 
   }
 
   public void calibarateCamAngle(double angleY) {

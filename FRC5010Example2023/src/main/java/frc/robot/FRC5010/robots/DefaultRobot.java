@@ -9,10 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.DrivePorts;
@@ -32,7 +34,7 @@ public class DefaultRobot extends GenericMechanism {
     public DefaultRobot(Mechanism2d visual, ShuffleboardTab displayTab) {
         super(visual, displayTab);
         driveConstants = new GenericDrivetrainConstants();
-        vision = new VisionLimeLightSim("Vision", 1);
+        vision = new VisionLimeLightSim("Vision", 1, AprilTags.aprilTagRoomLayout);
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
         List<DrivePorts> motorPorts = new ArrayList<>();

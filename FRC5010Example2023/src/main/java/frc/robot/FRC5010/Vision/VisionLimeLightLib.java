@@ -4,6 +4,7 @@
 
 package frc.robot.FRC5010.Vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -11,8 +12,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 /** Add your docs here. */
 public class VisionLimeLightLib extends VisionSystem{
 
-    public VisionLimeLightLib(String name, int colIndex) {
-        super(name, colIndex);
+    public VisionLimeLightLib(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
+        super(name, colIndex, fieldLayout);
         init();
     }
 

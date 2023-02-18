@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.FRC5010.constants.GenericPID;
+import frc.robot.FRC5010.drive.GenericDrivetrain;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
@@ -68,8 +70,8 @@ public class ChargedUpMech extends GenericMechanism {
         // operator.createStartButton()
         //         .onTrue(new IntakeSpin(intakeSubsystem, () -> -0.1));
 
-        operator.setRightYAxis(driver.createRightYAxis().deadzone(.07).negate());
-        operator.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07));
+        operator.setRightYAxis(operator.createRightYAxis().deadzone(.07).negate());
+        operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07));
     }
 
     @Override
@@ -78,8 +80,8 @@ public class ChargedUpMech extends GenericMechanism {
                 () -> {
                 },
                 () -> {
-                    //elevatorSubsystem.pivotPow(driver.getRightYAxis());
-                    //elevatorSubsystem.extendPow(operator.getLeftYAxis());
+                    elevatorSubsystem.pivotPow(operator.getRightYAxis());
+                    elevatorSubsystem.extendPow(operator.getLeftYAxis());
                 },
                 (Boolean interrupted) -> {
                     elevatorSubsystem.pivotPow(0);

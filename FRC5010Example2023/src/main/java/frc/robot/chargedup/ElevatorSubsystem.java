@@ -30,6 +30,10 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
+  /**
+   *
+   */
+  private static final double pivotOffset = 0;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
@@ -69,6 +73,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.pivotMotor = pivot;
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
     this.pivotEncoder = ((CANSparkMax) pivot).getAbsoluteEncoder(Type.kDutyCycle);
+    pivotEncoder.setPositionConversionFactor(180.0/Math.PI);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
 
@@ -118,7 +123,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getPivotPosition() {
-    return pivotEncoder.getPosition();
+    return pivotEncoder.getPosition() + pivotOffset;
   }
 
   public double getExtendPosition() {
@@ -126,7 +131,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean isPivotAtTarget() {
-    return Math.abs(pivotEncoder.getPosition() - this.currentPivotTarget) < 0.1;
+    return Math.abs(getPivotPosition() - this.currentPivotTarget) < 0.1;
   }
 
   public boolean isExtendAtTarget() {
@@ -174,10 +179,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     m_elevatorMech2d.setLength(extendEncoder.getPosition());
-    m_elevatorMech2d.setAngle(pivotEncoder.getPosition());
+    m_elevatorMech2d.setAngle(getPivotPosition());
 
     SmartDashboard.putNumber("Elevator Position: ", extendEncoder.getPosition());
-    SmartDashboard.putNumber("Pivot Position: ", pivotEncoder.getPosition());
+    SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
     SmartDashboard.putNumber("Abs", KFF);
   }
 

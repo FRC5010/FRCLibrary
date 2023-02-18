@@ -4,11 +4,13 @@
 
 package frc.robot.FRC5010.Vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+
 /** Add your docs here. */
 public class VisionLimeLightSim extends VisionSystem {
 
-    public VisionLimeLightSim(String name, int colIndex) {
-        super(name, colIndex);
+    public VisionLimeLightSim(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
+        super(name, colIndex, fieldLayout);
     }
     
     @Override

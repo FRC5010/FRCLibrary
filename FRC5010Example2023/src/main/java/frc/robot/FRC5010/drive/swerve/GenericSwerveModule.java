@@ -99,10 +99,12 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     }
 
     public double getDrivePosition() {
+        SmartDashboard.putNumber(moduleKey + " Drive Position", driveEncoder.getPosition());
         return driveEncoder.getPosition();
     }
 
     public double getTurningPosition() {
+        SmartDashboard.putNumber(moduleKey + " Turn Position", turnEncoder.getPosition());
         return turnEncoder.getPosition();
     }
 

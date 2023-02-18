@@ -3,11 +3,6 @@
     "Persistent Values": {
       "open": false
     },
-    "persistent": {
-      "Preferences": {
-        "open": true
-      }
-    },
     "transitory": {
       "Shuffleboard": {
         "open": true
@@ -34,6 +29,11 @@
         }
       },
       "/SmartDashboard/Drive Visual": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Visual": {
         "window": {
           "visible": true
         }

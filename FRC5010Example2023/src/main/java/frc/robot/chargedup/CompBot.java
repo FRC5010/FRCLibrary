@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.AutoModes;
@@ -57,7 +59,7 @@ public class CompBot extends GenericMechanism {
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
         
         // Will need to be changed for 2023 field
-        VisionSystem multiVision = new VisionLimeLightSim("Sim", 0);
+        VisionSystem multiVision = new VisionLimeLightSim("Sim", 0, AprilTags.aprilTagRoomLayout);
         // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
         // multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
         //   new Transform3d( // This describes the vector between the camera lens to the robot center on the ground

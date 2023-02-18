@@ -7,6 +7,7 @@
 
 package frc.robot.FRC5010.Vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class VisionLimeLight extends VisionSystem {
@@ -17,8 +18,9 @@ public class VisionLimeLight extends VisionSystem {
    */
 
    // makes a new limelight that is vertical, portrait
-  public VisionLimeLight(String name, int colIndex) {
-    super(name, colIndex);
+   
+  public VisionLimeLight(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
+    super(name, colIndex, fieldLayout);
     init();
   }
 
