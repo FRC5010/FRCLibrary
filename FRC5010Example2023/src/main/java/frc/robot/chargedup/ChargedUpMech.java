@@ -17,6 +17,7 @@ import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
+import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.commands.ElevatorMove;
 import frc.robot.commands.ElevatorOut;
@@ -25,8 +26,9 @@ import frc.robot.commands.ElevatorOut;
 public class ChargedUpMech extends GenericMechanism {
     private ElevatorSubsystem elevatorSubsystem;
     private IntakeSubsystem intakeSubsystem;
+    private ButtonBoard buttonOperator;
 
-    public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab) {
+    public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator) {
         super(robotMechVisual, shuffleTab);
         this.elevatorSubsystem = new ElevatorSubsystem(
                 MotorFactory.NEO(9), new GenericPID(0, 0, 0),
@@ -44,10 +46,16 @@ public class ChargedUpMech extends GenericMechanism {
                 robotMechVisual
         );
         // TODO: Set up IntakeSubsystem add correct values please
+        this.buttonOperator = buttonOperator;
     }
 
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
+        
+        // buttonOperator.getButton(0)
+        //         .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
+        // buttonOperator.getButton(1)
+        //         .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
         operator.createYButton()
                 .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
         operator.createAButton()
@@ -71,6 +79,7 @@ public class ChargedUpMech extends GenericMechanism {
         operator.setRightYAxis(driver.createRightYAxis().deadzone(.07).negate());
         operator.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07));
     }
+    
 
     @Override
     public void setupDefaultCommands(Controller driver, Controller operator) {

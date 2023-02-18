@@ -21,6 +21,7 @@ import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
+import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
@@ -31,6 +32,7 @@ public class CompBot extends GenericMechanism {
     private Drive drive; 
     private GenericMechanism elevator;
     private AutoModes autoMaps;
+    private ButtonBoard buttonOperator;
 
     public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
       super(visual, displayTab);
@@ -82,7 +84,9 @@ public class CompBot extends GenericMechanism {
         drive = new Drive(multiVision, gyro, Drive.Type.SDS_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         // Uncomment when using PhotonVision
         //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
-        elevator = new ChargedUpMech(mechVisual, shuffleTab);
+        buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
+        buttonOperator.createButtons(4);
+        elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator);
     } 
 
     public Map<String,Command> setAutoCommands(){
