@@ -4,11 +4,7 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;

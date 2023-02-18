@@ -7,19 +7,12 @@ package frc.robot.chargedup;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.spec.PBEKeySpec;
-
-import com.pathplanner.lib.auto.PIDConstants;
-
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
@@ -27,7 +20,6 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.commands.ElevatorMove;
 import frc.robot.commands.ElevatorOut;
-import frc.robot.commands.IntakeSpin;
 
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {

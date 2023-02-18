@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -17,12 +15,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.AutoModes;
-import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
@@ -36,8 +32,6 @@ public class CompBot extends GenericMechanism {
     private GenericMechanism elevator;
     private AutoModes autoMaps;
 
-    private Persisted<Double> maxChassisVelocity;
-    private Persisted<Double> maxChassisRotation;
     public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
       super(visual, displayTab);
         // Needs to be set
@@ -61,8 +55,6 @@ public class CompBot extends GenericMechanism {
 
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
-        maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, swerveConstants.getkTeleDriveMaxSpeedMetersPerSecond());
-        maxChassisRotation = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION, swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond());
         
         // Will need to be changed for 2023 field
         VisionSystem multiVision = new VisionLimeLightSim("Sim", 0);

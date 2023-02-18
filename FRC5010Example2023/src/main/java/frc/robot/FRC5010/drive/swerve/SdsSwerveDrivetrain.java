@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -31,8 +30,6 @@ public class SdsSwerveDrivetrain extends GenericDrivetrain {
     private GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
 
     private SwerveConstants swerveConstants;
-
-    public static final double MAX_VOLTAGE = 12.0;
 
     public SdsSwerveDrivetrain(Mechanism2d mechVisual,
             GenericSwerveModule frontLeft, GenericSwerveModule frontRight, GenericSwerveModule backLeft,
