@@ -7,9 +7,9 @@ package frc.robot.chargedup;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -24,7 +24,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
@@ -66,6 +69,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private Mechanism2d m_mech2d;
   private MechanismRoot2d m_mech2dRoot;
   private MechanismLigament2d m_elevatorMech2d;
+  private MechanismLigament2d targetPos2d;
 
   private double currentPivotTarget;
   private double currentExtendTarget;
@@ -103,7 +107,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_mech2dRoot = m_mech2d.getRoot("Elevator Root", 10, 10);
     m_elevatorMech2d = m_mech2dRoot.append(
         new MechanismLigament2d(
-            "Elevator", Units.metersToInches(0.05), -30));
+            "Elevator", Units.metersToInches(kMinElevatorHeight), -30.0, 6, new Color8Bit(Color.kOrange)));
+    targetPos2d = m_mech2dRoot.append(
+      new MechanismLigament2d("Target", Units.metersToInches(kMinElevatorHeight), -30, 6, new Color8Bit(Color.kBlue)));        
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75, 
       40, 2, Units.degreesToRadians(0), 
       Units.degreesToRadians(60), false);
@@ -132,20 +138,38 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void setPivotPosition(double position) {
     this.currentPivotTarget = position;
-    pivotController.setReference(this.currentPivotTarget, CANSparkMax.ControlType.kSmartMotion, 0);
+    targetPos2d.setAngle(currentPivotTarget);
+    if (Robot.isReal()) {
+      pivotController.setReference(this.currentPivotTarget, CANSparkMax.ControlType.kSmartMotion, 0);
+    } else {
+      pivotPow((currentPivotTarget - getPivotPosition())/100);
+    }
   }
 
   public void setExtendPosition(double position) {
     this.currentExtendTarget = position;
-    extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kSmartMotion, 0);
+    targetPos2d.setLength(position);
+    if (Robot.isReal()) {
+      extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kSmartMotion, 0);
+    } else {
+      extendPow((currentExtendTarget - getExtendPosition()) / kMaxElevatorHeight);
+    }
   }
 
   public double getPivotPosition() {
-    return pivotEncoder.getPosition() + pivotOffset;
+    if (Robot.isReal()) {
+      return pivotEncoder.getPosition() + pivotOffset;
+    } else {
+      return pivotSimEncoder.getPosition() + pivotOffset;
+    }
   }
 
   public double getExtendPosition() {
-    return extendEncoder.getPosition();
+    if (Robot.isReal()) {
+      return extendEncoder.getPosition();
+    } else {
+      return extendSimEncoder.getPosition();
+    }
   }
 
   public boolean isPivotAtTarget() {
@@ -153,7 +177,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean isExtendAtTarget() {
-    return Math.abs(extendEncoder.getPosition() - this.currentExtendTarget) < 0.1;
+    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.1;
   }
 
   public double getPivotTarget() {
@@ -196,9 +220,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // m_elevatorMech2d.setLength(getExtendPosition());
-    // m_elevatorMech2d.setAngle(getPivotPosition());
-
+    if (Robot.isReal()) {
+      m_elevatorMech2d.setLength(getExtendPosition());
+      m_elevatorMech2d.setAngle(getPivotPosition());
+    }
     SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
     SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
     SmartDashboard.putNumber("Abs", KFF);

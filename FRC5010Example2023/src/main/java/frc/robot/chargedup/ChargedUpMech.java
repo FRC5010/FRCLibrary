@@ -59,17 +59,17 @@ public class ChargedUpMech extends GenericMechanism {
     public void configureButtonBindings(Controller driver, Controller operator) {
         
         buttonOperator.getButton(7)
-                .onTrue(new SetElevatorExtendFromLevel(elevatorSubsystem));
+                .whileTrue(new SetElevatorExtendFromLevel(elevatorSubsystem));
         buttonOperator.getButton(1)
-                .onTrue(new SetElevatorExtendFromLevel(elevatorSubsystem, ElevatorLevel.ground));
+                .whileTrue(new SetElevatorExtendFromLevel(elevatorSubsystem, ElevatorLevel.ground));
         buttonOperator.getButton(5)
-                .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.ground));
+                .whileTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.ground));
         buttonOperator.getButton(4)
-                .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.low));
+                .whileTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.low));
         buttonOperator.getButton(3)
-                .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.medium));
+                .whileTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.medium));
         buttonOperator.getButton(2)
-                .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
+                .whileTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
         buttonOperator.getButton(6)
                 .onTrue(new InstantCommand(() -> {speedLimit = 0.5;}))
                 .onFalse(new InstantCommand(() -> {speedLimit = 1.0;}));
@@ -77,16 +77,6 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.setXAxis(buttonOperator.createXAxis().negate().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
         new ElevatorOut(elevatorSubsystem, () -> (buttonOperator.getXAxis() / speedLimit));
         new ElevatorMove(elevatorSubsystem, () -> (buttonOperator.getYAxis() / speedLimit));
-
-        // operator.createYButton()
-        //         .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
-        // operator.createAButton()
-        //         .onTrue(new ElevatorMove(elevatorSubsystem, () -> -0.5));
-        // operator.createBButton()
-        //         .whileTrue(new ElevatorOut(elevatorSubsystem, () -> -0.1));
-        // operator.createXButton()
-        //         .whileTrue(new ElevatorOut(elevatorSubsystem, () -> 0.1));
-
 
         // new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
         //         .onTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
