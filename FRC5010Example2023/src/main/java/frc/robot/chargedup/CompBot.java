@@ -87,7 +87,7 @@ public class CompBot extends GenericMechanism {
         // Uncomment when using PhotonVision
         //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
-        buttonOperator.createButtons(7);
+        buttonOperator.createButtons(8);
         elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator);
     } 
 

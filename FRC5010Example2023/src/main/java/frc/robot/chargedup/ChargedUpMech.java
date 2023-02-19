@@ -58,7 +58,7 @@ public class ChargedUpMech extends GenericMechanism {
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
         
-        buttonOperator.getButton(0)
+        buttonOperator.getButton(7)
                 .onTrue(new SetElevatorExtendFromLevel(elevatorSubsystem));
         buttonOperator.getButton(1)
                 .onTrue(new SetElevatorExtendFromLevel(elevatorSubsystem, ElevatorLevel.ground));

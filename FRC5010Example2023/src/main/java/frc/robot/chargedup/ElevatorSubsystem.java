@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
+import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 
 public class ElevatorSubsystem extends SubsystemBase {
   /**
@@ -39,15 +40,28 @@ public class ElevatorSubsystem extends SubsystemBase {
   private MotorModelConstants pivotConstants;
   private GenericPID pivotPID;
   private AbsoluteEncoder pivotEncoder;
+  private SimulatedEncoder pivotSimEncoder = new SimulatedEncoder(10, 11);
 
   private MotorController5010 extendMotor;
   private SparkMaxPIDController extendController;
   private MotorModelConstants extendConstants;
   private GenericPID extendPID;
   private RelativeEncoder extendEncoder;
+  private SimulatedEncoder extendSimEncoder = new SimulatedEncoder(12, 13);
 
   private double KFF = 0.000156;
   private double kIz = 0;
+
+  private static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
+  private static final double kCarriageMass = 10.0; // kg
+
+  private static final double kMinElevatorHeight = Units.inchesToMeters(2);
+  private static final double kMaxElevatorHeight = Units.inchesToMeters(50);
+
+  // distance per pulse = (distance per revolution) / (pulses per revolution)
+  //  = (Pi * D) / ppr
+  private static final double kElevatorEncoderDistPerPulse =
+      2.0 * Math.PI * kElevatorDrumRadius / 8192;
 
   private Mechanism2d m_mech2d;
   private MechanismRoot2d m_mech2dRoot;
@@ -81,6 +95,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.extendMotor = extend;
     this.extendController = ((CANSparkMax) extend).getPIDController();
     this.extendEncoder = ((CANSparkMax) extend).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature , 8192);
+    this.extendEncoder.setPositionConversionFactor(kElevatorEncoderDistPerPulse);
     this.extendPID = extendPID;
     this.extendConstants = extendConstants;
 
@@ -89,12 +104,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_elevatorMech2d = m_mech2dRoot.append(
         new MechanismLigament2d(
             "Elevator", Units.metersToInches(0.05), -30));
+    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75, 
+      40, 2, Units.degreesToRadians(0), 
+      Units.degreesToRadians(60), false);
+    extendSim = new ElevatorSim(DCMotor.getNEO(1), 25, 
+      kCarriageMass, kElevatorDrumRadius, kMinElevatorHeight, kMaxElevatorHeight, false);
 
     extendFeedforward = new ElevatorFeedforward(liftConstants.getkS(), extendConstants.getkV(),
         extendConstants.getkA());
     pivotFeedforward = new ArmFeedforward(liftConstants.getkS(), liftConstants.getkF(), liftConstants.getkV());
-    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(2), 1.0/60.0, 40, 1, Units.degreesToRadians(-30), Units.degreesToRadians(60), true);
-    extendSim = new ElevatorSim(DCMotor.getNEO(1), 1.0/5.0, 10, 0.05, 0.05, 1.5, true);
 
     pivotController.setP(pivotPID.getkP());
     pivotController.setI(pivotPID.getkI());
@@ -157,15 +175,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void pivotPow(double pow) {
     SmartDashboard.putNumber("Pivot Power", pow);
     SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
-    SmartDashboard.putNumber("Pivot Rotation", ((CANSparkMax) pivotMotor).getEncoder().getPosition());
+    SmartDashboard.putNumber("Pivot Rotation", pivotEncoder.getPosition());
     pivotMotor.set(pow);
   }
 
   public void extendPow(double pow) {
-    SmartDashboard.putNumber("Elevate Power", pow);
-    SmartDashboard.putNumber("Elevate Current", ((CANSparkMax) extendMotor).getOutputCurrent());
-    SmartDashboard.putNumber("Elevate Rotation", ((CANSparkMax) extendMotor).getEncoder().getPosition());
     extendMotor.set(pow);
+    SmartDashboard.putNumber("Elevate Power", extendMotor.get());
+    SmartDashboard.putNumber("Elevate Current", ((CANSparkMax) extendMotor).getOutputCurrent());
+    SmartDashboard.putNumber("Extend Position", extendEncoder.getPosition());
   }
 
   public void stopPivot(){
@@ -178,10 +196,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    m_elevatorMech2d.setLength(extendEncoder.getPosition());
-    m_elevatorMech2d.setAngle(getPivotPosition());
+    // m_elevatorMech2d.setLength(getExtendPosition());
+    // m_elevatorMech2d.setAngle(getPivotPosition());
 
-    SmartDashboard.putNumber("Elevator Position: ", extendEncoder.getPosition());
+    SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
     SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
     SmartDashboard.putNumber("Abs", KFF);
   }
@@ -199,7 +217,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // Finally, we set our simulated encoder's readings and simulated battery
     // voltage
-    extendEncoder.setPosition(extendSim.getPositionMeters());
+    extendSimEncoder.setPosition(extendSim.getPositionMeters());
+    pivotSimEncoder.setPosition(Units.radiansToDegrees(pivotSim.getAngleRads()));
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(extendSim.getCurrentDrawAmps()));
@@ -207,6 +226,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         BatterySim.calculateDefaultBatteryLoadedVoltage(pivotSim.getCurrentDrawAmps()));
 
     // Update elevator visualization with simulated position
+    SmartDashboard.putNumber("Pivot Sim Rotation", Units.radiansToDegrees(pivotSim.getAngleRads()));
     m_elevatorMech2d.setLength(Units.metersToInches(extendSim.getPositionMeters()));
     m_elevatorMech2d.setAngle(Units.radiansToDegrees(pivotSim.getAngleRads()));
   }
