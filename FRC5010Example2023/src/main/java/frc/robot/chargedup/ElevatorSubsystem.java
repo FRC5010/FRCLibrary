@@ -37,7 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   /**
    *
    */
-  private static final double pivotOffset = 0;
+  private static final double pivotOffset = -20;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
@@ -58,8 +58,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
   private static final double kCarriageMass = 10.0; // kg
 
-  private static final double kMinElevatorHeight = Units.inchesToMeters(2);
-  private static final double kMaxElevatorHeight = Units.inchesToMeters(50);
+  public static final double kMinElevatorHeight = Units.inchesToMeters(24);
+  public static final double kMaxElevatorHeight = Units.inchesToMeters(60);
 
   // distance per pulse = (distance per revolution) / (pulses per revolution)
   //  = (Pi * D) / ppr
@@ -104,14 +104,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.extendConstants = extendConstants;
 
     this.m_mech2d = mech2d;
-    m_mech2dRoot = m_mech2d.getRoot("Elevator Root", 10, 10);
+    m_mech2dRoot = m_mech2d.getRoot("Elevator Root", 5, 20);
     m_elevatorMech2d = m_mech2dRoot.append(
         new MechanismLigament2d(
             "Elevator", Units.metersToInches(kMinElevatorHeight), -30.0, 6, new Color8Bit(Color.kOrange)));
     targetPos2d = m_mech2dRoot.append(
       new MechanismLigament2d("Target", Units.metersToInches(kMinElevatorHeight), -30, 6, new Color8Bit(Color.kBlue)));        
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75, 
-      40, 2, Units.degreesToRadians(0), 
+      40, 2, Units.degreesToRadians(-20), 
       Units.degreesToRadians(60), false);
     extendSim = new ElevatorSim(DCMotor.getNEO(1), 25, 
       kCarriageMass, kElevatorDrumRadius, kMinElevatorHeight, kMaxElevatorHeight, false);
@@ -194,6 +194,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void setElevatorLevel(ElevatorLevel level) {
     this.currentLevel = level;
+    targetPos2d.setLength(currentLevel.getExtenstionPosition());
+    targetPos2d.setAngle(currentLevel.getPivotPosition());
   }
 
   public void pivotPow(double pow) {
@@ -221,7 +223,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     if (Robot.isReal()) {
-      m_elevatorMech2d.setLength(getExtendPosition());
+      m_elevatorMech2d.setLength(Units.metersToInches(getExtendPosition()));
       m_elevatorMech2d.setAngle(getPivotPosition());
     }
     SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
