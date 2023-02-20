@@ -18,7 +18,6 @@ public class ChargedUpAutoModes extends AutoModes{
     public static String blueCone8Start = "Blue Cone 8 Start";
 
     public void loadAutoPaths(){
-        List<PathPlannerTrajectory> examplePath = PathPlanner.loadPathGroup(blueCone8Start, new PathConstraints(1,1));
-        paths.put(blueCone8Start, examplePath);
+        addPath("Blue Cone 8 Start", new PathConstraints(4, 3));
     }
 }

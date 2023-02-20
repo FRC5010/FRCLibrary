@@ -40,11 +40,11 @@ public class ButtonBoard extends Controller {
         return super.getLeftXAxis();
     }
     public void createButtons(int numberOfButtons){
-        for(int i = 0; i < numberOfButtons; i++){
+        for(int i = 1; i < numberOfButtons; i++){
            BUTTONS.add(super.createCustomButton(i)); 
         }
     }
     public JoystickButton getButton(int button){
-        return BUTTONS.get(button);
+        return BUTTONS.get(button - 1);
     }
 }

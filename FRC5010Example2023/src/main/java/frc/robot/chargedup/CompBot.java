@@ -33,7 +33,7 @@ public class CompBot extends GenericMechanism {
     private SwerveConstants swerveConstants; 
     private Drive drive; 
     private GenericMechanism elevator;
-    private AutoModes autoMaps;
+    private ChargedUpAutoModes autoMaps;
     private ButtonBoard buttonOperator;
 
     public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
@@ -87,7 +87,7 @@ public class CompBot extends GenericMechanism {
         // Uncomment when using PhotonVision
         //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
-        buttonOperator.createButtons(7);
+        buttonOperator.createButtons(11);
         elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator);
     } 
 
