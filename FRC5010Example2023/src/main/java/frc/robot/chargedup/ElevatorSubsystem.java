@@ -208,7 +208,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void setElevatorLevel(ElevatorLevel level) {
     this.currentLevel = level;
-    targetPos2d.setLength(currentLevel.getExtenstionPosition());
+    targetPos2d.setLength(currentLevel.getExtensionPosition());
     targetPos2d.setAngle(currentLevel.getPivotPosition());
   }
 
