@@ -29,7 +29,7 @@ public class SetElevatorExtendFromLevel extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.setExtendPosition(targetLevel.getExtenstionPosition());
+    elevator.setExtendPosition(targetLevel.getExtensionPosition());
     elevator.setElevatorLevel(targetLevel);
   }
 
@@ -41,7 +41,9 @@ public class SetElevatorExtendFromLevel extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    elevator.extendPow(0);
+  }
 
   // Returns true when the command should end.
   @Override

@@ -1,10 +1,12 @@
 package frc.robot.chargedup;
 
+import edu.wpi.first.math.util.Units;
+
 public enum ElevatorLevel {
-  ground(0,0), 
-  low(0,0), 
-  medium(0,0), 
-  high(0,0);
+  ground(ElevatorSubsystem.kMinElevatorHeight,-20), 
+  low(ElevatorSubsystem.kMinElevatorHeight,-30), 
+  medium(ElevatorSubsystem.kMinElevatorHeight + Units.inchesToMeters(20), 20), 
+  high(ElevatorSubsystem.kMaxElevatorHeight + Units.inchesToMeters(40),40);
 
   private double extension, pivot;
 
@@ -13,7 +15,7 @@ public enum ElevatorLevel {
     this.pivot = pivot;
   }
 
-  public double getExtenstionPosition() {
+  public double getExtensionPosition() {
       return extension;
   }
   public double getPivotPosition() {

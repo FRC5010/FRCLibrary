@@ -43,7 +43,7 @@ public class ChargedUpMech extends GenericMechanism {
                 MotorFactory.NEO(11), new GenericPID(0, 0, 0),
                 new MotorModelConstants(1, 1, 1), 
                 new MotorModelConstants(1, 1, 1),
-                mechVisual);
+                mechVisual, 0);
 
         this.intakeSubsystem = new IntakeSubsystem(
                 MotorFactory.NEO(18), 
@@ -90,16 +90,6 @@ public class ChargedUpMech extends GenericMechanism {
         new Trigger(() -> (Math.abs(buttonOperator.getYAxis()) > 0.01))
             .onTrue(new ElevatorMove(elevatorSubsystem, () -> (buttonOperator.getYAxis() * speedLimit))
         );
-
-        // operator.createYButton()
-        //         .onTrue(new ElevatorMove(elevatorSubsystem, () -> 0.5));
-        // operator.createAButton()
-        //         .onTrue(new ElevatorMove(elevatorSubsystem, () -> -0.5));
-        // operator.createBButton()
-        //         .whileTrue(new ElevatorOut(elevatorSubsystem, () -> -0.1));
-        // operator.createXButton()
-        //         .whileTrue(new ElevatorOut(elevatorSubsystem, () -> 0.1));
-
 
         // new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
         //         .onTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
