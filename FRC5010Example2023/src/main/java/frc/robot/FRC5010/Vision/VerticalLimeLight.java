@@ -7,6 +7,8 @@
 
 package frc.robot.FRC5010.Vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+
 public class VerticalLimeLight extends VisionLimeLight {
   /**
    * Creates a new LimeLightVision.
@@ -15,8 +17,8 @@ public class VerticalLimeLight extends VisionLimeLight {
 
   //class for when the limelight is mounted "normally" or where the leds are mounted horizontally
   //used when the limelight is mounted horiziontal, landscape
-  public VerticalLimeLight(String name, int colIndex) {
-    super(name, colIndex);
+  public VerticalLimeLight(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
+    super(name, colIndex, fieldLayout);
   }
 
   public VerticalLimeLight(String name, double camHeight, double camAngle, double targetHeight, int colIndex,String driverTabeName) {

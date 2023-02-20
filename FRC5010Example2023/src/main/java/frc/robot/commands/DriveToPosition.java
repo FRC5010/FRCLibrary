@@ -9,7 +9,10 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -17,9 +20,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
+import frc.robot.chargedup.TargetConstants;
 
 
-public class ChaseTag extends CommandBase {
+public class DriveToPosition extends CommandBase {
   private SwerveDrivetrain swerveSubsystem;
   private final GenericPID pidTranslation = new GenericPID(1, 0, 0);
   private final GenericPID thetaTranslation = new GenericPID(.25, 0, 0);
@@ -32,16 +36,31 @@ public class ChaseTag extends CommandBase {
   private final ProfiledPIDController yController;
   private final ProfiledPIDController thetaController;
 
+  public static enum LCR {
+    left, center, right
+  }
+
+  Transform2d tagToLeftConeTransfrom = new Transform2d(new Translation2d(TargetConstants.tagToRobotXOffset, TargetConstants.tagToConeYOffset), 
+  Rotation2d.fromDegrees(0));
+
+  Transform2d tagToCubeTransfrom = new Transform2d(new Translation2d(TargetConstants.tagToRobotXOffset, 0), 
+  Rotation2d.fromDegrees(0));
+
+  Transform2d tagToRightConeTransfrom = new Transform2d(new Translation2d(TargetConstants.tagToRobotXOffset, -TargetConstants.tagToConeYOffset), 
+  Rotation2d.fromDegrees(0));
+
 
   private final Pose3d tagToGoal = new Pose3d(
     new Translation3d(1.5, 0.0, 0.0),
     new Rotation3d(0.0, 0.0, 0));
 
-    
+  private Pose2d targetPose; 
+  private Transform2d targetTransform; 
  
   private Supplier<Pose2d> poseProvider; 
+  private Supplier<Pose2d> targetPoseProvider; 
 
-  public ChaseTag(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider) {
+  public DriveToPosition(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider, Supplier<Pose2d> targetPoseProvider, LCR relativePosition) {
     xConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
     yConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
     thetaConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond()); 
@@ -53,14 +72,30 @@ public class ChaseTag extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = (SwerveDrivetrain) swerveSubsystem;
     this.poseProvider = poseProvider;
+    this.targetPoseProvider = targetPoseProvider;
 
     xController.setTolerance(0.2);
     yController.setTolerance(0.2);
     thetaController.setTolerance(Units.degreesToRadians(3));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     
+
+    switch(relativePosition){
+      case left:
+        targetTransform = tagToLeftConeTransfrom;
+        break;
+      case center: 
+        targetTransform = tagToCubeTransfrom;
+        break; 
+      case right: 
+        targetTransform = tagToRightConeTransfrom;
+        break; 
+      default:
+        targetTransform = tagToCubeTransfrom; 
+        break; 
+    }
+
     addRequirements(swerveSubsystem);
-    
   }
   
   // Called when the command is initially scheduled.
@@ -68,13 +103,17 @@ public class ChaseTag extends CommandBase {
   public void initialize() {
     var robotPose = poseProvider.get(); 
 
+    targetPose = targetPoseProvider.get().transformBy(targetTransform);
+
     thetaController.reset(robotPose.getRotation().getRadians());
     xController.reset(robotPose.getX());
     yController.reset(robotPose.getY());
 
-    xController.setGoal(tagToGoal.getX());
-    yController.setGoal(tagToGoal.getY());
-    thetaController.setGoal(tagToGoal.getRotation().getAngle());
+    xController.setGoal(targetPose.getX());
+    yController.setGoal(targetPose.getY());
+    thetaController.setGoal(targetPose.getRotation().getRadians());
+
+    swerveSubsystem.getPoseEstimator().setTargetPoseOnField(targetPose, "Target Pose");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -113,10 +152,6 @@ public class ChaseTag extends CommandBase {
       // System.out.println(goalPose); 
 
       // // Drive
-      xController.setGoal(tagToGoal.getX());
-      yController.setGoal(tagToGoal.getY());
-      thetaController.setGoal(0);
-
       System.out.println("xSpeed: " + xController.calculate(robotPose.getX()) + "\nySpeed: " + yController.calculate(robotPose.getY()) + 
       "\nTheta: " + thetaController.calculate(robotPose2d.getRotation().getRadians())); 
 
@@ -131,7 +166,8 @@ public class ChaseTag extends CommandBase {
     // yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()
     // ,0));
 
-    swerveSubsystem.drive(new ChassisSpeeds(0, 0, -thetaController.calculate(robotPose2d.getRotation().getRadians())));
+    swerveSubsystem.drive(new ChassisSpeeds(xController.calculate(robotPose.getX()), 
+    yController.calculate(robotPose.getY()), 0));
   }
 
 

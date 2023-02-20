@@ -5,11 +5,14 @@
 package frc.robot.FRC5010.Vision;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -19,7 +22,8 @@ import edu.wpi.first.math.util.Units;
 public class AprilTags {
     public static AprilTagFieldLayout aprilTagFieldLayout;
     public static AprilTagFieldLayout aprilTagRoomLayout;
- 
+    public static Map<Pose2d, Integer> poseToID = new HashMap<>(); 
+
     public static enum AprilTag5010 {
         // TODO: Define April Tag positions here.
         ID0(0, 0, 0, 0, 0),
@@ -89,6 +93,7 @@ public class AprilTags {
             }
 
             aprilTagRoomLayout = new AprilTagFieldLayout(aprilTagPoses, Units.feetToMeters(30), Units.feetToMeters(30));
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

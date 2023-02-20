@@ -31,13 +31,16 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.chargedup.ChargedUpAutoModes;
+import frc.robot.chargedup.DriverDisplaySubsystem;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.ChaseTag;
+import frc.robot.commands.DriveToPosition;
+import frc.robot.commands.DriveToPosition.LCR;
 
 /** Add your docs here. */
 public class PracticeBot extends GenericMechanism {
   private GenericGyro gyro;
   private SwerveConstants swerveConstants;
+  private DriverDisplaySubsystem driverDisplay; 
   private AutoModes autoMaps;
   private Drive drive;
 
@@ -57,12 +60,12 @@ public class PracticeBot extends GenericMechanism {
 
     VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout,
         PoseStrategy.AVERAGE_BEST_TARGETS);
-    multiVision.addPhotonCamera("FrontCamera",
+    multiVision.addPhotonCamera("RightCamera",
         new Transform3d( // This describes the vector between the camera lens to the robot center on the
                          // ground
             new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)),
             new Rotation3d(0, 0, Units.degreesToRadians(-90))));
-    multiVision.addPhotonCamera("BackCamera",
+    multiVision.addPhotonCamera("LeftCamera",
         new Transform3d( // This describes the vector between the camera lens to the robot center on the
                          // ground
             new Translation3d(Units.inchesToMeters(-5.5), 0, Units.inchesToMeters(3.5)),
@@ -81,6 +84,8 @@ public class PracticeBot extends GenericMechanism {
 
     drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
     multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
+
+    driverDisplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
   }
 
   @Override
@@ -92,10 +97,19 @@ public class PracticeBot extends GenericMechanism {
   public void configureButtonBindings(Controller driver, Controller operator) {
     driver.createYButton().whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createAButton().getAsBoolean(), gyro)); 
     
-    driver.createBButton().whileTrue(new ChaseTag((SwerveDrivetrain) drive.getDrivetrain(), () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose())); 
+    driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
+    () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
+    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), LCR.left)); 
 
-    drive.configureButtonBindings(driver, operator);
-    
+    driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
+    () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
+    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), LCR.center)); 
+
+    driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
+    () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
+    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), LCR.right)); 
+
+    drive.configureButtonBindings(driver, operator); 
   }
 
   @Override

@@ -40,7 +40,7 @@ public class VisionPhotonMultiCam extends VisionSystem {
   // makes a new limelight that is vertical, portrait
   public VisionPhotonMultiCam(String name, int colIndex, 
     AprilTagFieldLayout fieldLayout, PoseStrategy strategy) {
-    super(name, colIndex);
+    super(name, colIndex, fieldLayout);
     this.fieldLayout = fieldLayout; 
     this.strategy = strategy;
   }

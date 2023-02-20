@@ -62,15 +62,6 @@ public class MK4SwerveModule extends GenericSwerveModule {
                 turn = MotorFactory.NEO(swervePorts.getTurnPort()).invert(individualConstants.isTurningInv());
                 absoluteEncoder = new AnalogInput5010(swervePorts.getEncoderPort());
                 absoluteEncoder.setInverted(individualConstants.isEncoderInv());
-                turnEncoder = turn.getMotorEncoder();
-                driveEncoder = drive.getMotorEncoder();
-        
-                // set units drive encoder to meters and meters/sec
-                driveEncoder.setPositionConversion(moduleConstants.getkDriveEncoderRot2Meter());
-                driveEncoder.setVelocityConversion(moduleConstants.getkDriveEncoderRPM2MeterPerSec());
-                // set units turning encoder to radians and radians/sec
-                turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
-                turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
 
                 setupSwerveEncoders();
     }
