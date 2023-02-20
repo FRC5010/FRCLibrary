@@ -13,7 +13,7 @@ public enum ElevatorLevel {
     this.pivot = pivot;
   }
 
-  public double getExtenstionPosition() {
+  public double getExtensionPosition() {
       return extension;
   }
   public double getPivotPosition() {

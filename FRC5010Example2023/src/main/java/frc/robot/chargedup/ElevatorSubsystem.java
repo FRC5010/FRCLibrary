@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -35,6 +36,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private MotorModelConstants pivotConstants;
   private GenericPID pivotPID;
   private AbsoluteEncoder pivotEncoder;
+
+  private DigitalInput extendHallEffect;
 
   private MotorController5010 extendMotor;
   private SparkMaxPIDController extendController;
@@ -62,7 +65,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem(MotorController5010 pivot, GenericPID pivotPID,
       MotorController5010 extend, GenericPID extendPID,
       MotorModelConstants liftConstants, MotorModelConstants extendConstants,
-      Mechanism2d mech2d) {
+      Mechanism2d mech2d, int extendHallEffectPort) {
     this.currentPivotTarget = 0;
     this.currentExtendTarget = 0;
 
@@ -101,10 +104,16 @@ public class ElevatorSubsystem extends SubsystemBase {
     pivotController.setSmartMotionMaxVelocity(3000, 0);
     pivotController.setSmartMotionMinOutputVelocity(0, 0);
     pivotController.setSmartMotionMaxAccel(10, 0);
+
+    this.extendHallEffect = new DigitalInput(extendHallEffectPort);
   }
 
   public void reset() {
 
+  }
+
+  public void zeroExtendEncoder() {
+    this.extendEncoder.setPosition(0);
   }
 
   public void setPivotPosition(double position) {
@@ -140,6 +149,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   public double getExtendTarget() {
     return this.currentExtendTarget;
   }
+
+  public boolean isElevatorIn() {
+    return extendHallEffect.get();
+  }
+
 
   public ElevatorLevel getElevatorLevel() {
     return this.currentLevel;
@@ -179,6 +193,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Position: ", extendEncoder.getPosition());
     SmartDashboard.putNumber("Pivot Position: ", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Abs", KFF);
+    SmartDashboard.putBoolean("Is Elevator in: ", isElevatorIn());
   }
 
   @Override
