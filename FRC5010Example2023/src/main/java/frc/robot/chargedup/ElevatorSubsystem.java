@@ -38,7 +38,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   /**
    *
    */
-  private static final double pivotOffset = 0;
+  private static final double pivotOffset = -14.04;
   private final double pivotConversionFactor = 24.242; 
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
@@ -56,7 +56,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private RelativeEncoder extendEncoder;
   private SimulatedEncoder extendSimEncoder = new SimulatedEncoder(12, 13);
 
-  private double KFF = 0.000156;
+  //private double KFF = 0.000156;
   private double kIz = 0;
 
   private static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
@@ -93,16 +93,17 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.currentExtendTarget = 0;
 
     this.pivotMotor = pivot;
+    this.pivotMotor.setInverted(false);
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
     this.pivotEncoder = ((CANSparkMax) pivot).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
-    this.pivotMotor.setInverted(true);
-    this.pivotEncoder.setInverted(false);
     pivotEncoder.setPositionConversionFactor(this.pivotConversionFactor);
+    this.pivotEncoder.setInverted(true);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
 
 
     this.extendMotor = extend;
+    this.extendMotor.setInverted(true);
     this.extendController = ((CANSparkMax) extend).getPIDController();
     this.extendEncoder = ((CANSparkMax) extend).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature , 8192);
     this.extendEncoder.setPositionConversionFactor(kElevatorEncoderDistPerPulse);
@@ -131,7 +132,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     pivotController.setD(pivotPID.getkD());
     pivotController.setFeedbackDevice(pivotEncoder);
     // TODO Set FF and IZ
-    pivotController.setFF(KFF);
+    //pivotController.setFF(KFF);
     pivotController.setIZone(kIz);
     pivotController.setSmartMotionMaxVelocity(3000, 0);
     pivotController.setSmartMotionMinOutputVelocity(0, 0);
@@ -159,6 +160,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Target", currentPivotTarget);
     targetPos2d.setAngle(currentPivotTarget);
     if (Robot.isReal()) {
+      //pivotController.setFF(position / 180);
       pivotController.setReference(this.currentPivotTarget, CANSparkMax.ControlType.kSmartMotion, 0);
     } else {
       pivotPow((currentPivotTarget - getPivotPosition())/100);
@@ -170,6 +172,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Extend Target", currentExtendTarget);
     targetPos2d.setLength(position);
     if (Robot.isReal()) {
+      //extendController.setFF();
       extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kSmartMotion, 0);
     } else {
       extendPow((currentExtendTarget - getExtendPosition()) / kMaxElevatorHeight);
@@ -253,7 +256,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
     SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
     SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
-    SmartDashboard.putNumber("Abs", KFF);
+    //SmartDashboard.putNumber("Abs", KFF);
     SmartDashboard.putBoolean("Is Elevator in: ", isElevatorIn());
   }
 

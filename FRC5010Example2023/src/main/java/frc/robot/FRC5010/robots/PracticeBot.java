@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.commands.AutoModes;
+import frc.robot.FRC5010.commands.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.swerve.MK4SwerveModule;
@@ -30,7 +30,6 @@ import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
-import frc.robot.chargedup.ChargedUpAutoModes;
 import frc.robot.chargedup.DriverDisplaySubsystem;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPosition;
@@ -41,7 +40,7 @@ public class PracticeBot extends GenericMechanism {
   private GenericGyro gyro;
   private SwerveConstants swerveConstants;
   private DriverDisplaySubsystem driverDisplay; 
-  private AutoModes autoMaps;
+  private AutoMaps autoMaps;
   private Drive drive;
 
   public PracticeBot(Mechanism2d visual, ShuffleboardTab displayTab) {
@@ -79,9 +78,8 @@ public class PracticeBot extends GenericMechanism {
 
     gyro = new PigeonGyro(11);
 
-    autoMaps = new ChargedUpAutoModes();
-    autoMaps.loadAutoPaths();
-
+    autoMaps = new AutoMaps();
+    
     drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
     multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
 

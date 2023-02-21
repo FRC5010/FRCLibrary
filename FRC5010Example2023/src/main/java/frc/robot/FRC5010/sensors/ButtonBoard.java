@@ -21,29 +21,37 @@ public class ButtonBoard extends Controller {
     public ButtonBoard(int port) {
         super(port);
     }
+    
     public void setYAxis(Axis yAxis){
         super.setLeftYAxis(yAxis);
     }
+
     public  void setXAxis(Axis xAxis){
         super.setLeftXAxis(xAxis);
     }
+
     public Axis createYAxis(){
         return super.createLeftYAxis();
     }
+
     public Axis createXAxis(){
         return super.createLeftXAxis();
     }
+
     public double getYAxis(){
         return super.getLeftYAxis();
     }
+
     public double getXAxis(){
         return super.getLeftXAxis();
     }
+
     public void createButtons(int numberOfButtons){
         for(int i = 1; i < numberOfButtons; i++){
            BUTTONS.add(super.createCustomButton(i)); 
         }
     }
+
     public JoystickButton getButton(int button){
         return BUTTONS.get(button - 1);
     }

@@ -38,8 +38,10 @@ public class ChargedUpMech extends GenericMechanism {
 
     public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator) {
         super(robotMechVisual, shuffleTab);
+        // use this to PID the Elevator
+        // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
         this.elevatorSubsystem = new ElevatorSubsystem(
-                MotorFactory.NEO(9), new GenericPID(3.6174, 0, 0),
+                MotorFactory.NEO(9), new GenericPID(3.6174/8, 0, 0),
                 MotorFactory.NEO(11), new GenericPID(3.6174, 0, 0),
                 new MotorModelConstants(1, 1, 1), 
                 new MotorModelConstants(1, 1, 1),
@@ -104,8 +106,15 @@ public class ChargedUpMech extends GenericMechanism {
         operator.setRightYAxis(operator.createRightYAxis().deadzone(.07).negate());
         operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07));
     }
-    
 
+    public IntakeSubsystem getIntakeSubsystem(){
+        return intakeSubsystem;
+    }
+
+    public ElevatorSubsystem getElevatorSubsystem(){
+        return elevatorSubsystem;
+    }
+    
     @Override
     public void setupDefaultCommands(Controller driver, Controller operator) {
         elevatorSubsystem.setDefaultCommand(new FunctionalCommand(

@@ -4,22 +4,30 @@
 
 package frc.robot.chargedup;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.pathplanner.lib.PathConstraints;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.commands.AutoModes;
+import frc.robot.FRC5010.commands.AutoMaps;
+import frc.robot.FRC5010.commands.ElapseTime;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
+import frc.robot.FRC5010.drive.swerve.SdsSwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
@@ -27,13 +35,17 @@ import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
+import frc.robot.commands.AutoBalance;
+import frc.robot.commands.IntakeSpin;
+import frc.robot.commands.SetElevatorExtendFromLevel;
+import frc.robot.commands.SetElevatorPivotFromLevel;
 
 /** Add your docs here. */
 public class CompBot extends GenericMechanism {
     private SwerveConstants swerveConstants; 
     private Drive drive; 
     private GenericMechanism elevator;
-    private ChargedUpAutoModes autoMaps;
+    private AutoMaps autoMaps;
     private ButtonBoard buttonOperator;
 
     public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
@@ -80,8 +92,7 @@ public class CompBot extends GenericMechanism {
 
         GenericGyro gyro = new PigeonGyro(13);
 
-        autoMaps = new ChargedUpAutoModes();
-        autoMaps.loadAutoPaths();
+        
 
         drive = new Drive(multiVision, gyro, Drive.Type.SDS_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         // Uncomment when using PhotonVision
@@ -89,6 +100,33 @@ public class CompBot extends GenericMechanism {
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
         buttonOperator.createButtons(11);
         elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator);
+
+        autoMaps = new AutoMaps();
+        SdsSwerveDrivetrain swerveDrivetrain = (SdsSwerveDrivetrain) drive.getDrivetrain();
+        ElevatorSubsystem elevatorSubsystem = ((ChargedUpMech) elevator).getElevatorSubsystem();
+        IntakeSubsystem intakeSubsystem = ((ChargedUpMech) elevator).getIntakeSubsystem();
+
+        // Elevator Controls
+        autoMaps.addMarker("ExtendToPivotPosition", new SetElevatorExtendFromLevel(elevatorSubsystem));
+        autoMaps.addMarker("ExtendToHome", new SetElevatorExtendFromLevel(elevatorSubsystem, ElevatorLevel.ground));
+        autoMaps.addMarker("PivotToGround", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.ground));
+        autoMaps.addMarker("PivotToLow", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.low));
+        autoMaps.addMarker("PivotToMid", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.medium));
+        autoMaps.addMarker("PivotToHigh", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
+
+        // Intake Controls
+        autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
+        autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
+        autoMaps.addMarker("Outtake", new ParallelDeadlineGroup(new ElapseTime(500), new IntakeSpin(intakeSubsystem, () -> -0.5)));
+        autoMaps.addMarker("Intake", new ParallelDeadlineGroup(new ElapseTime(500), new IntakeSpin(intakeSubsystem, () ->  0.5)));
+
+        // Drivetrain Controls
+        autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
+
+
+        // Create Paths
+        autoMaps.addPath("Blue Cone 8 Start", new PathConstraints(4, 3));
+        autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
     } 
 
     public Map<String,Command> setAutoCommands(){
