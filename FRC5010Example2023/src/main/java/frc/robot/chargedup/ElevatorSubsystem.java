@@ -38,12 +38,13 @@ public class ElevatorSubsystem extends SubsystemBase {
   /**
    *
    */
-  private static final double pivotOffset = -20;
+  private static final double pivotOffset = 0;
+  private final double pivotConversionFactor = 24.242; 
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
   private GenericPID pivotPID;
-  private AbsoluteEncoder pivotEncoder;
+  private RelativeEncoder pivotEncoder;
   private SimulatedEncoder pivotSimEncoder = new SimulatedEncoder(10, 11);
 
   private DigitalInput extendHallEffect;
@@ -66,8 +67,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   // distance per pulse = (distance per revolution) / (pulses per revolution)
   //  = (Pi * D) / ppr
-  private static final double kElevatorEncoderDistPerPulse =
-      2.0 * Math.PI * kElevatorDrumRadius / 8192;
+  private static final double kElevatorEncoderDistPerPulse = Units.inchesToMeters(14.8828);
+      // 2.0 * Math.PI * kElevatorDrumRadius / 8192;
 
   private Mechanism2d m_mech2d;
   private MechanismRoot2d m_mech2dRoot;
@@ -93,8 +94,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     this.pivotMotor = pivot;
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
-    this.pivotEncoder = ((CANSparkMax) pivot).getAbsoluteEncoder(Type.kDutyCycle);
-    pivotEncoder.setPositionConversionFactor(180.0/Math.PI);
+    this.pivotEncoder = ((CANSparkMax) pivot).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+    this.pivotMotor.setInverted(true);
+    this.pivotEncoder.setInverted(false);
+    pivotEncoder.setPositionConversionFactor(this.pivotConversionFactor);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
 
@@ -135,6 +138,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     pivotController.setSmartMotionMaxAccel(10, 0);
 
     this.extendHallEffect = new DigitalInput(extendHallEffectPort);
+    zeroPivotEncoder();
   }
 
   public void reset() {
@@ -145,8 +149,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.extendEncoder.setPosition(0);
   }
 
+  public void zeroPivotEncoder(){
+    this.pivotEncoder.setPosition(0);
+  }
+
+
   public void setPivotPosition(double position) {
     this.currentPivotTarget = position;
+    SmartDashboard.putNumber("Pivot Target", currentPivotTarget);
     targetPos2d.setAngle(currentPivotTarget);
     if (Robot.isReal()) {
       pivotController.setReference(this.currentPivotTarget, CANSparkMax.ControlType.kSmartMotion, 0);
@@ -157,6 +167,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void setExtendPosition(double position) {
     this.currentExtendTarget = position;
+    SmartDashboard.putNumber("Extend Target", currentExtendTarget);
     targetPos2d.setLength(position);
     if (Robot.isReal()) {
       extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kSmartMotion, 0);

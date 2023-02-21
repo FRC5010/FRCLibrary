@@ -46,6 +46,12 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
         super.follow((CANSparkMax) motor.getMotor());
         return this;
     }
+
+    @Override
+    public MotorController5010 setFollow(MotorController5010 motor, boolean inverted) {
+        super.follow((CANSparkMax) motor.getMotor(), inverted);
+        return this;
+    }
     @Override
     public MotorController5010 invert(boolean inverted) {
         super.setInverted(inverted);

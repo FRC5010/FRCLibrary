@@ -21,6 +21,7 @@ public class PivotElevator extends CommandBase {
   @Override
   public void initialize() {
     elevator.setPivotPosition(targetPosition);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.

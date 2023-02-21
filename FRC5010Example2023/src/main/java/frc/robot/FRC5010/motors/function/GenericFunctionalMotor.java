@@ -77,6 +77,12 @@ public class GenericFunctionalMotor implements MotorController5010 {
     }
 
     @Override
+    public MotorController5010 setFollow(MotorController5010 motor, boolean inverted) {
+        _motor.setFollow(motor, inverted);
+        return this;
+    }
+
+    @Override
     public MotorController5010 invert(boolean inverted) {
         _motor.invert(inverted);
         return this;

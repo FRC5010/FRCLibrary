@@ -39,8 +39,8 @@ public class ChargedUpMech extends GenericMechanism {
     public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator) {
         super(robotMechVisual, shuffleTab);
         this.elevatorSubsystem = new ElevatorSubsystem(
-                MotorFactory.NEO(9), new GenericPID(0, 0, 0),
-                MotorFactory.NEO(11), new GenericPID(0, 0, 0),
+                MotorFactory.NEO(9), new GenericPID(3.6174, 0, 0),
+                MotorFactory.NEO(11), new GenericPID(3.6174, 0, 0),
                 new MotorModelConstants(1, 1, 1), 
                 new MotorModelConstants(1, 1, 1),
                 mechVisual, 0);
@@ -73,15 +73,15 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.getButton(3)
                 .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
         buttonOperator.getButton(7)
-                .onTrue(new InstantCommand(() -> {speedLimit = 0.5;}))
+                .onTrue(new InstantCommand(() -> {speedLimit = 0.15;}))
                 .onFalse(new InstantCommand(() -> {speedLimit = 0.3;}));
 
         buttonOperator.getButton(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
         buttonOperator.getButton(9).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-        buttonOperator.getButton(10).onTrue(new IntakeSpin(intakeSubsystem, () -> -0.5));
+        buttonOperator.getButton(10).whileTrue(new IntakeSpin(intakeSubsystem, () -> -0.5));
 
         buttonOperator.setYAxis(buttonOperator.createYAxis().deadzone(0.05));
-        buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
+        buttonOperator.setXAxis(buttonOperator.createXAxis().negate().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
 
         new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
             .onTrue(new ElevatorOut(elevatorSubsystem, () -> (buttonOperator.getXAxis() * speedLimit))
@@ -91,8 +91,8 @@ public class ChargedUpMech extends GenericMechanism {
             .onTrue(new ElevatorMove(elevatorSubsystem, () -> (buttonOperator.getYAxis() * speedLimit))
         );
 
-        // new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
-        //         .onTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
+        new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
+                .whileTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
  
         // operator.createRightBumper()
         //         .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));

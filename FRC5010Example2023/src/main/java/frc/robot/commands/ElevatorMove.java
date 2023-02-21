@@ -43,7 +43,7 @@ public class ElevatorMove extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return this.elevatorSubsystem.isPivotAtTarget();
+        return false;
     }    
     
 }

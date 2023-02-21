@@ -15,6 +15,7 @@ public interface MotorController5010 extends MotorController {
     MotorController5010 duplicate(int port);
     MotorController5010 setSlewRate(double rate);
     MotorController5010 setFollow(MotorController5010 motor);
+    MotorController5010 setFollow(MotorController5010 motor, boolean inverted); 
     MotorController5010 invert(boolean inverted);
     MotorController5010 setCurrentLimit(int limit);
     GenericEncoder getMotorEncoder();

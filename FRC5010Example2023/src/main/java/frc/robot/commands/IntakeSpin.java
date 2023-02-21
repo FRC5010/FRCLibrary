@@ -30,7 +30,8 @@ public class IntakeSpin extends CommandBase {
   @Override
   public void execute() {
     double velocity = (this.spinVelocity.get());
-    this.intakeSubsystem.setVelocity(velocity);
+    // this.intakeSubsystem.setVelocity(velocity);
+    this.intakeSubsystem.setMotor(velocity);
   }
 
   // Called once the command ends or is interrupted.

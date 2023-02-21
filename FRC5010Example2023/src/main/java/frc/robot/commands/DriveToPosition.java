@@ -167,7 +167,7 @@ public class DriveToPosition extends CommandBase {
     // ,0));
 
     swerveSubsystem.drive(new ChassisSpeeds(xController.calculate(robotPose.getX()), 
-    yController.calculate(robotPose.getY()), 0));
+    yController.calculate(robotPose.getY()), thetaController.calculate(robotPose.getRotation().getAngle())));
   }
 
 

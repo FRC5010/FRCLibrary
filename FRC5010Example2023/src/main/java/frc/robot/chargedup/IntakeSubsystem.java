@@ -44,9 +44,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2,
       MotorModelConstants intakeConstants, GenericPID intakePID,
       DoubleSolenoid intakeSolenoid, Mechanism2d m_mech2d) {
-    this.intake = intake;
-    intake2.setInverted(true);
-    intake2.setFollow(intake);
+    this.intake = intake.invert(true);
+    intake2.setFollow(intake, true);
     this.intakeController = ((CANSparkMax) intake).getPIDController(); 
     this.intakeEncoder = intake.getMotorEncoder();
     this.intakeConstants = intakeConstants;
@@ -85,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void stopIntake(){
     this.setPoint = 0;
-    intakeController.setReference(0, CANSparkMax.ControlType.kVelocity, 0);
+    // intakeController.setReference(0, CANSparkMax.ControlType.kVelocity, 0);
     intake.set(0);
   }
 
@@ -108,6 +107,10 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeSolenoid.set(DoubleSolenoid.Value.kOff);
   }
   
+  public void setMotor(double speed){
+    intake.set(speed);
+  }
+
   public boolean isIntakeCone(){
     return intakeSolenoid.get().equals(DoubleSolenoid.Value.kForward);
   }

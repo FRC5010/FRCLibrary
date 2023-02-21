@@ -17,6 +17,7 @@ public class HomeElevator extends CommandBase {
   /** Creates a new HomeElevator. */
   public HomeElevator(ElevatorSubsystem elevatorSubsystem) {
     this.elevatorSubsystem = elevatorSubsystem;
+    addRequirements(elevatorSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
