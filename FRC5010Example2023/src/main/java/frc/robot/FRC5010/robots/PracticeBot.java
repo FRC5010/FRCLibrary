@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import com.pathplanner.lib.PathConstraints;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -78,12 +80,20 @@ public class PracticeBot extends GenericMechanism {
 
     gyro = new PigeonGyro(11);
 
-    autoMaps = new AutoMaps();
-    
     drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
     multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
-
+    
     driverDisplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
+
+    autoMaps = new AutoMaps();
+    SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
+
+    // Drivetrain Controls
+    autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
+
+    // Create Paths
+    autoMaps.addPath("Blue Cone 7 Start", new PathConstraints(1, .4 ));
+    autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
   }
 
   @Override

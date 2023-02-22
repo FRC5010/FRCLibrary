@@ -125,9 +125,10 @@ public class CompBot extends GenericMechanism {
 
 
         // Create Paths
-        autoMaps.addPath("Blue Cone 8 Start", new PathConstraints(4, 3));
+        autoMaps.addPath("Blue Cone 7 Start", new PathConstraints(4, 3));
         autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
-    } 
+
+      } 
 
     public Map<String,Command> setAutoCommands(){
       return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap()); 

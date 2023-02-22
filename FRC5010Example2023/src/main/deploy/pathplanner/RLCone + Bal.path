@@ -16,11 +16,7 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "PivotToHigh",
-          "ExtendToPivotPosition",
-          "Outtake"
-        ],
+        "names": [],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
@@ -70,11 +66,8 @@
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [
-          "PivotToLow",
-          "ExtendToPivotPosition"
-        ],
-        "executionBehavior": "parallel",
+        "names": [],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -100,7 +93,7 @@
       "stopEvent": {
         "names": [],
         "executionBehavior": "sequential",
-        "waitBehavior": "deadline",
+        "waitBehavior": "none",
         "waitTime": 0
       }
     },
@@ -120,12 +113,17 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "AutoBalance"
+        ],
         "executionBehavior": "sequential",
-        "waitBehavior": "none",
+        "waitBehavior": "after",
         "waitTime": 0
       }
     }
   ],
+  "maxVelocity": 1.0,
+  "maxAcceleration": 0.4,
+  "isReversed": null,
   "markers": []
 }
