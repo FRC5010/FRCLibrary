@@ -4,16 +4,14 @@
 
 package frc.robot.chargedup;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.PathConstraints;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,7 +34,10 @@ import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
+import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
+import frc.robot.commands.DriveToPosition;
+import frc.robot.commands.DriveToPosition.LCR;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.SetElevatorExtendFromLevel;
 import frc.robot.commands.SetElevatorPivotFromLevel;
@@ -48,6 +49,8 @@ public class CompBot extends GenericMechanism {
     private GenericMechanism elevator;
     private AutoMaps autoMaps;
     private ButtonBoard buttonOperator;
+    private LedSubsystem ledSubsystem;
+    private GenericGyro gyro;
 
     public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
       super(visual, displayTab);
@@ -72,7 +75,10 @@ public class CompBot extends GenericMechanism {
 
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
-        
+
+        ledSubsystem = new LedSubsystem(1, 60);
+
+
         // Will need to be changed for 2023 field
         VisionSystem multiVision = new VisionLimeLightSim("Sim", 0, AprilTags.aprilTagRoomLayout);
         // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
@@ -91,7 +97,7 @@ public class CompBot extends GenericMechanism {
         swervePorts.add(new SwervePorts(5, 6, 9));  //BR
 
 
-        GenericGyro gyro = new PigeonGyro(13);
+        gyro = new PigeonGyro(13);
 
         
 
@@ -100,7 +106,7 @@ public class CompBot extends GenericMechanism {
         //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
         buttonOperator.createButtons(11);
-        elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator);
+        elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator, ledSubsystem);
 
         autoMaps = new AutoMaps();
         SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
@@ -136,6 +142,20 @@ public class CompBot extends GenericMechanism {
 
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
+      driver.createYButton().whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createLeftBumper().getAsBoolean(), gyro)); 
+    
+      driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
+      () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
+      () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.left)); 
+
+      driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
+      () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
+      () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.center)); 
+
+      driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
+      () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
+      () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right)); 
+
       drive.configureButtonBindings(driver, operator);      
       elevator.configureButtonBindings(driver, operator);
     }

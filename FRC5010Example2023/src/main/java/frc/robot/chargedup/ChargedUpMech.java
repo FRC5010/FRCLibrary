@@ -23,6 +23,7 @@ import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.ElevatorMove;
 import frc.robot.commands.ElevatorOut;
 import frc.robot.commands.IntakeSpin;
@@ -35,8 +36,9 @@ public class ChargedUpMech extends GenericMechanism {
     private IntakeSubsystem intakeSubsystem;
     private ButtonBoard buttonOperator;
     private double speedLimit = .3;
+    private LedSubsystem ledSubsystem;
 
-    public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator) {
+    public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator, LedSubsystem ledSubsystem) {
         super(robotMechVisual, shuffleTab);
         // use this to PID the Elevator
         // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
@@ -57,6 +59,9 @@ public class ChargedUpMech extends GenericMechanism {
         );
         // TODO: Set up IntakeSubsystem add correct values please
         this.buttonOperator = buttonOperator;
+
+        this.ledSubsystem = ledSubsystem;
+    
     }
 
     @Override
@@ -78,9 +83,9 @@ public class ChargedUpMech extends GenericMechanism {
                 .onTrue(new InstantCommand(() -> {speedLimit = 0.2;}))
                 .onFalse(new InstantCommand(() -> {speedLimit = 0.5;}));
 
-        buttonOperator.getButton(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
-        buttonOperator.getButton(9).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-        buttonOperator.getButton(10).whileTrue(new IntakeSpin(intakeSubsystem, () -> 0.5));
+        buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {intakeSubsystem.setIntakeCone(); ledSubsystem.setSolidColor(255, 0, 255);}, intakeSubsystem, ledSubsystem));
+        buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {intakeSubsystem.setIntakeCube(); ledSubsystem.setSolidColor(255, 255, 0);}, intakeSubsystem, ledSubsystem));
+        buttonOperator.getButton(10).whileTrue(new IntakeSpin(intakeSubsystem, () -> -0.5));
 
         buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
         buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
