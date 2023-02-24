@@ -20,6 +20,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
+import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.TargetConstants;
 
 
@@ -35,6 +36,8 @@ public class DriveToPosition extends CommandBase {
   private final ProfiledPIDController xController;
   private final ProfiledPIDController yController;
   private final ProfiledPIDController thetaController;
+
+  private LedSubsystem ledSubsystem; 
 
   public static enum LCR {
     left, center, right
@@ -60,7 +63,7 @@ public class DriveToPosition extends CommandBase {
   private Supplier<Pose2d> poseProvider; 
   private Supplier<Pose2d> targetPoseProvider; 
 
-  public DriveToPosition(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider, Supplier<Pose2d> targetPoseProvider, LCR relativePosition) {
+  public DriveToPosition(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider, Supplier<Pose2d> targetPoseProvider, LedSubsystem ledSubsystem, LCR relativePosition) {
     xConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
     yConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
     thetaConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond()); 
@@ -79,6 +82,7 @@ public class DriveToPosition extends CommandBase {
     thetaController.setTolerance(Units.degreesToRadians(3));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     
+    this.ledSubsystem = ledSubsystem;
 
     switch(relativePosition){
       case left:
@@ -102,7 +106,6 @@ public class DriveToPosition extends CommandBase {
   @Override
   public void initialize() {
     var robotPose = poseProvider.get(); 
-
     targetPose = targetPoseProvider.get().transformBy(targetTransform);
 
     thetaController.reset(robotPose.getRotation().getRadians());
@@ -121,6 +124,7 @@ public class DriveToPosition extends CommandBase {
   public void execute() {
     var robotPose2d = poseProvider.get();
     
+    ledSubsystem.setSolidColor(255,165,0);
     //System.out.println(robotPose2d);
     var robotPose = 
         new Pose3d(
@@ -175,6 +179,7 @@ public class DriveToPosition extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     swerveSubsystem.drive(new ChassisSpeeds(0, 0, 0));
+    ledSubsystem.setSolidColor(0, 0, 0);
   }
 
   // Returns true when the command should end.

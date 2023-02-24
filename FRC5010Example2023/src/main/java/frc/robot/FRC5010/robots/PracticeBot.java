@@ -32,6 +32,7 @@ import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
+import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.DriverDisplaySubsystem;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPosition;
@@ -44,6 +45,7 @@ public class PracticeBot extends GenericMechanism {
   private DriverDisplaySubsystem driverDisplay; 
   private AutoMaps autoMaps;
   private Drive drive;
+  private LedSubsystem ledSubsystem; 
 
   public PracticeBot(Mechanism2d visual, ShuffleboardTab displayTab) {
     super(visual, displayTab);
@@ -81,6 +83,7 @@ public class PracticeBot extends GenericMechanism {
     gyro = new PigeonGyro(11);
 
     drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
+    ledSubsystem = new LedSubsystem(1, 60);
     multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
     
     driverDisplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
@@ -103,19 +106,19 @@ public class PracticeBot extends GenericMechanism {
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
-    driver.createYButton().whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createAButton().getAsBoolean(), gyro)); 
+    driver.createYButton().whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createStartButton().getAsBoolean(), gyro)); 
     
     driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
-    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), LCR.left)); 
+    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.left)); 
 
     driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
-    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), LCR.center)); 
+    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.center)); 
 
     driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
-    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), LCR.right)); 
+    () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right)); 
 
     drive.configureButtonBindings(driver, operator); 
   }
