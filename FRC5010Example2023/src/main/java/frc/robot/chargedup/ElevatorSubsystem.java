@@ -123,7 +123,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     extendSim = new ElevatorSim(DCMotor.getNEO(1), 25, 
       kCarriageMass, kElevatorDrumRadius, kMinElevatorHeight, kMaxElevatorHeight, false);
 
-    extendFeedforward = new ElevatorFeedforward(liftConstants.getkS(), extendConstants.getkV(),
+    extendFeedforward = new ElevatorFeedforward(extendConstants.getkS(), extendConstants.getkV(),
         extendConstants.getkA());
     pivotFeedforward = new ArmFeedforward(liftConstants.getkS(), liftConstants.getkF(), liftConstants.getkV());
 
@@ -136,7 +136,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     pivotController.setIZone(kIz);
     pivotController.setSmartMotionMaxVelocity(3000, 0);
     pivotController.setSmartMotionMinOutputVelocity(0, 0);
-    pivotController.setSmartMotionMaxAccel(10, 0);
+    pivotController.setSmartMotionMaxAccel(100, 0);
 
     this.extendHallEffect = new DigitalInput(extendHallEffectPort);
     zeroPivotEncoder();
@@ -160,7 +160,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Target", currentPivotTarget);
     targetPos2d.setAngle(currentPivotTarget);
     if (Robot.isReal()) {
-      //pivotController.setFF(position / 180);
+      //pivotController.setFF(pivotFeedforward.calculate((position * Math.PI) / 180, .25));
       pivotController.setReference(this.currentPivotTarget, CANSparkMax.ControlType.kSmartMotion, 0);
     } else {
       pivotPow((currentPivotTarget - getPivotPosition())/100);
@@ -196,7 +196,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean isPivotAtTarget() {
-    return Math.abs(getPivotPosition() - this.currentPivotTarget) < 0.1;
+    return Math.abs(getPivotPosition() - this.currentPivotTarget) < 1;
   }
 
   public boolean isExtendAtTarget() {

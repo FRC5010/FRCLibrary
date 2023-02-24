@@ -22,12 +22,13 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.commands.AutoMaps;
 import frc.robot.FRC5010.commands.ElapseTime;
+import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SdsSwerveDrivetrain;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
@@ -66,7 +67,7 @@ public class CompBot extends GenericMechanism {
         swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
         swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
-        swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
+        swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.1);
         swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
 
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
@@ -102,7 +103,7 @@ public class CompBot extends GenericMechanism {
         elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator);
 
         autoMaps = new AutoMaps();
-        SdsSwerveDrivetrain swerveDrivetrain = (SdsSwerveDrivetrain) drive.getDrivetrain();
+        SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
         ElevatorSubsystem elevatorSubsystem = ((ChargedUpMech) elevator).getElevatorSubsystem();
         IntakeSubsystem intakeSubsystem = ((ChargedUpMech) elevator).getIntakeSubsystem();
 
@@ -125,10 +126,9 @@ public class CompBot extends GenericMechanism {
 
 
         // Create Paths
-        autoMaps.addPath("Blue Cone 7 Start", new PathConstraints(4, 3));
+        autoMaps.addPath("Blue Cone 8 Start", new PathConstraints(4, 3));
         autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
-
-      } 
+    } 
 
     public Map<String,Command> setAutoCommands(){
       return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap()); 

@@ -41,15 +41,15 @@ public class ChargedUpMech extends GenericMechanism {
         // use this to PID the Elevator
         // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
         this.elevatorSubsystem = new ElevatorSubsystem(
-                MotorFactory.NEO(9), new GenericPID(3.6174/8, 0, 0),
+                MotorFactory.NEO(9), new GenericPID(0.01, 0.0, 0.03),
                 MotorFactory.NEO(11), new GenericPID(3.6174, 0, 0),
                 new MotorModelConstants(1, 1, 1), 
                 new MotorModelConstants(1, 1, 1),
                 mechVisual, 0);
 
         this.intakeSubsystem = new IntakeSubsystem(
-                MotorFactory.NEO(18), 
                 MotorFactory.NEO(19), 
+                MotorFactory.NEO(18), 
                 new MotorModelConstants(0, 0, 0), 
                 new GenericPID(0.003, 0, 0), 
                 new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1), 
@@ -75,15 +75,15 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.getButton(3)
                 .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
         buttonOperator.getButton(7)
-                .onTrue(new InstantCommand(() -> {speedLimit = 0.15;}))
-                .onFalse(new InstantCommand(() -> {speedLimit = 0.3;}));
+                .onTrue(new InstantCommand(() -> {speedLimit = 0.2;}))
+                .onFalse(new InstantCommand(() -> {speedLimit = 0.5;}));
 
         buttonOperator.getButton(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
         buttonOperator.getButton(9).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-        buttonOperator.getButton(10).whileTrue(new IntakeSpin(intakeSubsystem, () -> -0.5));
+        buttonOperator.getButton(10).whileTrue(new IntakeSpin(intakeSubsystem, () -> 0.5));
 
-        buttonOperator.setYAxis(buttonOperator.createYAxis().deadzone(0.05));
-        buttonOperator.setXAxis(buttonOperator.createXAxis().negate().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
+        buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
+        buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
 
         new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
             .onTrue(new ElevatorOut(elevatorSubsystem, () -> (buttonOperator.getXAxis() * speedLimit))
