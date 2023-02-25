@@ -78,7 +78,7 @@ public class SdsSwerveDrivetrain extends GenericDrivetrain {
             (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the beginning of auto
             swerveConstants.getKinematics(), // SwerveDriveKinematics
             new PIDConstants(5.0, 0.0, 0.0),// PID constants to correct for translation error (used to create the X and Y PID controllers)
-            new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+            new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
             this::setModuleStates, // Module states consumer used to output to the drive subsystem
             eventMap,
             true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true

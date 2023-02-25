@@ -54,9 +54,9 @@ public class PracticeBot extends GenericMechanism {
     swerveConstants.setkFrontRightAbsoluteOffsetRad(-2.792);
     swerveConstants.setkBackLeftAbsoluteOffsetRad(0.845 + Math.PI);
     swerveConstants.setkBackRightAbsoluteOffsetRad(-0.171);
-    swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(1);
+    swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(4);
     swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
-    swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
+    swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(3);
     swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
     swerveConstants.setSwerveModuleConstants(MK4SwerveModule.MK4_L1);
     swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
@@ -95,7 +95,8 @@ public class PracticeBot extends GenericMechanism {
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
 
     // Create Paths
-    autoMaps.addPath("Blue Cone 7 Start", new PathConstraints(1, .4 ));
+    autoMaps.addPath("Blue Cone 7 Start", new PathConstraints(4, 3 ));
+    autoMaps.addPath("Blue Cone 6 Start", new PathConstraints(4, 3));
     autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
   }
 
