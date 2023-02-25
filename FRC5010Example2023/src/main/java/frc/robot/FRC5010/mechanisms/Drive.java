@@ -240,10 +240,10 @@ public class Drive extends GenericMechanism {
     }
 
     private void initializeMK4iSwerveDrive() {
-        SwerveModuleConstants frontLeftConstants = new SwerveModuleConstants(0, 0, true, 0, true, false);
-        SwerveModuleConstants frontRightConstants = new SwerveModuleConstants(0, 0, true, 0, true, false);
-        SwerveModuleConstants backLeftConstants = new SwerveModuleConstants(0, 0, true, 0, true, false);
-        SwerveModuleConstants backRightConstants = new SwerveModuleConstants(0, 0, true, 0, true, false);
+        SwerveModuleConstants frontLeftConstants = new SwerveModuleConstants(0, 0, false, 0, true, false);
+        SwerveModuleConstants frontRightConstants = new SwerveModuleConstants(0, 0, false, 0, true, false);
+        SwerveModuleConstants backLeftConstants = new SwerveModuleConstants(0, 0, false, 0, true, false);
+        SwerveModuleConstants backRightConstants = new SwerveModuleConstants(0, 0, false, 0, true, false);
 
         GenericSwerveModule frontLeft = new MK4iSwerveModule(
                 mechVisual.getRoot("frontleft", 15, 45), "frontleft",

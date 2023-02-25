@@ -3,6 +3,7 @@ package frc.robot.FRC5010.commands;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -29,6 +30,8 @@ public class DefaultDriveCommand extends CommandBase {
     private MechanismLigament2d heading;
     private Persisted<Double>maxChassisVelocity;
     private Persisted<Double>maxChassisRotation;
+
+    private SlewRateLimiter xRateLimiter, yRateLimiter, thetaRateLimiter; 
   
     public DefaultDriveCommand(GenericDrivetrain drivetrainSubsystem,
                                DoubleSupplier translationXSupplier,
@@ -50,7 +53,12 @@ public class DefaultDriveCommand extends CommandBase {
         joystick.append(yAxis);
         joystick.append(heading);
 
-        addRequirements(drivetrainSubsystem);
+        xRateLimiter = new SlewRateLimiter(2, -2, 0);
+        yRateLimiter = new SlewRateLimiter(2, -2, 0);
+        thetaRateLimiter = new SlewRateLimiter(4, -4, 0);
+
+        addRequirements(drivetrainSubsystem); 
+    
     }
 
     @Override
@@ -59,6 +67,12 @@ public class DefaultDriveCommand extends CommandBase {
         double y = m_translationYSupplier.getAsDouble();
         double r = m_rotationSupplier.getAsDouble();
         
+        x = xRateLimiter.calculate(x);
+        y = yRateLimiter.calculate(y);
+        r = thetaRateLimiter.calculate(r);
+        
+        
+
         xAxis.setLength(x * 30);
         yAxis.setLength(y * 30);
         heading.setAngle(180 * r);

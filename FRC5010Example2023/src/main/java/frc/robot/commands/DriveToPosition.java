@@ -37,8 +37,6 @@ public class DriveToPosition extends CommandBase {
   private final ProfiledPIDController yController;
   private final ProfiledPIDController thetaController;
 
-  private LedSubsystem ledSubsystem; 
-
   public static enum LCR {
     left, center, right
   }
@@ -82,8 +80,6 @@ public class DriveToPosition extends CommandBase {
     thetaController.setTolerance(Units.degreesToRadians(3));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     
-    this.ledSubsystem = ledSubsystem;
-
     switch(relativePosition){
       case left:
         targetTransform = tagToLeftConeTransfrom;
@@ -124,7 +120,6 @@ public class DriveToPosition extends CommandBase {
   public void execute() {
     var robotPose2d = poseProvider.get();
     
-    ledSubsystem.setSolidColor(255,165,0);
     //System.out.println(robotPose2d);
     var robotPose = 
         new Pose3d(
@@ -179,7 +174,6 @@ public class DriveToPosition extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     swerveSubsystem.drive(new ChassisSpeeds(0, 0, 0));
-    ledSubsystem.setSolidColor(0, 0, 0);
   }
 
   // Returns true when the command should end.

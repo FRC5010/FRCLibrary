@@ -4,11 +4,10 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -31,7 +30,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     private final MechanismLigament2d absEncDial;
     private final MechanismLigament2d expectDial;
     private final String moduleKey;
-    private ProfiledPIDController turningController;
+    private PIDController turningController;
 
     protected MotorController5010 drive, turn;
     protected GenericEncoder turnEncoder, driveEncoder, absoluteEncoder;
@@ -81,12 +80,11 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         swerveTurnP = new Persisted<>(DriveConstantsDef.SWERVE_TURN_P, pid.getkP());
         swerveTurnI = new Persisted<>(DriveConstantsDef.SWERVE_TURN_I, pid.getkI());
         swerveTurnD = new Persisted<>(DriveConstantsDef.SWERVE_TURN_D, pid.getkD());
-        turningController = new ProfiledPIDController(
+        turningController = new PIDController(
                 swerveTurnP.get(),
                 swerveTurnI.get(),
-                swerveTurnD.get(),
-                new TrapezoidProfile.Constraints(swerveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond(),
-                        swerveConstants.getkTeleDriveMaxAngularAccelerationUnitsPerSecond()));
+                swerveTurnD.get()
+            );
 
         turningController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -121,7 +119,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     }
 
     public boolean setState(SwerveModuleState state, boolean ready) {
-        state = SwerveModuleState.optimize(state, getState().angle);
+        // state = SwerveModuleState.optimize(state, getState().angle);
         turningController.setPID(swerveTurnP.get(), swerveTurnI.get(), swerveTurnD.get());
         double turnPow = turningController.calculate(getTurningPosition(), state.angle.getRadians());
 

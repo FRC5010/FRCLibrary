@@ -44,7 +44,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2,
       MotorModelConstants intakeConstants, GenericPID intakePID,
       DoubleSolenoid intakeSolenoid, Mechanism2d m_mech2d) {
-    this.intake = intake.invert(true);
+    this.intake = intake.invert(false);
     intake2.setFollow(intake, true);
     this.intakeController = ((CANSparkMax) intake).getPIDController(); 
     this.intakeEncoder = intake.getMotorEncoder();

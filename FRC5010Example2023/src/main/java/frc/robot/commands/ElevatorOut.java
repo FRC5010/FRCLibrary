@@ -15,7 +15,9 @@ public class ElevatorOut extends CommandBase {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        System.out.println("Elevator Out");
+    }
 
     @Override 
     public void execute() {

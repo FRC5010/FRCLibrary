@@ -26,7 +26,9 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.ElevatorMove;
 import frc.robot.commands.ElevatorOut;
+import frc.robot.commands.HomeElevator;
 import frc.robot.commands.IntakeSpin;
+import frc.robot.commands.LedDefaultCommand;
 import frc.robot.commands.SetElevatorExtendFromLevel;
 import frc.robot.commands.SetElevatorPivotFromLevel;
 
@@ -44,10 +46,10 @@ public class ChargedUpMech extends GenericMechanism {
         // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
         this.elevatorSubsystem = new ElevatorSubsystem(
                 MotorFactory.NEO(9), new GenericPID(0.01, 0.0, 0.03),
-                MotorFactory.NEO(11), new GenericPID(3.6174, 0, 0),
+                MotorFactory.NEO(11), new GenericPID(.012, 0, 0),
                 new MotorModelConstants(1, 1, 1), 
                 new MotorModelConstants(1, 1, 1),
-                mechVisual, 0);
+                mechVisual, 0, 1);
 
         this.intakeSubsystem = new IntakeSubsystem(
                 MotorFactory.NEO(19), 
@@ -60,8 +62,7 @@ public class ChargedUpMech extends GenericMechanism {
         // TODO: Set up IntakeSubsystem add correct values please
         this.buttonOperator = buttonOperator;
 
-        this.ledSubsystem = ledSubsystem;
-    
+        this.ledSubsystem = ledSubsystem;    
     }
 
     @Override
@@ -70,7 +71,7 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.getButton(1)
                 .onTrue(new SetElevatorExtendFromLevel(elevatorSubsystem));
         buttonOperator.getButton(2)
-                .onTrue(new SetElevatorExtendFromLevel(elevatorSubsystem, ElevatorLevel.ground));
+                .onTrue(new HomeElevator(elevatorSubsystem));
         buttonOperator.getButton(6)
                 .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.ground));
         buttonOperator.getButton(5)
@@ -83,8 +84,10 @@ public class ChargedUpMech extends GenericMechanism {
                 .onTrue(new InstantCommand(() -> {speedLimit = 0.2;}))
                 .onFalse(new InstantCommand(() -> {speedLimit = 0.5;}));
 
-        buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {intakeSubsystem.setIntakeCone(); ledSubsystem.setSolidColor(255, 0, 255);}, intakeSubsystem, ledSubsystem));
-        buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {intakeSubsystem.setIntakeCube(); ledSubsystem.setSolidColor(255, 255, 0);}, intakeSubsystem, ledSubsystem));
+        buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {intakeSubsystem.setIntakeCone();}, intakeSubsystem));
+
+        buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {intakeSubsystem.setIntakeCube();}, intakeSubsystem));
+
         buttonOperator.getButton(10).whileTrue(new IntakeSpin(intakeSubsystem, () -> -0.5));
 
         buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
@@ -135,6 +138,8 @@ public class ChargedUpMech extends GenericMechanism {
                 },
                 () -> false,
                 elevatorSubsystem));
+
+        ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem));
     }
 
     @Override

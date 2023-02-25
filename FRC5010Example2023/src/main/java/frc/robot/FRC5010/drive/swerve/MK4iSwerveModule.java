@@ -41,7 +41,7 @@ public class MK4iSwerveModule extends GenericSwerveModule {
                 false
         );
 
-    private GenericPID pid = new GenericPID(.7, 0.0, 0.005); 
+    private GenericPID pid = new GenericPID(3, 0.0, 0); 
     private GenericMotorConstants motorConstants = new GenericMotorConstants(0, 0.0016156, 4.2354e-05);
 
     public MK4iSwerveModule(MechanismRoot2d visualRoot, String key, double radOffset, SwervePorts swervePorts, SwerveModuleConstants individualConstants, SwerveConstants swerveConstants) {

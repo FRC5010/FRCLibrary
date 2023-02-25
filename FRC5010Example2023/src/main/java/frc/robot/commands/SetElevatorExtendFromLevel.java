@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;
@@ -12,25 +13,31 @@ public class SetElevatorExtendFromLevel extends CommandBase {
   ElevatorSubsystem elevator;
   ElevatorLevel targetLevel;
   /** Creates a new SetElevatorLevel. */
-  public SetElevatorExtendFromLevel(ElevatorSubsystem elevator, ElevatorLevel targetLevel) {
+  public SetElevatorExtendFromLevel(ElevatorSubsystem elevator) {
     this.elevator = elevator;
-    this.targetLevel = targetLevel;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
   }
 
-  public SetElevatorExtendFromLevel(ElevatorSubsystem elevator) {
+  public SetElevatorExtendFromLevel(ElevatorSubsystem elevator, ElevatorLevel level) {
     this.elevator = elevator;
-    this.targetLevel = elevator.getElevatorLevel();
+    this.targetLevel = level; 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
   }
+
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.setExtendPosition(targetLevel.getExtensionPosition());
-    elevator.setElevatorLevel(targetLevel);
+    if (null == targetLevel){
+      elevator.setExtendPosition(elevator.getElevatorLevel().getExtensionPosition());
+    } else {
+      elevator.setElevatorLevel(targetLevel);
+    }
+    SmartDashboard.putNumber("Elevator Level: ", elevator.getElevatorLevel().getExtensionPosition()); 
+    SmartDashboard.putNumber("Curr Pos: ", elevator.getExtendPosition()); 
+      // elevator.setElevatorLevel(elevator.getElevatorLevel());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,6 +49,7 @@ public class SetElevatorExtendFromLevel extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    System.out.println(interrupted); 
     elevator.extendPow(0);
   }
 

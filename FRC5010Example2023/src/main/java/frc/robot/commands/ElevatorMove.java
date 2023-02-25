@@ -17,7 +17,9 @@ public class ElevatorMove extends CommandBase {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        System.out.println("Elevator Move");
+    }
 
     @Override 
     public void execute() {

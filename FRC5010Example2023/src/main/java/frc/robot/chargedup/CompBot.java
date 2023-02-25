@@ -58,10 +58,10 @@ public class CompBot extends GenericMechanism {
         swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
         // Baby Swerve values need to be changed
-        swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(271.758)); //  
-        swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(224.912)); // 
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(181.494)); // 
-        swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(186.064)); //  
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(-91.5)); //  
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(137.5 + 180)); //
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(2.2)); // 
+        swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(3.25)); //  
         // swerveConstants.setkFrontLeftAbsoluteOffsetRad(0); //  
         // swerveConstants.setkFrontRightAbsoluteOffsetRad(0); // 
         // swerveConstants.setkBackLeftAbsoluteOffsetRad(0); // 
@@ -76,8 +76,7 @@ public class CompBot extends GenericMechanism {
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
-        ledSubsystem = new LedSubsystem(1, 60);
-
+        ledSubsystem = new LedSubsystem(1, 120);
 
         // Will need to be changed for 2023 field
         VisionSystem multiVision = new VisionLimeLightSim("Sim", 0, AprilTags.aprilTagRoomLayout);
@@ -101,7 +100,7 @@ public class CompBot extends GenericMechanism {
 
         
 
-        drive = new Drive(multiVision, gyro, Drive.Type.SDS_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
+        drive = new Drive(multiVision, gyro, Drive.Type.MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         // Uncomment when using PhotonVision
         //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
@@ -115,7 +114,7 @@ public class CompBot extends GenericMechanism {
 
         // Elevator Controls
         autoMaps.addMarker("ExtendToPivotPosition", new SetElevatorExtendFromLevel(elevatorSubsystem));
-        autoMaps.addMarker("ExtendToHome", new SetElevatorExtendFromLevel(elevatorSubsystem, ElevatorLevel.ground));
+        autoMaps.addMarker("ExtendToHome", new SetElevatorExtendFromLevel(elevatorSubsystem));
         autoMaps.addMarker("PivotToGround", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.ground));
         autoMaps.addMarker("PivotToLow", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.low));
         autoMaps.addMarker("PivotToMid", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.medium));

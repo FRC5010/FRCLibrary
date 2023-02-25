@@ -24,7 +24,7 @@ public class HomeElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.elevatorSubsystem.extendPow(-0.01);
+    this.elevatorSubsystem.extendPow(-0.06);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,7 +35,6 @@ public class HomeElevator extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     this.elevatorSubsystem.extendPow(0);
-    this.elevatorSubsystem.zeroExtendEncoder();
   }
 
   // Returns true when the command should end.

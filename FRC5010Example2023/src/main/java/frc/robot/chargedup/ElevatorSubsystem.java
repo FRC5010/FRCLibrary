@@ -47,7 +47,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private RelativeEncoder pivotEncoder;
   private SimulatedEncoder pivotSimEncoder = new SimulatedEncoder(10, 11);
 
-  private DigitalInput extendHallEffect;
+  private DigitalInput extendHallEffect, pivotHallEffect; 
 
   private MotorController5010 extendMotor;
   private SparkMaxPIDController extendController;
@@ -88,7 +88,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem(MotorController5010 pivot, GenericPID pivotPID,
       MotorController5010 extend, GenericPID extendPID,
       MotorModelConstants liftConstants, MotorModelConstants extendConstants,
-      Mechanism2d mech2d, int extendHallEffectPort) {
+      Mechanism2d mech2d, int extendHallEffectPort, int pivotHallEffectPort) {
     this.currentPivotTarget = 0;
     this.currentExtendTarget = 0;
 
@@ -137,21 +137,31 @@ public class ElevatorSubsystem extends SubsystemBase {
     pivotController.setSmartMotionMaxVelocity(3000, 0);
     pivotController.setSmartMotionMinOutputVelocity(0, 0);
     pivotController.setSmartMotionMaxAccel(100, 0);
+      
+    extendController.setP(extendPID.getkP());
+    extendController.setI(extendPID.getkI());
+    extendController.setD(extendPID.getkD());
+    extendController.setFeedbackDevice(extendEncoder);
+
+    extendController.setSmartMotionMaxVelocity(3000, 0);
+    extendController.setSmartMotionMinOutputVelocity(0, 0);
+    extendController.setSmartMotionMaxAccel(100, 0);
 
     this.extendHallEffect = new DigitalInput(extendHallEffectPort);
-    zeroPivotEncoder();
+    this.pivotHallEffect = new DigitalInput(pivotHallEffectPort);
+    
   }
 
   public void reset() {
 
   }
 
-  public void zeroExtendEncoder() {
-    this.extendEncoder.setPosition(0);
+  public void setExtendEncoderPosition(double pos) {
+    this.extendEncoder.setPosition(pos);
   }
 
-  public void zeroPivotEncoder(){
-    this.pivotEncoder.setPosition(0);
+  public void setPivotEncoderPosition(double pos){
+    this.pivotEncoder.setPosition(pos);
   }
 
 
@@ -189,9 +199,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public double getExtendPosition() {
     if (Robot.isReal()) {
-      return extendEncoder.getPosition();
+      return extendEncoder.getPosition() + ElevatorLevel.ground.getExtensionPosition();
     } else {
-      return extendSimEncoder.getPosition();
+      return extendSimEncoder.getPosition() + ElevatorLevel.ground.getExtensionPosition();
     }
   }
 
@@ -212,8 +222,13 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean isElevatorIn() {
-    return extendHallEffect.get();
+    return !extendHallEffect.get();
   }
+
+  public boolean isPivotIn(){
+    return !pivotHallEffect.get();  
+  }
+
 
 
   public ElevatorLevel getElevatorLevel() {
@@ -253,7 +268,22 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (Robot.isReal()) {
       m_elevatorMech2d.setLength(Units.metersToInches(getExtendPosition()));
       m_elevatorMech2d.setAngle(getPivotPosition());
+
+      if (isElevatorIn()){
+        setExtendEncoderPosition(0);
+      }
+
+      if (isPivotIn()){
+        setPivotEncoderPosition(0);
+      }
+
+      SmartDashboard.putBoolean("Pivot In: ", isPivotIn());
+      SmartDashboard.putBoolean("Elevator In: ", isElevatorIn());
+
     }
+    SmartDashboard.putNumber("Motor Pow: ", extendMotor.get());  
+    SmartDashboard.putNumber("Pivot Pow: ", pivotMotor.get());
+    
     SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
     SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
     //SmartDashboard.putNumber("Abs", KFF);
