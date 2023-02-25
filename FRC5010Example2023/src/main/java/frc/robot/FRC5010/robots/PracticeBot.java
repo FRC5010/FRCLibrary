@@ -75,14 +75,14 @@ public class PracticeBot extends GenericMechanism {
             new Rotation3d(0, 0, Units.degreesToRadians(90))));
 
     List<SwervePorts> swervePorts = new ArrayList<>();
-    swervePorts.add(new SwervePorts(1, 3, 0));
-    swervePorts.add(new SwervePorts(10, 8, 1));
-    swervePorts.add(new SwervePorts(5, 4, 2));
-    swervePorts.add(new SwervePorts(2, 7, 3));
+    swervePorts.add(new SwervePorts(1, 3, 21));
+    swervePorts.add(new SwervePorts(10, 8, 22));
+    swervePorts.add(new SwervePorts(5, 4, 23));
+    swervePorts.add(new SwervePorts(2, 7, 20));
 
     gyro = new PigeonGyro(11);
 
-    drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
+    drive = new Drive(multiVision, gyro, Drive.Type.SDS_MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
     ledSubsystem = new LedSubsystem(1, 60);
     multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
     

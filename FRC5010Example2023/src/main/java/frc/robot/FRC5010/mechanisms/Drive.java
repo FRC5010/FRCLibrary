@@ -63,6 +63,7 @@ public class Drive extends GenericMechanism {
         public static final String MK4_SWERVE_DRIVE = "MK4SwerveDrive";
         public static final String MK4I_SWERVE_DRIVE = "MK4ISwerveDrive";
         public static final String SDS_MK4I_SWERVE_DRIVE = "SDSMK4ISwerveDrive";
+        public static final String SDS_MK4_SWERVE_DRIVE = "SDSMK4SwerveDrive";
     }
 
     // Examples of how to use a persisted constants
@@ -110,6 +111,10 @@ public class Drive extends GenericMechanism {
             }
             case Type.SDS_MK4I_SWERVE_DRIVE: {
                 initializeSDSMk4iSwerveDrive();
+                break;
+            }
+            case Type.SDS_MK4_SWERVE_DRIVE:{
+                initializeSDSMk4SwerveDrive();
                 break;
             }
             default: {
@@ -283,6 +288,25 @@ public class Drive extends GenericMechanism {
 //        drivetrain = new SdsSwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, (SwerveConstants)driveConstants, vision);
     }
 
+    private void initializeSDSMk4SwerveDrive() {
+        SdsSwerveModule frontLeft = new SdsSwerveModule(mechVisual.getRoot("frontLeft", 15, 45), "frontLeft", 
+        ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
+        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(0), SdsModuleConfigurations.MK4_L1);
+
+        SdsSwerveModule frontRight = new SdsSwerveModule(mechVisual.getRoot("frontRight", 45, 45), "frontRight", 
+        ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(),
+        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(1), SdsModuleConfigurations.MK4_L1);
+
+        SdsSwerveModule backLeft = new SdsSwerveModule(mechVisual.getRoot("backLeft", 15,15), "backLeft", 
+        ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(),
+        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(2), SdsModuleConfigurations.MK4_L1);
+
+        SdsSwerveModule backRight = new SdsSwerveModule(mechVisual.getRoot("backRight", 15,15), "backRight", 
+        ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(),
+        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(3), SdsModuleConfigurations.MK4_L1);
+
+        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (SwerveConstants)driveConstants);
+    }
 
     public Map<String, Command> initAutoCommands() {
         return new HashMap<>();
