@@ -50,10 +50,12 @@ public class PracticeBot extends GenericMechanism {
   public PracticeBot(Mechanism2d visual, ShuffleboardTab displayTab) {
     super(visual, displayTab);
     swerveConstants = new SwerveConstants(Units.inchesToMeters(24.25), Units.inchesToMeters(20.5));
-    swerveConstants.setkFrontLeftAbsoluteOffsetRad(-2.357 + Math.PI);
-    swerveConstants.setkFrontRightAbsoluteOffsetRad(-2.792);
-    swerveConstants.setkBackLeftAbsoluteOffsetRad(0.845 + Math.PI);
-    swerveConstants.setkBackRightAbsoluteOffsetRad(-0.171);
+
+    swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(-164.619));
+    swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(-319.043));
+    swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(-346.025));
+    swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(-112.412));
+
     swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(1);
     swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
     swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
