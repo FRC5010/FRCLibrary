@@ -11,7 +11,6 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.BaseAutoBuilder;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,10 +38,7 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.AutoBalance;
-import frc.robot.commands.DriveToPosition;
-import frc.robot.commands.DriveToPosition.LCR;
+import frc.robot.swervelib.SdsModuleConfigurations;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {

@@ -4,12 +4,6 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
-import com.swervedrivespecialties.swervelib.AbsoluteEncoder;
-import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
-import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
-import com.swervedrivespecialties.swervelib.MotorType;
-import com.swervedrivespecialties.swervelib.SwerveModule;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -21,6 +15,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
+import frc.robot.swervelib.AbsoluteEncoder;
+import frc.robot.swervelib.MechanicalConfiguration;
+import frc.robot.swervelib.MkSwerveModuleBuilder;
+import frc.robot.swervelib.MotorType;
+import frc.robot.swervelib.SwerveModule;
 
 /** Add your docs here. */
 public class SdsSwerveModule extends GenericSwerveModule {
@@ -46,7 +45,7 @@ public class SdsSwerveModule extends GenericSwerveModule {
                 .withSteerEncoderPort(swervePorts.getEncoderPort())
                 .withSteerOffset(radOffset)
                 .build();
-        new ScheduleCommand(Commands.waitSeconds(1.0)).andThen(Commands.runOnce(() -> resetAbsoluteEncoder())); 
+        new ScheduleCommand(Commands.waitSeconds(1.0)).andThen(Commands.runOnce(() -> module.resetToAbsolute())); 
         absEncoder = module.getSteerEncoder();
     }
 
@@ -87,10 +86,6 @@ public class SdsSwerveModule extends GenericSwerveModule {
     @Override
     public double getAbsoluteEncoderRad() {
         return absEncoder.getAbsoluteAngle();
-    }
-
-    public void resetAbsoluteEncoder(){
-        module.set(0, 0);
     }
 
 }
