@@ -88,6 +88,7 @@ public class Drive extends GenericMechanism {
                 driveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond());
         mechVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
         SmartDashboard.putData("Drive Visual", mechVisual);
+        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
         initRealOrSim();
     }
 
@@ -158,23 +159,25 @@ public class Drive extends GenericMechanism {
         // .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
         driver.createLeftBumper().onTrue(new InstantCommand(() -> toggleFieldOrientedDrive()));
-        
+        driver.createStartButton().onTrue(new InstantCommand(() -> gyro.reset()));
+
+
+
         defaultDriveCommand = new DefaultDriveCommand(drivetrain,
                 () -> driver.getLeftYAxis(),
                 () -> driver.getLeftXAxis(),
                 () -> driver.getRightXAxis(),
                 () -> isFieldOrientedDrive);
         
-        driver.createStartButton().onTrue(new InstantCommand(() -> gyro.reset()));
-        
     }
 
     public GenericDrivetrain getDrivetrain() {
         return drivetrain;
     }
-
-    public boolean toggleFieldOrientedDrive(){    
-        return !isFieldOrientedDrive; 
+    
+    public void toggleFieldOrientedDrive(){    
+        isFieldOrientedDrive = !isFieldOrientedDrive; 
+        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
     }
 
     private void initializeThriftySwerveDrive() {

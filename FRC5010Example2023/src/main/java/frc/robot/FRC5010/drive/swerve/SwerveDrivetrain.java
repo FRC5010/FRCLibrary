@@ -134,5 +134,8 @@ public class SwerveDrivetrain extends GenericDrivetrain{
 
     public void disabledBehavior(){
         frontLeft.resetAbsoluteEncoder(); 
+        frontRight.resetAbsoluteEncoder(); 
+        backLeft.resetAbsoluteEncoder(); 
+        backRight.resetAbsoluteEncoder(); 
     } 
 }

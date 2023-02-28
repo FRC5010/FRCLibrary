@@ -31,11 +31,11 @@ public class PivotPower extends CommandBase {
         // if (newPosition < -1.0) {newPosition = -1.0;}
 
         // this.elevatorSubsystem.setPivotPosition(newPosition);
-
-        double speed = this.moveSpeed.get(); 
-        elevatorSubsystem.pivotPow(speed);
-
         
+        if (!elevatorSubsystem.isPivotMax() || !elevatorSubsystem.isPivotIn()){
+            double speed = this.moveSpeed.get(); 
+            elevatorSubsystem.pivotPow(speed);
+        } 
     }
 
     @Override
