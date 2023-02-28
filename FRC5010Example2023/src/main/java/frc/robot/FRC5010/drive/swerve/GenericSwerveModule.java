@@ -122,7 +122,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     }
 
     public boolean setState(SwerveModuleState state, boolean ready) {
-        // state = SwerveModuleState.optimize(state, getState().angle);
+        state = SwerveModuleState.optimize(state, getState().angle);
         turningController.setPID(swerveTurnP.get(), swerveTurnI.get(), swerveTurnD.get());
         double turnPow = turningController.calculate(getTurningPosition(), state.angle.getRadians());
 

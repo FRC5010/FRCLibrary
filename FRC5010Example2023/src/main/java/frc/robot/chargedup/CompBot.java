@@ -100,7 +100,7 @@ public class CompBot extends GenericMechanism {
 
         
 
-        drive = new Drive(multiVision, gyro, Drive.Type.MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
+        drive = new Drive(multiVision, gyro, Drive.Type.SDS_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         // Uncomment when using PhotonVision
         //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());

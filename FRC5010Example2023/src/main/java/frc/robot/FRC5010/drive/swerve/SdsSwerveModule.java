@@ -4,9 +4,10 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
+import java.util.Timer;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -45,7 +46,16 @@ public class SdsSwerveModule extends GenericSwerveModule {
                 .withSteerEncoderPort(swervePorts.getEncoderPort())
                 .withSteerOffset(radOffset)
                 .build();
-        new ScheduleCommand(Commands.waitSeconds(1.0)).andThen(Commands.runOnce(() -> module.resetToAbsolute())); 
+        try{ 
+            new Timer().wait(1000);
+            System.out.println("Reset");
+        } catch (Exception e){
+            
+        } 
+        module.resetToAbsolute();
+        // new ScheduleCommand(Commands.waitSeconds(1.0)).andThen(Commands.runOnce(() -> { System.out.println("reset");})); 
+
+        System.out.println("Printing");
         absEncoder = module.getSteerEncoder();
     }
 
