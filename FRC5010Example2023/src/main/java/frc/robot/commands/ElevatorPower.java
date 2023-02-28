@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorSubsystem;
 
-public class ElevatorOut extends CommandBase {
+public class ElevatorPower extends CommandBase {
     private Supplier<Double> moveSpeed;
     private ElevatorSubsystem elevatorSubsystem;
 
-    public ElevatorOut(ElevatorSubsystem elevatorSubsystem, Supplier<Double> moveSpeed) {
+    public ElevatorPower(ElevatorSubsystem elevatorSubsystem, Supplier<Double> moveSpeed) {
         this.elevatorSubsystem = elevatorSubsystem;
         this.moveSpeed = moveSpeed;
     }

@@ -49,7 +49,7 @@ public class Drive extends GenericMechanism {
     private VisionSystem vision;
     private GenericDrivetrain drivetrain;
     private GenericGyro gyro;
-
+    private boolean isFieldOrientedDrive;
     private Command defaultDriveCommand;
     private String type;
     private GenericDrivetrainConstants driveConstants;
@@ -79,6 +79,7 @@ public class Drive extends GenericMechanism {
         this.type = type;
         this.motorPorts = drivePorts;
         this.driveConstants = driveConstants;
+        this.isFieldOrientedDrive = true; 
         driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, 60);
         driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
         maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY,
@@ -156,19 +157,24 @@ public class Drive extends GenericMechanism {
         // driver.setRightXAxis(driver.createRightXAxis()
         // .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
-
+        driver.createLeftBumper().onTrue(new InstantCommand(() -> toggleFieldOrientedDrive()));
+        
         defaultDriveCommand = new DefaultDriveCommand(drivetrain,
                 () -> driver.getLeftYAxis(),
                 () -> driver.getLeftXAxis(),
                 () -> driver.getRightXAxis(),
-                () -> !driver.createLeftBumper().getAsBoolean());
-
+                () -> isFieldOrientedDrive);
+        
         driver.createStartButton().onTrue(new InstantCommand(() -> gyro.reset()));
         
     }
 
     public GenericDrivetrain getDrivetrain() {
         return drivetrain;
+    }
+
+    public boolean toggleFieldOrientedDrive(){    
+        return !isFieldOrientedDrive; 
     }
 
     private void initializeThriftySwerveDrive() {
@@ -323,5 +329,9 @@ public class Drive extends GenericMechanism {
         }
 
         return commands;
+    }
+    
+    public void disabledBehavior(){
+        drivetrain.disabledBehavior(); 
     }
 }

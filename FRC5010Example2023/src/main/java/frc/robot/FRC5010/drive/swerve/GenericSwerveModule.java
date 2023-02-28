@@ -118,6 +118,9 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         return driveEncoder.getVelocity();
     }
 
+    public void resetAbsoluteEncoder(){
+    }
+
     public boolean setState(SwerveModuleState state, boolean ready) {
         // state = SwerveModuleState.optimize(state, getState().angle);
         turningController.setPID(swerveTurnP.get(), swerveTurnI.get(), swerveTurnD.get());

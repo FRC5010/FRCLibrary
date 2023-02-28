@@ -6,11 +6,11 @@ import edu.wpi.first.math.trajectory.constraint.EllipticalRegionConstraint;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorSubsystem;
 
-public class ElevatorMove extends CommandBase {
+public class PivotPower extends CommandBase {
     private ElevatorSubsystem elevatorSubsystem;
     private Supplier<Double> moveSpeed;
 
-    public ElevatorMove(ElevatorSubsystem elevatorSubsystem, Supplier<Double> moveSpeed) {
+    public PivotPower(ElevatorSubsystem elevatorSubsystem, Supplier<Double> moveSpeed) {
         this.moveSpeed = moveSpeed;
         this.elevatorSubsystem = elevatorSubsystem;
         addRequirements(this.elevatorSubsystem);

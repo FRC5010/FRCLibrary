@@ -62,4 +62,9 @@ public abstract class GenericMechanism {
     }
 
     public abstract Map<String,Command> initAutoCommands();
+
+    public void disabledBehavior(){
+        
+    } 
+  
 }

@@ -12,10 +12,13 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 
@@ -43,7 +46,7 @@ public class SdsSwerveModule extends GenericSwerveModule {
                 .withSteerEncoderPort(swervePorts.getEncoderPort())
                 .withSteerOffset(radOffset)
                 .build();
-
+        new ScheduleCommand(Commands.waitSeconds(1.0)).andThen(Commands.runOnce(() -> resetAbsoluteEncoder())); 
         absEncoder = module.getSteerEncoder();
     }
 
@@ -84,6 +87,10 @@ public class SdsSwerveModule extends GenericSwerveModule {
     @Override
     public double getAbsoluteEncoderRad() {
         return absEncoder.getAbsoluteAngle();
+    }
+
+    public void resetAbsoluteEncoder(){
+        module.set(0, 0);
     }
 
 }

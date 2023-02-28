@@ -212,4 +212,8 @@ public class RobotContainer extends GenericMechanism {
   public static Alliance getAlliance() {
     return alliance;
   }
+
+  public void disabledBehavior(){
+    robot.disabledBehavior();
+  } 
 }

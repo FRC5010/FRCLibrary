@@ -47,7 +47,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private RelativeEncoder pivotEncoder;
   private SimulatedEncoder pivotSimEncoder = new SimulatedEncoder(10, 11);
 
-  private DigitalInput extendHallEffect, pivotHallEffect; 
+  private DigitalInput extendHallEffect, pivotHallEffect, pivotMaxHallEffect; 
 
   private MotorController5010 extendMotor;
   private SparkMaxPIDController extendController;
@@ -88,7 +88,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem(MotorController5010 pivot, GenericPID pivotPID,
       MotorController5010 extend, GenericPID extendPID,
       MotorModelConstants liftConstants, MotorModelConstants extendConstants,
-      Mechanism2d mech2d, int extendHallEffectPort, int pivotHallEffectPort) {
+      Mechanism2d mech2d, int extendHallEffectPort, int pivotHallEffectPort, int pivotMaxHallEffectPort) {
     this.currentPivotTarget = 0;
     this.currentExtendTarget = 0;
 
@@ -149,6 +149,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     this.extendHallEffect = new DigitalInput(extendHallEffectPort);
     this.pivotHallEffect = new DigitalInput(pivotHallEffectPort);
+    this.pivotMaxHallEffect = new DigitalInput(pivotMaxHallEffectPort); 
     
   }
 
@@ -191,9 +192,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public double getPivotPosition() {
     if (Robot.isReal()) {
-      return pivotEncoder.getPosition() + pivotOffset;
+      return pivotEncoder.getPosition();
     } else {
-      return pivotSimEncoder.getPosition() + pivotOffset;
+      return pivotSimEncoder.getPosition();
     }
   }
 
@@ -229,7 +230,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     return !pivotHallEffect.get();  
   }
 
-
+  public boolean isPivotMax(){
+    return !pivotMaxHallEffect.get();
+  }
 
   public ElevatorLevel getElevatorLevel() {
     return this.currentLevel;
@@ -274,12 +277,18 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
 
       if (isPivotIn()){
-        setPivotEncoderPosition(0);
+        setPivotEncoderPosition(pivotOffset);
+      }
+
+      if (isPivotMax() && (currentPivotTarget > pivotEncoder.getPosition() || pivotMotor.get() > 0)){
+        stopPivot();
       }
 
       SmartDashboard.putBoolean("Pivot In: ", isPivotIn());
       SmartDashboard.putBoolean("Elevator In: ", isElevatorIn());
-
+      SmartDashboard.putBoolean("Pivot Max", isPivotMax());
+      SmartDashboard.putBoolean("Pivot Target is good", currentPivotTarget > pivotEncoder.getPosition());
+      SmartDashboard.putNumber("Pivot Motor is positive", pivotMotor.get());
     }
     SmartDashboard.putNumber("Motor Pow: ", extendMotor.get());  
     SmartDashboard.putNumber("Pivot Pow: ", pivotMotor.get());

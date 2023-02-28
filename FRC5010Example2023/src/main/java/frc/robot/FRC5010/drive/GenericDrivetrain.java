@@ -41,4 +41,6 @@ public abstract class GenericDrivetrain extends SubsystemBase {
     }
 
     public abstract BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap);
+
+    public void disabledBehavior(){}
 }

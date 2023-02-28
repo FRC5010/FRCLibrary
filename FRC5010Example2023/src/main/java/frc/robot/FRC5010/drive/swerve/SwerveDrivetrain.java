@@ -131,4 +131,8 @@ public class SwerveDrivetrain extends GenericDrivetrain{
             this // The drive subsystem. Used to properly set the requirements of path following commands
         );        
     }
+
+    public void disabledBehavior(){
+        frontLeft.resetAbsoluteEncoder(); 
+    } 
 }

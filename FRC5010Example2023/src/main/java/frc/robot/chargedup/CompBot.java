@@ -58,10 +58,10 @@ public class CompBot extends GenericMechanism {
         swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
         // Baby Swerve values need to be changed
-        swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(-91.5)); //  
-        swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(137.5 + 180)); //
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(2.2)); // 
-        swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(3.25)); //  
+        swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(-93.076)); //  
+        swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(140.010)); //
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(-1.582)); // 
+        swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(1.670)); //  
         // swerveConstants.setkFrontLeftAbsoluteOffsetRad(0); //  
         // swerveConstants.setkFrontRightAbsoluteOffsetRad(0); // 
         // swerveConstants.setkBackLeftAbsoluteOffsetRad(0); // 
@@ -172,5 +172,9 @@ public class CompBot extends GenericMechanism {
     @Override
     public Map<String, Command> initAutoCommands() {
       return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap());
+    }
+
+    public void disabledBehavior(){
+      drive.disabledBehavior();
     }
 }

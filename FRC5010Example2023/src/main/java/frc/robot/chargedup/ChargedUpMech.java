@@ -24,8 +24,8 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.ElevatorMove;
-import frc.robot.commands.ElevatorOut;
+import frc.robot.commands.PivotPower;
+import frc.robot.commands.ElevatorPower;
 import frc.robot.commands.HomeElevator;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.LedDefaultCommand;
@@ -37,7 +37,7 @@ public class ChargedUpMech extends GenericMechanism {
     private ElevatorSubsystem elevatorSubsystem;
     private IntakeSubsystem intakeSubsystem;
     private ButtonBoard buttonOperator;
-    private double speedLimit = .3;
+    private double speedLimit = .5;
     private LedSubsystem ledSubsystem;
 
     public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator, LedSubsystem ledSubsystem) {
@@ -49,7 +49,7 @@ public class ChargedUpMech extends GenericMechanism {
                 MotorFactory.NEO(11), new GenericPID(.012, 0, 0),
                 new MotorModelConstants(1, 1, 1), 
                 new MotorModelConstants(1, 1, 1),
-                mechVisual, 0, 1);
+                mechVisual, 0, 1, 2);
 
         this.intakeSubsystem = new IntakeSubsystem(
                 MotorFactory.NEO(19), 
@@ -81,24 +81,24 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.getButton(3)
                 .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
         buttonOperator.getButton(7)
-                .onTrue(new InstantCommand(() -> {speedLimit = 0.2;}))
+                .onTrue(new InstantCommand(() -> {speedLimit = 0.25;}))
                 .onFalse(new InstantCommand(() -> {speedLimit = 0.5;}));
 
         buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {intakeSubsystem.setIntakeCone();}, intakeSubsystem));
 
         buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {intakeSubsystem.setIntakeCube();}, intakeSubsystem));
 
-        buttonOperator.getButton(10).whileTrue(new IntakeSpin(intakeSubsystem, () -> -0.5));
+        buttonOperator.getButton(10).whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-speedLimit * 1.2, -1)));
 
         buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
         buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
 
         new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
-            .onTrue(new ElevatorOut(elevatorSubsystem, () -> (buttonOperator.getXAxis() * speedLimit))
+            .onTrue(new ElevatorPower(elevatorSubsystem, () -> (buttonOperator.getXAxis() * speedLimit))
         );
 
         new Trigger(() -> (Math.abs(buttonOperator.getYAxis()) > 0.01))
-            .onTrue(new ElevatorMove(elevatorSubsystem, () -> (buttonOperator.getYAxis() * speedLimit))
+            .onTrue(new PivotPower(elevatorSubsystem, () -> (buttonOperator.getYAxis() * speedLimit))
         );
 
         new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
