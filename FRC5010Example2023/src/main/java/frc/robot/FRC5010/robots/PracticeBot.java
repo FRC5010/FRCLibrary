@@ -94,8 +94,9 @@ public class PracticeBot extends GenericMechanism {
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
 
-    // Create Paths
-    autoMaps.addPath("Blue Cone 7 Start", new PathConstraints(4, 3 ));
+    // Create 
+    autoMaps.addPath("Blue Cone 8 Start", new PathConstraints(4, 3));
+    autoMaps.addPath("Blue Cone 7 Start", new PathConstraints(4, 3));
     autoMaps.addPath("Blue Cone 6 Start", new PathConstraints(4, 3));
     autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
   }
