@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.constants.DrivePorts;
 import frc.robot.FRC5010.constants.GenericDrivetrainConstants;
 import frc.robot.FRC5010.constants.Persisted;
@@ -60,7 +59,8 @@ public class Drive extends GenericMechanism {
         public static final String MK4I_SWERVE_DRIVE = "MK4ISwerveDrive";
         public static final String SDS_MK4I_SWERVE_DRIVE = "SDSMK4ISwerveDrive";
         public static final String SDS_MK4_SWERVE_DRIVE = "SDSMK4SwerveDrive";
-        public static final String YAGSL_SWERVE_DRIVE = "YAGSLSwerveDrive";
+        public static final String YAGSL_MK4I_SWERVE_DRIVE = "YAGSLMK4ISwerveDrive";
+        public static final String YAGSL_MK4_SWERVE_DRIVE = "YAGSLMK4SwerveDrive";
     }
 
     // Examples of how to use a persisted constants
@@ -115,8 +115,12 @@ public class Drive extends GenericMechanism {
                 initializeSDSMk4SwerveDrive();
                 break;
             }
-            case Type.YAGSL_SWERVE_DRIVE:{
-                initializeYAGSLSwerveDrive();
+            case Type.YAGSL_MK4I_SWERVE_DRIVE:{
+                initializeYAGSLMK4ISwerveDrive();
+                break; 
+            }
+            case Type.YAGSL_MK4_SWERVE_DRIVE:{
+                initializeYAGSLMK4SwerveDrive();
                 break; 
             }
             default: {
@@ -125,8 +129,11 @@ public class Drive extends GenericMechanism {
         }
     }
 
-    private void initializeYAGSLSwerveDrive() {
-        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants);
+    private void initializeYAGSLMK4ISwerveDrive() {
+        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4i");
+    }
+    private void initializeYAGSLMK4SwerveDrive() {
+        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4");
     }
 
     public void setupDefaultCommands(Controller driver, Controller operator) {

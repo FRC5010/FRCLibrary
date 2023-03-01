@@ -36,10 +36,10 @@ import swervelib.parser.SwerveParser;
 public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
     private SwerveDrive swerveDrive; 
 
-    public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants) {
+    public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants, String swerveType) {
         super(mechVisual, gyro, swerveConstants); 
         try {
-            File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
+            File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
             swerveDrive  = new SwerveParser(swerveJsonDirectory).createSwerveDrive();
         } catch (Exception e){
             System.out.println(e.getMessage());
