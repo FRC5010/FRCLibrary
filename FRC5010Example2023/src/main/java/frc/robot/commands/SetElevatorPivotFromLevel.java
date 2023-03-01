@@ -7,29 +7,23 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;
+import frc.robot.chargedup.PivotSubsystem;
 
 public class SetElevatorPivotFromLevel extends CommandBase {
 
-  ElevatorSubsystem elevator;
-  ElevatorLevel level;
+  private PivotSubsystem elevator;
+  private ElevatorLevel level;
 
   /** Creates a new SetElevatorPivotFromLevel. */
-  public SetElevatorPivotFromLevel(ElevatorSubsystem elevator, ElevatorLevel level) {
+  public SetElevatorPivotFromLevel(PivotSubsystem elevator, ElevatorSubsystem elevatorSubsystem, ElevatorLevel level) {
     this.elevator = elevator;
-    this.level = level;
-    addRequirements(elevator);
-  }
-
-  public SetElevatorPivotFromLevel(ElevatorSubsystem elevator) {
-    this.elevator = elevator;
-    this.level = elevator.getElevatorLevel();
+    this.level = elevatorSubsystem.getElevatorLevel();
     addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.setElevatorLevel(level);
     elevator.setPivotPosition(level.getPivotPosition());
   }
 

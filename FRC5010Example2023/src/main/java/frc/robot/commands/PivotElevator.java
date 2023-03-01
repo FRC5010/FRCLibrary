@@ -6,12 +6,13 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorSubsystem;
+import frc.robot.chargedup.PivotSubsystem;
 
 public class PivotElevator extends CommandBase {
-  ElevatorSubsystem elevator;
+  PivotSubsystem elevator;
   double targetPosition;
   /** Creates a new PivotElevator. */
-  public PivotElevator(ElevatorSubsystem elevator, double targetPosition) {
+  public PivotElevator(PivotSubsystem elevator, double targetPosition) {
     this.elevator = elevator;
     this.targetPosition = targetPosition;
     addRequirements(elevator);

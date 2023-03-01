@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,7 +34,7 @@ public class SwerveDrivetrain extends GenericDrivetrain{
 
     private ChassisSpeeds chassisSpeeds;
 
-    private GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
+    protected GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
 
     private GenericGyro gyro; 
 
@@ -56,11 +57,18 @@ public class SwerveDrivetrain extends GenericDrivetrain{
 
         this.gyro = genericGyro;
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-        poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, swerveConstants.getKinematics(), frontLeft, frontRight, backLeft, backRight), visonSystem);
+        poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, swerveConstants.getKinematics(), this), visonSystem);
         maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
 
         setDrivetrainPoseEstimator(poseEstimator);
 
+        gyro.reset();
+    }
+
+    public SwerveDrivetrain(Mechanism2d mechVisual, GenericGyro genericGyro, SwerveConstants swerveConstants){
+        super(mechVisual);
+        this.gyro = genericGyro; 
+        this.swerveConstants = swerveConstants; 
         gyro.reset();
     }
 
@@ -75,6 +83,15 @@ public class SwerveDrivetrain extends GenericDrivetrain{
         setModuleStates(states);
     }
     
+    public SwerveModulePosition[] getModulePositions(){
+        return new SwerveModulePosition[] {
+            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())), 
+            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())), 
+            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getTurningPosition())), 
+            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getTurningPosition()))
+          };
+
+    }
 
     public void setModuleStates(SwerveModuleState[] setDesiredStates){
         SwerveModuleState[] states = setDesiredStates;
@@ -97,6 +114,14 @@ public class SwerveDrivetrain extends GenericDrivetrain{
         ready = isReady;
     }
 
+    public void resetEncoders(){
+        frontLeft.resetEncoders();
+        frontRight.resetEncoders();
+        backLeft.resetEncoders(); 
+        backRight.resetEncoders();
+    } 
+
+    
     public void stop(){
         frontLeft.stop();
         frontRight.stop();

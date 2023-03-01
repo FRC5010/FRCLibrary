@@ -36,6 +36,7 @@ import frc.robot.commands.SetElevatorPivotFromLevel;
 public class ChargedUpMech extends GenericMechanism {
     private ElevatorSubsystem elevatorSubsystem;
     private IntakeSubsystem intakeSubsystem;
+    private PivotSubsystem pivotSubsystem;
     private ButtonBoard buttonOperator;
     private double speedLimit = .5;
     private LedSubsystem ledSubsystem;
@@ -45,11 +46,11 @@ public class ChargedUpMech extends GenericMechanism {
         // use this to PID the Elevator
         // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
         this.elevatorSubsystem = new ElevatorSubsystem(
-                MotorFactory.NEO(9), new GenericPID(0.01, 0.0, 0.03),
                 MotorFactory.NEO(11), new GenericPID(.012, 0, 0),
-                new MotorModelConstants(1, 1, 1), 
                 new MotorModelConstants(1, 1, 1),
-                mechVisual, 0, 1, 2);
+                mechVisual, 0);
+
+        this.pivotSubsystem = new PivotSubsystem(MotorFactory.NEO(9), new GenericPID(0.01, 0.0, 0.03), new MotorModelConstants(1, 1, 1), 1, 2, mechVisual);
 
         this.intakeSubsystem = new IntakeSubsystem(
                 MotorFactory.NEO(19), 
@@ -73,13 +74,13 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.getButton(2)
                 .onTrue(new HomeElevator(elevatorSubsystem));
         buttonOperator.getButton(6)
-                .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.ground));
+                .onTrue(new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.ground));
         buttonOperator.getButton(5)
-                .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.low));
+                .onTrue(new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.low));
         buttonOperator.getButton(4)
-                .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.medium));
+                .onTrue(new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.medium));
         buttonOperator.getButton(3)
-                .onTrue(new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
+                .onTrue(new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.high));
         buttonOperator.getButton(7)
                 .onTrue(new InstantCommand(() -> {speedLimit = 0.25;}))
                 .onFalse(new InstantCommand(() -> {speedLimit = 0.5;}));
@@ -98,7 +99,7 @@ public class ChargedUpMech extends GenericMechanism {
         );
 
         new Trigger(() -> (Math.abs(buttonOperator.getYAxis()) > 0.01))
-            .onTrue(new PivotPower(elevatorSubsystem, () -> (buttonOperator.getYAxis() * speedLimit))
+            .onTrue(new PivotPower(pivotSubsystem, () -> (buttonOperator.getYAxis() * speedLimit))
         );
 
         new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
@@ -122,6 +123,10 @@ public class ChargedUpMech extends GenericMechanism {
     public ElevatorSubsystem getElevatorSubsystem(){
         return elevatorSubsystem;
     }
+
+    public PivotSubsystem getPivotSubsystem(){
+        return pivotSubsystem;
+    }
     
     @Override
     public void setupDefaultCommands(Controller driver, Controller operator) {
@@ -129,11 +134,11 @@ public class ChargedUpMech extends GenericMechanism {
                 () -> {
                 },
                 () -> {
-                    elevatorSubsystem.pivotPow(operator.getRightYAxis());
+                    pivotSubsystem.pivotPow(operator.getRightYAxis());
                     elevatorSubsystem.extendPow(operator.getLeftYAxis());
                 },
                 (Boolean interrupted) -> {
-                    elevatorSubsystem.pivotPow(0);
+                    pivotSubsystem.pivotPow(0);
                     elevatorSubsystem.extendPow(0);
                 },
                 () -> false,

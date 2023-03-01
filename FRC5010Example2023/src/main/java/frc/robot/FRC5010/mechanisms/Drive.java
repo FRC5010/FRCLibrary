@@ -34,6 +34,7 @@ import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SdsSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.drive.swerve.ThriftySwerveModule;
+import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
@@ -45,7 +46,6 @@ public class Drive extends GenericMechanism {
     private VisionSystem vision;
     private GenericDrivetrain drivetrain;
     private GenericGyro gyro;
-    private boolean isFieldOrientedDrive;
     private Command defaultDriveCommand;
     private String type;
     private GenericDrivetrainConstants driveConstants;
@@ -60,6 +60,7 @@ public class Drive extends GenericMechanism {
         public static final String MK4I_SWERVE_DRIVE = "MK4ISwerveDrive";
         public static final String SDS_MK4I_SWERVE_DRIVE = "SDSMK4ISwerveDrive";
         public static final String SDS_MK4_SWERVE_DRIVE = "SDSMK4SwerveDrive";
+        public static final String YAGSL_SWERVE_DRIVE = "YAGSLSwerveDrive";
     }
 
     // Examples of how to use a persisted constants
@@ -75,7 +76,6 @@ public class Drive extends GenericMechanism {
         this.type = type;
         this.motorPorts = drivePorts;
         this.driveConstants = driveConstants;
-        this.isFieldOrientedDrive = true; 
         driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, 60);
         driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
         maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY,
@@ -84,7 +84,7 @@ public class Drive extends GenericMechanism {
                 driveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond());
         mechVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
         SmartDashboard.putData("Drive Visual", mechVisual);
-        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
+        // SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
         initRealOrSim();
     }
 
@@ -115,10 +115,18 @@ public class Drive extends GenericMechanism {
                 initializeSDSMk4SwerveDrive();
                 break;
             }
+            case Type.YAGSL_SWERVE_DRIVE:{
+                initializeYAGSLSwerveDrive();
+                break; 
+            }
             default: {
                 break;
             }
         }
+    }
+
+    private void initializeYAGSLSwerveDrive() {
+        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants);
     }
 
     public void setupDefaultCommands(Controller driver, Controller operator) {
@@ -128,7 +136,8 @@ public class Drive extends GenericMechanism {
         } else {
 
         }
-        drivetrain.setDefaultCommand(defaultDriveCommand);
+
+        drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
     }
 
     @Override
@@ -154,26 +163,12 @@ public class Drive extends GenericMechanism {
         // driver.setRightXAxis(driver.createRightXAxis()
         // .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
-        driver.createLeftBumper().onTrue(new InstantCommand(() -> toggleFieldOrientedDrive()));
-        driver.createStartButton().onTrue(new InstantCommand(() -> gyro.reset()));
-
-
-
-        defaultDriveCommand = new DefaultDriveCommand(drivetrain,
-                () -> driver.getLeftYAxis(),
-                () -> driver.getLeftXAxis(),
-                () -> driver.getRightXAxis(),
-                () -> isFieldOrientedDrive);
-        
+        driver.createLeftBumper().onTrue(new InstantCommand(() -> drivetrain.toggleFieldOrientedDrive()));
+        driver.createStartButton().onTrue(new InstantCommand(() -> gyro.reset()));        
     }
 
     public GenericDrivetrain getDrivetrain() {
         return drivetrain;
-    }
-    
-    public void toggleFieldOrientedDrive(){    
-        isFieldOrientedDrive = !isFieldOrientedDrive; 
-        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
     }
 
     private void initializeThriftySwerveDrive() {

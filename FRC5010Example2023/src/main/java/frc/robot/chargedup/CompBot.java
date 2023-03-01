@@ -76,7 +76,7 @@ public class CompBot extends GenericMechanism {
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
-        ledSubsystem = new LedSubsystem(1, 120);
+        ledSubsystem = new LedSubsystem(1, 250);
 
         // Will need to be changed for 2023 field
         VisionSystem multiVision = new VisionLimeLightSim("Sim", 0, AprilTags.aprilTagRoomLayout);
@@ -90,6 +90,7 @@ public class CompBot extends GenericMechanism {
 
         // Ports need to be changed when comp bot is ready
         List<SwervePorts> swervePorts = new ArrayList<>();
+        
         swervePorts.add(new SwervePorts(1, 2, 10)); //FL
         swervePorts.add(new SwervePorts(8, 7, 11)); //FR
         swervePorts.add(new SwervePorts(3, 4, 12)); //BL
@@ -100,7 +101,7 @@ public class CompBot extends GenericMechanism {
 
         
 
-        drive = new Drive(multiVision, gyro, Drive.Type.SDS_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
+        drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, swervePorts, swerveConstants);
         // Uncomment when using PhotonVision
         //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
@@ -111,14 +112,15 @@ public class CompBot extends GenericMechanism {
         SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
         ElevatorSubsystem elevatorSubsystem = ((ChargedUpMech) elevator).getElevatorSubsystem();
         IntakeSubsystem intakeSubsystem = ((ChargedUpMech) elevator).getIntakeSubsystem();
+        PivotSubsystem pivotSubsystem = ((ChargedUpMech) elevator).getPivotSubsystem();
 
         // Elevator Controls
         autoMaps.addMarker("ExtendToPivotPosition", new SetElevatorExtendFromLevel(elevatorSubsystem));
         autoMaps.addMarker("ExtendToHome", new SetElevatorExtendFromLevel(elevatorSubsystem));
-        autoMaps.addMarker("PivotToGround", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.ground));
-        autoMaps.addMarker("PivotToLow", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.low));
-        autoMaps.addMarker("PivotToMid", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.medium));
-        autoMaps.addMarker("PivotToHigh", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
+        autoMaps.addMarker("PivotToGround", new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.ground));
+        autoMaps.addMarker("PivotToLow", new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.low));
+        autoMaps.addMarker("PivotToMid", new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.medium));
+        autoMaps.addMarker("PivotToHigh", new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.high));
 
         // Intake Controls
         autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));

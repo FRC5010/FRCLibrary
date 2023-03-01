@@ -29,7 +29,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     private final MechanismLigament2d motorDial;
     private final MechanismLigament2d absEncDial;
     private final MechanismLigament2d expectDial;
-    private final String moduleKey;
+    protected final String moduleKey;
     private PIDController turningController;
 
     protected MotorController5010 drive, turn;
