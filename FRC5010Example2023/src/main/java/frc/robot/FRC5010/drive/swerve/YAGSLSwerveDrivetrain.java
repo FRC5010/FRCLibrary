@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,11 +22,11 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
+import frc.robot.FRC5010.drive.pose.SwervePose;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.chargedup.Constants.OperatorConstants;
-import frc.robot.commands.TeleopDrive;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveKinematics2;
@@ -34,9 +35,9 @@ import swervelib.parser.SwerveParser;
 
 /** Add your docs here. */
 public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
-    private SwerveDrive swerveDrive; 
+    private SwerveDrive swerveDrive;
 
-    public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants, String swerveType) {
+    public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants, String swerveType, VisionSystem visionSystem) {
         super(mechVisual, gyro, swerveConstants); 
         try {
             File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
@@ -44,8 +45,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
-        
-
+        poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, this, swerveDrive.swerveDrivePoseEstimator), visionSystem);
+        setDrivetrainPoseEstimator(poseEstimator);
     }
 
     // public Command createDefaultCommand(Controller driverXbox){

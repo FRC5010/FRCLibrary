@@ -84,9 +84,9 @@ public class PracticeBot extends GenericMechanism {
 
     drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
     ledSubsystem = new LedSubsystem(1, 60);
-    //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
+    multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
     
-    //driverDisplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
+    driverDisplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 
     autoMaps = new AutoMaps();
     SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();

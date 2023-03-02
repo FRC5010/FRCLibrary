@@ -130,10 +130,10 @@ public class Drive extends GenericMechanism {
     }
 
     private void initializeYAGSLMK4ISwerveDrive() {
-        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4i");
+        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4i", vision);
     }
     private void initializeYAGSLMK4SwerveDrive() {
-        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4");
+        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4", vision);
     }
 
     public void setupDefaultCommands(Controller driver, Controller operator) {

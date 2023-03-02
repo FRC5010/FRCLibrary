@@ -29,6 +29,13 @@ public class SwervePose extends GenericPose {
         // poseEstimator.
     }
 
+    public SwervePose(GenericGyro gyro, SwerveDrivetrain drivetrain, SwerveDrivePoseEstimator poseEstimator){
+        super(gyro);
+        this.drivetrain = drivetrain;
+        modulePositions = drivetrain.getModulePositions();
+        this.poseEstimator = poseEstimator;
+    }
+
     @Override
     public void resetEncoders() {
         drivetrain.resetEncoders(); 
