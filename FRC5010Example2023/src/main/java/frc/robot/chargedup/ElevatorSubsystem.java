@@ -4,14 +4,13 @@
 
 package frc.robot.chargedup;
 
-import com.revrobotics.AbsoluteEncoder;
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -20,7 +19,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -76,11 +74,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   // TODO Implement ElevatorFeefForward
   private ElevatorFeedforward extendFeedforward;
-  private ElevatorSim extendSim;
+  private ElevatorSim extendSim;  
+
+  private Supplier<Double> pivotAngle; 
   
   public ElevatorSubsystem(MotorController5010 extend, GenericPID extendPID,
        MotorModelConstants extendConstants,
-      Mechanism2d mech2d, int extendHallEffectPort) {
+      Mechanism2d mech2d, int extendHallEffectPort, Supplier<Double> pivotAngle) {
     
     this.currentExtendTarget = 0;
 
@@ -113,12 +113,18 @@ public class ElevatorSubsystem extends SubsystemBase {
     extendController.setD(extendPID.getkD());
     extendController.setFeedbackDevice(extendEncoder);
 
+    extendController.setFF(0.0);
+
     extendController.setSmartMotionMaxVelocity(3000, 0);
     extendController.setSmartMotionMinOutputVelocity(0, 0);
     extendController.setSmartMotionMaxAccel(100, 0);
 
+
     this.extendHallEffect = new DigitalInput(extendHallEffectPort);
      
+    this.pivotAngle = pivotAngle; 
+
+    SmartDashboard.putNumber("Extend P", extendPID.getkP());
     
   }
 
@@ -132,25 +138,36 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   
 
-  public void setExtendPosition(double position) {
+  public void runExtendToTarget(double position) {
     this.currentExtendTarget = position;
     SmartDashboard.putNumber("Extend Target", currentExtendTarget);
-    targetPos2d.setLength(position);
+    targetPos2d.setLength(currentExtendTarget);
     if (Robot.isReal()) {
-      //extendController.setFF();
+      extendController.setFF(getFeedFowardVoltage() / currentExtendTarget);
       extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kSmartMotion, 0);
+      SmartDashboard.putNumber("Extend FF", getFeedFowardVoltage());
     } else {
       extendPow((currentExtendTarget - getExtendPosition()) / kMaxElevatorHeight);
     }
   }
 
-  
+  // public void runExtendToTarget(double position){
+  //   this.currentExtendTarget = position;
+  //   double kP = SmartDashboard.getNumber("Extend P", extendPID.getkP());
+  //   double kF = getFeedFowardVoltage(); 
+  //   double pow = kP * (getExtendPosition() - position) + kF; 
+  //   extendMotor.setVoltage(pow);
+  // }
+
+  public double getFeedFowardVoltage(){
+    return Math.sin(Units.degreesToRadians(pivotAngle.get()) * (1.131));
+  }
 
   public double getExtendPosition() {
     if (Robot.isReal()) {
-      return extendEncoder.getPosition() + ElevatorLevel.ground.getExtensionPosition();
+      return extendEncoder.getPosition();
     } else {
-      return extendSimEncoder.getPosition() + ElevatorLevel.ground.getExtensionPosition();
+      return extendSimEncoder.getPosition();
     }
   }
 
@@ -197,13 +214,17 @@ public class ElevatorSubsystem extends SubsystemBase {
     extendMotor.set(0);
   }
 
+  public void stopAndHoldExtend(){
+    extendMotor.setVoltage(getFeedFowardVoltage());
+  }
+
   @Override
   public void periodic() {
     if (Robot.isReal()) {
       m_elevatorMech2d.setLength(Units.metersToInches(getExtendPosition()));
 
       if (isElevatorIn()){
-        setExtendEncoderPosition(0);
+        setExtendEncoderPosition(kMinElevatorHeight);
       }
 
       SmartDashboard.putBoolean("Elevator In: ", isElevatorIn());
@@ -213,6 +234,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
     //SmartDashboard.putNumber("Abs", KFF);
     SmartDashboard.putBoolean("Is Elevator in: ", isElevatorIn());
+
+    SmartDashboard.putNumber("Elevator Level", currentLevel.getExtensionPosition());
+
+    SmartDashboard.putNumber("Pivot Level", currentLevel.getPivotPosition());
   }
 
   @Override

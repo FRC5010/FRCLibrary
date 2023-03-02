@@ -139,12 +139,14 @@ public class Drive extends GenericMechanism {
     public void setupDefaultCommands(Controller driver, Controller operator) {
         // Handle real or simulation case for default commands
         if (Robot.isReal()) {
-
+            if(defaultDriveCommand == null){
+                this.defaultDriveCommand = drivetrain.createDefaultCommand(driver);
+                drivetrain.setDefaultCommand(defaultDriveCommand);
+            }
         } else {
 
         }
 
-        drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
     }
 
     @Override

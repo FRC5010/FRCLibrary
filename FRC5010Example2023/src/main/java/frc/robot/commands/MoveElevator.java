@@ -4,34 +4,42 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;
 
 public class MoveElevator extends CommandBase {
   ElevatorSubsystem elevator;
-  double targetPosition;
+  Supplier<ElevatorLevel> elevatorLevel;
   /** Creates a new MoveElevator. */
-  public MoveElevator(ElevatorSubsystem elevator, double targetPosition) {
+  public MoveElevator(ElevatorSubsystem elevator, Supplier<ElevatorLevel> elevatorLevel) {
     this.elevator = elevator;
-    this.targetPosition = targetPosition;
-
+    this.elevatorLevel = elevatorLevel;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    elevator.setExtendPosition(targetPosition);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    elevator.runExtendToTarget(elevatorLevel.get().getExtensionPosition());
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    if (interrupted){
+      elevator.stopExtend();
+    } else {
+      elevator.stopAndHoldExtend();
+    }
+  }
 
   // Returns true when the command should end.
   @Override

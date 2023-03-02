@@ -4,7 +4,7 @@ import edu.wpi.first.math.util.Units;
 
 public enum ElevatorLevel {
   ground(1.469,-11.3), 
-  low(ElevatorSubsystem.kMinElevatorHeight + Units.inchesToMeters(10),0), 
+  low(ElevatorSubsystem.kMinElevatorHeight + Units.inchesToMeters(10), 0), 
   medium(1.412, 23), 
   high(1.81,27.94);
 

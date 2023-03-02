@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
@@ -29,8 +31,8 @@ import frc.robot.commands.ElevatorPower;
 import frc.robot.commands.HomeElevator;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.LedDefaultCommand;
-import frc.robot.commands.SetElevatorExtendFromLevel;
-import frc.robot.commands.SetElevatorPivotFromLevel;
+import frc.robot.commands.MoveElevator;
+import frc.robot.commands.PivotElevator;
 
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {
@@ -41,6 +43,8 @@ public class ChargedUpMech extends GenericMechanism {
     private double speedLimit = .5;
     private LedSubsystem ledSubsystem;
 
+    private ElevatorLevel elevatorLevel;
+
     public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator, LedSubsystem ledSubsystem) {
         super(robotMechVisual, shuffleTab);
         // use this to PID the Elevator
@@ -48,9 +52,14 @@ public class ChargedUpMech extends GenericMechanism {
         this.elevatorSubsystem = new ElevatorSubsystem(
                 MotorFactory.NEO(11), new GenericPID(.012, 0, 0),
                 new MotorModelConstants(1, 1, 1),
-                mechVisual, 0);
+                mechVisual, 0, () -> pivotSubsystem.getPivotPosition());
 
-        this.pivotSubsystem = new PivotSubsystem(MotorFactory.NEO(9), new GenericPID(0.01, 0.0, 0.03), new MotorModelConstants(1, 1, 1), 1, 2, mechVisual);
+        this.pivotSubsystem = new PivotSubsystem(
+            MotorFactory.NEO(9), 
+            new GenericPID(2.75, 0.0, 0.03), 
+            new MotorModelConstants(1, 1, 1), 
+            1, 2, 
+            () -> elevatorSubsystem.getExtendPosition(), mechVisual);
 
         this.intakeSubsystem = new IntakeSubsystem(
                 MotorFactory.NEO(19), 
@@ -70,17 +79,46 @@ public class ChargedUpMech extends GenericMechanism {
     public void configureButtonBindings(Controller driver, Controller operator) {
         
         buttonOperator.getButton(1)
-                .onTrue(new SetElevatorExtendFromLevel(elevatorSubsystem));
+                .whileTrue(new MoveElevator(elevatorSubsystem, () -> elevatorLevel));
+
         buttonOperator.getButton(2)
-                .onTrue(new HomeElevator(elevatorSubsystem));
+                .whileTrue(new HomeElevator(elevatorSubsystem));
+
         buttonOperator.getButton(6)
-                .onTrue(new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.ground));
+                .onTrue(
+                    new SequentialCommandGroup(
+                        new InstantCommand(() -> {elevatorLevel = ElevatorLevel.ground;}),
+                        new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
+                        
+                    )
+                );
+
         buttonOperator.getButton(5)
-                .onTrue(new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.low));
+                .onTrue(
+                    new SequentialCommandGroup(
+                        new InstantCommand( () -> elevatorLevel = ElevatorLevel.low),
+                        new PivotElevator(pivotSubsystem, ElevatorLevel.low)
+                        
+                    )    
+                );
+
         buttonOperator.getButton(4)
-                .onTrue(new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.medium));
+                .onTrue(
+                    new SequentialCommandGroup(
+                        new InstantCommand( () -> elevatorLevel = ElevatorLevel.medium),
+                        new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
+                        
+                    )
+                );
+
         buttonOperator.getButton(3)
-                .onTrue(new SetElevatorPivotFromLevel(pivotSubsystem, elevatorSubsystem, ElevatorLevel.high));
+                .onTrue(
+                    new SequentialCommandGroup(
+                        new InstantCommand( () -> elevatorLevel = ElevatorLevel.high),
+                        new PivotElevator(pivotSubsystem, ElevatorLevel.high)
+                    )
+                );
+
         buttonOperator.getButton(7)
                 .onTrue(new InstantCommand(() -> {speedLimit = 0.25;}))
                 .onFalse(new InstantCommand(() -> {speedLimit = 0.5;}));

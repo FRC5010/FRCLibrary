@@ -4,11 +4,7 @@
 
 package frc.robot.commands;
 
-import com.revrobotics.AbsoluteEncoder;
-
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.chargedup.ElevatorSubsystem;
 
 public class HomeElevator extends CommandBase {
@@ -24,7 +20,7 @@ public class HomeElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.elevatorSubsystem.extendPow(-0.06);
+    this.elevatorSubsystem.extendPow(-0.4);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
