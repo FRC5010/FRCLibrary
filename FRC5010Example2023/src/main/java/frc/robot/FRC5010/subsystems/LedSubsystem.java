@@ -62,6 +62,7 @@ public class LedSubsystem extends SubsystemBase {
     // Runs the blueSnake method which changes the m_ledBuffer, then the m_led is set to the data that was just created
 
     //this method is esscentially only for controlling blink
+    //System.out.println(status);
     switch(status){
       case "rainbow":
         rainbow();
@@ -70,16 +71,6 @@ public class LedSubsystem extends SubsystemBase {
         orbit();
         break;
       case "blink":
-        // if(currTime - startTime >= delayMs){
-        //   if(ledOn){
-        //     m_led.setData(m_ledOff);
-        //     ledOn = false;
-        //   }else{
-        //     m_led.setData(m_ledBuffer);
-        //     ledOn = true;
-        //   }
-        //   startTime = currTime;
-        // }
         blink();
         break;
       default:

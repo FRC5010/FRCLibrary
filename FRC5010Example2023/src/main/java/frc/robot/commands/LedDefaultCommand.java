@@ -12,11 +12,12 @@ public class LedDefaultCommand extends CommandBase {
   /** Creates a new LedDefaultCommand. */
   LedSubsystem ledSubsystem;
   IntakeSubsystem intakeSubsystem;
+  private boolean lastState;
   public LedDefaultCommand(LedSubsystem ledSubsystem, IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.ledSubsystem = ledSubsystem;
     this.intakeSubsystem = intakeSubsystem;
-
+    lastState = !intakeSubsystem.isIntakeCone();
     addRequirements(ledSubsystem);
 
   }
@@ -28,12 +29,20 @@ public class LedDefaultCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(intakeSubsystem.isIntakeCone()){
-      ledSubsystem.setSolidColor(255, 255, 0);
-      // ledSubsystem.speed(1);
-    }else{
-      ledSubsystem.setSolidColor(255, 0, 255);
-      // ledSubsystem.speed(2);
+    if(intakeSubsystem.isIntakeCone() != lastState){
+      if(intakeSubsystem.isIntakeCone()){
+        //ledSubsystem.setOrbit(210, 255, 0, 0, 0, 0, .1);
+        ledSubsystem.setBlink(210, 255, 0, 500);
+        //(210, 255, 0);
+        //ledSubsystem.speed(1);
+        lastState = intakeSubsystem.isIntakeCone();
+      }else{
+        //ledSubsystem.setOrbit(100, 0, 255, 0, 0, 0, .1);
+        ledSubsystem.setBlink(100, 0, 255, 500);
+        //ledSubsystem.setSolidColor(100, 0, 255);
+        //ledSubsystem.speed(2);
+        lastState = intakeSubsystem.isIntakeCone();
+      }
     }
   }
 
