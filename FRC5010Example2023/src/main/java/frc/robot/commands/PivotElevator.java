@@ -21,6 +21,7 @@ public class PivotElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -44,7 +45,7 @@ public class PivotElevator extends CommandBase {
   public boolean isFinished() {
     double goalPos = pivotSubsystem.getPivotTarget();
     double currPos = elevatorLevel.getPivotPosition();
-    return pivotSubsystem.isPivotAtTarget() 
+    return pivotSubsystem.isPivotAtTarget()
     || (pivotSubsystem.isPivotMax() && pivotSubsystem.getVelocity() > 0)  
     || (pivotSubsystem.isPivotIn() && pivotSubsystem.getVelocity() < 0);
     // || (elevatorLevel.getPivotPosition() > 0 && pivotSubsystem.getPivotTarget() > 0);

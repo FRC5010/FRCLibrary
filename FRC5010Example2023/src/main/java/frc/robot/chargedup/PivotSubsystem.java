@@ -46,6 +46,7 @@ public class PivotSubsystem extends SubsystemBase {
   private double kIz = 0;
   private Supplier<Double> extendPos; 
 
+  private boolean override = false; 
 
 
   private double currentPivotTarget;
@@ -91,6 +92,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     this.extendPos = extendPos; 
     SmartDashboard.putNumber("Pivot P", pivotPID.getkP());
+    SmartDashboard.putBoolean("Override", override); 
   }
 
   public void setPivotEncoderPosition(double pos){
@@ -142,11 +144,22 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public boolean isPivotIn(){
-    return !pivotHallEffect.get();  
+    if (override){
+      return false;  
+    }  
+    return !pivotHallEffect.get(); 
   }
 
+
   public boolean isPivotMax(){
+    if (override){
+      return false;
+    }
     return !pivotMaxHallEffect.get();
+  }
+
+  public void toggleOverride(){
+    override = !override; 
   }
  
   public double getVelocity(){
@@ -176,7 +189,7 @@ public class PivotSubsystem extends SubsystemBase {
         setPivotEncoderPosition(pivotOffset);
       }
 
-      if (isPivotMax() && (currentPivotTarget > pivotEncoder.getPosition() || pivotMotor.get() > 0)){
+      if (isPivotMax() && pivotEncoder.getVelocity() > 0){
         stopPivot();
       }
 

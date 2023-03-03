@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -58,7 +59,7 @@ public class ChargedUpMech extends GenericMechanism {
             MotorFactory.NEO(9), 
             new GenericPID(3, 0.0, 0.03), 
             new MotorModelConstants(1, 1, 1), 
-            1, 2, 
+            1, 8, 
             () -> elevatorSubsystem.getExtendPosition(), mechVisual);
 
         this.intakeSubsystem = new IntakeSubsystem(
@@ -71,7 +72,6 @@ public class ChargedUpMech extends GenericMechanism {
         );
         // TODO: Set up IntakeSubsystem add correct values please
         this.buttonOperator = buttonOperator;
-
         this.ledSubsystem = ledSubsystem;    
     }
 
@@ -132,6 +132,7 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
         buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
 
+        
         new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
             .onTrue(new ElevatorPower(elevatorSubsystem, () -> (buttonOperator.getXAxis() * speedLimit))
         );
@@ -142,7 +143,8 @@ public class ChargedUpMech extends GenericMechanism {
 
         new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
                 .whileTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
- 
+        
+        driver.createStartButton().onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride()));
         // operator.createRightBumper()
         //         .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
         // operator.createLeftBumper()
@@ -182,7 +184,7 @@ public class ChargedUpMech extends GenericMechanism {
                 () -> false,
                 elevatorSubsystem));
 
-        ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem));
+        //ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem));
     }
 
     @Override

@@ -6,6 +6,7 @@ package frc.robot.FRC5010.drive.swerve;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.auto.PIDConstants;
@@ -26,7 +27,9 @@ import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
+import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.commands.JoystickToSwerve;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveKinematics2;
@@ -49,14 +52,20 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
         setDrivetrainPoseEstimator(poseEstimator);
     }
 
-    // public Command createDefaultCommand(Controller driverXbox){
-    //     System.out.println("brrrrr"); 
-    //     return new TeleopDrive(this,
-    //         () -> (Math.abs(driverXbox.getLeftYAxis()) > OperatorConstants.LEFT_Y_DEADBAND) ? driverXbox.getLeftYAxis() : 0,
-    //         () -> (Math.abs(driverXbox.getLeftXAxis()) > OperatorConstants.LEFT_X_DEADBAND) ? driverXbox.getLeftXAxis() : 0,
-    //         () -> (Math.abs(driverXbox.getRightXAxis()) > OperatorConstants.RIGHT_X_DEADBAND) ? driverXbox.getRightXAxis() : 0, 
-    //         () -> isFieldOrientedDrive, false, true);
-    // }
+    public Command createDefaultCommand(Controller driverXbox){
+        //System.out.println("brrrrr"); 
+        Supplier<Double> leftX = () -> driverXbox.getLeftXAxis();
+        Supplier<Double> leftY = () -> driverXbox.getLeftYAxis();
+        Supplier<Double> rightX = () -> driverXbox.getRightXAxis();
+        Supplier<Boolean> isFieldOriented = () -> isFieldOrientedDrive;
+
+        return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
+        // return new TeleopDrive(this,
+        //     () -> (Math.abs(driverXbox.getLeftYAxis()) > OperatorConstants.LEFT_Y_DEADBAND) ? driverXbox.getLeftYAxis() : 0,
+        //     () -> (Math.abs(driverXbox.getLeftXAxis()) > OperatorConstants.LEFT_X_DEADBAND) ? driverXbox.getLeftXAxis() : 0,
+        //     () -> (Math.abs(driverXbox.getRightXAxis()) > OperatorConstants.RIGHT_X_DEADBAND) ? driverXbox.getRightXAxis() : 0, 
+        //     () -> isFieldOrientedDrive, false, true);
+    }
     /**
      * The primary method for controlling the drivebase.  Takes a {@link Translation2d} and a rotation rate, and
      * calculates and commands module states accordingly.  Can use either open-loop or closed-loop velocity control for

@@ -72,8 +72,8 @@ public class CompBot extends GenericMechanism {
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
-        ledSubsystem = new LedSubsystem(1, 290);
-        ledSubsystem.setSolidColor(0, 0, 0);
+        //ledSubsystem = new LedSubsystem(1, 290);
+        //ledSubsystem.off();
 
         // Will need to be changed for 2023 field
         VisionSystem multiVision = new VisionLimeLightSim("Sim", 0, AprilTags.aprilTagRoomLayout);
