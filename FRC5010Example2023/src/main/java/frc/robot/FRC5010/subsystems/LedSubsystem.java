@@ -24,10 +24,8 @@ public class LedSubsystem extends SubsystemBase {
   private AddressableLEDBuffer m_ledOff;
   private int m_rainbowFirstPixelHue = 180;
 
-  private boolean isBlink = false;
   private boolean ledOn;
-  private boolean isRainbow = false;
-  private boolean isOrbit = false; 
+  private String status = "off"; 
 
   private int red1;
   private int green1;
@@ -64,21 +62,28 @@ public class LedSubsystem extends SubsystemBase {
     // Runs the blueSnake method which changes the m_ledBuffer, then the m_led is set to the data that was just created
 
     //this method is esscentially only for controlling blink
-    if(isBlink){
-      if(currTime - startTime >= delayMs){
-        if(ledOn){
-          m_led.setData(m_ledOff);
-          ledOn = false;
-        }else{
-          m_led.setData(m_ledBuffer);
-          ledOn = true;
-        }
-        startTime = currTime;
-      }
-    } else if (isRainbow){
-      rainbow();
-    } else if (isOrbit){
-      orbit();
+    switch(status){
+      case "rainbow":
+        rainbow();
+        break;
+      case "orbit":
+        orbit();
+        break;
+      case "blink":
+        // if(currTime - startTime >= delayMs){
+        //   if(ledOn){
+        //     m_led.setData(m_ledOff);
+        //     ledOn = false;
+        //   }else{
+        //     m_led.setData(m_ledBuffer);
+        //     ledOn = true;
+        //   }
+        //   startTime = currTime;
+        // }
+        blink();
+        break;
+      default:
+        break;
     }
   }
 
@@ -97,7 +102,18 @@ public class LedSubsystem extends SubsystemBase {
     // Check bounds
     m_rainbowFirstPixelHue %= 180;
   }
-
+  private void blink(){
+    if(currTime - startTime >= delayMs){
+      if(ledOn){
+        m_led.setData(m_ledOff);
+        ledOn = false;
+      }else{
+        m_led.setData(m_ledBuffer);
+        ledOn = true;
+      }
+      startTime = currTime;
+    }
+  }
   private void orbit(){
     for(int i = 0; i < m_ledBuffer.getLength(); i++){
       if(i >= ledPos && (i - ledPos) < numberOrbit){
@@ -120,12 +136,11 @@ public class LedSubsystem extends SubsystemBase {
     }
   }
 
-  public void rainbow(boolean isRainbow) { 
-    this.isRainbow = isRainbow; 
-    isBlink = false;
+  public void setRainbow() { 
+    status = "rainbow";
   }
 
-  public void orbit(int r1, int g1, int b1, int r2, int g2, int b2, double percentLed){
+  public void setOrbit(int r1, int g1, int b1, int r2, int g2, int b2, double percentLed){
     red1 = r1;
     green1 = g1;
     blue1 = b1;
@@ -133,7 +148,7 @@ public class LedSubsystem extends SubsystemBase {
     green2 = g2;
     blue2 = b2;
     numberOrbit = (int) ((double) m_ledBuffer.getLength() * percentLed);
-    isOrbit = true;
+    status = "orbit";
   }
 
   public void speed(double power){
@@ -150,9 +165,7 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   public void setSolidColor(int red, int green, int blue){
-    isBlink = false;
-    isRainbow = false; 
-    isOrbit = false;
+    status = "solid";
     for(int i = 0; i < m_ledBuffer.getLength(); i++){
       m_ledBuffer.setRGB(i,red,green,blue);
     }
@@ -160,8 +173,7 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   public void setSolidColorPercent(int red, int green, int blue, double percent){
-    isBlink = false;
-    isRainbow = false; 
+    status = "solid_percent";
     int percentLength = (int) ((double) m_ledBuffer.getLength() * percent);
     for(int i = 0; i < percentLength; i++){
       m_ledBuffer.setRGB(i,red,green,blue);
@@ -182,6 +194,10 @@ public class LedSubsystem extends SubsystemBase {
     ledOn = true;
     m_led.setData(m_ledBuffer);
     startTime = currTime;
-    isBlink = true;
+    status = "blink";
+  }
+
+  public void off(){
+    setSolidColor(0, 0, 0);
   }
 }
