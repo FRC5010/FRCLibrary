@@ -86,11 +86,16 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
     {
       swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop);
     }
+    @Override
+    public void stop(){
+      swerveDrive.setChassisSpeeds(new ChassisSpeeds(0,0,0));
+    }
   
     @Override
     public void periodic()
     {
       swerveDrive.updateOdometry();
+      poseEstimator.update();
     }
   
     @Override
@@ -287,10 +292,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
         return new SwerveAutoBuilder(
             () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
             (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the beginning of auto
-            swerveDrive.kinematics, // SwerveDriveKinematics
             new PIDConstants(5.0, 0.0, 0.0),// PID constants to correct for translation error (used to create the X and Y PID controllers)
             new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
-            this::setModuleStates, // Module states consumer used to output to the drive subsystem
+            swerveDrive::setChassisSpeeds, // Module states consumer used to output to the drive subsystem
             eventMap,
             true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
             this // The drive subsystem. Used to properly set the requirements of path following commands

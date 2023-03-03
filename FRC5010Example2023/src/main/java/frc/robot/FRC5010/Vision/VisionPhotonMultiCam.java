@@ -88,6 +88,7 @@ public class VisionPhotonMultiCam extends VisionSystem {
         robotPoseEstInit = result.get().estimatedPose.toPose2d();
         deltaTimeInit = result.get().timestampSeconds;
         referencePose = robotPoseEstInit;
+        //System.out.println("Vision: " + robotPoseEstInit.toString());
       } else {
         robotPoseEstInit = null;
       }

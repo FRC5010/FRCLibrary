@@ -11,6 +11,7 @@ import java.util.Map;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -22,6 +23,7 @@ public class AutoMaps {
     public AutoMaps() {   
         eventMap = new HashMap<String,Command>();
         paths = new HashMap<String,List<PathPlannerTrajectory>>();
+        PathPlannerServer.startServer(5811);
     }
     
     public HashMap<String, Command> getEventMap() {

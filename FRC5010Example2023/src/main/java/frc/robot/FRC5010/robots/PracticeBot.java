@@ -67,12 +67,12 @@ public class PracticeBot extends GenericMechanism {
         new Transform3d( // This describes the vector between the camera lens to the robot center on the
                          // ground
             new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)),
-            new Rotation3d(0, 0, Units.degreesToRadians(-90))));
+            new Rotation3d(0, 0, Units.degreesToRadians(-100))));
     multiVision.addPhotonCamera("LeftCamera",
         new Transform3d( // This describes the vector between the camera lens to the robot center on the
                          // ground
             new Translation3d(Units.inchesToMeters(-5.5), 0, Units.inchesToMeters(3.5)),
-            new Rotation3d(0, 0, Units.degreesToRadians(90))));
+            new Rotation3d(0, 0, Units.degreesToRadians(80))));
 
     List<SwervePorts> swervePorts = new ArrayList<>();
     swervePorts.add(new SwervePorts(1, 3, 21));
