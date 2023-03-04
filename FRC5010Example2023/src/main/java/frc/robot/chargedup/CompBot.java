@@ -50,6 +50,7 @@ import frc.robot.commands.IntakeSpin;
 public class CompBot extends GenericMechanism {
     private SwerveConstants swerveConstants; 
     private Drive drive; 
+    private DriverDisplaySubsystem driverDiplay;
     private GenericMechanism elevator;
     private AutoMaps autoMaps;
     private ButtonBoard buttonOperator;
@@ -84,18 +85,17 @@ public class CompBot extends GenericMechanism {
         //ledSubsystem.off();
 
         // Will need to be changed for 2023 field
-        VisionSystem multiVision = new VisionLimeLightSim("Sim", 0, AprilTags.aprilTagRoomLayout);
-        VisionPhotonMultiCam photonMultiCam = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP);
+        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP);
 
         // y = +- 27.75 / 2, x = 2.5, z = 36.75
-        photonMultiCam.addPhotonCamera("LeftCamera", 
+        multiVision.addPhotonCamera("LeftCamera", 
           new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
             new Translation3d(Units.inchesToMeters(27.75 / 2), Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)), 
             new Rotation3d(0, 0, Units.degreesToRadians(90))
           )
         );
 
-        photonMultiCam.addPhotonCamera("RightCamera", 
+        multiVision.addPhotonCamera("RightCamera", 
         new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
           new Translation3d(-Units.inchesToMeters(27.75 / 2), Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)), 
           new Rotation3d(0, 0, Units.degreesToRadians(-90))
@@ -117,7 +117,10 @@ public class CompBot extends GenericMechanism {
 
         drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         // Uncomment when using PhotonVision
-        //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
+
+        multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
+        driverDiplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
+        
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
         buttonOperator.createButtons(11);
         elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator, ledSubsystem);
