@@ -8,9 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
 import com.pathplanner.lib.PathConstraints;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -19,13 +23,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
+import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.ElapseTime;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
-import frc.robot.FRC5010.drive.swerve.SdsSwerveDrivetrain;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
@@ -80,13 +84,22 @@ public class CompBot extends GenericMechanism {
 
         // Will need to be changed for 2023 field
         VisionSystem multiVision = new VisionLimeLightSim("Sim", 0, AprilTags.aprilTagRoomLayout);
-        // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
-        // multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
-        //   new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
-        //     new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
-        //     new Rotation3d(0, Units.degreesToRadians(-20), 0)
-        //   )
-        // );
+        VisionPhotonMultiCam photonMultiCam = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP);
+
+        // y = +- 27.75 / 2, x = 2.5, z = 36.75
+        photonMultiCam.addPhotonCamera("LeftCamera", 
+          new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
+            new Translation3d(Units.inchesToMeters(27.75 / 2), Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)), 
+            new Rotation3d(0, 0, Units.degreesToRadians(90))
+          )
+        );
+
+        photonMultiCam.addPhotonCamera("RightCamera", 
+        new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
+          new Translation3d(-Units.inchesToMeters(27.75 / 2), Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)), 
+          new Rotation3d(0, 0, Units.degreesToRadians(-90))
+        )
+      );
 
         // Ports need to be changed when comp bot is ready
         List<SwervePorts> swervePorts = new ArrayList<>();
