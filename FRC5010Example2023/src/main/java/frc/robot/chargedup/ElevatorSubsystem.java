@@ -138,29 +138,29 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   
 
-  public void runExtendToTarget(double position) {
-    this.currentExtendTarget = position;
-    SmartDashboard.putNumber("Extend Target", currentExtendTarget);
-    targetPos2d.setLength(currentExtendTarget);
-    if (Robot.isReal()) {
-      extendController.setFF(getFeedFowardVoltage() / currentExtendTarget);
-      extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kSmartMotion, 0);
-      SmartDashboard.putNumber("Extend FF", getFeedFowardVoltage());
-    } else {
-      extendPow((currentExtendTarget - getExtendPosition()) / kMaxElevatorHeight);
-    }
-  }
-
-  // public void runExtendToTarget(double position){
+  // public void runExtendToTarget(double position) {
   //   this.currentExtendTarget = position;
-  //   double kP = SmartDashboard.getNumber("Extend P", extendPID.getkP());
-  //   double kF = getFeedFowardVoltage(); 
-  //   double pow = kP * (getExtendPosition() - position) + kF; 
-  //   extendMotor.setVoltage(pow);
+  //   SmartDashboard.putNumber("Extend Target", currentExtendTarget);
+  //   targetPos2d.setLength(currentExtendTarget);
+  //   if (Robot.isReal()) {
+  //     extendController.setFF(getFeedFowardVoltage() / currentExtendTarget);
+  //     extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kPosition, 0);
+  //     SmartDashboard.putNumber("Extend FF", getFeedFowardVoltage());
+  //   } else {
+  //     extendPow((currentExtendTarget - getExtendPosition()) / kMaxElevatorHeight);
+  //   }
   // }
 
+  public void runExtendToTarget(double position){
+    this.currentExtendTarget = position;
+    double kP = SmartDashboard.getNumber("Extend P", extendPID.getkP());
+    double kF = getFeedFowardVoltage(); 
+    double pow = kP * (position - getExtendPosition()) + kF; 
+    extendMotor.setVoltage(pow);
+  }
+
   public double getFeedFowardVoltage(){
-    return Math.sin(Units.degreesToRadians(pivotAngle.get()) * (1.131));
+    return Math.sin(Units.degreesToRadians(pivotAngle.get())) * (1.131);
   }
 
   public double getExtendPosition() {

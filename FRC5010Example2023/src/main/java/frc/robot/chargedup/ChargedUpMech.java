@@ -51,13 +51,13 @@ public class ChargedUpMech extends GenericMechanism {
         // use this to PID the Elevator
         // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
         this.elevatorSubsystem = new ElevatorSubsystem(
-                MotorFactory.NEO(11), new GenericPID(.012, 0, 0),
+                MotorFactory.NEO(11), new GenericPID(10, 0, 0),
                 new MotorModelConstants(1, 1, 1),
                 mechVisual, 0, () -> pivotSubsystem.getPivotPosition());
 
         this.pivotSubsystem = new PivotSubsystem(
             MotorFactory.NEO(9), 
-            new GenericPID(3, 0.0, 0.03), 
+            new GenericPID(2, 0.0, 0.03), 
             new MotorModelConstants(1, 1, 1), 
             1, 8, 
             () -> elevatorSubsystem.getExtendPosition(), mechVisual);
@@ -133,24 +133,18 @@ public class ChargedUpMech extends GenericMechanism {
         buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); //The deadzone isnt technically necessary but I have seen self movement without it
 
         
-        new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
-            .onTrue(new ElevatorPower(elevatorSubsystem, () -> (buttonOperator.getXAxis() * speedLimit))
-        );
+        // new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
+        //     .onTrue(new ElevatorPower(elevatorSubsystem, () -> (buttonOperator.getXAxis() * speedLimit))
+        // );
 
-        new Trigger(() -> (Math.abs(buttonOperator.getYAxis()) > 0.01))
-            .onTrue(new PivotPower(pivotSubsystem, () -> (buttonOperator.getYAxis() * speedLimit))
-        );
+        // new Trigger(() -> (Math.abs(buttonOperator.getYAxis()) > 0.01))
+        //     .onTrue(new PivotPower(pivotSubsystem, () -> (buttonOperator.getYAxis() * speedLimit))
+        // );
 
         new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
-                .whileTrue(new IntakeSpin(intakeSubsystem, () -> driver.createRightTrigger().get() - driver.createLeftTrigger().get()));
+                .whileTrue(new IntakeSpin(intakeSubsystem, () -> (driver.createRightTrigger().get() - driver.createLeftTrigger().get())* .7));
         
-        driver.createStartButton().onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride()));
-        // operator.createRightBumper()
-        //         .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
-        // operator.createLeftBumper()
-        //         .onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-        // operator.createStartButton()
-        //         .onTrue(new IntakeSpin(intakeSubsystem, () -> -0.1));
+        driver.createStartButton().onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
         operator.setRightYAxis(operator.createRightYAxis().deadzone(.07).negate());
         operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07));
@@ -174,8 +168,8 @@ public class ChargedUpMech extends GenericMechanism {
                 () -> {
                 },
                 () -> {
-                    pivotSubsystem.pivotPow(operator.getRightYAxis());
-                    elevatorSubsystem.extendPow(operator.getLeftYAxis());
+                    pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit + operator.getRightYAxis());
+                    elevatorSubsystem.extendPow(buttonOperator.getXAxis() * speedLimit + operator.getLeftYAxis());
                 },
                 (Boolean interrupted) -> {
                     pivotSubsystem.pivotPow(0);
