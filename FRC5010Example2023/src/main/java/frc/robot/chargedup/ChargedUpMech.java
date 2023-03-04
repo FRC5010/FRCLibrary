@@ -42,9 +42,10 @@ public class ChargedUpMech extends GenericMechanism {
     private PivotSubsystem pivotSubsystem;
     private ButtonBoard buttonOperator;
     private double speedLimit = .5;
+    private boolean ledConePickUp = false;
     private LedSubsystem ledSubsystem;
 
-    private ElevatorLevel elevatorLevel;
+    private ElevatorLevel elevatorLevel = ElevatorLevel.ground;
 
     public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator, LedSubsystem ledSubsystem) {
         super(robotMechVisual, shuffleTab);
@@ -148,6 +149,8 @@ public class ChargedUpMech extends GenericMechanism {
 
         operator.setRightYAxis(operator.createRightYAxis().deadzone(.07).negate());
         operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07));
+
+        driver.createRightBumper().onTrue(new InstantCommand(() -> ledSubsystem.togglePickUp(), ledSubsystem));
     }
 
     public IntakeSubsystem getIntakeSubsystem(){
@@ -178,7 +181,7 @@ public class ChargedUpMech extends GenericMechanism {
                 () -> false,
                 elevatorSubsystem));
 
-        //ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem));
+        ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem));
     }
 
     @Override

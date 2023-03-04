@@ -36,6 +36,7 @@ public class LedSubsystem extends SubsystemBase {
   private int numberOrbit;
   private int ledPos = 0;
 
+  private boolean ledConeMode = false;
   public LedSubsystem(int port, int length) {
     //init method, sets up the led strip and if you want it to be one solid color you would do that here
     //you can still change it later
@@ -190,5 +191,11 @@ public class LedSubsystem extends SubsystemBase {
 
   public void off(){
     setSolidColor(0, 0, 0);
+  }
+  public void togglePickUp(){
+    ledConeMode = !ledConeMode;
+  }
+  public boolean getLedConeMode(){
+    return ledConeMode;
   }
 }

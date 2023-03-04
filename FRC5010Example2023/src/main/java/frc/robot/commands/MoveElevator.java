@@ -34,11 +34,12 @@ public class MoveElevator extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (interrupted){
-      elevator.stopExtend();
-    } else {
-      elevator.stopAndHoldExtend();
-    }
+    // if (interrupted){
+    //   elevator.stopExtend();
+    // } else {
+    //   elevator.stopAndHoldExtend();
+    // }
+    elevator.stopAndHoldExtend();
   }
 
   // Returns true when the command should end.

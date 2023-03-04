@@ -33,11 +33,12 @@ public class PivotElevator extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (interrupted){
-      pivotSubsystem.stopPivot();
-    } else {
-      pivotSubsystem.stopAndHoldPivot();
-    }
+    // if (interrupted){
+    //   pivotSubsystem.stopPivot();
+    // } else {
+    //   pivotSubsystem.stopAndHoldPivot();
+    // 
+    pivotSubsystem.stopAndHoldPivot();
   }
 
   // Returns true when the command should end.

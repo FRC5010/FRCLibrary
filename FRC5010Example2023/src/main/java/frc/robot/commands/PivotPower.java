@@ -26,7 +26,7 @@ public class PivotPower extends CommandBase {
         // double speed = (this.moveSpeed.get());
         // double newPosition = currentPosition + speed;
 
-        // if (newPosition > 1.0) {newPosition = 1.0;}
+        // if (newPosition > 1H.0) {newPosition = 1.0;}
         // if (newPosition < -1.0) {newPosition = -1.0;}
 
         // this.elevatorSubsystem.setPivotPosition(newPosition);
@@ -39,7 +39,7 @@ public class PivotPower extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        this.elevatorSubsystem.stopPivot();
+        this.elevatorSubsystem.stopAndHoldPivot();;
     }
 
     @Override

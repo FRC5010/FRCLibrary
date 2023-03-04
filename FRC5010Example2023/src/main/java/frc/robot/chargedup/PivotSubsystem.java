@@ -130,13 +130,13 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage(){
-    return (0.4 + 0.6 * 
+    return (0.2 + 0.3 * 
     ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight) / (ElevatorSubsystem.kMaxElevatorHeight - ElevatorSubsystem.kMinElevatorHeight)))
     * Math.cos(Units.degreesToRadians(getPivotPosition()));
   }
 
   public boolean isPivotAtTarget() {
-    return Math.abs(getPivotPosition() - this.currentPivotTarget) < 1;
+    return Math.abs(getPivotPosition() - this.currentPivotTarget) < 0.25;
   }
 
   public double getPivotTarget() {
@@ -169,7 +169,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Power", pow);
     SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
     SmartDashboard.putNumber("Pivot Rotation", pivotEncoder.getPosition());
-    pivotMotor.set(pow);
+    pivotMotor.set(pow + (getFeedFowardVoltage() / 12));
   }
 
   public void stopPivot(){

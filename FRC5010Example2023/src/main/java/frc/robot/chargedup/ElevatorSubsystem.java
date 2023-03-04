@@ -160,7 +160,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage(){
-    return Math.sin(Units.degreesToRadians(pivotAngle.get())) * (1.131);
+    return Math.sin(Units.degreesToRadians(pivotAngle.get())) * (.7);
   }
 
   public double getExtendPosition() {
@@ -174,7 +174,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   
 
   public boolean isExtendAtTarget() {
-    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.1;
+    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.05;
   }
 
   
@@ -202,7 +202,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   
 
   public void extendPow(double pow) {
-    extendMotor.set(pow);
+    extendMotor.set(pow + ((pow == 0) ? (getFeedFowardVoltage() / 12) : 0));
     SmartDashboard.putNumber("Elevate Power", extendMotor.get());
     SmartDashboard.putNumber("Elevate Current", ((CANSparkMax) extendMotor).getOutputCurrent());
     SmartDashboard.putNumber("Extend Position", extendEncoder.getPosition());

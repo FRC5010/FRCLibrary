@@ -27,11 +27,12 @@ public class ElevatorPower extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if (interrupted){
-            elevatorSubsystem.stopExtend();
-          } else {
-            elevatorSubsystem.stopAndHoldExtend();
-          }
+        // if (interrupted){
+        //     elevatorSubsystem.stopExtend();
+        //   } else {
+        //     elevatorSubsystem.stopAndHoldExtend();
+        //   }
+        elevatorSubsystem.stopAndHoldExtend();
     }
 
     @Override

@@ -29,21 +29,19 @@ public class LedDefaultCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(intakeSubsystem.isIntakeCone() != lastState){
-      if(intakeSubsystem.isIntakeCone()){
+      if(ledSubsystem.getLedConeMode()){
         //ledSubsystem.setOrbit(210, 255, 0, 0, 0, 0, .1);
         ledSubsystem.setBlink(210, 255, 0, 500);
         //(210, 255, 0);
         //ledSubsystem.speed(1);
-        lastState = intakeSubsystem.isIntakeCone();
+        //lastState = intakeSubsystem.isIntakeCone();
       }else{
         //ledSubsystem.setOrbit(100, 0, 255, 0, 0, 0, .1);
         ledSubsystem.setBlink(100, 0, 255, 500);
         //ledSubsystem.setSolidColor(100, 0, 255);
         //ledSubsystem.speed(2);
-        lastState = intakeSubsystem.isIntakeCone();
+        //lastState = intakeSubsystem.isIntakeCone();
       }
-    }
   }
 
   // Called once the command ends or is interrupted.

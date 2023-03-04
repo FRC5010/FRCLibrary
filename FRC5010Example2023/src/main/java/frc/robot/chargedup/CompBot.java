@@ -35,6 +35,8 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPosition;
+import frc.robot.commands.HomeElevator;
+import frc.robot.commands.HomePivot;
 import frc.robot.commands.DriveToPosition.LCR;
 import frc.robot.commands.IntakeSpin;
 
@@ -72,7 +74,7 @@ public class CompBot extends GenericMechanism {
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
-        //ledSubsystem = new LedSubsystem(1, 290);
+        ledSubsystem = new LedSubsystem(1, 290);
         //ledSubsystem.off();
 
         // Will need to be changed for 2023 field
@@ -113,11 +115,12 @@ public class CompBot extends GenericMechanism {
 
         // Elevator Controls
         //autoMaps.addMarker("ExtendToPivotPosition", new MoveElevator(elevatorSubsystem));
-        // autoMaps.addMarker("ExtendToHome", new HomeElevator(elevatorSubsystem));
+        autoMaps.addMarker("HomeElevator", new HomeElevator(elevatorSubsystem));
         // autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem, ElevatorLevel.ground));
         // autoMaps.addMarker("PivotToLow", new PivotElevator(pivotSubsystem, ElevatorLevel.low));
         // autoMaps.addMarker("PivotToMid", new PivotElevator(pivotSubsystem, ElevatorLevel.medium));
         // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem, ElevatorLevel.high));
+        autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
 
         // Intake Controls
         autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
@@ -130,9 +133,11 @@ public class CompBot extends GenericMechanism {
 
 
         // Create Paths
-        autoMaps.addPath("Blue Cone 8 Start", new PathConstraints(4, 3));
-        autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
-    } 
+        autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
+        autoMaps.addPath("7-2 North Cone", new PathConstraints(4, 3));
+        autoMaps.addPath("6-3 South Cone", new PathConstraints(4, 3));
+        autoMaps.addPath("Bal 8-1 North Cone", new PathConstraints(4, 3));
+      } 
 
     public Map<String,Command> setAutoCommands(){
       return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap()); 
