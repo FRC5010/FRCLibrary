@@ -62,17 +62,17 @@ public class PracticeBot extends GenericMechanism {
     swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
     VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout,
-        PoseStrategy.AVERAGE_BEST_TARGETS);
+        PoseStrategy.MULTI_TAG_PNP);
     multiVision.addPhotonCamera("RightCamera",
         new Transform3d( // This describes the vector between the camera lens to the robot center on the
                          // ground
             new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(0.0), Units.inchesToMeters(3.5)),
-            new Rotation3d(0, 0, Units.degreesToRadians(-90))));
+            new Rotation3d(0, 0, Units.degreesToRadians(-100))));
     multiVision.addPhotonCamera("LeftCamera",
         new Transform3d( // This describes the vector between the camera lens to the robot center on the
                          // ground
             new Translation3d(Units.inchesToMeters(-5.5), 0, Units.inchesToMeters(3.5)),
-            new Rotation3d(0, 0, Units.degreesToRadians(90))));
+            new Rotation3d(0, 0, Units.degreesToRadians(80))));
 
     List<SwervePorts> swervePorts = new ArrayList<>();
     swervePorts.add(new SwervePorts(1, 3, 21));
@@ -82,7 +82,7 @@ public class PracticeBot extends GenericMechanism {
 
     gyro = new PigeonGyro(11);
 
-    drive = new Drive(multiVision, gyro, Drive.Type.MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
+    drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4_SWERVE_DRIVE, swervePorts, swerveConstants);
     ledSubsystem = new LedSubsystem(1, 60);
     multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
     
@@ -94,10 +94,11 @@ public class PracticeBot extends GenericMechanism {
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
 
-    // Create Paths
-    autoMaps.addPath("Blue Cone 7 Start", new PathConstraints(4, 3 ));
-    autoMaps.addPath("Blue Cone 6 Start", new PathConstraints(4, 3));
-    autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
+    // Create 
+    autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
+    autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
+    autoMaps.addPath("6-3 South Cone", new PathConstraints(4, 3));
+    autoMaps.addPath("Bal 8-1 North Cone", new PathConstraints(4, 3));
   }
 
   @Override

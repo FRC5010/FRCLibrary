@@ -1,5 +1,8 @@
 {
   "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
     "transitory": {
       "Shuffleboard": {
         "open": true
@@ -14,8 +17,10 @@
       "/Shuffleboard/Robot/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
+      "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/LED Orange": "Command",
       "/SmartDashboard/Orange Blink": "Command",
+      "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
       "/SmartDashboard/Swerve Sim": "Mechanism2d"
     },

@@ -11,16 +11,21 @@ import com.pathplanner.lib.auto.BaseAutoBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
+import frc.robot.FRC5010.sensors.Controller;
 
 /** Add your docs here. */
 public abstract class GenericDrivetrain extends SubsystemBase {
     protected Mechanism2d mechVisual;
     protected DrivetrainPoseEstimator poseEstimator;
+    protected boolean isFieldOrientedDrive = true; 
     public GenericDrivetrain(Mechanism2d mechVisual) {
         this.mechVisual = mechVisual;
+        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
     }
     public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator poseEstimator) {
         this.poseEstimator = poseEstimator;
@@ -43,4 +48,18 @@ public abstract class GenericDrivetrain extends SubsystemBase {
     public abstract BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap);
 
     public void disabledBehavior(){}
+
+    public void toggleFieldOrientedDrive(){    
+        isFieldOrientedDrive = !isFieldOrientedDrive;
+        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive); 
+    }
+
+    public Command createDefaultCommand(Controller driver){
+        return new DefaultDriveCommand(this,
+            () -> driver.getLeftYAxis(),
+            () -> driver.getLeftXAxis(),
+            () -> driver.getRightXAxis(),
+            () -> isFieldOrientedDrive);
+            
+    }
 }

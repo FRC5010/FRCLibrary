@@ -41,10 +41,10 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPosition;
+import frc.robot.commands.HomeElevator;
+import frc.robot.commands.HomePivot;
 import frc.robot.commands.DriveToPosition.LCR;
 import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.SetElevatorExtendFromLevel;
-import frc.robot.commands.SetElevatorPivotFromLevel;
 
 /** Add your docs here. */
 public class CompBot extends GenericMechanism {
@@ -80,7 +80,8 @@ public class CompBot extends GenericMechanism {
         swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
-        ledSubsystem = new LedSubsystem(1, 120);
+        ledSubsystem = new LedSubsystem(1, 290);
+        //ledSubsystem.off();
 
         // Will need to be changed for 2023 field
         VisionSystem multiVision = new VisionLimeLightSim("Sim", 0, AprilTags.aprilTagRoomLayout);
@@ -103,6 +104,7 @@ public class CompBot extends GenericMechanism {
 
         // Ports need to be changed when comp bot is ready
         List<SwervePorts> swervePorts = new ArrayList<>();
+        
         swervePorts.add(new SwervePorts(1, 2, 10)); //FL
         swervePorts.add(new SwervePorts(8, 7, 11)); //FR
         swervePorts.add(new SwervePorts(3, 4, 12)); //BL
@@ -113,7 +115,7 @@ public class CompBot extends GenericMechanism {
 
         
 
-        drive = new Drive(multiVision, gyro, Drive.Type.SDS_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
+        drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, swervePorts, swerveConstants);
         // Uncomment when using PhotonVision
         //multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
         buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
@@ -124,14 +126,16 @@ public class CompBot extends GenericMechanism {
         SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
         ElevatorSubsystem elevatorSubsystem = ((ChargedUpMech) elevator).getElevatorSubsystem();
         IntakeSubsystem intakeSubsystem = ((ChargedUpMech) elevator).getIntakeSubsystem();
+        PivotSubsystem pivotSubsystem = ((ChargedUpMech) elevator).getPivotSubsystem();
 
         // Elevator Controls
-        autoMaps.addMarker("ExtendToPivotPosition", new SetElevatorExtendFromLevel(elevatorSubsystem));
-        autoMaps.addMarker("ExtendToHome", new SetElevatorExtendFromLevel(elevatorSubsystem));
-        autoMaps.addMarker("PivotToGround", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.ground));
-        autoMaps.addMarker("PivotToLow", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.low));
-        autoMaps.addMarker("PivotToMid", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.medium));
-        autoMaps.addMarker("PivotToHigh", new SetElevatorPivotFromLevel(elevatorSubsystem, ElevatorLevel.high));
+        //autoMaps.addMarker("ExtendToPivotPosition", new MoveElevator(elevatorSubsystem));
+        autoMaps.addMarker("HomeElevator", new HomeElevator(elevatorSubsystem));
+        // autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem, ElevatorLevel.ground));
+        // autoMaps.addMarker("PivotToLow", new PivotElevator(pivotSubsystem, ElevatorLevel.low));
+        // autoMaps.addMarker("PivotToMid", new PivotElevator(pivotSubsystem, ElevatorLevel.medium));
+        // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem, ElevatorLevel.high));
+        autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
 
         // Intake Controls
         autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
@@ -144,9 +148,11 @@ public class CompBot extends GenericMechanism {
 
 
         // Create Paths
-        autoMaps.addPath("Blue Cone 8 Start", new PathConstraints(4, 3));
-        autoMaps.addPath("RLCone + Bal", new PathConstraints(4, 3));
-    } 
+        autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
+        autoMaps.addPath("7-2 North Cone", new PathConstraints(4, 3));
+        autoMaps.addPath("6-3 South Cone", new PathConstraints(4, 3));
+        autoMaps.addPath("Bal 8-1 North Cone", new PathConstraints(4, 3));
+      } 
 
     public Map<String,Command> setAutoCommands(){
       return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap()); 

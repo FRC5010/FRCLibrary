@@ -24,7 +24,7 @@ import frc.robot.FRC5010.drive.pose.SwervePose;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
-public class SdsSwerveDrivetrain extends GenericDrivetrain {
+public class SdsSwerveDrivetrain extends SwerveDrivetrain {
     private ChassisSpeeds chassisSpeeds;
 
     private GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
@@ -36,7 +36,7 @@ public class SdsSwerveDrivetrain extends GenericDrivetrain {
             GenericSwerveModule backRight,
             GenericGyro gyro, SwerveConstants constants,
             VisionSystem visionSystem) {
-        super(mechVisual);
+        super(mechVisual, gyro, constants);
 
         this.swerveConstants = constants;
         this.frontLeft = frontLeft;
@@ -46,7 +46,7 @@ public class SdsSwerveDrivetrain extends GenericDrivetrain {
 
         this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         poseEstimator = new DrivetrainPoseEstimator(
-                new SwervePose(gyro, swerveConstants.getKinematics(), frontLeft, frontRight, backLeft, backRight),
+                new SwervePose(gyro, swerveConstants.getKinematics(), this),
                 visionSystem);
 
         setDrivetrainPoseEstimator(poseEstimator);

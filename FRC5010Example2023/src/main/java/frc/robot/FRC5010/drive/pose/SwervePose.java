@@ -10,43 +10,35 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.FRC5010.drive.swerve.GenericSwerveModule;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class SwervePose extends GenericPose {
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final GenericSwerveModule frontLeft;
-    private final GenericSwerveModule frontRight;
-    private final GenericSwerveModule backLeft;
-    private final GenericSwerveModule backRight;
     private final SwerveModulePosition[] modulePositions;
+    private SwerveDrivetrain drivetrain; 
 
-    public SwervePose(GenericGyro gyro, SwerveDriveKinematics kDriveKinematics,
-        GenericSwerveModule frontLeft, GenericSwerveModule frontRight, 
-        GenericSwerveModule backLeft, GenericSwerveModule backRight) {
+    public SwervePose(GenericGyro gyro, SwerveDriveKinematics kDriveKinematics, SwerveDrivetrain drivetrain) {
         super(gyro);
 
-         modulePositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(0, new Rotation2d(frontLeft.getTurningPosition())), 
-            new SwerveModulePosition(0, new Rotation2d(frontRight.getTurningPosition())), 
-            new SwerveModulePosition(0, new Rotation2d(backLeft.getTurningPosition())), 
-            new SwerveModulePosition(0, new Rotation2d(backRight.getTurningPosition()))
-          };
+        this.drivetrain = drivetrain; 
+        modulePositions = drivetrain.getModulePositions(); 
         
-        this.frontLeft = frontLeft;
-        this.frontRight = frontRight;
-        this.backLeft = backLeft;
-        this.backRight = backRight;
         poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, new Rotation2d(0), modulePositions, new Pose2d());
         // poseEstimator.
     }
 
+    public SwervePose(GenericGyro gyro, SwerveDrivetrain drivetrain, SwerveDrivePoseEstimator poseEstimator){
+        super(gyro);
+        this.drivetrain = drivetrain;
+        modulePositions = drivetrain.getModulePositions();
+        this.poseEstimator = poseEstimator;
+    }
+
     @Override
     public void resetEncoders() {
-        frontLeft.resetEncoders();
-        frontRight.resetEncoders();
-        backLeft.resetEncoders();
-        backRight.resetEncoders();
+        drivetrain.resetEncoders(); 
     }
 
     @Override
@@ -60,14 +52,7 @@ public class SwervePose extends GenericPose {
 
     @Override
     public void updateLocalMeasurements() {
-        SwerveModulePosition[] newPositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())), 
-            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())), 
-            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getTurningPosition())), 
-            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getTurningPosition()))
-          };
-
-        poseEstimator.update(getGyroRotation2d(), newPositions);
+        poseEstimator.update(getGyroRotation2d(), drivetrain.getModulePositions());
     }
 
     @Override

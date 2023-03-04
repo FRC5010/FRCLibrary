@@ -5,36 +5,50 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.chargedup.ElevatorSubsystem;
+import frc.robot.chargedup.ElevatorLevel;
+import frc.robot.chargedup.PivotSubsystem;
 
 public class PivotElevator extends CommandBase {
-  ElevatorSubsystem elevator;
-  double targetPosition;
+  PivotSubsystem pivotSubsystem;
+  ElevatorLevel elevatorLevel;
   /** Creates a new PivotElevator. */
-  public PivotElevator(ElevatorSubsystem elevator, double targetPosition) {
-    this.elevator = elevator;
-    this.targetPosition = targetPosition;
-    addRequirements(elevator);
+  public PivotElevator(PivotSubsystem pivot, ElevatorLevel elevatorLevel) {
+    this.pivotSubsystem = pivot;
+    this.elevatorLevel = elevatorLevel;
+    addRequirements(pivot);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.setPivotPosition(targetPosition);
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    pivotSubsystem.runPivotToTarget(elevatorLevel.getPivotPosition());
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    // if (interrupted){
+    //   pivotSubsystem.stopPivot();
+    // } else {
+    //   pivotSubsystem.stopAndHoldPivot();
+    // 
+    pivotSubsystem.stopAndHoldPivot();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return elevator.isPivotAtTarget();
+    double goalPos = pivotSubsystem.getPivotTarget();
+    double currPos = elevatorLevel.getPivotPosition();
+    return pivotSubsystem.isPivotAtTarget()
+    || (pivotSubsystem.isPivotMax() && pivotSubsystem.getVelocity() > 0)  
+    || (pivotSubsystem.isPivotIn() && pivotSubsystem.getVelocity() < 0);
+    // || (elevatorLevel.getPivotPosition() > 0 && pivotSubsystem.getPivotTarget() > 0);
   }
 }

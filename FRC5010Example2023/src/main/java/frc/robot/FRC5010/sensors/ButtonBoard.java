@@ -26,7 +26,7 @@ public class ButtonBoard extends Controller {
         super.setLeftYAxis(yAxis);
     }
 
-    public  void setXAxis(Axis xAxis){
+    public void setXAxis(Axis xAxis){
         super.setLeftXAxis(xAxis);
     }
 
