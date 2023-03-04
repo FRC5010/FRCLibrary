@@ -11,9 +11,14 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionSystem;
 
@@ -86,8 +91,10 @@ public class DrivetrainPoseEstimator {
     for(Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
         if (null != robotPose) {
           double imageCaptureTime = vision.getRawValues().getLatency();
-//          field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);    
-          poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
+//          field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);   
+          if (RobotState.isDisabled() || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())) {
+            poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
+          }
         }
     }
     field2d.setRobotPose(getCurrentPose());

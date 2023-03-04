@@ -62,7 +62,7 @@ public class PracticeBot extends GenericMechanism {
     swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
     VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout,
-        PoseStrategy.AVERAGE_BEST_TARGETS);
+        PoseStrategy.MULTI_TAG_PNP);
     multiVision.addPhotonCamera("RightCamera",
         new Transform3d( // This describes the vector between the camera lens to the robot center on the
                          // ground
