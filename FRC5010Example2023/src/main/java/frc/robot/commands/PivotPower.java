@@ -33,7 +33,7 @@ public class PivotPower extends CommandBase {
         
         if (!elevatorSubsystem.isPivotMax() || !elevatorSubsystem.isPivotIn()){
             double speed = this.moveSpeed.get(); 
-            elevatorSubsystem.pivotPow(speed);
+            elevatorSubsystem.pivotPow(speed, true);
         } 
     }
 

@@ -30,6 +30,7 @@ import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.PivotPower;
 import frc.robot.commands.ElevatorPower;
 import frc.robot.commands.HomeElevator;
+import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.LedDefaultCommand;
 import frc.robot.commands.MoveElevator;
@@ -147,8 +148,9 @@ public class ChargedUpMech extends GenericMechanism {
         
         driver.createStartButton().onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
-        operator.setRightYAxis(operator.createRightYAxis().deadzone(.07).negate());
-        operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07));
+        operator.createBButton().whileTrue(new HomePivot(pivotSubsystem));
+        operator.setRightYAxis(operator.createRightYAxis().deadzone(.2).negate());
+        operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 
         driver.createRightBumper().onTrue(new InstantCommand(() -> ledSubsystem.togglePickUp(), ledSubsystem));
     }
@@ -171,11 +173,11 @@ public class ChargedUpMech extends GenericMechanism {
                 () -> {
                 },
                 () -> {
-                    pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit + operator.getRightYAxis());
+                    pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit + operator.getRightYAxis(),true);
                     elevatorSubsystem.extendPow(buttonOperator.getXAxis() * speedLimit + operator.getLeftYAxis());
                 },
                 (Boolean interrupted) -> {
-                    pivotSubsystem.pivotPow(0);
+                    pivotSubsystem.pivotPow(0,true);
                     elevatorSubsystem.extendPow(0);
                 },
                 () -> false,

@@ -165,11 +165,11 @@ public class PivotSubsystem extends SubsystemBase {
   public double getVelocity(){
     return pivotEncoder.getVelocity(); 
   }
-  public void pivotPow(double pow) {
+  public void pivotPow(double pow, boolean feedForward) {
     SmartDashboard.putNumber("Pivot Power", pow);
     SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
     SmartDashboard.putNumber("Pivot Rotation", pivotEncoder.getPosition());
-    pivotMotor.set(pow + (getFeedFowardVoltage() / 12));
+    pivotMotor.set(pow + (feedForward ?(getFeedFowardVoltage() / 12) : 0));
   }
 
   public void stopPivot(){

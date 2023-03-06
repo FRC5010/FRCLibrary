@@ -97,7 +97,7 @@ public class PracticeBot extends GenericMechanism {
     // Create 
     autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
     autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
-    autoMaps.addPath("6-3 South Cone", new PathConstraints(4, 3));
+    autoMaps.addPath("6-3 Cube", new PathConstraints(4, 3));
     autoMaps.addPath("Bal 7-2 Cube", new PathConstraints(1.5, .75));
   }
 

@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.789900139178747,
-        "y": 3.8796223652380712
+        "x": 1.7406100432742944,
+        "y": 4.4026513160016325
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9556299734131106,
-        "y": 5.146320925272261
+        "x": 3.810427934693245,
+        "y": 4.974424214183664
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -16,9 +16,11 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
+        "names": [
+          "Outtake"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
         "waitTime": 0
       }
     },
@@ -41,20 +43,25 @@
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
+        "names": [
+          "PivotToLow",
+          "ExtendToPivotPosition",
+          "PivotToGround",
+          "Intake"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 1.80825808932417,
-        "y": 3.888801340310783
+        "x": 1.7177391273470128,
+        "y": 4.414086773965274
       },
       "prevControl": {
-        "x": 2.9648089484858215,
-        "y": 5.155499900344973
+        "x": 3.821863392656885,
+        "y": 4.962988756220023
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -63,7 +70,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "Outtake"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -73,5 +82,19 @@
   "maxVelocity": 1.0,
   "maxAcceleration": 0.5,
   "isReversed": null,
-  "markers": []
+  "markers": [
+    {
+      "position": 0.05818181818182517,
+      "names": [
+        "HomePivot"
+      ]
+    },
+    {
+      "position": 1.1636363636363678,
+      "names": [
+        "PivotToLow",
+        "HomeElevator"
+      ]
+    }
+  ]
 }

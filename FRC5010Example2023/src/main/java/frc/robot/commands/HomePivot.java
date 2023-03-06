@@ -19,17 +19,22 @@ public class HomePivot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pivotSubsystem.pivotPow(-0.5);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    System.out.println("test");
+    pivotSubsystem.pivotPow(-0.8, false);
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     pivotSubsystem.stopAndHoldPivot();
+    System.out.println("Break");
+
   }
 
   // Returns true when the command should end.
