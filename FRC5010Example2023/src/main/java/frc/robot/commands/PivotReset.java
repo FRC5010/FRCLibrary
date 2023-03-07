@@ -4,42 +4,40 @@
 
 package frc.robot.commands;
 
-import com.revrobotics.RelativeEncoder;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.chargedup.ElevatorSubsystem;
+import frc.robot.chargedup.PivotSubsystem;
 
-public class HomeElevator extends CommandBase {
-  ElevatorSubsystem elevatorSubsystem;
-
-  /** Creates a new HomeElevator. */
-  public HomeElevator(ElevatorSubsystem elevatorSubsystem) {
-    this.elevatorSubsystem = elevatorSubsystem;
-    addRequirements(elevatorSubsystem);
+public class PivotReset extends CommandBase {
+  private PivotSubsystem pivotSubsystem;
+  /** Creates a new PivotReset. */
+  public PivotReset(PivotSubsystem pivotSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.pivotSubsystem = pivotSubsystem;
+    addRequirements(pivotSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    pivotSubsystem.pivotPow(-0.5, false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.elevatorSubsystem.runExtendToTarget(0);
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.elevatorSubsystem.stopAndHoldExtend();
+    pivotSubsystem.pivotPow(0, false);
+    pivotSubsystem.setPivotEncoderPosition(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.elevatorSubsystem.isElevatorIn();
+    return pivotSubsystem.isPivotIn();
   }
 }
