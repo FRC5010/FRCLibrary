@@ -148,15 +148,20 @@ public class CompBot extends GenericMechanism {
     autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
     autoMaps.addMarker("Outtake",(new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.5)));
     autoMaps.addMarker("Intake",(new IntakeSpin(intakeSubsystem, () -> 0.6).withTimeout(0.5)));
-
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
 
+    autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.high)
+    .andThen(new IntakeSpin(intakeSubsystem, () -> 0.2))
+    .withTimeout(0.5)
+    .andThen(new HomeElevator(elevatorSubsystem))
+    .andThen(new HomePivot(pivotSubsystem)));
     // Create Paths
     autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
     autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
     autoMaps.addPath("6-3 Cube", new PathConstraints(4, 3));
-    autoMaps.addPath("Bal 7-2 Cube", new PathConstraints(1.5, .75));
+    autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
+    autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
   }
 
   public Map<String, Command> setAutoCommands() {

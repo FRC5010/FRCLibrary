@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
@@ -42,13 +43,13 @@ public class DriveToPosition extends CommandBase {
   }
 
   Transform2d tagToLeftConeTransfrom = new Transform2d(new Translation2d(TargetConstants.tagToRobotXOffset, TargetConstants.tagToConeYOffset), 
-  Rotation2d.fromDegrees(0));
+  Rotation2d.fromDegrees(180));
 
   Transform2d tagToCubeTransfrom = new Transform2d(new Translation2d(TargetConstants.tagToRobotXOffset, 0), 
-  Rotation2d.fromDegrees(0));
+  Rotation2d.fromDegrees(180));
 
   Transform2d tagToRightConeTransfrom = new Transform2d(new Translation2d(TargetConstants.tagToRobotXOffset, -TargetConstants.tagToConeYOffset), 
-  Rotation2d.fromDegrees(0));
+  Rotation2d.fromDegrees(180));
 
 
   private final Pose3d tagToGoal = new Pose3d(
@@ -60,6 +61,10 @@ public class DriveToPosition extends CommandBase {
  
   private Supplier<Pose2d> poseProvider; 
   private Supplier<Pose2d> targetPoseProvider; 
+
+  private double xSpeed; 
+  private double ySpeed; 
+  private double thetaSpeed; 
 
   public DriveToPosition(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider, Supplier<Pose2d> targetPoseProvider, LedSubsystem ledSubsystem, LCR relativePosition) {
     xConstraints = new TrapezoidProfile.Constraints(swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(), swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()); 
@@ -121,17 +126,11 @@ public class DriveToPosition extends CommandBase {
     var robotPose2d = poseProvider.get();
     
     //System.out.println(robotPose2d);
-    var robotPose = 
-        new Pose3d(
-            robotPose2d.getX(),
-            robotPose2d.getY(),
-            0.0, 
-            new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
     
     //System.out.println(robotPose);
-    var xSpeed = xController.calculate(robotPose.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 0.5; 
-    var ySpeed = yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 0.5; 
-    var thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
+    xSpeed = xController.calculate(robotPose2d.getX()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 0.5; 
+    ySpeed = yController.calculate(robotPose2d.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 0.5; 
+    thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
 
 
     if (xController.atGoal()){
@@ -145,14 +144,13 @@ public class DriveToPosition extends CommandBase {
     if (thetaController.atGoal()){
       thetaSpeed = 0;
     }
-            
+    
       // // Transform the tag's pose to set our goal
       
       // System.out.println(goalPose); 
-
-      // // Drive
-      System.out.println("xSpeed: " + xController.calculate(robotPose.getX()) + "\nySpeed: " + yController.calculate(robotPose.getY()) + 
-      "\nTheta: " + thetaController.calculate(robotPose2d.getRotation().getRadians())); 
+      // SmartDashboard.putNumber("X Speed", xSpeed);
+      // SmartDashboard.putNumber("Y Speed", ySpeed);
+      // SmartDashboard.putNumber("Theta Speed", thetaSpeed);
 
       
       //System.out.println(thetaSpeed);
@@ -165,20 +163,24 @@ public class DriveToPosition extends CommandBase {
     // yController.calculate(robotPose.getY()) * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()
     // ,0));
 
-    swerveSubsystem.drive(new ChassisSpeeds(xController.calculate(robotPose.getX()), 
-    yController.calculate(robotPose.getY()), thetaController.calculate(robotPose.getRotation().getAngle())));
+    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, thetaSpeed, swerveSubsystem.getHeading());
+
+    SmartDashboard.putNumber("X Speed", chassisSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Y Speed", chassisSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Theta Speed", chassisSpeeds.omegaRadiansPerSecond);
+    swerveSubsystem.drive(chassisSpeeds);
   }
 
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    swerveSubsystem.drive(new ChassisSpeeds(0, 0, 0));
+    swerveSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, swerveSubsystem.getHeading()));
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (xSpeed == 0) && (ySpeed == 0) && (thetaSpeed == 0);
   }
 }

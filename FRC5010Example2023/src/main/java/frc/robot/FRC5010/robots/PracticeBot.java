@@ -19,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.constants.AutoMaps;
@@ -93,12 +94,30 @@ public class PracticeBot extends GenericMechanism {
 
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
+    autoMaps.addMarker("ExtendToPivotPosition", new PrintCommand("ExtendToPivotPosition"));
+   autoMaps.addMarker("HomeElevator", new PrintCommand("HomeElevator"));
+   autoMaps.addMarker("PivotToGround", new PrintCommand("PivotToGround"));
+   autoMaps.addMarker("PivotToLow", new PrintCommand("PivotToLow"));
+   autoMaps.addMarker("PivotToMid", new PrintCommand("PivotToMid"));
+   // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
+   // ElevatorLevel.high));
+   autoMaps.addMarker("HomePivot", new PrintCommand("HomePivot"));
 
+   // Intake Controls
+   autoMaps.addMarker("ConeMode", new PrintCommand("ConeMode"));
+   autoMaps.addMarker("CubeMode", new PrintCommand("CubeMode"));
+   autoMaps.addMarker("Outtake",(new PrintCommand("Outtake")));
+   autoMaps.addMarker("Intake",(new PrintCommand("Intake")));
+   // Drivetrain Controls
+   autoMaps.addMarker("AutoBalance", new PrintCommand("AutoBalance"));
+
+   autoMaps.addMarker("AutoExtendDrop", new PrintCommand("AutoExtendDrop"));
     // Create 
     autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
     autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
     autoMaps.addPath("6-3 Cube", new PathConstraints(4, 3));
-    autoMaps.addPath("Bal 7-2 Cube", new PathConstraints(1.5, .75));
+    autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
+    autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
   }
 
   @Override
