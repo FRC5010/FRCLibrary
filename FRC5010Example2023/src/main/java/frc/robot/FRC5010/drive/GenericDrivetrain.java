@@ -43,6 +43,7 @@ public abstract class GenericDrivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         poseEstimator.update();
+        lockWheels();
     }
 
     public abstract BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap);
@@ -53,6 +54,8 @@ public abstract class GenericDrivetrain extends SubsystemBase {
         isFieldOrientedDrive = !isFieldOrientedDrive;
         SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive); 
     }
+
+    public void lockWheels(){}; 
 
     public Command createDefaultCommand(Controller driver){
         return new DefaultDriveCommand(this,

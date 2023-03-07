@@ -50,6 +50,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
         }
         poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, this, swerveDrive.swerveDrivePoseEstimator), visionSystem);
         setDrivetrainPoseEstimator(poseEstimator);
+
+        // swerveDrive.setModuleStates();
     }
 
     public Command createDefaultCommand(Controller driverXbox){

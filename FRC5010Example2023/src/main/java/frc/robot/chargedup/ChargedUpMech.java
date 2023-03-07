@@ -174,7 +174,7 @@ public class ChargedUpMech extends GenericMechanism {
                 },
                 () -> {
                     pivotSubsystem.pivotPow(buttonOperator.getYAxis() * (speedLimit > 0.3 ? 0.75 : speedLimit) + operator.getRightYAxis(),true);
-                    elevatorSubsystem.extendPow(buttonOperator.getXAxis() * speedLimit + operator.getLeftYAxis());
+                    elevatorSubsystem.extendPow((elevatorSubsystem.atHardStop() ? 0 : buttonOperator.getXAxis()) * speedLimit + operator.getLeftYAxis());
                 },
                 (Boolean interrupted) -> {
                     pivotSubsystem.pivotPow(0,true);
