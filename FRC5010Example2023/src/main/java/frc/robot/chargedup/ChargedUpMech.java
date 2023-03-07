@@ -144,7 +144,7 @@ public class ChargedUpMech extends GenericMechanism {
         // );
 
         new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
-                .whileTrue(new IntakeSpin(intakeSubsystem, () -> (driver.createRightTrigger().get() - driver.createLeftTrigger().get())* .7));
+                .whileTrue(new IntakeSpin(intakeSubsystem, () -> (driver.createRightTrigger().get() - driver.createLeftTrigger().get())* 1));
         
         driver.createStartButton().onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
