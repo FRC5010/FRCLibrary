@@ -1,0 +1,114 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.commands;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.Vision.AprilTags;
+import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
+import frc.robot.chargedup.TargetConstants;
+
+public class DriveToTrajectory extends CommandBase {
+
+  public static enum LCR {
+    left, center, right
+  }
+    
+  private SwerveDrivetrain swerveDrivetrain;
+
+  private PathPlannerTrajectory trajectory;
+  private PathPlannerState currentSetpoint; 
+
+	private PIDController translationController, thetaController;
+	private PPHolonomicDriveController driveController;
+
+	private Pose2d currentPose;
+  private Pose2d targetPose; 
+  private Pose2d kPositionTolerance;
+  
+
+  private PathConstraints constraints; 
+
+  private double yOffset; 
+  private Rotation2d desiredHeading = DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(180) : new Rotation2d(0); 
+  
+
+   
+  public DriveToTrajectory(SwerveDrivetrain swerveDrivetrain, LCR relativePosition) {
+    this.swerveDrivetrain = swerveDrivetrain;
+
+    constraints = new PathConstraints(4, 3); 
+
+    switch(relativePosition){
+      case left:
+        yOffset = -TargetConstants.tagToConeYOffset;
+        break; 
+      case center:
+        yOffset = TargetConstants.tagToConeYOffset; 
+        break; 
+      default:
+        yOffset = 0; 
+    }
+
+    addRequirements(swerveDrivetrain);
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+
+    int closestTagID = swerveDrivetrain.getPoseEstimator().getClosestTagToRobot(); 
+
+    currentPose = swerveDrivetrain.getPoseEstimator().getCurrentPose(); 
+    targetPose = AprilTags.aprilTagFieldLayout.getTagPose(closestTagID).get().toPose2d();  
+    
+    PathPoint startPoint = new PathPoint(new Translation2d(currentPose.getX(), currentPose.getY()), swerveDrivetrain.getPoseEstimator().getGyroRotation2d());
+    PathPoint endPoint = new PathPoint(new Translation2d(targetPose.getX(), targetPose.getY() + yOffset), desiredHeading);
+
+    trajectory = PathPlanner.generatePath(constraints,startPoint, endPoint); 
+
+    translationController = new PIDController(1, 0, 0);
+    thetaController = new PIDController(0.25, 0, 0);
+
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    driveController = new PPHolonomicDriveController(translationController, translationController, thetaController); 
+    // driveController.setTolerance(); 
+
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+
+    // currentSetpoint = (PathPlannerState) trajectory;
+
+    this.swerveDrivetrain.drive(this.driveController.calculate(currentPose, currentSetpoint));
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+}
