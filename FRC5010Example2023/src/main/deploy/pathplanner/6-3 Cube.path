@@ -44,7 +44,6 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "PivotToLow",
           "ExtendToPivotPosition",
           "PivotToGround",
           "Intake"
@@ -79,21 +78,21 @@
       }
     }
   ],
-  "maxVelocity": 1.0,
+  "maxVelocity": 2.0,
   "maxAcceleration": 0.5,
   "isReversed": null,
   "markers": [
     {
-      "position": 0.05818181818182517,
+      "position": 0.01,
       "names": [
-        "HomePivot"
+        "HomePivot",
+        "PivotToLow"
       ]
     },
     {
-      "position": 1.1636363636363678,
+      "position": 1.05,
       "names": [
-        "PivotToLow",
-        "HomeElevator"
+        "PivotToMid"
       ]
     }
   ]

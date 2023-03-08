@@ -148,7 +148,7 @@ public class ChargedUpMech extends GenericMechanism {
         
         driver.createStartButton().onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
-        operator.createBButton().whileTrue(new HomePivot(pivotSubsystem));
+        operator.createBButton().onTrue(new HomePivot(pivotSubsystem));
         operator.setRightYAxis(operator.createRightYAxis().deadzone(.2).negate());
         operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 

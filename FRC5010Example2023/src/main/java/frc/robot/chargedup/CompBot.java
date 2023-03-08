@@ -147,6 +147,7 @@ public class CompBot extends GenericMechanism {
     autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
     autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
     autoMaps.addMarker("Outtake",(new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.5)));
+    autoMaps.addMarker("OuttakeSlow",(new IntakeSpin(intakeSubsystem, () -> -0.25).withTimeout(.5)));
     autoMaps.addMarker("Intake",(new IntakeSpin(intakeSubsystem, () -> 0.6).withTimeout(0.5)));
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
@@ -159,9 +160,10 @@ public class CompBot extends GenericMechanism {
     // Create Paths
     autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
     autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
-    autoMaps.addPath("6-3 Cube", new PathConstraints(4, 3));
+    autoMaps.addPath("6-3 Cube", new PathConstraints(2, 0.5));
     autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
     autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
+    //autoMaps.addPath("Command Test", new PathConstraints(1.5, .75));
   }
 
   public Map<String, Command> setAutoCommands() {
