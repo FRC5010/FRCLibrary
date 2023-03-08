@@ -203,12 +203,15 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void extendPow(double pow) {
     extendMotor.set(pow + ((pow == 0) ? (getFeedFowardVoltage() / 12) : 0));
+    
     SmartDashboard.putNumber("Elevate Power", extendMotor.get());
     SmartDashboard.putNumber("Elevate Current", ((CANSparkMax) extendMotor).getOutputCurrent());
     SmartDashboard.putNumber("Extend Position", extendEncoder.getPosition());
   }
 
-  
+  public boolean atHardStop(){
+    return isElevatorIn() && extendEncoder.getVelocity() < 0;
+  }
 
   public void stopExtend(){
     extendMotor.set(0);

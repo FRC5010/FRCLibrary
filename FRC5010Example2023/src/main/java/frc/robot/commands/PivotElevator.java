@@ -48,7 +48,7 @@ public class PivotElevator extends CommandBase {
     double currPos = elevatorLevel.getPivotPosition();
     return pivotSubsystem.isPivotAtTarget()
     || (pivotSubsystem.isPivotMax() && pivotSubsystem.getVelocity() > 0)  
-    || (pivotSubsystem.isPivotIn() && pivotSubsystem.getVelocity() < 0);
+    || (pivotSubsystem.isPivotMin() && pivotSubsystem.getVelocity() < 0);
     // || (elevatorLevel.getPivotPosition() > 0 && pivotSubsystem.getPivotTarget() > 0);
   }
 }

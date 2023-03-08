@@ -3,10 +3,10 @@ package frc.robot.chargedup;
 import edu.wpi.first.math.util.Units;
 
 public enum ElevatorLevel {
-  ground(1.1,-13.5), 
+  ground(1.1,-14), 
   low(1.1, -8), 
   medium(1.43, 28.3), 
-  high(1.7, 33);
+  high(1.743, 33);
 
   private double extension, pivot;
 

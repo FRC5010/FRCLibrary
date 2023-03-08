@@ -143,7 +143,7 @@ public class PivotSubsystem extends SubsystemBase {
     return this.currentPivotTarget;
   }
 
-  public boolean isPivotIn(){
+  public boolean isPivotMin(){
     if (override){
       return false;  
     }  
@@ -185,7 +185,7 @@ public class PivotSubsystem extends SubsystemBase {
   public void periodic() {
     if (Robot.isReal()) {
 
-      if (isPivotIn()){
+      if (isPivotMin()){
         setPivotEncoderPosition(pivotOffset);
       }
 
@@ -193,7 +193,7 @@ public class PivotSubsystem extends SubsystemBase {
         stopPivot();
       }
 
-      SmartDashboard.putBoolean("Pivot In: ", isPivotIn());
+      SmartDashboard.putBoolean("Pivot In: ", isPivotMin());
       SmartDashboard.putBoolean("Pivot Max", isPivotMax());
       SmartDashboard.putBoolean("Pivot Target is good", currentPivotTarget > pivotEncoder.getPosition());
       SmartDashboard.putNumber("Pivot Motor is positive", pivotMotor.get());

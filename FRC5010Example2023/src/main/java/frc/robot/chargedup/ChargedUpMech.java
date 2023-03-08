@@ -144,11 +144,11 @@ public class ChargedUpMech extends GenericMechanism {
         // );
 
         new Trigger(() -> (Math.abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
-                .whileTrue(new IntakeSpin(intakeSubsystem, () -> (driver.createRightTrigger().get() - driver.createLeftTrigger().get())* .7));
+                .whileTrue(new IntakeSpin(intakeSubsystem, () -> (driver.createRightTrigger().get() - driver.createLeftTrigger().get())* 1));
         
         driver.createStartButton().onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
-        operator.createBButton().whileTrue(new HomePivot(pivotSubsystem));
+        operator.createBButton().onTrue(new HomePivot(pivotSubsystem));
         operator.setRightYAxis(operator.createRightYAxis().deadzone(.2).negate());
         operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 
@@ -174,7 +174,7 @@ public class ChargedUpMech extends GenericMechanism {
                 },
                 () -> {
                     pivotSubsystem.pivotPow(buttonOperator.getYAxis() * (speedLimit > 0.3 ? 0.75 : speedLimit) + operator.getRightYAxis(),true);
-                    elevatorSubsystem.extendPow(buttonOperator.getXAxis() * speedLimit + operator.getLeftYAxis());
+                    elevatorSubsystem.extendPow((elevatorSubsystem.atHardStop() ? 0 : buttonOperator.getXAxis()) * speedLimit + operator.getLeftYAxis());
                 },
                 (Boolean interrupted) -> {
                     pivotSubsystem.pivotPow(0,true);
