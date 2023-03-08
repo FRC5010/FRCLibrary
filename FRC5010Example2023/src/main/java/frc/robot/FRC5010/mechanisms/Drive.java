@@ -323,12 +323,13 @@ public class Drive extends GenericMechanism {
 
     public Map<String, Command> setAutoCommands(Map<String, List<PathPlannerTrajectory>> paths,
             HashMap<String, Command> eventMap) {
+        
         Map<String, Command> commands = new HashMap<>();
         BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(eventMap);
-
+        
         for (String name : paths.keySet()) {
             List<PathPlannerTrajectory> path = paths.get(name);
-            commands.put(name, autoBuilder.fullAuto(path));
+            commands.put(name, autoBuilder.fullAuto(path).beforeStarting(() -> drivetrain.resetEncoders()));
         }
 
         return commands;

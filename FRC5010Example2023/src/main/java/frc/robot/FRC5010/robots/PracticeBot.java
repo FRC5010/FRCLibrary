@@ -19,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
@@ -99,6 +100,7 @@ public class PracticeBot extends GenericMechanism {
    autoMaps.addMarker("PivotToGround", new PrintCommand("PivotToGround"));
    autoMaps.addMarker("PivotToLow", new PrintCommand("PivotToLow"));
    autoMaps.addMarker("PivotToMid", new PrintCommand("PivotToMid"));
+   autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
    // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
    // ElevatorLevel.high));
    autoMaps.addMarker("HomePivot", new PrintCommand("HomePivot"));
@@ -118,6 +120,7 @@ public class PracticeBot extends GenericMechanism {
     autoMaps.addPath("6-3 Cube", new PathConstraints(4, 3));
     autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
     autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
+    autoMaps.addPath("Test Path", new PathConstraints(1.5, .75));
   }
 
   @Override
@@ -140,6 +143,9 @@ public class PracticeBot extends GenericMechanism {
     driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(), 
     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(), 
     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right)); 
+
+    SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
+    driver.createLeftBumper().onTrue(new InstantCommand(() -> swerveDrivetrain.lockWheels()));
 
     drive.configureButtonBindings(driver, operator); 
   }

@@ -276,4 +276,7 @@ public class SwerveModule
   {
     driveMotor.setMotorBrake(brake);
   }
+  public void resetEncoders(){
+    driveMotor.setPosition(0);
+  }
 }

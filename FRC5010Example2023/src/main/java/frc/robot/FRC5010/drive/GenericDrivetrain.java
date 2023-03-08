@@ -62,7 +62,9 @@ public abstract class GenericDrivetrain extends SubsystemBase {
             () -> driver.getLeftYAxis(),
             () -> driver.getLeftXAxis(),
             () -> driver.getRightXAxis(),
-            () -> isFieldOrientedDrive);
-            
+            () -> isFieldOrientedDrive);     
     }
+
+    public void resetEncoders(){}
+    
 }
