@@ -61,18 +61,19 @@ public class DriveToTrajectory extends CommandBase {
     thetaController = new PIDController(0.25, 0, 0);
 
     desiredHeading = DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(180) : new Rotation2d(0);
+    xOffset = desiredHeading.getDegrees() == 180 ? TargetConstants.tagToRobotXOffset : -TargetConstants.tagToRobotXOffset; 
 
     switch(relativePosition){
       case left:
         yOffset = -TargetConstants.tagToConeYOffset;
         break; 
-      case center:
+      case right:
         yOffset = TargetConstants.tagToConeYOffset; 
         break; 
       default:
         yOffset = 0; 
+        break;
     }
-    xOffset = desiredHeading.getDegrees() == 180 ? TargetConstants.tagToRobotXOffset : -TargetConstants.tagToRobotXOffset; 
 
     addRequirements(swerveDrivetrain);
   }
