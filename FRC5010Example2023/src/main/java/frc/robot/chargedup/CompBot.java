@@ -20,12 +20,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.commands.ElapseTime;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -40,10 +36,10 @@ import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.DriveToPosition;
+import frc.robot.commands.DriveToTrajectory;
+import frc.robot.commands.DriveToTrajectory.LCR;
 import frc.robot.commands.HomeElevator;
 import frc.robot.commands.HomePivot;
-import frc.robot.commands.DriveToPosition.LCR;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.MoveElevator;
 import frc.robot.commands.PivotElevator;
@@ -175,17 +171,25 @@ public class CompBot extends GenericMechanism {
     driver.createYButton()
         .whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createLeftBumper().getAsBoolean(), gyro));
 
-    driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.left));
+    // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.left));
 
-    driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.center));
+    // driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.center));
 
-    driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right));
+    // driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right));
+
+    
+    driver.createBButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.left, swerveConstants));
+
+    driver.createAButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.center, swerveConstants));
+
+    driver.createXButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.right, swerveConstants));
+    
 
     drive.configureButtonBindings(driver, operator);
     elevator.configureButtonBindings(driver, operator);
