@@ -342,6 +342,12 @@ public class SwerveDrive
   {
     swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
   }
+  public void resetEncoders(){
+    swerveModules[0].resetEncoders();
+    swerveModules[1].resetEncoders();
+    swerveModules[2].resetEncoders();
+    swerveModules[3].resetEncoders();
+  }
 
   /**
    * Post the trajectory to the field
@@ -409,7 +415,6 @@ public class SwerveDrive
     swerveController.lastAngleScalar = 0;
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
-
   /**
    * Gets the current yaw angle of the robot, as reported by the imu. CCW positive, not wrapped.
    *
@@ -521,7 +526,6 @@ public class SwerveDrive
             desiredState.speedMetersPerSecond;
       }
       swerveModule.setDesiredState(desiredState, false);
-
     }
   }
 

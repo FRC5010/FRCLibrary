@@ -25,7 +25,7 @@ public class HomePivot extends CommandBase {
   @Override
   public void execute() {
     System.out.println("test");
-    pivotSubsystem.pivotPow(-0.8, false);
+    pivotSubsystem.pivotPow(-1, false);
 
   }
 

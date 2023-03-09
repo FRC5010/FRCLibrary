@@ -164,7 +164,11 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
     {
       swerveDrive.zeroGyro();
     }
-  
+    
+    @Override
+    public void resetEncoders(){
+      swerveDrive.resetEncoders();
+    }
     /**
      * Sets the drive motors to brake/coast mode.
      *
@@ -260,8 +264,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
     /**
      * Lock the swerve drive to prevent it from moving.
      */
-    public void lock()
+    @Override
+    public void lockWheels()
     {
+      System.out.println("YagslLock");
       swerveDrive.lockPose();
     }
   

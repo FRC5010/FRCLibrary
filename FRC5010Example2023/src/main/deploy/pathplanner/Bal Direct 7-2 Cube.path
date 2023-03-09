@@ -17,11 +17,10 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake",
-          "HomePivot"
+          "OuttakeSlow"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "deadline",
+        "waitBehavior": "none",
         "waitTime": 5.0
       }
     },
@@ -53,5 +52,12 @@
   "maxVelocity": 1.0,
   "maxAcceleration": 0.4,
   "isReversed": null,
-  "markers": []
+  "markers": [
+    {
+      "position": 0.13818181818181446,
+      "names": [
+        "HomePivot"
+      ]
+    }
+  ]
 }

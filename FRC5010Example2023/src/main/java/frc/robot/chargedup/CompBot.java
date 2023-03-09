@@ -129,6 +129,7 @@ public class CompBot extends GenericMechanism {
      autoMaps.addMarker("ExtendToPivotPosition", new
      MoveElevator(elevatorSubsystem, () -> ElevatorLevel.low));
     autoMaps.addMarker("HomeElevator", new HomeElevator(elevatorSubsystem));
+    autoMaps.addMarker("ExtendToGround", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground));
     autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem,
     ElevatorLevel.ground));
     autoMaps.addMarker("PivotToLow", new PivotElevator(pivotSubsystem,
@@ -142,21 +143,27 @@ public class CompBot extends GenericMechanism {
     // Intake Controls
     autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
     autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-    autoMaps.addMarker("Outtake",(new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.5)));
-    autoMaps.addMarker("OuttakeSlow",(new IntakeSpin(intakeSubsystem, () -> -0.25).withTimeout(.5)));
+    autoMaps.addMarker("Outtake",(new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
+    autoMaps.addMarker("OuttakeSlow",(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
     autoMaps.addMarker("Intake",(new IntakeSpin(intakeSubsystem, () -> 0.6).withTimeout(0.5)));
+    autoMaps.addMarker("IntakeLong",(new IntakeSpin(intakeSubsystem, () -> 0.6).withTimeout(5.0)));
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
+    autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
+    autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium)
+    .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
 
-    autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.high)
-    .andThen(new IntakeSpin(intakeSubsystem, () -> 0.2))
-    .withTimeout(0.5)
-    .andThen(new HomeElevator(elevatorSubsystem))
-    .andThen(new HomePivot(pivotSubsystem)));
+    autoMaps.addMarker("AutoGroundPickUp", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
+    .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground))
+    //.andThen(new IntakeSpin(intakeSubsystem, () -> 0.35))
+    //.withTimeout(0.5)
+    .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.ground)));
+    
+
     // Create Paths
-    autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
+    autoMaps.addPath("8-1 Cube", new PathConstraints(2, 0.75));
     autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
-    autoMaps.addPath("6-3 Cube", new PathConstraints(2, 0.5));
+    autoMaps.addPath("6-3 Cube Good", new PathConstraints(2, 0.75));
     autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
     autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
     //autoMaps.addPath("Command Test", new PathConstraints(1.5, .75));
