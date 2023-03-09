@@ -14,6 +14,7 @@
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Pigeon 2 [11]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d"
     },
@@ -41,9 +42,6 @@
     }
   },
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
     "Retained Values": {
       "open": false
     },
@@ -69,7 +67,10 @@
         "open": true
       },
       "SmartDashboard": {
-        "open": true
+        "open": true,
+        "swerve": {
+          "open": true
+        }
       },
       "photonvision": {
         "HP_Wide_Vision_HD": {

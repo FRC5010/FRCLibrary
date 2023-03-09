@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.constants.AutoMaps;
@@ -115,12 +116,11 @@ public class PracticeBot extends GenericMechanism {
 
    autoMaps.addMarker("AutoExtendDrop", new PrintCommand("AutoExtendDrop"));
     // Create 
-    autoMaps.addPath("8-1 North Cone", new PathConstraints(4, 3));
+    autoMaps.addPath("8-1 Cube", new PathConstraints(4, 3));
     autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
-    autoMaps.addPath("6-3 Cube", new PathConstraints(4, 3));
+    autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1));
     autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
     autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
-    autoMaps.addPath("Test Path", new PathConstraints(1.5, .75));
   }
 
   @Override
@@ -145,7 +145,7 @@ public class PracticeBot extends GenericMechanism {
     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right)); 
 
     SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
-    driver.createLeftBumper().onTrue(new InstantCommand(() -> swerveDrivetrain.lockWheels()));
+    driver.createLeftBumper().whileTrue(new RunCommand(() -> swerveDrivetrain.lockWheels(), swerveDrivetrain));
 
     drive.configureButtonBindings(driver, operator); 
   }

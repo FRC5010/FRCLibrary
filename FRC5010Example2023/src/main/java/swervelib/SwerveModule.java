@@ -144,7 +144,7 @@ public class SwerveModule
     desiredState =
         new SwerveModuleState2(
             simpleState.speedMetersPerSecond, simpleState.angle, desiredState.omegaRadPerSecond);
-    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
+    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH || true)
     {
       SmartDashboard.putNumber(
           "Optimized " + moduleNumber + " Speed Setpoint: ", desiredState.speedMetersPerSecond);

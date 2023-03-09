@@ -526,7 +526,6 @@ public class SwerveDrive
             desiredState.speedMetersPerSecond;
       }
       swerveModule.setDesiredState(desiredState, false);
-
     }
   }
 
