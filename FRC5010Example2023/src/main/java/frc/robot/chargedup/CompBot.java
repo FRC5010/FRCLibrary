@@ -38,8 +38,8 @@ import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.DriveToPosition;
-import frc.robot.commands.DriveToPosition.LCR;
+import frc.robot.commands.DriveToTrajectory;
+import frc.robot.commands.DriveToTrajectory.LCR;
 import frc.robot.commands.HomeElevator;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
@@ -195,9 +195,13 @@ public class CompBot extends GenericMechanism {
     //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
     //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right));
 
-    driver.createAButton().whileTrue(
-      new RunCommand(() -> ((SwerveDrivetrain)drive.getDrivetrain()).lockWheels(), 
-        drive.getDrivetrain()));
+    
+    driver.createBButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.left, swerveConstants));
+
+    driver.createAButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.center, swerveConstants));
+
+    driver.createXButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.right, swerveConstants));
+    
 
     drive.configureButtonBindings(driver, operator);
     elevator.configureButtonBindings(driver, operator);
