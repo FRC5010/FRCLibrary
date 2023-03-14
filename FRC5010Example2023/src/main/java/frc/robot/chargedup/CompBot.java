@@ -20,12 +20,10 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.commands.ElapseTime;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -41,9 +39,9 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPosition;
+import frc.robot.commands.DriveToPosition.LCR;
 import frc.robot.commands.HomeElevator;
 import frc.robot.commands.HomePivot;
-import frc.robot.commands.DriveToPosition.LCR;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.MoveElevator;
 import frc.robot.commands.PivotElevator;
@@ -130,16 +128,15 @@ public class CompBot extends GenericMechanism {
     PivotSubsystem pivotSubsystem = ((ChargedUpMech) elevator).getPivotSubsystem();
 
     // Elevator Controls
-     autoMaps.addMarker("ExtendToPivotPosition", new
-     MoveElevator(elevatorSubsystem, () -> ElevatorLevel.low));
+    autoMaps.addMarker("ExtendToPivotPosition", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.low));
     autoMaps.addMarker("HomeElevator", new HomeElevator(elevatorSubsystem));
     autoMaps.addMarker("ExtendToGround", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground));
     autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem,
-    ElevatorLevel.ground));
+        ElevatorLevel.ground));
     autoMaps.addMarker("PivotToLow", new PivotElevator(pivotSubsystem,
-    ElevatorLevel.low));
+        ElevatorLevel.low));
     autoMaps.addMarker("PivotToMid", new PivotElevator(pivotSubsystem,
-    ElevatorLevel.medium));
+        ElevatorLevel.medium));
     // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
     // ElevatorLevel.high));
     autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
@@ -147,30 +144,34 @@ public class CompBot extends GenericMechanism {
     // Intake Controls
     autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
     autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-    autoMaps.addMarker("Outtake",(new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
-    autoMaps.addMarker("OuttakeSlow",(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
-    autoMaps.addMarker("Intake",(new IntakeSpin(intakeSubsystem, () -> 0.6).withTimeout(0.5)));
-    autoMaps.addMarker("IntakeLong",(new IntakeSpin(intakeSubsystem, () -> 0.6).withTimeout(5.0)));
+    autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
+    autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
+    autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
+    autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
     autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
     autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium)
-    .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
+        .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
 
-    autoMaps.addMarker("AutoGroundPickUp", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
-    .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground))
-    //.andThen(new IntakeSpin(intakeSubsystem, () -> 0.35))
-    //.withTimeout(0.5)
-    .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.ground)));
     
+    autoMaps.addMarker("AutoGroundPickUp", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
+        .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground))
+        .andThen(new PrintCommand("Done extending"))
+        // .andThen(new IntakeSpin(intakeSubsystem, () -> 0.35))
+        // .withTimeout(0.5)
+        .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.ground))
+        .andThen(new PrintCommand("Done Pivoting")));
 
     // Create Paths
     autoMaps.addPath("8-1 Cube", new PathConstraints(2, 0.75));
     autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
     autoMaps.addPath("6-3 Cube Good", new PathConstraints(2, 0.75));
-    autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
-    autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
-    //autoMaps.addPath("Command Test", new PathConstraints(1.5, .75));
+    autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.75, 1));
+    autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.75, 1));
+    autoMaps.addPath("Bal Over 7-2 Cube Slow", new PathConstraints(1.75, 1));
+    autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
+    // autoMaps.addPath("Command Test", new PathConstraints(1.5, .75));
   }
 
   public Map<String, Command> setAutoCommands() {
@@ -182,17 +183,21 @@ public class CompBot extends GenericMechanism {
     driver.createYButton()
         .whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createLeftBumper().getAsBoolean(), gyro));
 
-    driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.left));
+    // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.left));
 
-    driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.center));
+    // driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.center));
 
-    driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right));
+    // driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right));
+
+    driver.createAButton().whileTrue(
+      new RunCommand(() -> ((SwerveDrivetrain)drive.getDrivetrain()).lockWheels(), 
+        drive.getDrivetrain()));
 
     drive.configureButtonBindings(driver, operator);
     elevator.configureButtonBindings(driver, operator);

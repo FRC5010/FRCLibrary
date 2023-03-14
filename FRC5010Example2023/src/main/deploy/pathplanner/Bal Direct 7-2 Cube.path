@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "OuttakeSlow"
+          "Outtake"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

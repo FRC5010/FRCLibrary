@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "OuttakeSlow"
+          "Outtake"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -138,7 +138,7 @@
       ]
     },
     {
-      "position": 0.37,
+      "position": 0.25,
       "names": [
         "AutoGroundPickUp"
       ]

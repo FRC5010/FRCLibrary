@@ -73,6 +73,7 @@ public class AutoBalance extends CommandBase {
                 autoBalanceYMode = false;
             }
             
+            
             // Control drive system automatically, 
             // driving in reverse direction of pitch/roll angle,
             // with a magnitude based upon the angle
@@ -94,8 +95,12 @@ public class AutoBalance extends CommandBase {
 
             System.out.println("Y-Axis: " + yAxisRate + "X-Axis: " + xAxisRate);
             System.out.println(drivetrain.getHeading());
-            drivetrain.drive(new ChassisSpeeds(xAxisRate, yAxisRate, 0));
 
+            drivetrain.drive(new ChassisSpeeds(xAxisRate, yAxisRate, 0));
+        
+          if (!autoBalanceXMode && !autoBalanceYMode){
+            drivetrain.lockWheels();
+          }
 
 
   }
@@ -104,6 +109,7 @@ public class AutoBalance extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drivetrain.drive(new ChassisSpeeds(0,0,0));
+    drivetrain.lockWheels();
   }
 
   // Returns true when the command should end.

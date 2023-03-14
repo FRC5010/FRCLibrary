@@ -155,12 +155,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.currentExtendTarget = position;
     double kP = SmartDashboard.getNumber("Extend P", extendPID.getkP());
     double kF = getFeedFowardVoltage(); 
+    // double error = (position - getExtendPosition());
+    // double signum = Math.signum(error);
+    // double pow = signum < 0 ? kP / 2.0 : kP * + kF; 
     double pow = kP * (position - getExtendPosition()) + kF; 
     extendMotor.setVoltage(pow);
   }
 
   public double getFeedFowardVoltage(){
-    return Math.sin(Units.degreesToRadians(pivotAngle.get())) * (.7);
+    return Math.sin(Units.degreesToRadians(pivotAngle.get())) * (.8);
   }
 
   public double getExtendPosition() {
@@ -189,6 +192,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   
 
+  
+
   public ElevatorLevel getElevatorLevel() {
     return this.currentLevel;
   }
@@ -210,7 +215,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean atHardStop(){
-    return isElevatorIn() && extendEncoder.getVelocity() < 0;
+    return false; // isElevatorIn() && extendEncoder.getVelocity() < 0;
   }
 
   public void stopExtend(){

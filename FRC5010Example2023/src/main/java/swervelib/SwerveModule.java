@@ -129,14 +129,16 @@ public class SwerveModule
       angleMotor.setPosition(getAbsolutePosition() - angleOffset);
     }
   }
-
+  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop) {
+    setDesiredState(desiredState, isOpenLoop, false);
+  }
   /**
    * Set the desired state of the swerve module.
    *
    * @param desiredState Desired swerve module state.
    * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.
    */
-  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop)
+  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop, boolean isForced)
   {
     SwerveModuleState simpleState =
         new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
@@ -165,10 +167,14 @@ public class SwerveModule
     }
 
     // Prevents module rotation if speed is less than 1%
-    double angle =
-        (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01)
+    double angle = desiredState.angle.getDegrees();
+    if (!isForced) {
+        angle = (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01)
          ? lastAngle
          : desiredState.angle.getDegrees());
+    }
+    SmartDashboard.putNumber(
+      "Final " + moduleNumber + " Angle Setpoint: ", angle);
     angleMotor.setReference(
         angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
     lastAngle = angle;

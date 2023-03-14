@@ -123,7 +123,7 @@ public class PivotSubsystem extends SubsystemBase {
 
   public void runPivotToTarget(double position){
     this.currentPivotTarget = position;
-    double kP = SmartDashboard.getNumber("Pivot P", pivotPID.getkP());
+    double kP = pivotPID.getkP();// SmartDashboard.getNumber("Pivot P", pivotPID.getkP());
     double kF = getFeedFowardVoltage(); 
     double pow = kP * (position - getPivotPosition()) + kF; 
     pivotMotor.setVoltage(pow);

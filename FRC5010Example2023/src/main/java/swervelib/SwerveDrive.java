@@ -525,7 +525,7 @@ public class SwerveDrive
         SwerveDriveTelemetry.desiredStates[(swerveModule.moduleNumber * 2) + 1] =
             desiredState.speedMetersPerSecond;
       }
-      swerveModule.setDesiredState(desiredState, false);
+      swerveModule.setDesiredState(desiredState, false, true);
     }
   }
 
