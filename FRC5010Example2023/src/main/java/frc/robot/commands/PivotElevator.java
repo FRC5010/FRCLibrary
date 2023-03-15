@@ -25,9 +25,10 @@ public class PivotElevator extends CommandBase {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
+  
   @Override
   public void execute() {
-    pivotSubsystem.runPivotToTarget(elevatorLevel.getPivotPosition());
+      pivotSubsystem.runPivotToTarget(elevatorLevel.getPivotPosition());
   }
 
   // Called once the command ends or is interrupted.

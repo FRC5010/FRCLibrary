@@ -169,8 +169,17 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Power", pow);
     SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
     SmartDashboard.putNumber("Pivot Rotation", pivotEncoder.getPosition());
-    pivotMotor.set(pow + (feedForward ?(getFeedFowardVoltage() / 12) : 0));
+
+    if (!isPivotMin() && !isPivotMax()){
+      pivotMotor.set(pow + (feedForward ?(getFeedFowardVoltage() / 12) : 0));
+    }
   }
+
+  // public boolean isMovementOk(double pow){
+  //   if (Math.signum(pow) > 1 && isPivotMax()){
+      
+  //   }
+  // }
 
   public void stopPivot(){
     pivotMotor.set(0);
@@ -180,6 +189,10 @@ public class PivotSubsystem extends SubsystemBase {
     pivotMotor.setVoltage(getFeedFowardVoltage());
   } 
 
+  public boolean atMinHardStop(){
+    //TODO: Test if encoder is greater
+    return isPivotMin() && pivotEncoder.getVelocity() < 0;
+  }
   
   @Override
   public void periodic() {
@@ -187,10 +200,6 @@ public class PivotSubsystem extends SubsystemBase {
 
       if (isPivotMin()){
         setPivotEncoderPosition(pivotOffset);
-      }
-
-      if (isPivotMax() && pivotEncoder.getVelocity() > 0){
-        stopPivot();
       }
 
       SmartDashboard.putBoolean("Pivot In: ", isPivotMin());

@@ -12,7 +12,6 @@ import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,6 +21,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -282,7 +282,12 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain{
     @Override
     public void drive(ChassisSpeeds direction) {
         setChassisSpeeds(direction);
-        
+
+        SmartDashboard.putNumber("Robot Vel X", getRobotVelocity().vxMetersPerSecond); 
+        SmartDashboard.putNumber("Robot Vel Y", getRobotVelocity().vyMetersPerSecond); 
+
+        SmartDashboard.putNumber("Field Vel X", getFieldVelocity().vxMetersPerSecond); 
+        SmartDashboard.putNumber("Field Vel Y", getFieldVelocity().vyMetersPerSecond); 
     }
 
     @Override

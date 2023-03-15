@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.Map;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -93,6 +94,8 @@ public class RobotContainer extends GenericMechanism {
       /**
        * TODO: Initialize expected vision subsystem
        */
+      DataLogManager.start();
+      DriverStation.startDataLog(DataLogManager.getLog());
     } else {
       NetworkTableInstance instance = NetworkTableInstance.getDefault();
       instance.stopServer();

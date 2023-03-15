@@ -116,11 +116,11 @@ public class PracticeBot extends GenericMechanism {
 
    autoMaps.addMarker("AutoExtendDrop", new PrintCommand("AutoExtendDrop"));
     // Create 
-    autoMaps.addPath("8-1 Cube", new PathConstraints(4, 3));
-    autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
-    autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1));
-    autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
-    autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
+    //autoMaps.addPath("8-1 Cube", new PathConstraints(4, 3));
+    //autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
+    //autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1));
+    //autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
+    //autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
   }
 
   @Override

@@ -128,6 +128,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     
   }
 
+  public double isCloseToMin() {
+    if(getExtendPosition() < 0.1){
+      return 0.5;
+    }
+    return 1;
+  }
+
   public void reset() {
 
   }
@@ -214,8 +221,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Extend Position", extendEncoder.getPosition());
   }
 
-  public boolean atHardStop(){
-    return false; // isElevatorIn() && extendEncoder.getVelocity() < 0;
+  public boolean atMinHardStop(){
+    //TODO: Test if encoder is greater
+    return isElevatorIn() && extendEncoder.getVelocity() < 0;
+  }
+
+  public boolean atMaxHardStop(){
+    return getExtendPosition() > 1.82 && extendEncoder.getVelocity() > 0;
   }
 
   public void stopExtend(){
@@ -235,17 +247,26 @@ public class ElevatorSubsystem extends SubsystemBase {
         setExtendEncoderPosition(kMinElevatorHeight);
       }
 
+      if(atMaxHardStop()){
+        stopAndHoldExtend();
+      }
+
+      if(atMinHardStop()){
+        stopExtend();
+      }
+
       SmartDashboard.putBoolean("Elevator In: ", isElevatorIn());
     }
     SmartDashboard.putNumber("Motor Pow: ", extendMotor.get());  
     
     SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
     //SmartDashboard.putNumber("Abs", KFF);
-    SmartDashboard.putBoolean("Is Elevator in: ", isElevatorIn());
 
     SmartDashboard.putNumber("Elevator Level", currentLevel.getExtensionPosition());
 
     SmartDashboard.putNumber("Pivot Level", currentLevel.getPivotPosition());
+
+    SmartDashboard.putNumber("Extend Velocity Encoder", extendEncoder.getVelocity());
   }
 
   @Override
