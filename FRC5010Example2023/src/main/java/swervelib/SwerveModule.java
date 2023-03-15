@@ -51,6 +51,7 @@ public class SwerveModule
    * Last velocity set for the swerve module.
    */
   public        double                 lastVelocity;
+
   /**
    * Simulated swerve module.
    */
@@ -138,6 +139,7 @@ public class SwerveModule
       synchronizeEncoderQueued = true;
     }
   }
+
 
   /**
    * Set the desired state of the swerve module.
