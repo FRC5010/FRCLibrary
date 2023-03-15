@@ -48,6 +48,10 @@ public class SwerveModule
    */
   public        double                 lastAngle;
   /**
+   * Last velocity set for the swerve module.
+   */
+  public        double                 lastVelocity;
+  /**
    * Simulated swerve module.
    */
   private       SwerveModuleSimulation simModule;
@@ -117,6 +121,7 @@ public class SwerveModule
     }
 
     lastAngle = getState().angle.getDegrees();
+    lastVelocity = getState().speedMetersPerSecond;
   }
 
   /**
@@ -129,16 +134,16 @@ public class SwerveModule
       angleMotor.setPosition(getAbsolutePosition() - angleOffset);
     }
   }
-  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop) {
-    setDesiredState(desiredState, isOpenLoop, false);
-  }
+
   /**
    * Set the desired state of the swerve module.
    *
    * @param desiredState Desired swerve module state.
    * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.
+   * @param force        Disables optimizations that prevent movement in the angle motor and forces the desired state
+   *                     onto the swerve module.
    */
-  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop, boolean isForced)
+  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop, boolean force)
   {
     SwerveModuleState simpleState =
         new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
@@ -146,7 +151,7 @@ public class SwerveModule
     desiredState =
         new SwerveModuleState2(
             simpleState.speedMetersPerSecond, simpleState.angle, desiredState.omegaRadPerSecond);
-    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH || true)
+    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {
       SmartDashboard.putNumber(
           "Optimized " + moduleNumber + " Speed Setpoint: ", desiredState.speedMetersPerSecond);
@@ -163,20 +168,30 @@ public class SwerveModule
     } else
     {
       double velocity = desiredState.speedMetersPerSecond;
-      driveMotor.setReference(velocity, feedforward.calculate(velocity));
+      if (velocity != lastVelocity)
+      {
+        driveMotor.setReference(velocity, feedforward.calculate(velocity));
+      }
+      lastVelocity = velocity;
     }
 
-    // Prevents module rotation if speed is less than 1%
     double angle = desiredState.angle.getDegrees();
-    if (!isForced) {
-        angle = (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01)
-         ? lastAngle
-         : desiredState.angle.getDegrees());
+
+    // If we are forcing the angle
+    if (force)
+    {
+      angleMotor.setReference(angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+    } else
+    {
+      // Prevents module rotation if speed is less than 1%
+      angle = Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01) ? lastAngle : angle;
+      // Prevent module rotation if angle is the same as the previous angle.
+      if (angle != lastAngle)
+      {
+        angleMotor.setReference(
+            angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+      }
     }
-    SmartDashboard.putNumber(
-      "Final " + moduleNumber + " Angle Setpoint: ", angle);
-    angleMotor.setReference(
-        angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
     lastAngle = angle;
 
     if (SwerveDriveTelemetry.isSimulation)
@@ -281,8 +296,5 @@ public class SwerveModule
   public void setMotorBrake(boolean brake)
   {
     driveMotor.setMotorBrake(brake);
-  }
-  public void resetEncoders(){
-    driveMotor.setPosition(0);
   }
 }

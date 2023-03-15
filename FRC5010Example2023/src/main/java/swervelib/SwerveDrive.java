@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveMath;
@@ -261,7 +263,7 @@ public class SwerveDrive
     // Sets states
     for (SwerveModule module : swerveModules)
     {
-      module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop);
+      module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop, false);
 
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
       {
@@ -342,12 +344,6 @@ public class SwerveDrive
   {
     swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
   }
-  public void resetEncoders(){
-    swerveModules[0].resetEncoders();
-    swerveModules[1].resetEncoders();
-    swerveModules[2].resetEncoders();
-    swerveModules[3].resetEncoders();
-  }
 
   /**
    * Post the trajectory to the field
@@ -407,14 +403,16 @@ public class SwerveDrive
     // simulated
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      imu.setYaw(0);
+      imu.setOffset(imu.getRawRotation3d());
     } else
     {
       simIMU.setAngle(0);
     }
     swerveController.lastAngleScalar = 0;
+    lastHeadingRadians = 0;
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
+
   /**
    * Gets the current yaw angle of the robot, as reported by the imu. CCW positive, not wrapped.
    *
@@ -425,9 +423,9 @@ public class SwerveDrive
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]);
+      return swerveDriveConfiguration.invertedIMU
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getZ())
+             : Rotation2d.fromRadians(imu.getRotation3d().getZ());
     } else
     {
       return simIMU.getYaw();
@@ -444,9 +442,9 @@ public class SwerveDrive
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]);
+      return swerveDriveConfiguration.invertedIMU
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getY())
+             : Rotation2d.fromRadians(imu.getRotation3d().getY());
     } else
     {
       return simIMU.getPitch();
@@ -463,9 +461,9 @@ public class SwerveDrive
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]);
+      return swerveDriveConfiguration.invertedIMU
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getX())
+             : Rotation2d.fromRadians(imu.getRotation3d().getX());
     } else
     {
       return simIMU.getRoll();
@@ -482,15 +480,28 @@ public class SwerveDrive
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return new Rotation3d(
-          Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]),
-          Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]),
-          Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]));
+      return swerveDriveConfiguration.invertedIMU
+             ? imu.getRotation3d().unaryMinus()
+             : imu.getRotation3d();
     } else
     {
       return simIMU.getGyroRotation3d();
+    }
+  }
+
+  /**
+   * Gets current acceleration of the robot in m/s/s. If gyro unsupported returns empty.
+   *
+   * @return acceleration of the robot as a {@link Translation3d}
+   */
+  public Optional<Translation3d> getAccel()
+  {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
+      return imu.getAccel();
+    } else
+    {
+      return simIMU.getAccel();
     }
   }
 
@@ -526,6 +537,7 @@ public class SwerveDrive
             desiredState.speedMetersPerSecond;
       }
       swerveModule.setDesiredState(desiredState, false, true);
+
     }
   }
 
@@ -670,11 +682,34 @@ public class SwerveDrive
 
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
+      imu.setOffset(new Rotation3d(0, 0, swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians()));
       // Yaw reset recommended by Team 1622
     } else
     {
       simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
     }
   }
+
+  /**
+   * Set the Gyroscope offset using a {@link Rotation3d} object.
+   *
+   * @param gyro Gyroscope offset.
+   */
+  public void setGyro(Rotation3d gyro)
+  {
+    imu.setOffset(gyro);
+  }
+
+  /**
+   * Reset the drive encoders on the robot, useful when manually resetting the robot without a reboot, like in
+   * autonomous.
+   */
+  public void resetEncoders()
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.configuration.driveMotor.setPosition(0);
+    }
+  }
+
 }

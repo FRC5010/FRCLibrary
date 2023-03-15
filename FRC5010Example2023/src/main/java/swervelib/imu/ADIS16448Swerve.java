@@ -1,7 +1,10 @@
 package swervelib.imu;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Optional;
 
 /**
  * IMU Swerve class for the {@link ADIS16448_IMU} device.
@@ -14,9 +17,9 @@ public class ADIS16448Swerve extends SwerveIMU
    */
   private final ADIS16448_IMU imu;
   /**
-   * Offset for the ADIS16448 yaw reading.
+   * Offset for the ADIS16448.
    */
-  private       double        yawOffset = 0;
+  private       Rotation3d    offset = new Rotation3d();
 
   /**
    * Construct the ADIS16448 imu and reset default configurations. Publish the gyro to the SmartDashboard.
@@ -34,7 +37,9 @@ public class ADIS16448Swerve extends SwerveIMU
   @Override
   public void factoryDefault()
   {
-    yawOffset = (imu.getAngle() % 360);
+    offset = new Rotation3d(
+        Math.toRadians(imu.getYComplementaryAngle()), Math.toRadians(imu.getXComplementaryAngle()),
+        Math.toRadians(imu.getAngle()));
   }
 
   /**
@@ -47,27 +52,48 @@ public class ADIS16448Swerve extends SwerveIMU
   }
 
   /**
-   * Set the yaw in degrees.
+   * Set the gyro offset.
    *
-   * @param yaw Yaw angle in degrees.
+   * @param offset gyro offset as a {@link Rotation3d}.
    */
-  @Override
-  public void setYaw(double yaw)
+  public void setOffset(Rotation3d offset)
   {
-    yawOffset = (yaw % 360) + (imu.getAngle() % 360);
+    this.offset = offset;
   }
 
   /**
-   * Fetch the yaw/pitch/roll from the IMU.
+   * Fetch the {@link Rotation3d} from the IMU without any zeroing. Robot relative.
    *
-   * @param yprArray Array which will be filled with {yaw, pitch, roll} in degrees.
+   * @return {@link Rotation3d} from the IMU.
+   */
+  public Rotation3d getRawRotation3d()
+  {
+    return new Rotation3d(
+        Math.toRadians(imu.getYComplementaryAngle()), Math.toRadians(imu.getXComplementaryAngle()),
+        Math.toRadians(imu.getAngle()));
+  }
+
+  /**
+   * Fetch the {@link Rotation3d} from the IMU. Robot relative.
+   *
+   * @return {@link Rotation3d} from the IMU.
    */
   @Override
-  public void getYawPitchRoll(double[] yprArray)
+  public Rotation3d getRotation3d()
   {
-    yprArray[0] = (imu.getAngle() % 360) - yawOffset;
-    yprArray[1] = imu.getXComplementaryAngle() % 360;
-    yprArray[2] = imu.getYComplementaryAngle() % 360;
+    return getRawRotation3d().minus(offset);
+  }
+
+  /**
+   * Fetch the acceleration [x, y, z] from the IMU in meters per second squared. If acceleration isn't supported returns
+   * empty.
+   *
+   * @return {@link Translation3d} of the acceleration.
+   */
+  @Override
+  public Optional<Translation3d> getAccel()
+  {
+    return Optional.of(new Translation3d(imu.getAccelX(), imu.getAccelY(), imu.getAccelZ()));
   }
 
   /**
