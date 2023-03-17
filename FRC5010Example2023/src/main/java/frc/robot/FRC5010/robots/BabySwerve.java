@@ -63,7 +63,7 @@ public class BabySwerve extends GenericMechanism {
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        drive = new Drive(vision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
+        drive = new Drive(vision, gyro, Drive.Type.YAGSL_THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
 //        multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
     }
 
