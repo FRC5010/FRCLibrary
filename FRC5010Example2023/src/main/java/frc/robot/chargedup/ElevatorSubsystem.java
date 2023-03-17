@@ -197,10 +197,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     return !extendHallEffect.get();
   }
 
-  
-
-  
-
   public ElevatorLevel getElevatorLevel() {
     return this.currentLevel;
   }
@@ -210,8 +206,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     targetPos2d.setLength(currentLevel.getExtensionPosition());
     targetPos2d.setAngle(currentLevel.getPivotPosition());
   }
-
-  
 
   public void extendPow(double pow) {
     extendMotor.set(pow + ((pow == 0) ? (getFeedFowardVoltage() / 12) : 0));

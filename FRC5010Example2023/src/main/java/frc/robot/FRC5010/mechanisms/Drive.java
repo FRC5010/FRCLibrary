@@ -60,6 +60,7 @@ public class Drive extends GenericMechanism {
         public static final String SDS_MK4I_SWERVE_DRIVE = "SDSMK4ISwerveDrive";
         public static final String SDS_MK4_SWERVE_DRIVE = "SDSMK4SwerveDrive";
         public static final String YAGSL_MK4I_SWERVE_DRIVE = "YAGSLMK4ISwerveDrive";
+        public static final String YAGSL_THRIFTY_SWERVE_DRIVE = "YAGSLThriftySwerveDrive";
         public static final String YAGSL_MK4_SWERVE_DRIVE = "YAGSLMK4SwerveDrive";
     }
 
@@ -123,6 +124,10 @@ public class Drive extends GenericMechanism {
                 initializeYAGSLMK4SwerveDrive();
                 break; 
             }
+            case Type.YAGSL_THRIFTY_SWERVE_DRIVE:{
+                initializeYAGSLThriftySwerveDrive();
+                break; 
+            }
             default: {
                 break;
             }
@@ -135,7 +140,9 @@ public class Drive extends GenericMechanism {
     private void initializeYAGSLMK4SwerveDrive() {
         drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4", vision);
     }
-
+    private void initializeYAGSLThriftySwerveDrive() {
+        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervethrifty", vision);
+    }
     public void setupDefaultCommands(Controller driver, Controller operator) {
         // Handle real or simulation case for default commands
         if (Robot.isReal()) {
