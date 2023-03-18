@@ -9,6 +9,7 @@ import frc.robot.chargedup.PivotSubsystem;
 
 public class PivotReset extends CommandBase {
   private PivotSubsystem pivotSubsystem;
+
   /** Creates a new PivotReset. */
   public PivotReset(PivotSubsystem pivotSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -25,7 +26,7 @@ public class PivotReset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+
   }
 
   // Called once the command ends or is interrupted.
@@ -38,6 +39,6 @@ public class PivotReset extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return pivotSubsystem.isPivotMin();
+    return pivotSubsystem.isPivotMinHallEffect();
   }
 }

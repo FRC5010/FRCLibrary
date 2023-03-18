@@ -72,7 +72,7 @@
           "PivotToMid",
           "HomeElevator"
         ],
-        "executionBehavior": "sequential",
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }

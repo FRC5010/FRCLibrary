@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.PivotSubsystem;
@@ -11,6 +12,7 @@ import frc.robot.chargedup.PivotSubsystem;
 public class PivotElevator extends CommandBase {
   PivotSubsystem pivotSubsystem;
   ElevatorLevel elevatorLevel;
+
   /** Creates a new PivotElevator. */
   public PivotElevator(PivotSubsystem pivot, ElevatorLevel elevatorLevel) {
     this.pivotSubsystem = pivot;
@@ -21,24 +23,20 @@ public class PivotElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    DataLogManager.log(getName());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
-  
+
   @Override
   public void execute() {
-      pivotSubsystem.runPivotToTarget(elevatorLevel.getPivotPosition());
+    pivotSubsystem.runPivotToTarget(elevatorLevel.getPivotPosition());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // if (interrupted){
-    //   pivotSubsystem.stopPivot();
-    // } else {
-    //   pivotSubsystem.stopAndHoldPivot();
-    // 
+    DataLogManager.log(getName() + " ended " + interrupted);
     pivotSubsystem.stopAndHoldPivot();
   }
 
@@ -48,8 +46,7 @@ public class PivotElevator extends CommandBase {
     double goalPos = pivotSubsystem.getPivotTarget();
     double currPos = elevatorLevel.getPivotPosition();
     return pivotSubsystem.isPivotAtTarget()
-    || (pivotSubsystem.isPivotMax() && pivotSubsystem.getVelocity() > 0)  
-    || (pivotSubsystem.isPivotMin() && pivotSubsystem.getVelocity() < 0);
-    // || (elevatorLevel.getPivotPosition() > 0 && pivotSubsystem.getPivotTarget() > 0);
+        || (pivotSubsystem.isPivotMaxPosition() && pivotSubsystem.getVelocity() > 0)
+        || (pivotSubsystem.isPivotMinHallEffect() && pivotSubsystem.getVelocity() < 0);
   }
 }

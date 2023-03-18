@@ -36,11 +36,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   /**
    *
    */
-  
-
 
   private DigitalInput extendHallEffect;
-  
+  private DigitalInput extendMaxHallEffect;
 
   private MotorController5010 extendMotor;
   private SparkMaxPIDController extendController;
@@ -49,7 +47,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private RelativeEncoder extendEncoder;
   private SimulatedEncoder extendSimEncoder = new SimulatedEncoder(12, 13);
 
-  //private double KFF = 0.000156;
+  // private double KFF = 0.000156;
 
   private static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
   private static final double kCarriageMass = 10.0; // kg
@@ -58,37 +56,36 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double kMaxElevatorHeight = Units.inchesToMeters(60);
 
   // distance per pulse = (distance per revolution) / (pulses per revolution)
-  //  = (Pi * D) / ppr
+  // = (Pi * D) / ppr
   private static final double kElevatorEncoderDistPerPulse = Units.inchesToMeters(14.8828);
-      // 2.0 * Math.PI * kElevatorDrumRadius / 8192;
+  // 2.0 * Math.PI * kElevatorDrumRadius / 8192;
 
   private Mechanism2d m_mech2d;
   private MechanismRoot2d m_mech2dRoot;
   private MechanismLigament2d m_elevatorMech2d;
   private MechanismLigament2d targetPos2d;
 
-  
   private double currentExtendTarget;
 
+  private boolean usingTarget = false;
   private ElevatorLevel currentLevel = ElevatorLevel.ground; // Unsure of whether this should be stored in subsystem
 
   // TODO Implement ElevatorFeefForward
   private ElevatorFeedforward extendFeedforward;
-  private ElevatorSim extendSim;  
+  private ElevatorSim extendSim;
 
-  private Supplier<Double> pivotAngle; 
-  
+  private Supplier<Double> pivotAngle;
+
   public ElevatorSubsystem(MotorController5010 extend, GenericPID extendPID,
-       MotorModelConstants extendConstants,
-      Mechanism2d mech2d, int extendHallEffectPort, Supplier<Double> pivotAngle) {
-    
-    this.currentExtendTarget = 0;
+      MotorModelConstants extendConstants,
+      Mechanism2d mech2d, int extendHallEffectPort, int extendMaxHallEffect, Supplier<Double> pivotAngle) {
 
+    this.currentExtendTarget = 0;
 
     this.extendMotor = extend;
     this.extendMotor.setInverted(true);
     this.extendController = ((CANSparkMax) extend).getPIDController();
-    this.extendEncoder = ((CANSparkMax) extend).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature , 8192);
+    this.extendEncoder = ((CANSparkMax) extend).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
     this.extendEncoder.setPositionConversionFactor(kElevatorEncoderDistPerPulse);
     this.extendPID = extendPID;
     this.extendConstants = extendConstants;
@@ -99,15 +96,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         new MechanismLigament2d(
             "Elevator", Units.metersToInches(kMinElevatorHeight), -30.0, 6, new Color8Bit(Color.kOrange)));
     targetPos2d = m_mech2dRoot.append(
-      new MechanismLigament2d("Target", Units.metersToInches(kMinElevatorHeight), -30, 6, new Color8Bit(Color.kBlue)));        
-    
-    extendSim = new ElevatorSim(DCMotor.getNEO(1), 25, 
-      kCarriageMass, kElevatorDrumRadius, kMinElevatorHeight, kMaxElevatorHeight, false);
+        new MechanismLigament2d("Target", Units.metersToInches(kMinElevatorHeight), -30, 6,
+            new Color8Bit(Color.kBlue)));
+
+    extendSim = new ElevatorSim(DCMotor.getNEO(1), 25,
+        kCarriageMass, kElevatorDrumRadius, kMinElevatorHeight, kMaxElevatorHeight, false);
 
     extendFeedforward = new ElevatorFeedforward(extendConstants.getkS(), extendConstants.getkV(),
         extendConstants.getkA());
-    
-      
+
     extendController.setP(extendPID.getkP());
     extendController.setI(extendPID.getkI());
     extendController.setD(extendPID.getkD());
@@ -119,57 +116,79 @@ public class ElevatorSubsystem extends SubsystemBase {
     extendController.setSmartMotionMinOutputVelocity(0, 0);
     extendController.setSmartMotionMaxAccel(100, 0);
 
-
     this.extendHallEffect = new DigitalInput(extendHallEffectPort);
-     
-    this.pivotAngle = pivotAngle; 
+    this.extendMaxHallEffect = new DigitalInput(extendMaxHallEffect);
+
+    this.pivotAngle = pivotAngle;
 
     SmartDashboard.putNumber("Extend P", extendPID.getkP());
-    
+
   }
 
-  public double isCloseToMin() {
-    if(getExtendPosition() < 0.1){
-      return 0.5;
+  public boolean isCloseToMinHardStop() {
+    return (getExtendPosition() < kMinElevatorHeight + Units.inchesToMeters(6));
+  }
+
+  public boolean isCloseToMaxHardStop() {
+    return (getExtendPosition() > kMaxElevatorHeight - Units.inchesToMeters(6));
+  }
+
+  public boolean closeToTarget() {
+    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.15;
+  }
+
+  public double getPowerFactor(double pow) {
+    double powerFactor = 1;
+    double sign = Math.signum(pow);
+    boolean closeToTarget = closeToTarget();
+    boolean atTarget = isExtendAtTarget();
+    if (sign > 0) {
+
+      if (atMaxHardStop(pow) || atTarget) {
+        powerFactor = 0;
+      } else if (isCloseToMaxHardStop()) {
+        powerFactor = 0.75;
+      }
+
+    } else {
+
+      if (atMinHardStop(pow) || atTarget) {
+        powerFactor = 0;
+      } else if (isCloseToMinHardStop()) {
+        powerFactor = 0.25;
+      }
+
     }
-    return 1;
+    return powerFactor;
   }
 
-  public void reset() {
-
+  public void runExtendToTarget(double position) {
+    this.currentExtendTarget = position;
+    usingTarget = true;
+    double kP = SmartDashboard.getNumber("Extend P", extendPID.getkP());
+    SmartDashboard.putBoolean("Is Close To Min Stop", isCloseToMinHardStop());
+    double kF = getFeedFowardVoltage();
+    double signum = Math.signum(position - getExtendPosition());
+    // double pow = signum < 0 ? kP / 2.0 : kP * + kF;
+    double pow = kP * signum;
+    extendMotor.setVoltage(((pow) * getPowerFactor(pow)) + kF);
   }
-
-  public void setExtendEncoderPosition(double pos) {
-    this.extendEncoder.setPosition(pos);
-  }
-
-  
 
   // public void runExtendToTarget(double position) {
-  //   this.currentExtendTarget = position;
-  //   SmartDashboard.putNumber("Extend Target", currentExtendTarget);
-  //   targetPos2d.setLength(currentExtendTarget);
-  //   if (Robot.isReal()) {
-  //     extendController.setFF(getFeedFowardVoltage() / currentExtendTarget);
-  //     extendController.setReference(this.currentExtendTarget, CANSparkMax.ControlType.kPosition, 0);
-  //     SmartDashboard.putNumber("Extend FF", getFeedFowardVoltage());
-  //   } else {
-  //     extendPow((currentExtendTarget - getExtendPosition()) / kMaxElevatorHeight);
-  //   }
+  // this.currentExtendTarget = position;
+  // SmartDashboard.putNumber("Extend Target", currentExtendTarget);
+  // targetPos2d.setLength(currentExtendTarget);
+  // if (Robot.isReal()) {
+  // extendController.setFF(getFeedFowardVoltage() / currentExtendTarget);
+  // extendController.setReference(this.currentExtendTarget,
+  // CANSparkMax.ControlType.kPosition, 0);
+  // SmartDashboard.putNumber("Extend FF", getFeedFowardVoltage());
+  // } else {
+  // extendPow((currentExtendTarget - getExtendPosition()) / kMaxElevatorHeight);
+  // }
   // }
 
-  public void runExtendToTarget(double position){
-    this.currentExtendTarget = position;
-    double kP = SmartDashboard.getNumber("Extend P", extendPID.getkP());
-    double kF = getFeedFowardVoltage(); 
-    // double error = (position - getExtendPosition());
-    // double signum = Math.signum(error);
-    // double pow = signum < 0 ? kP / 2.0 : kP * + kF; 
-    double pow = kP * (position - getExtendPosition()) + kF; 
-    extendMotor.setVoltage(pow);
-  }
-
-  public double getFeedFowardVoltage(){
+  public double getFeedFowardVoltage() {
     return Math.sin(Units.degreesToRadians(pivotAngle.get())) * (.8);
   }
 
@@ -181,13 +200,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
   }
 
-  
-
-  public boolean isExtendAtTarget() {
-    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.05;
+  public void setExtendEncoderPosition(double pos) {
+    this.extendEncoder.setPosition(pos);
   }
 
-  
+  public boolean isExtendAtTarget() {
+    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.05 && usingTarget;
+  }
 
   public double getExtendTarget() {
     return this.currentExtendTarget;
@@ -208,27 +227,28 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void extendPow(double pow) {
-    extendMotor.set(pow + ((pow == 0) ? (getFeedFowardVoltage() / 12) : 0));
-    
+    usingTarget = false;
+    SmartDashboard.putBoolean("Is Close To Min Stop", isCloseToMinHardStop());
+    extendMotor.set((pow + ((pow == 0) ? (getFeedFowardVoltage() / 12) : 0)) * getPowerFactor(pow));
+
     SmartDashboard.putNumber("Elevate Power", extendMotor.get());
     SmartDashboard.putNumber("Elevate Current", ((CANSparkMax) extendMotor).getOutputCurrent());
     SmartDashboard.putNumber("Extend Position", extendEncoder.getPosition());
   }
 
-  public boolean atMinHardStop(){
-    //TODO: Test if encoder is greater
-    return isElevatorIn() && extendEncoder.getVelocity() < 0;
+  public boolean atMinHardStop(double pow) {
+    return isElevatorIn() && pow < 0;
   }
 
-  public boolean atMaxHardStop(){
-    return getExtendPosition() > 1.82 && extendEncoder.getVelocity() > 0;
+  public boolean atMaxHardStop(double pow) {
+    return getExtendPosition() > 1.78 && pow > 0;
   }
 
-  public void stopExtend(){
+  public void stopExtend() {
     extendMotor.set(0);
   }
 
-  public void stopAndHoldExtend(){
+  public void stopAndHoldExtend() {
     extendMotor.setVoltage(getFeedFowardVoltage());
   }
 
@@ -237,24 +257,17 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (Robot.isReal()) {
       m_elevatorMech2d.setLength(Units.metersToInches(getExtendPosition()));
 
-      if (isElevatorIn()){
+      if (isElevatorIn()) {
         setExtendEncoderPosition(kMinElevatorHeight);
       }
 
-      if(atMaxHardStop()){
-        stopAndHoldExtend();
-      }
-
-      if(atMinHardStop()){
-        stopExtend();
-      }
-
       SmartDashboard.putBoolean("Elevator In: ", isElevatorIn());
+
     }
-    SmartDashboard.putNumber("Motor Pow: ", extendMotor.get());  
-    
+    SmartDashboard.putNumber("Motor Pow: ", extendMotor.get());
+
     SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
-    //SmartDashboard.putNumber("Abs", KFF);
+    // SmartDashboard.putNumber("Abs", KFF);
 
     SmartDashboard.putNumber("Elevator Level", currentLevel.getExtensionPosition());
 

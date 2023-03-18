@@ -16,12 +16,11 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.constants.AutoMaps;
@@ -154,14 +153,12 @@ public class CompBot extends GenericMechanism {
     autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium)
         .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
 
-    
-    autoMaps.addMarker("AutoGroundPickUp", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
-        .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground))
-        .andThen(new PrintCommand("Done extending"))
-        // .andThen(new IntakeSpin(intakeSubsystem, () -> 0.35))
-        // .withTimeout(0.5)
-        .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.ground))
-        .andThen(new PrintCommand("Done Pivoting")));
+    autoMaps.addMarker("AutoGroundPickUp",
+        new PivotElevator(pivotSubsystem, ElevatorLevel.low)
+            .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground))
+            .andThen(new InstantCommand(() -> DataLogManager.log("Pivot to Ground Start")))
+            .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.ground))
+            .andThen(new InstantCommand(() -> DataLogManager.log("Pivot to Ground Done"))));
 
     // Create Paths
     autoMaps.addPath("8-1 Cube", new PathConstraints(2, 0.75));
@@ -183,25 +180,34 @@ public class CompBot extends GenericMechanism {
     driver.createYButton()
         .whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createLeftBumper().getAsBoolean(), gyro));
 
-    // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.left));
+    // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
+    // drive.getDrivetrain(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+    // ledSubsystem, LCR.left));
 
-    // driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.center));
+    // driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
+    // drive.getDrivetrain(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+    // ledSubsystem, LCR.center));
 
-    // driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-    //     () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-    //     () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right));
+    // driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
+    // drive.getDrivetrain(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+    // ledSubsystem, LCR.right));
 
-    
-    driver.createBButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.left, swerveConstants));
+    driver.createBButton()
+        .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.left, swerveConstants));
 
-    driver.createAButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.center, swerveConstants));
+    driver.createAButton()
+        .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.center, swerveConstants));
 
-    driver.createXButton().whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.right, swerveConstants));
-    
+    driver.createXButton()
+        .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.right, swerveConstants));
+
+    driver.createBackButton().onTrue(new InstantCommand(() -> drive.getDrivetrain().resetEncoders()));
 
     drive.configureButtonBindings(driver, operator);
     elevator.configureButtonBindings(driver, operator);

@@ -112,21 +112,21 @@ public class Drive extends GenericMechanism {
                 initializeSDSMk4iSwerveDrive();
                 break;
             }
-            case Type.SDS_MK4_SWERVE_DRIVE:{
+            case Type.SDS_MK4_SWERVE_DRIVE: {
                 initializeSDSMk4SwerveDrive();
                 break;
             }
-            case Type.YAGSL_MK4I_SWERVE_DRIVE:{
+            case Type.YAGSL_MK4I_SWERVE_DRIVE: {
                 initializeYAGSLMK4ISwerveDrive();
-                break; 
+                break;
             }
-            case Type.YAGSL_MK4_SWERVE_DRIVE:{
+            case Type.YAGSL_MK4_SWERVE_DRIVE: {
                 initializeYAGSLMK4SwerveDrive();
-                break; 
+                break;
             }
-            case Type.YAGSL_THRIFTY_SWERVE_DRIVE:{
+            case Type.YAGSL_THRIFTY_SWERVE_DRIVE: {
                 initializeYAGSLThriftySwerveDrive();
-                break; 
+                break;
             }
             default: {
                 break;
@@ -135,18 +135,23 @@ public class Drive extends GenericMechanism {
     }
 
     private void initializeYAGSLMK4ISwerveDrive() {
-        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4i", vision);
+        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4i",
+                vision);
     }
+
     private void initializeYAGSLMK4SwerveDrive() {
         drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4", vision);
     }
+
     private void initializeYAGSLThriftySwerveDrive() {
-        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervethrifty", vision);
+        drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervethrifty",
+                vision);
     }
+
     public void setupDefaultCommands(Controller driver, Controller operator) {
         // Handle real or simulation case for default commands
         if (Robot.isReal()) {
-            if(defaultDriveCommand == null){
+            if (defaultDriveCommand == null) {
                 this.defaultDriveCommand = drivetrain.createDefaultCommand(driver);
                 drivetrain.setDefaultCommand(defaultDriveCommand);
             }
@@ -180,7 +185,7 @@ public class Drive extends GenericMechanism {
         // .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
         driver.createLeftBumper().onTrue(new InstantCommand(() -> drivetrain.toggleFieldOrientedDrive()));
-        driver.createStartButton().onTrue(new InstantCommand(() -> gyro.reset()));        
+        driver.createStartButton().onTrue(new InstantCommand(() -> gyro.reset()));
     }
 
     public GenericDrivetrain getDrivetrain() {
@@ -283,45 +288,47 @@ public class Drive extends GenericMechanism {
     }
 
     private void initializeSDSMk4iSwerveDrive() {
-        SdsSwerveModule frontLeft = new SdsSwerveModule(mechVisual.getRoot("frontLeft", 15, 45), "frontLeft", 
-        ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(0), SdsModuleConfigurations.MK4I_L1);
+        SdsSwerveModule frontLeft = new SdsSwerveModule(mechVisual.getRoot("frontLeft", 15, 45), "frontLeft",
+                ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
+                ((SwerveConstants) driveConstants), (SwervePorts) motorPorts.get(0), SdsModuleConfigurations.MK4I_L1);
 
-        SdsSwerveModule frontRight = new SdsSwerveModule(mechVisual.getRoot("frontRight", 45, 45), "frontRight", 
-        ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(1), SdsModuleConfigurations.MK4I_L1);
+        SdsSwerveModule frontRight = new SdsSwerveModule(mechVisual.getRoot("frontRight", 45, 45), "frontRight",
+                ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(),
+                ((SwerveConstants) driveConstants), (SwervePorts) motorPorts.get(1), SdsModuleConfigurations.MK4I_L1);
 
-        SdsSwerveModule backLeft = new SdsSwerveModule(mechVisual.getRoot("backLeft", 15,15), "backLeft", 
-        ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(2), SdsModuleConfigurations.MK4I_L1);
+        SdsSwerveModule backLeft = new SdsSwerveModule(mechVisual.getRoot("backLeft", 15, 15), "backLeft",
+                ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(),
+                ((SwerveConstants) driveConstants), (SwervePorts) motorPorts.get(2), SdsModuleConfigurations.MK4I_L1);
 
-        SdsSwerveModule backRight = new SdsSwerveModule(mechVisual.getRoot("backRight", 45,15), "backRight", 
-        ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(3), SdsModuleConfigurations.MK4I_L1);
+        SdsSwerveModule backRight = new SdsSwerveModule(mechVisual.getRoot("backRight", 45, 15), "backRight",
+                ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(),
+                ((SwerveConstants) driveConstants), (SwervePorts) motorPorts.get(3), SdsModuleConfigurations.MK4I_L1);
 
         drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision,
                 (SwerveConstants) driveConstants);
-//        drivetrain = new SdsSwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, (SwerveConstants)driveConstants, vision);
+        // drivetrain = new SdsSwerveDrivetrain(mechVisual, frontLeft, frontRight,
+        // backLeft, backRight, gyro, (SwerveConstants)driveConstants, vision);
     }
 
     private void initializeSDSMk4SwerveDrive() {
-        SdsSwerveModule frontLeft = new SdsSwerveModule(mechVisual.getRoot("frontLeft", 15, 45), "frontLeft", 
-        ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(0), SdsModuleConfigurations.MK4_L1);
+        SdsSwerveModule frontLeft = new SdsSwerveModule(mechVisual.getRoot("frontLeft", 15, 45), "frontLeft",
+                ((SwerveConstants) driveConstants).getkFrontLeftAbsoluteOffsetRad(),
+                ((SwerveConstants) driveConstants), (SwervePorts) motorPorts.get(0), SdsModuleConfigurations.MK4_L1);
 
-        SdsSwerveModule frontRight = new SdsSwerveModule(mechVisual.getRoot("frontRight", 45, 45), "frontRight", 
-        ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(1), SdsModuleConfigurations.MK4_L1);
+        SdsSwerveModule frontRight = new SdsSwerveModule(mechVisual.getRoot("frontRight", 45, 45), "frontRight",
+                ((SwerveConstants) driveConstants).getkFrontRightAbsoluteOffsetRad(),
+                ((SwerveConstants) driveConstants), (SwervePorts) motorPorts.get(1), SdsModuleConfigurations.MK4_L1);
 
-        SdsSwerveModule backLeft = new SdsSwerveModule(mechVisual.getRoot("backLeft", 15,15), "backLeft", 
-        ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(2), SdsModuleConfigurations.MK4_L1);
+        SdsSwerveModule backLeft = new SdsSwerveModule(mechVisual.getRoot("backLeft", 15, 15), "backLeft",
+                ((SwerveConstants) driveConstants).getkBackLeftAbsoluteOffsetRad(),
+                ((SwerveConstants) driveConstants), (SwervePorts) motorPorts.get(2), SdsModuleConfigurations.MK4_L1);
 
-        SdsSwerveModule backRight = new SdsSwerveModule(mechVisual.getRoot("backRight", 15,15), "backRight", 
-        ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(),
-        ((SwerveConstants) driveConstants), (SwervePorts)motorPorts.get(3), SdsModuleConfigurations.MK4_L1);
+        SdsSwerveModule backRight = new SdsSwerveModule(mechVisual.getRoot("backRight", 15, 15), "backRight",
+                ((SwerveConstants) driveConstants).getkBackRightAbsoluteOffsetRad(),
+                ((SwerveConstants) driveConstants), (SwervePorts) motorPorts.get(3), SdsModuleConfigurations.MK4_L1);
 
-        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision, (SwerveConstants)driveConstants);
+        drivetrain = new SwerveDrivetrain(mechVisual, frontLeft, frontRight, backLeft, backRight, gyro, vision,
+                (SwerveConstants) driveConstants);
     }
 
     public Map<String, Command> initAutoCommands() {
@@ -330,10 +337,10 @@ public class Drive extends GenericMechanism {
 
     public Map<String, Command> setAutoCommands(Map<String, List<PathPlannerTrajectory>> paths,
             HashMap<String, Command> eventMap) {
-        
+
         Map<String, Command> commands = new HashMap<>();
         BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(eventMap);
-        
+
         for (String name : paths.keySet()) {
             List<PathPlannerTrajectory> path = paths.get(name);
             commands.put(name, autoBuilder.fullAuto(path).beforeStarting(() -> drivetrain.resetEncoders()));
@@ -341,8 +348,8 @@ public class Drive extends GenericMechanism {
 
         return commands;
     }
-    
-    public void disabledBehavior(){
-        drivetrain.disabledBehavior(); 
+
+    public void disabledBehavior() {
+        drivetrain.disabledBehavior();
     }
 }

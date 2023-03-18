@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorSubsystem;
-import frc.robot.chargedup.PivotSubsystem;
 
 public class ElevatorReset extends CommandBase {
   private ElevatorSubsystem elevatorSubsystem;
@@ -26,9 +25,9 @@ public class ElevatorReset extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() { 
+  public void execute() {
 
-    if (elevatorSubsystem.getExtendPosition() < .5){
+    if (elevatorSubsystem.getExtendPosition() < .5) {
       elevatorSubsystem.extendPow(-0.2);
     }
 

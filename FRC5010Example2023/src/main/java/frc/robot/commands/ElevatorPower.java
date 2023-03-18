@@ -22,7 +22,7 @@ public class ElevatorPower extends CommandBase {
     @Override 
     public void execute() {
         double speed = (this.moveSpeed.get());
-        elevatorSubsystem.extendPow(speed * elevatorSubsystem.isCloseToMin());
+        elevatorSubsystem.extendPow(speed);
     }
 
     @Override

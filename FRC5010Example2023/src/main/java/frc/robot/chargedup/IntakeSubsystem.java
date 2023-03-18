@@ -25,13 +25,13 @@ public class IntakeSubsystem extends SubsystemBase {
   private MotorModelConstants intakeConstants;
   private GenericPID intakePID;
   private GenericEncoder intakeEncoder;
-  
+
   private DoubleSolenoid intakeSolenoid;
 
   private double setPoint = 0;
   private double KFF = 0;
   private double kIz = 0;
- // When piston is closed = cube, open = cone
+  // When piston is closed = cube, open = cone
   private Mechanism2d m_mech2d;
   private MechanismRoot2d m_mech2dRoot;
   private MechanismLigament2d m_intakeLeft1Mech2d;
@@ -39,14 +39,13 @@ public class IntakeSubsystem extends SubsystemBase {
   private MechanismLigament2d m_intakeRight1Mech2d;
   private MechanismLigament2d m_intakeRight2Mech2d;
 
-
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2,
       MotorModelConstants intakeConstants, GenericPID intakePID,
       DoubleSolenoid intakeSolenoid, Mechanism2d m_mech2d) {
     this.intake = intake.invert(false);
     intake2.setFollow(intake, true);
-    this.intakeController = ((CANSparkMax) intake).getPIDController(); 
+    this.intakeController = ((CANSparkMax) intake).getPIDController();
     this.intakeEncoder = intake.getMotorEncoder();
     this.intakeConstants = intakeConstants;
     this.intakePID = intakePID;
@@ -82,36 +81,36 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeController.setReference(this.setPoint, CANSparkMax.ControlType.kVelocity, 0);
   }
 
-  public void stopIntake(){
+  public void stopIntake() {
     this.setPoint = 0;
     // intakeController.setReference(0, CANSparkMax.ControlType.kVelocity, 0);
     intake.set(0);
   }
 
-  public void toggleIntake(){
+  public void toggleIntake() {
     if (intakeSolenoid.isFwdSolenoidDisabled()) {
       setIntakeCone();
     }
     intakeSolenoid.toggle();
   }
-  
-  public void setIntakeCube(){ // Cube
+
+  public void setIntakeCube() { // Cube
     intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
   }
 
-  public void setIntakeCone(){ // Cone
+  public void setIntakeCone() { // Cone
     intakeSolenoid.set(DoubleSolenoid.Value.kForward);
   }
 
-  public void disableIntake(){
+  public void disableIntake() {
     intakeSolenoid.set(DoubleSolenoid.Value.kOff);
   }
-  
-  public void setMotor(double speed){
+
+  public void setMotor(double speed) {
     intake.set(speed);
   }
 
-  public boolean isIntakeCone(){
+  public boolean isIntakeCone() {
     return intakeSolenoid.get().equals(DoubleSolenoid.Value.kForward);
   }
 
@@ -124,6 +123,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     // This method will be called once per scheduler run
-    //Shuffleboard.getTab("Robot").addString("Intake Mode Cone/Cube", () -> intakeState);
+    // Shuffleboard.getTab("Robot").addString("Intake Mode Cone/Cube", () ->
+    // intakeState);
   }
 }

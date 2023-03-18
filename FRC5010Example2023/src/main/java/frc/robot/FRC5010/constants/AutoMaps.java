@@ -17,15 +17,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** Add your docs here. */
 public class AutoMaps {
-    protected HashMap<String,Command> eventMap;
-    protected Map<String,List<PathPlannerTrajectory>> paths;    
+    protected HashMap<String, Command> eventMap;
+    protected Map<String, List<PathPlannerTrajectory>> paths;
 
-    public AutoMaps() {   
-        eventMap = new HashMap<String,Command>();
-        paths = new HashMap<String,List<PathPlannerTrajectory>>();
-        // PathPlannerServer.startServer(5811);
+    public AutoMaps() {
+        eventMap = new HashMap<String, Command>();
+        paths = new HashMap<String, List<PathPlannerTrajectory>>();
+        PathPlannerServer.startServer(5811);
     }
-    
+
     public HashMap<String, Command> getEventMap() {
         return eventMap;
     }
@@ -33,12 +33,12 @@ public class AutoMaps {
     public Map<String, List<PathPlannerTrajectory>> getPaths() {
         return paths;
     }
-    
-    public void addMarker(String name, Command command){
+
+    public void addMarker(String name, Command command) {
         eventMap.put(name, command);
     }
 
-    public void addPath(String name, PathConstraints pathconstraints){
+    public void addPath(String name, PathConstraints pathconstraints) {
         paths.put(name, PathPlanner.loadPathGroup(name, pathconstraints));
     }
 }

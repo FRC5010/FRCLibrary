@@ -26,5 +26,8 @@
     },
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
-  "workbench.colorTheme": "Default Dark+"
+  "workbench.colorTheme": "Default Dark+",
+  "[java]": {
+    "editor.formatOnSave": true
+}
 }

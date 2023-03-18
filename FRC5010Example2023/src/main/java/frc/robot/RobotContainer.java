@@ -96,6 +96,7 @@ public class RobotContainer extends GenericMechanism {
        */
       DataLogManager.start();
       DriverStation.startDataLog(DataLogManager.getLog());
+      DataLogManager.logNetworkTables(true);
     } else {
       NetworkTableInstance instance = NetworkTableInstance.getDefault();
       instance.stopServer();
@@ -216,7 +217,7 @@ public class RobotContainer extends GenericMechanism {
     return alliance;
   }
 
-  public void disabledBehavior(){
+  public void disabledBehavior() {
     robot.disabledBehavior();
-  } 
+  }
 }

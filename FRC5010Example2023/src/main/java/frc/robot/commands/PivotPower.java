@@ -20,7 +20,7 @@ public class PivotPower extends CommandBase {
         System.out.println("Elevator Move");
     }
 
-    @Override 
+    @Override
     public void execute() {
         // double currentPosition = this.elevatorSubsystem.getPivotPosition();
         // double speed = (this.moveSpeed.get());
@@ -30,22 +30,23 @@ public class PivotPower extends CommandBase {
         // if (newPosition < -1.0) {newPosition = -1.0;}
 
         // this.elevatorSubsystem.setPivotPosition(newPosition);
-        
-        //TODO: Sankalp believes it doesn't work \/
-        if (!elevatorSubsystem.isPivotMax() || !elevatorSubsystem.isPivotMin()){
-            double speed = this.moveSpeed.get(); 
+
+        // TODO: Sankalp believes it doesn't work \/
+        if (!elevatorSubsystem.isPivotMaxPosition() || !elevatorSubsystem.isPivotMinHallEffect()) {
+            double speed = this.moveSpeed.get();
             elevatorSubsystem.pivotPow(speed, true);
-        } 
+        }
     }
 
     @Override
     public void end(boolean interrupted) {
-        this.elevatorSubsystem.stopAndHoldPivot();;
+        this.elevatorSubsystem.stopAndHoldPivot();
+        ;
     }
 
     @Override
     public boolean isFinished() {
         return false;
-    }    
-    
+    }
+
 }

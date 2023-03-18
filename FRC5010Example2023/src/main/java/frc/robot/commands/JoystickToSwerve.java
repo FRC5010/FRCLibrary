@@ -18,31 +18,33 @@ public class JoystickToSwerve extends CommandBase {
   private Supplier<Double> xSpdFunction, ySpdFunction, turnSpdFunction;
   private Supplier<Boolean> fieldOrientedDrive;
 
-  public JoystickToSwerve(SwerveDrivetrain swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turnSpdFunction, Supplier<Boolean> fieldOrientedDrive) {
+  public JoystickToSwerve(SwerveDrivetrain swerveSubsystem, Supplier<Double> xSpdFunction,
+      Supplier<Double> ySpdFunction, Supplier<Double> turnSpdFunction, Supplier<Boolean> fieldOrientedDrive) {
     this.swerveDrive = swerveSubsystem;
     this.xSpdFunction = xSpdFunction;
     this.ySpdFunction = ySpdFunction;
     this.turnSpdFunction = turnSpdFunction;
     this.fieldOrientedDrive = fieldOrientedDrive;
-    
+
     addRequirements(this.swerveDrive);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     // get values on sticks and deadzone them
-    
+
     double xSpeed = (xSpdFunction.get());
     double ySpeed = (ySpdFunction.get());
 
     double turnSpeed = (turnSpdFunction.get());
-    
+
     // limit power
     xSpeed = xSpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
     ySpeed = ySpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
@@ -50,20 +52,20 @@ public class JoystickToSwerve extends CommandBase {
 
     // convert to chassis speed class
     ChassisSpeeds chassisSpeeds;
-    // 
-    if(fieldOrientedDrive.get()){
+    //
+    if (fieldOrientedDrive.get()) {
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        xSpeed, 
-        ySpeed, 
-        turnSpeed, 
-        swerveDrive.getHeading()
-      );
-    }else{
-      chassisSpeeds = new ChassisSpeeds(xSpeed,ySpeed,turnSpeed);
+          xSpeed,
+          ySpeed,
+          turnSpeed,
+          swerveDrive.getHeading());
+    } else {
+      chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnSpeed);
     }
 
     // convert chassis speed into modules speeds
-    //SwerveModuleState[] moduleStates = SwerveDrivetrain.m_kinematics.toSwerveModuleStates(chassisSpeeds);
+    // SwerveModuleState[] moduleStates =
+    // SwerveDrivetrain.m_kinematics.toSwerveModuleStates(chassisSpeeds);
 
     // output each module speed into subsystem
     swerveDrive.drive(chassisSpeeds);
