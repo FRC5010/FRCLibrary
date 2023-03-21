@@ -7,13 +7,16 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorSubsystem;
+import frc.robot.chargedup.PivotSubsystem;
 
 public class HomeElevator extends CommandBase {
   ElevatorSubsystem elevatorSubsystem;
+  PivotSubsystem pivot;
 
   /** Creates a new HomeElevator. */
-  public HomeElevator(ElevatorSubsystem elevatorSubsystem) {
+  public HomeElevator(ElevatorSubsystem elevatorSubsystem, PivotSubsystem pivot) {
     this.elevatorSubsystem = elevatorSubsystem;
+    this.pivot = pivot;
     addRequirements(elevatorSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }

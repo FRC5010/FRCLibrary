@@ -55,6 +55,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double kMinElevatorHeight = Units.inchesToMeters(24);
   public static final double kMaxElevatorHeight = Units.inchesToMeters(60);
 
+  private double insideTheBumpers = kMinElevatorHeight + 0.1;
+  private double outsideTheBumpers = kMinElevatorHeight + 0.5;
+  private double aboveTheBumpers = ElevatorLevel.low.getPivotPosition();
+
   // distance per pulse = (distance per revolution) / (pulses per revolution)
   // = (Pi * D) / ppr
   private static final double kElevatorEncoderDistPerPulse = Units.inchesToMeters(14.8828);
@@ -126,11 +130,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean isCloseToMinHardStop() {
-    return (getExtendPosition() < kMinElevatorHeight + Units.inchesToMeters(6));
+    return (getExtendPosition() < kMinElevatorHeight + Units.inchesToMeters(3));
   }
 
   public boolean isCloseToMaxHardStop() {
-    return (getExtendPosition() > kMaxElevatorHeight - Units.inchesToMeters(6));
+    return (getExtendPosition() > kMaxElevatorHeight - Units.inchesToMeters(1));
   }
 
   public boolean closeToTarget() {
@@ -146,16 +150,16 @@ public class ElevatorSubsystem extends SubsystemBase {
 
       if (atMaxHardStop(pow) || atTarget) {
         powerFactor = 0;
-      } else if (isCloseToMaxHardStop()) {
-        powerFactor = 0.75;
+      } else if (isCloseToMaxHardStop() || closeToTarget) {
+        powerFactor = 0.5;
       }
 
     } else {
 
       if (atMinHardStop(pow) || atTarget) {
         powerFactor = 0;
-      } else if (isCloseToMinHardStop()) {
-        powerFactor = 0.25;
+      } else if (isCloseToMinHardStop() || closeToTarget) {
+        powerFactor = 0.5;
       }
 
     }
@@ -205,7 +209,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean isExtendAtTarget() {
-    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.05 && usingTarget;
+    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.0125 && usingTarget;
   }
 
   public double getExtendTarget() {
@@ -250,6 +254,41 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void stopAndHoldExtend() {
     extendMotor.setVoltage(getFeedFowardVoltage());
+  }
+
+  public double extendSafe(double power, PivotSubsystem pivotSubsys, double desiredPivot) {
+    double signPower = Math.signum(power);
+    double extendPower = power;
+    if (signPower > 0) { // if extending
+      if (getExtendPosition() <= insideTheBumpers) { // if behind the bumpers
+        if (pivotSubsys.getPivotPosition() < aboveTheBumpers) { // if too low to extend
+          pivotSubsys.runPivotToTarget(aboveTheBumpers); // raise the pivot
+          if (getExtendPosition() > (insideTheBumpers - 0.05)) { // while pivoting, stop extending and allow pivot to
+                                                                 // raise
+            extendPower = 0;
+          }
+        }
+      } else if (getExtendPosition() > outsideTheBumpers) { // if outside the bumpers
+        if (pivotSubsys.getPivotPosition() != desiredPivot) { // if still pivoted up
+          pivotSubsys.runPivotToTarget(desiredPivot); // pivot back down
+        }
+      } else if (signPower < 0) { // if retracting
+        if (getExtendPosition() >= outsideTheBumpers) { // if outside the bumpers
+          if (pivotSubsys.getPivotPosition() < aboveTheBumpers) { // if too low to retract
+            pivotSubsys.runPivotToTarget(aboveTheBumpers); // raise the pivot
+            if (getExtendPosition() < (outsideTheBumpers + 0.05)) { // while pivoting, stop retracting and allow pivot
+                                                                    // to raise
+              extendPower = 0;
+            }
+          }
+        } else if (getExtendPosition() < insideTheBumpers) { // if inside the bumpers
+          if (pivotSubsys.getPivotPosition() != desiredPivot) { // if still pivoted up
+            pivotSubsys.runPivotToTarget(desiredPivot); // pivot back down
+          }
+        }
+      }
+    }
+    return extendPower;
   }
 
   @Override

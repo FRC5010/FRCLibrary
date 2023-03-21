@@ -27,8 +27,8 @@ public class DrivetrainPoseEstimator {
   private VisionSystem vision;
   private final Field2d field2d = new Field2d();
   private final GenericPose poseTracker;
-  private int closestTagToRobot; 
-  private List<Pose2d> tagPoses = new ArrayList<>(); 
+  private int closestTagToRobot;
+  private List<Pose2d> tagPoses = new ArrayList<>();
 
   public DrivetrainPoseEstimator(GenericPose poseTracker, VisionSystem vision) {
     this.poseTracker = poseTracker;
@@ -39,7 +39,7 @@ public class DrivetrainPoseEstimator {
     tab.addNumber("Pose Degrees", () -> getCurrentPose().getRotation().getDegrees()).withPosition(1, 4);
     tab.add(field2d);
 
-    for (AprilTag at: vision.getFieldLayout().getTags()) {
+    for (AprilTag at : vision.getFieldLayout().getTags()) {
       if (at.pose.getX() != 0 && at.pose.getY() != 0 && at.pose.getZ() != 0) {
         field2d.getObject("Field Tag " + at.ID).setPose(at.pose.toPose2d());
         AprilTags.poseToID.put(at.pose.toPose2d(), at.ID);
@@ -61,25 +61,25 @@ public class DrivetrainPoseEstimator {
   }
 
   public Rotation2d getGyroRotation2d() {
-    //System.out.println(poseTracker.getGyroRotation2d());
+    // System.out.println(poseTracker.getGyroRotation2d());
     return poseTracker.getGyroRotation2d();
   }
 
-  public int getClosestTagToRobot(){
+  public int getClosestTagToRobot() {
     return closestTagToRobot;
   }
 
-  public Pose2d getPoseFromClosestTag(){
-    Pose2d targetPose = vision.getFieldLayout().getTagPose(closestTagToRobot).map(it -> it.toPose2d()).orElse(getCurrentPose());
+  public Pose2d getPoseFromClosestTag() {
+    Pose2d targetPose = vision.getFieldLayout().getTagPose(closestTagToRobot).map(it -> it.toPose2d())
+        .orElse(getCurrentPose());
     field2d.getObject("Closest Tag").setPose(targetPose);
-    return targetPose; 
+    return targetPose;
   }
 
-  public void setTargetPoseOnField(Pose2d targetPose, String targetName){
+  public void setTargetPoseOnField(Pose2d targetPose, String targetName) {
     field2d.getObject(targetName).setPose(targetPose);
   }
 
-  
   /*
    * Perform all periodic pose estimation tasks.
    *
@@ -88,14 +88,16 @@ public class DrivetrainPoseEstimator {
   public void update() {
     poseTracker.updateLocalMeasurements();
 
-    for(Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
-        if (null != robotPose) {
-          double imageCaptureTime = vision.getRawValues().getLatency();
-//          field2d.getObject("MyRobot" + ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);   
-          if (RobotState.isDisabled() || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())) {
-            poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
-          }
+    for (Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
+      if (null != robotPose) {
+        double imageCaptureTime = vision.getRawValues().getLatency();
+        // field2d.getObject("MyRobot" +
+        // ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);
+        if (RobotState.isDisabled()
+            || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())) {
+          poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
         }
+      }
     }
     field2d.setRobotPose(getCurrentPose());
 

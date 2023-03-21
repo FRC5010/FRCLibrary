@@ -6,17 +6,23 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
+import frc.robot.chargedup.ElevatorSubsystem;
 import frc.robot.chargedup.IntakeSubsystem;
 
 public class LedDefaultCommand extends CommandBase {
   /** Creates a new LedDefaultCommand. */
   LedSubsystem ledSubsystem;
   IntakeSubsystem intakeSubsystem;
+  ElevatorSubsystem elevator;
   private boolean lastState;
-  public LedDefaultCommand(LedSubsystem ledSubsystem, IntakeSubsystem intakeSubsystem) {
+
+  public LedDefaultCommand(LedSubsystem ledSubsystem, IntakeSubsystem intakeSubsystem,
+      ElevatorSubsystem elevator) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.ledSubsystem = ledSubsystem;
     this.intakeSubsystem = intakeSubsystem;
+    this.elevator = elevator;
+
     lastState = !intakeSubsystem.isIntakeCone();
     addRequirements(ledSubsystem);
 
@@ -24,23 +30,32 @@ public class LedDefaultCommand extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(lastState != ledSubsystem.getLedConeMode()){
-      if(ledSubsystem.getLedConeMode()){
-        //ledSubsystem.setOrbit(210, 255, 0, 0, 0, 0, .1);
-        ledSubsystem.setBlink(210, 255, 0, 500);
-        //(210, 255, 0);
-        //ledSubsystem.speed(1);
-      }else{
-        //ledSubsystem.setOrbit(100, 0, 255, 0, 0, 0, .1);
-        ledSubsystem.setBlink(100, 0, 255, 500);
-        //ledSubsystem.setSolidColor(100, 0, 255);
-        //ledSubsystem.speed(2);
-        
+    if (lastState != ledSubsystem.getLedConeMode()) {
+      if (ledSubsystem.getLedConeMode()) {
+        // ledSubsystem.setOrbit(210, 255, 0, 0, 0, 0, .1);
+        if (elevator.isExtendAtTarget()) {
+          ledSubsystem.setSolidColor(210, 255, 0);
+        } else {
+          ledSubsystem.setBlink(210, 255, 0, 250);
+        }
+        // (210, 255, 0);
+        // ledSubsystem.speed(1);
+      } else {
+        // ledSubsystem.setOrbit(100, 0, 255, 0, 0, 0, .1);
+        if (elevator.isExtendAtTarget()) {
+          ledSubsystem.setSolidColor(100, 0, 255);
+        } else {
+          ledSubsystem.setBlink(100, 0, 255, 250);
+        }
+        // ledSubsystem.setSolidColor(100, 0, 255);
+        // ledSubsystem.speed(2);
+
       }
       lastState = ledSubsystem.getLedConeMode();
     }

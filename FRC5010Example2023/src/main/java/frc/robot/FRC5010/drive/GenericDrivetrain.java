@@ -22,11 +22,13 @@ import frc.robot.FRC5010.sensors.Controller;
 public abstract class GenericDrivetrain extends SubsystemBase {
     protected Mechanism2d mechVisual;
     protected DrivetrainPoseEstimator poseEstimator;
-    protected boolean isFieldOrientedDrive = true; 
+    protected boolean isFieldOrientedDrive = true;
+
     public GenericDrivetrain(Mechanism2d mechVisual) {
         this.mechVisual = mechVisual;
         SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
     }
+
     public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator poseEstimator) {
         this.poseEstimator = poseEstimator;
     }
@@ -34,37 +36,47 @@ public abstract class GenericDrivetrain extends SubsystemBase {
     public DrivetrainPoseEstimator getPoseEstimator() {
         return poseEstimator;
     }
-    
-    public Mechanism2d getMechVisual() { assert(null != poseEstimator); return mechVisual; }
-    public Rotation2d getHeading() { assert(null != poseEstimator); return poseEstimator.getGyroRotation2d(); };
-    
+
+    public Mechanism2d getMechVisual() {
+        assert (null != poseEstimator);
+        return mechVisual;
+    }
+
+    public Rotation2d getHeading() {
+        assert (null != poseEstimator);
+        return poseEstimator.getGyroRotation2d();
+    };
+
     public abstract void drive(ChassisSpeeds direction);
 
     @Override
     public void periodic() {
         poseEstimator.update();
-        lockWheels();
+        // lockWheels();
     }
 
     public abstract BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap);
 
-    public void disabledBehavior(){}
+    public void disabledBehavior() {
+    }
 
-    public void toggleFieldOrientedDrive(){    
+    public void toggleFieldOrientedDrive() {
         isFieldOrientedDrive = !isFieldOrientedDrive;
-        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive); 
+        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
     }
 
-    public void lockWheels(){}; 
+    public void lockWheels() {
+    };
 
-    public Command createDefaultCommand(Controller driver){
+    public Command createDefaultCommand(Controller driver) {
         return new DefaultDriveCommand(this,
-            () -> driver.getLeftYAxis(),
-            () -> driver.getLeftXAxis(),
-            () -> driver.getRightXAxis(),
-            () -> isFieldOrientedDrive);     
+                () -> driver.getLeftYAxis(),
+                () -> driver.getLeftXAxis(),
+                () -> driver.getRightXAxis(),
+                () -> isFieldOrientedDrive);
     }
 
-    public void resetEncoders(){}
-    
+    public void resetEncoders() {
+    }
+
 }

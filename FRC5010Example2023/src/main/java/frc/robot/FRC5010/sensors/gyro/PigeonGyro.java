@@ -6,6 +6,8 @@ package frc.robot.FRC5010.sensors.gyro;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /** Add your docs here. */
 public class PigeonGyro implements GenericGyro {
     private final Pigeon2 pigeon2;
@@ -48,5 +50,5 @@ public class PigeonGyro implements GenericGyro {
     public void setAngle(double angle) {
         pigeon2.setYaw(angle);
     }
-    //big kahunas
+    // big kahunas
 }

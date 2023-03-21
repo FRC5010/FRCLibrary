@@ -12,18 +12,20 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.sensors.Controller;
 
-/** 
+/**
  * GenericMechanism should be used as the parent class of any mechanism
  * It enforces the use of the functions:
- *      @function configureButtonBindings(Controller driver, Controller operator)
- *      @function setupDefaultCommands()
- *      @function function initRealOrSim()
+ * 
+ * @function configureButtonBindings(Controller driver, Controller operator)
+ * @function setupDefaultCommands()
+ * @function function initRealOrSim()
  */
 public abstract class GenericMechanism {
     protected Mechanism2d mechVisual;
     protected ShuffleboardTab shuffleTab;
+
     public GenericMechanism(String tabName) {
-        this.mechVisual = new Mechanism2d(100,100);
+        this.mechVisual = new Mechanism2d(100, 100);
         shuffleTab = Shuffleboard.getTab(tabName);
     }
 
@@ -32,16 +34,18 @@ public abstract class GenericMechanism {
         this.shuffleTab = shuffleTab;
     }
 
-    public ShuffleboardTab getShuffleTab(){
+    public ShuffleboardTab getShuffleTab() {
         return shuffleTab;
     }
+
     /**
      * configureButtonBindings should map button/axis controls to commands
-     * @param driver - driver joystick
+     * 
+     * @param driver   - driver joystick
      * @param operator - operator joystick
      */
     public abstract void configureButtonBindings(Controller driver, Controller operator);
-    
+
     /**
      * setupDefaultCommands should setup the default commands needed by subsystems
      * It could check for Test mode and enable different commands
@@ -61,10 +65,10 @@ public abstract class GenericMechanism {
 
     }
 
-    public abstract Map<String,Command> initAutoCommands();
+    public abstract Map<String, Command> initAutoCommands();
 
-    public void disabledBehavior(){
-        
-    } 
-  
+    public void disabledBehavior() {
+
+    }
+
 }

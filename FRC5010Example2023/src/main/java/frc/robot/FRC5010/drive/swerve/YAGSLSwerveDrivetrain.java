@@ -19,7 +19,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,6 +41,7 @@ import swervelib.parser.SwerveParser;
 /** Add your docs here. */
 public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   private SwerveDrive swerveDrive;
+  private PowerDistribution powerDistributionHub;
 
   public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants,
       String swerveType, VisionSystem visionSystem) {
@@ -54,6 +57,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     setDrivetrainPoseEstimator(poseEstimator);
 
     // swerveDrive.setModuleStates();
+    powerDistributionHub = new PowerDistribution(1, ModuleType.kRev);
   }
 
   public Command createDefaultCommand(Controller driverXbox) {
@@ -113,6 +117,18 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public void periodic() {
     swerveDrive.updateOdometry();
     poseEstimator.update();
+
+    SmartDashboard.putNumber("FL Wheel Current",
+        powerDistributionHub.getCurrent(1));
+
+    SmartDashboard.putNumber("FR Wheel Current",
+        powerDistributionHub.getCurrent(18));
+
+    SmartDashboard.putNumber("BL Wheel Current",
+        powerDistributionHub.getCurrent(3));
+
+    SmartDashboard.putNumber("BR Wheel Current",
+        powerDistributionHub.getCurrent(15));
   }
 
   @Override

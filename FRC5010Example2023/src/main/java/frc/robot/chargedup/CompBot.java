@@ -77,10 +77,10 @@ public class CompBot extends GenericMechanism {
     swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.1);
     swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
 
-    swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L1);
+    swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
     swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
-    ledSubsystem = new LedSubsystem(1, 290);
+    ledSubsystem = new LedSubsystem(1, 287);
     ledSubsystem.off();
 
     // Will need to be changed for 2023 field
@@ -127,9 +127,11 @@ public class CompBot extends GenericMechanism {
     PivotSubsystem pivotSubsystem = ((ChargedUpMech) elevator).getPivotSubsystem();
 
     // Elevator Controls
-    autoMaps.addMarker("ExtendToPivotPosition", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.low));
-    autoMaps.addMarker("HomeElevator", new HomeElevator(elevatorSubsystem));
-    autoMaps.addMarker("ExtendToGround", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground));
+    autoMaps.addMarker("ExtendToPivotPosition",
+        new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.low));
+    autoMaps.addMarker("HomeElevator", new HomeElevator(elevatorSubsystem, pivotSubsystem));
+    autoMaps.addMarker("ExtendToGround",
+        new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground));
     autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem,
         ElevatorLevel.ground));
     autoMaps.addMarker("PivotToLow", new PivotElevator(pivotSubsystem,
@@ -154,11 +156,8 @@ public class CompBot extends GenericMechanism {
         .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
 
     autoMaps.addMarker("AutoGroundPickUp",
-        new PivotElevator(pivotSubsystem, ElevatorLevel.low)
-            .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground))
-            .andThen(new InstantCommand(() -> DataLogManager.log("Pivot to Ground Start")))
-            .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.ground))
-            .andThen(new InstantCommand(() -> DataLogManager.log("Pivot to Ground Done"))));
+        new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
+            .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground)));
 
     // Create Paths
     autoMaps.addPath("8-1 Cube", new PathConstraints(2, 0.75));
