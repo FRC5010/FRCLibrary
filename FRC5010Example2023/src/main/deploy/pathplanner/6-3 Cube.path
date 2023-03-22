@@ -26,40 +26,15 @@
     },
     {
       "anchorPoint": {
-        "x": 1.7388297503867736,
-        "y": 4.418050199736763
-      },
-      "prevControl": {
-        "x": 2.774628842540009,
-        "y": 4.696237206960213
-      },
-      "nextControl": {
-        "x": 0.7030306582335379,
-        "y": 4.139863192513313
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 5.784446376585063,
+        "x": 5.6800001,
         "y": 4.6
       },
       "prevControl": {
-        "x": 5.436867940353569,
+        "x": 5.332421663768506,
         "y": 4.61829360190692
       },
       "nextControl": {
-        "x": 6.150573454993065,
+        "x": 6.046127178408002,
         "y": 4.580730153767999
       },
       "holonomicAngle": 0,
@@ -76,15 +51,15 @@
     },
     {
       "anchorPoint": {
-        "x": 6.574510072097068,
+        "x": 6.47,
         "y": 4.595858326332038
       },
       "prevControl": {
-        "x": 6.285462378617066,
+        "x": 6.180952306519997,
         "y": 4.576588480100038
       },
       "nextControl": {
-        "x": 6.285462378617066,
+        "x": 6.180952306519997,
         "y": 4.576588480100038
       },
       "holonomicAngle": 0,
@@ -93,10 +68,7 @@
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [
-          "PivotToMid",
-          "HomeElevator"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -104,16 +76,16 @@
     },
     {
       "anchorPoint": {
-        "x": 1.7177391273470128,
-        "y": 4.414086773965274
+        "x": 1.70722723848155,
+        "y": 4.3859569952642445
       },
       "prevControl": {
-        "x": 3.8092871378050464,
-        "y": 4.990890174088041
+        "x": 3.798775248939587,
+        "y": 4.962760395387011
       },
       "nextControl": {
-        "x": 1.4536987427766475,
-        "y": 4.341270185090244
+        "x": 1.4431868539111845,
+        "y": 4.3131404063892145
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -163,7 +135,7 @@
       ]
     },
     {
-      "position": 0.25,
+      "position": 0.55,
       "names": [
         "AutoGroundPickUp"
       ]
@@ -172,6 +144,12 @@
       "position": 1.5127272727271865,
       "names": [
         "IntakeLong"
+      ]
+    },
+    {
+      "position": 2.109090909090909,
+      "names": [
+        "Cube Retract"
       ]
     }
   ]

@@ -17,19 +17,20 @@ import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 public class SwervePose extends GenericPose {
     private final SwerveDrivePoseEstimator poseEstimator;
     private final SwerveModulePosition[] modulePositions;
-    private SwerveDrivetrain drivetrain; 
+    private SwerveDrivetrain drivetrain;
 
     public SwervePose(GenericGyro gyro, SwerveDriveKinematics kDriveKinematics, SwerveDrivetrain drivetrain) {
         super(gyro);
 
-        this.drivetrain = drivetrain; 
-        modulePositions = drivetrain.getModulePositions(); 
-        
-        poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, new Rotation2d(0), modulePositions, new Pose2d());
+        this.drivetrain = drivetrain;
+        modulePositions = drivetrain.getModulePositions();
+
+        poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, new Rotation2d(0), modulePositions,
+                new Pose2d());
         // poseEstimator.
     }
 
-    public SwervePose(GenericGyro gyro, SwerveDrivetrain drivetrain, SwerveDrivePoseEstimator poseEstimator){
+    public SwervePose(GenericGyro gyro, SwerveDrivetrain drivetrain, SwerveDrivePoseEstimator poseEstimator) {
         super(gyro);
         this.drivetrain = drivetrain;
         modulePositions = drivetrain.getModulePositions();
@@ -38,7 +39,7 @@ public class SwervePose extends GenericPose {
 
     @Override
     public void resetEncoders() {
-        drivetrain.resetEncoders(); 
+        drivetrain.resetEncoders();
     }
 
     @Override
@@ -53,12 +54,13 @@ public class SwervePose extends GenericPose {
 
     @Override
     public Pose2d getCurrentPose() {
-        //System.out.println(poseEstimator.getEstimatedPosition());
+        // System.out.println(poseEstimator.getEstimatedPosition());
         return poseEstimator.getEstimatedPosition();
     }
 
     public void resetToPose(Pose2d pose) {
-        poseEstimator.resetPosition(pose.getRotation(), modulePositions,pose);
+        gyro.reset();
+        poseEstimator.resetPosition(pose.getRotation(), modulePositions, pose);
         gyro.setAngle(pose.getRotation().getDegrees());
     }
 }

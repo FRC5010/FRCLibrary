@@ -27,15 +27,15 @@
     {
       "anchorPoint": {
         "x": 5.273795451437059,
-        "y": 0.89
+        "y": 0.94
       },
       "prevControl": {
         "x": 5.10408673508535,
-        "y": 0.89
+        "y": 0.94
       },
       "nextControl": {
         "x": 5.443504167788769,
-        "y": 0.89
+        "y": 0.94
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -68,10 +68,7 @@
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [
-          "PivotToMid",
-          "HomeElevator"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -127,8 +124,8 @@
       }
     }
   ],
-  "maxVelocity": 4.0,
-  "maxAcceleration": 1.0,
+  "maxVelocity": 3.0,
+  "maxAcceleration": 1.2,
   "isReversed": null,
   "markers": [
     {
@@ -138,7 +135,7 @@
       ]
     },
     {
-      "position": 1.7163636363636143,
+      "position": 1.55,
       "names": [
         "IntakeLong"
       ]
@@ -147,6 +144,12 @@
       "position": 0.640000000000005,
       "names": [
         "AutoGroundPickUp"
+      ]
+    },
+    {
+      "position": 2.1454545454545473,
+      "names": [
+        "Cube Retract"
       ]
     }
   ]

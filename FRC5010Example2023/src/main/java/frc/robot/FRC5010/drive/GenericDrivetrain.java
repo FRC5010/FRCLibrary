@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -65,8 +66,12 @@ public abstract class GenericDrivetrain extends SubsystemBase {
         SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
     }
 
+    public void resetOrientation() {
+        poseEstimator.resetToPose(new Pose2d(poseEstimator.getCurrentPose().getTranslation(), new Rotation2d()));
+    }
+
     public void lockWheels() {
-    };
+    }
 
     public Command createDefaultCommand(Controller driver) {
         return new DefaultDriveCommand(this,

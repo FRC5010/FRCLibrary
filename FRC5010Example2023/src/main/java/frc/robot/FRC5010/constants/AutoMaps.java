@@ -23,7 +23,7 @@ public class AutoMaps {
     public AutoMaps() {
         eventMap = new HashMap<String, Command>();
         paths = new HashMap<String, List<PathPlannerTrajectory>>();
-        // PathPlannerServer.startServer(5811);
+        PathPlannerServer.startServer(5811);
     }
 
     public HashMap<String, Command> getEventMap() {

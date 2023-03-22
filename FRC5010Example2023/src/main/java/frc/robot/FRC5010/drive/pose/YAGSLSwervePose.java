@@ -4,24 +4,19 @@
 
 package frc.robot.FRC5010.drive.pose;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import swervelib.math.SwerveKinematics2;
 
 /** Add your docs here. */
 public class YAGSLSwervePose extends GenericPose {
-    private SwerveDrivePoseEstimator poseEstimator; 
-    private YAGSLSwerveDrivetrain drivetrain; 
+    private YAGSLSwerveDrivetrain drivetrain;
 
-
-    public YAGSLSwervePose(GenericGyro gyro, SwerveKinematics2 kinematics, YAGSLSwerveDrivetrain drivetrain){
-        super(gyro); 
- 
-        poseEstimator = new SwerveDrivePoseEstimator(kinematics, getGyroRotation2d(), drivetrain.getModulePositions(), new Pose2d());
+    public YAGSLSwervePose(GenericGyro gyro, YAGSLSwerveDrivetrain drivetrain) {
+        super(gyro);
+        this.drivetrain = drivetrain;
     }
-    
+
     @Override
     public void resetEncoders() {
         drivetrain.resetEncoders();
@@ -29,26 +24,24 @@ public class YAGSLSwervePose extends GenericPose {
 
     @Override
     public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
-        poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
-        
+        drivetrain.updateVisionMeasurements(robotPose, imageCaptureTime);
     }
 
     @Override
     public void updateLocalMeasurements() {
-        poseEstimator.update(getGyroRotation2d(), drivetrain.getModulePositions());
-        
+        drivetrain.updateOdometry();
+
     }
 
     @Override
     public Pose2d getCurrentPose() {
-        return poseEstimator.getEstimatedPosition();
+        return drivetrain.getPose();
     }
 
     @Override
     public void resetToPose(Pose2d pose) {
-        poseEstimator.resetPosition(pose.getRotation(), drivetrain.getModulePositions(), pose);
-        gyro.setAngle(pose.getRotation().getDegrees());
+        drivetrain.zeroGyro();
+        drivetrain.resetOdometry(pose);
     }
 
-    
 }

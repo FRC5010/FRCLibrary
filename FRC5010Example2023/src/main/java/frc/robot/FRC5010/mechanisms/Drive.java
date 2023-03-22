@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.DrivePorts;
@@ -185,7 +186,7 @@ public class Drive extends GenericMechanism {
         // .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
         driver.createLeftBumper().onTrue(new InstantCommand(() -> drivetrain.toggleFieldOrientedDrive()));
-        driver.createStartButton().onTrue(new InstantCommand(() -> gyro.reset()));
+        driver.createStartButton().onTrue(new InstantCommand(() -> drivetrain.resetOrientation()));
     }
 
     public GenericDrivetrain getDrivetrain() {
@@ -343,7 +344,10 @@ public class Drive extends GenericMechanism {
 
         for (String name : paths.keySet()) {
             List<PathPlannerTrajectory> path = paths.get(name);
-            commands.put(name, autoBuilder.fullAuto(path).beforeStarting(() -> drivetrain.resetEncoders()));
+            commands.put(name, autoBuilder.fullAuto(path).beforeStarting(() -> {
+                drivetrain.resetEncoders();
+                drivetrain.resetOrientation();
+            }));
         }
 
         return commands;

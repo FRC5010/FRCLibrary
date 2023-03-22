@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -152,6 +151,7 @@ public class CompBot extends GenericMechanism {
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
     autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
+
     autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium)
         .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
 
@@ -159,13 +159,17 @@ public class CompBot extends GenericMechanism {
         new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
             .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground)));
 
+    autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
+        .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
+            .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem))));
+
     // Create Paths
-    autoMaps.addPath("8-1 Cube", new PathConstraints(2, 0.75));
-    autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
-    autoMaps.addPath("6-3 Cube Good", new PathConstraints(2, 0.75));
-    autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.75, 1));
-    autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.75, 1));
-    autoMaps.addPath("Bal Over 7-2 Cube Slow", new PathConstraints(1.75, 1));
+    autoMaps.addPath("8-1 Cube", new PathConstraints(2, 1.2));
+    autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
+    autoMaps.addPath("Bal Direct 7-2", new PathConstraints(1.75, 1));
+    autoMaps.addPath("Bal Over 7-2", new PathConstraints(1.75, 1));
+    autoMaps.addPath("Bal Over 7-2 Slow", new PathConstraints(1.75, 1));
+    autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
     autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
     // autoMaps.addPath("Command Test", new PathConstraints(1.5, .75));
   }

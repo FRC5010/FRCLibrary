@@ -29,6 +29,7 @@ import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
+import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.commands.JoystickToSwerve;
@@ -52,12 +53,11 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }
-    poseEstimator = new DrivetrainPoseEstimator(new SwervePose(gyro, this, swerveDrive.swerveDrivePoseEstimator),
-        visionSystem);
+    poseEstimator = new DrivetrainPoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
 
     // swerveDrive.setModuleStates();
-    powerDistributionHub = new PowerDistribution(1, ModuleType.kRev);
+    // powerDistributionHub = new PowerDistribution(1, ModuleType.kRev);
   }
 
   public Command createDefaultCommand(Controller driverXbox) {
@@ -118,17 +118,17 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.updateOdometry();
     poseEstimator.update();
 
-    SmartDashboard.putNumber("FL Wheel Current",
-        powerDistributionHub.getCurrent(1));
+    // SmartDashboard.putNumber("FL Wheel Current",
+    // powerDistributionHub.getCurrent(1));
 
-    SmartDashboard.putNumber("FR Wheel Current",
-        powerDistributionHub.getCurrent(18));
+    // SmartDashboard.putNumber("FR Wheel Current",
+    // powerDistributionHub.getCurrent(18));
 
-    SmartDashboard.putNumber("BL Wheel Current",
-        powerDistributionHub.getCurrent(3));
+    // SmartDashboard.putNumber("BL Wheel Current",
+    // powerDistributionHub.getCurrent(3));
 
-    SmartDashboard.putNumber("BR Wheel Current",
-        powerDistributionHub.getCurrent(15));
+    // SmartDashboard.putNumber("BR Wheel Current",
+    // powerDistributionHub.getCurrent(15));
   }
 
   @Override
@@ -157,6 +157,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.resetOdometry(initialHolonomicPose);
   }
 
+  public void updateOdometry() {
+    swerveDrive.updateOdometry();
+  }
+
   /**
    * Gets the current pose (position and rotation) of the robot, as reported by
    * odometry.
@@ -183,6 +187,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    */
   public void postTrajectory(Trajectory trajectory) {
     swerveDrive.postTrajectory(trajectory);
+  }
+
+  public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
+    swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime, true, 1);
   }
 
   /**
