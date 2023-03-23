@@ -1,8 +1,5 @@
 {
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
     "Retained Values": {
       "open": false
     },
@@ -80,6 +77,7 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/LED Orange": "Command",
       "/SmartDashboard/Orange Blink": "Command",
+      "/SmartDashboard/Pigeon 2 [11]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
       "/SmartDashboard/Scheduler": "Scheduler",

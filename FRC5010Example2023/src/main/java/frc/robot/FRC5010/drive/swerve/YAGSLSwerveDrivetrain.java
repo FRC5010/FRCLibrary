@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -40,6 +41,7 @@ import swervelib.parser.SwerveParser;
 /** Add your docs here. */
 public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   private SwerveDrive swerveDrive;
+  private ChassisSpeeds chassisSpeeds;
   private PowerDistribution powerDistributionHub;
 
   public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants,
@@ -103,6 +105,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    */
 
   public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+
     swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop);
   }
 
@@ -308,6 +311,15 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   @Override
   public void drive(ChassisSpeeds direction) {
+
+    chassisSpeeds = direction; // for driving in simulation
+    Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * 0.02,
+        direction.vyMetersPerSecond * 0.02,
+        Rotation2d.fromRadians(direction.omegaRadiansPerSecond * 0.02));
+    Twist2d twistVel = getPoseEstimator().getCurrentPose().log(robotPoseVel);
+    chassisSpeeds = new ChassisSpeeds(twistVel.dx / 0.02, twistVel.dy / 0.02,
+        twistVel.dtheta / 0.02);
+
     setChassisSpeeds(direction);
 
     SmartDashboard.putNumber("Robot Vel X", getRobotVelocity().vxMetersPerSecond);

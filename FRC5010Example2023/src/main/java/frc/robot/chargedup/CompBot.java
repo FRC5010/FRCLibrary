@@ -207,14 +207,17 @@ public class CompBot extends GenericMechanism {
     // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
     // ledSubsystem, LCR.right));
 
-    driver.createBButton()
-        .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.left, swerveConstants));
+    // driver.createBButton()
+    // .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(),
+    // LCR.left, swerveConstants));
 
-    driver.createAButton()
-        .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.center, swerveConstants));
+    // driver.createAButton()
+    // .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(),
+    // LCR.center, swerveConstants));
 
-    driver.createXButton()
-        .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(), LCR.right, swerveConstants));
+    // driver.createXButton()
+    // .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(),
+    // LCR.right, swerveConstants));
 
     driver.createBackButton().onTrue(new InstantCommand(() -> drive.getDrivetrain().resetEncoders()));
 

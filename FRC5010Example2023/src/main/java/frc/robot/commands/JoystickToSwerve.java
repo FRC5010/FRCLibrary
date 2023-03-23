@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
+import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 
 public class JoystickToSwerve extends CommandBase {
   /** Creates a new JoystickToSwerve. */
