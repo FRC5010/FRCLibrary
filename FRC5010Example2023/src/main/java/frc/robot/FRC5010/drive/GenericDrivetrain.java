@@ -4,7 +4,7 @@
 
 package frc.robot.FRC5010.drive;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
 
@@ -56,7 +56,7 @@ public abstract class GenericDrivetrain extends SubsystemBase {
         // lockWheels();
     }
 
-    public abstract BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap);
+    public abstract BaseAutoBuilder setAutoBuilder(Map<String, Command> eventMap);
 
     public void disabledBehavior() {
     }

@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
-//import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -39,7 +43,7 @@ import frc.robot.chargedup.CompBot;
  */
 public class RobotContainer extends GenericMechanism {
   // The robot's subsystems and commands are defined here...
-  private SendableChooser<Command> command = new SendableChooser<>();
+  private SendableChooser<List<PathPlannerTrajectory>> command = new SendableChooser<>();
   private Controller driver;
   private Controller operator;
   private static Alliance alliance;
@@ -94,9 +98,9 @@ public class RobotContainer extends GenericMechanism {
       /**
        * TODO: Initialize expected vision subsystem
        */
-      // DataLogManager.start();
-      // DriverStation.startDataLog(DataLogManager.getLog());
-      // DataLogManager.logNetworkTables(true);
+      DataLogManager.start();
+      DriverStation.startDataLog(DataLogManager.getLog(), false);
+      DataLogManager.logNetworkTables(true);
     } else {
       NetworkTableInstance instance = NetworkTableInstance.getDefault();
       instance.stopServer();
@@ -178,13 +182,13 @@ public class RobotContainer extends GenericMechanism {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return command.getSelected();
+    return generateAutoCommand(command.getSelected());
   }
 
   @Override
-  public Map<String, Command> initAutoCommands() {
-    Map<String, Command> autoCommands = robot.initAutoCommands();
-    command.setDefaultOption("Do nothing auto", new InstantCommand(() -> System.out.println("Auto Ran")));
+  public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
+    Map<String, List<PathPlannerTrajectory>> autoCommands = robot.initAutoCommands();
+    command.setDefaultOption("Do nothing auto", new ArrayList<>());
     if (null != autoCommands) {
       for (String name : autoCommands.keySet()) {
         command.addOption(name, autoCommands.get(name));
@@ -219,5 +223,10 @@ public class RobotContainer extends GenericMechanism {
 
   public void disabledBehavior() {
     robot.disabledBehavior();
+  }
+
+  @Override
+  public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+    return robot.generateAutoCommand(command.getSelected());
   }
 }

@@ -5,8 +5,8 @@
 package frc.robot.FRC5010.drive;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
 
@@ -79,7 +79,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
 
     setDrivetrainPoseEstimator(
         new DrivetrainPoseEstimator(
-            new DifferentialPose(diffKinematics, gyro, leftEncoder, rightEncoder), vision));    
+            new DifferentialPose(diffKinematics, gyro, leftEncoder, rightEncoder), vision));
     diffDrive = new DifferentialDrive(left.getMotor(), right.getMotor());
   }
 
@@ -139,8 +139,8 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
         // l and r position: 0.005 m
         VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
-        leftEncoder = new SimulatedEncoder(10, 11);
-        rightEncoder = new SimulatedEncoder(12, 13);
+    leftEncoder = new SimulatedEncoder(10, 11);
+    rightEncoder = new SimulatedEncoder(12, 13);
   }
 
   /** Update our simulation. This should be run every robot loop in simulation. */
@@ -163,7 +163,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
   }
 
   @Override
-  public BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap) {
+  public BaseAutoBuilder setAutoBuilder(Map<String, Command> eventMap) {
     // TODO Auto-generated method stub
     return null;
   }

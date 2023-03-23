@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
-//import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;
@@ -26,7 +26,7 @@ public class MoveElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // DataLogManager.log(getName());
+    DataLogManager.log(getName() + " " + elevatorLevel.get().name());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,7 +43,7 @@ public class MoveElevator extends CommandBase {
     // } else {
     // elevator.stopAndHoldExtend();
     // }
-    // DataLogManager.log(getName() + " ended " + interrupted);
+    DataLogManager.log(getName() + " ended " + interrupted);
 
     elevator.stopAndHoldExtend();
   }

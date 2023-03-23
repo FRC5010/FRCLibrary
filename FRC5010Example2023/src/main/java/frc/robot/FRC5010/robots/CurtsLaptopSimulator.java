@@ -11,6 +11,8 @@ import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -34,12 +36,14 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
-/** To setup a copy of this class
+/**
+ * To setup a copy of this class
  * Copy to a new class and rename the constructor
  * In RobotFactory add constants and a switch-case for your class
  * Start PhotonVision and get the camera name (java -jar photonvision.jar)
  * Start the robot simulation
- * In Glass - find the NetworkTables->Preferences->WhoAmI and set it to your robot name
+ * In Glass - find the NetworkTables->Preferences->WhoAmI and set it to your
+ * robot name
  * Also change the LaptopCamera name from photon vision
  * Stop the simulator, restart and it should start your robot code
  */
@@ -52,8 +56,8 @@ public class CurtsLaptopSimulator extends GenericMechanism {
         swerveConstants = new SwerveConstants(0.76835, 0.635);
         swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
         swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
-        swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0+Math.PI);
-        swerveConstants.setkBackRightAbsoluteOffsetRad(0.21+Math.PI);
+        swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0 + Math.PI);
+        swerveConstants.setkBackRightAbsoluteOffsetRad(0.21 + Math.PI);
         swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
         swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
         swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
@@ -61,13 +65,14 @@ public class CurtsLaptopSimulator extends GenericMechanism {
         swerveConstants.setSwerveModuleConstants(ThriftySwerveModule.moduleConstants);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO550.MAXRPM);
 
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, 
-            AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
+        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1,
+                AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
         multiVision.addPhotonCamera(Persisted.stringVal(VisionConstantDefs.LAPTOP_CAMERA),
-                new Transform3d( 
-            // This describes the vector between the camera lens to the robot center on the ground
-                    new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
-                    new Rotation3d(0, Units.degreesToRadians(-20), 0)));
+                new Transform3d(
+                        // This describes the vector between the camera lens to the robot center on the
+                        // ground
+                        new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+                        new Rotation3d(0, Units.degreesToRadians(-20), 0)));
         List<SwervePorts> swervePorts = new ArrayList<>();
         swervePorts.add(new SwervePorts(1, 2, 0));
         swervePorts.add(new SwervePorts(7, 8, 1));
@@ -94,7 +99,12 @@ public class CurtsLaptopSimulator extends GenericMechanism {
     }
 
     @Override
-    public Map<String, Command> initAutoCommands() {
+    public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
         return new HashMap<>();
+    }
+
+    @Override
+    public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+        return drive.generateAutoCommand(paths);
     }
 }

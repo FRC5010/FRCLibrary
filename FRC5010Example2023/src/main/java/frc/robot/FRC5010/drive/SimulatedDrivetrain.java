@@ -4,7 +4,7 @@
 
 package frc.robot.FRC5010.drive;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
 
@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SimulatedPose;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -39,7 +39,7 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
 
         driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, Integer.class);
         driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, Integer.class);
-    
+
         Integer centerH = driveVisualH.getInteger() / 2;
         Integer centerV = driveVisualV.getInteger() / 2;
 
@@ -51,8 +51,8 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
     public void drive(ChassisSpeeds chassisSpeeds) {
         Pose2d pose = poseEstimator.getCurrentPose();
         Transform2d direction = new Transform2d(
-            new Translation2d(chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02), 
-            new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
+                new Translation2d(chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
+                new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
         pose = pose.transformBy(direction);
         poseEstimator.resetToPose(pose);
 
@@ -66,7 +66,7 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
     }
 
     @Override
-    public BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap) {
+    public BaseAutoBuilder setAutoBuilder(Map<String, Command> eventMap) {
         // TODO Auto-generated method stub
         return null;
     }

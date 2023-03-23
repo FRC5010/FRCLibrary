@@ -5,7 +5,7 @@
 package frc.robot.FRC5010.drive.swerve;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
@@ -21,14 +21,12 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
-import frc.robot.FRC5010.drive.pose.SwervePose;
 import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -298,7 +296,6 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    */
   @Override
   public void lockWheels() {
-    System.out.println("YagslLock");
     swerveDrive.lockPose();
   }
 
@@ -331,7 +328,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   }
 
-  public BaseAutoBuilder setAutoBuilder(HashMap<String, Command> eventMap) {
+  public BaseAutoBuilder setAutoBuilder(Map<String, Command> eventMap) {
     return new SwerveAutoBuilder(
         () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
         (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the

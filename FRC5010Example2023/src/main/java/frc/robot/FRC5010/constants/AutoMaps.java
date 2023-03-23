@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** Add your docs here. */
 public class AutoMaps {
-    protected HashMap<String, Command> eventMap;
+    protected Map<String, Command> eventMap;
     protected Map<String, List<PathPlannerTrajectory>> paths;
 
     public AutoMaps() {
@@ -26,7 +26,7 @@ public class AutoMaps {
         PathPlannerServer.startServer(5811);
     }
 
-    public HashMap<String, Command> getEventMap() {
+    public Map<String, Command> getEventMap() {
         return eventMap;
     }
 

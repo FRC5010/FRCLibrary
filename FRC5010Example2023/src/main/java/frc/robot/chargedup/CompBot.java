@@ -11,11 +11,13 @@ import java.util.Map;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -126,9 +128,9 @@ public class CompBot extends GenericMechanism {
     PivotSubsystem pivotSubsystem = ((ChargedUpMech) elevator).getPivotSubsystem();
 
     // Elevator Controls
-    autoMaps.addMarker("ExtendToPivotPosition",
-        new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.low));
+    autoMaps.addMarker("ExtendToPivotPosition", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.low));
     autoMaps.addMarker("HomeElevator", new HomeElevator(elevatorSubsystem, pivotSubsystem));
+
     autoMaps.addMarker("ExtendToGround",
         new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground));
     autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem,
@@ -144,22 +146,26 @@ public class CompBot extends GenericMechanism {
     // Intake Controls
     autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
     autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
+    autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -1.0).withTimeout(0.25));
     autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
     autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
     autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
     autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
-    autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
+    autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels())
+        .beforeStarting(new InstantCommand(() -> DataLogManager.log("Lock Wheels"))));
 
     autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium)
         .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
 
     autoMaps.addMarker("AutoGroundPickUp",
         new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
+            .beforeStarting(new InstantCommand(() -> DataLogManager.log("AutoGroundPickUp")))
             .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground)));
 
     autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
+        .beforeStarting(new InstantCommand(() -> DataLogManager.log("Cube Retract")))
         .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
             .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem))));
 
@@ -174,7 +180,7 @@ public class CompBot extends GenericMechanism {
     // autoMaps.addPath("Command Test", new PathConstraints(1.5, .75));
   }
 
-  public Map<String, Command> setAutoCommands() {
+  public Map<String, List<PathPlannerTrajectory>> setAutoCommands() {
     return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap());
   }
 
@@ -227,11 +233,16 @@ public class CompBot extends GenericMechanism {
   }
 
   @Override
-  public Map<String, Command> initAutoCommands() {
+  public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
     return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap());
   }
 
   public void disabledBehavior() {
     drive.disabledBehavior();
+  }
+
+  @Override
+  public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+    return drive.generateAutoCommand(paths);
   }
 }

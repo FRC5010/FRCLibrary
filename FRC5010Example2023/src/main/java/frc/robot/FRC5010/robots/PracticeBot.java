@@ -8,23 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
-import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -42,6 +36,7 @@ import frc.robot.chargedup.DriverDisplaySubsystem;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPosition;
 import frc.robot.commands.DriveToPosition.LCR;
+import frc.robot.commands.LogCommand;
 
 /** Add your docs here. */
 public class PracticeBot extends GenericMechanism {
@@ -103,34 +98,37 @@ public class PracticeBot extends GenericMechanism {
 
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
-    autoMaps.addMarker("ExtendToPivotPosition", new PrintCommand("ExtendToPivotPosition"));
-    autoMaps.addMarker("HomeElevator", new PrintCommand("HomeElevator"));
-    autoMaps.addMarker("PivotToGround", new PrintCommand("PivotToGround"));
-    autoMaps.addMarker("PivotToLow", new PrintCommand("PivotToLow"));
-    autoMaps.addMarker("PivotToMid", new PrintCommand("PivotToMid"));
+    autoMaps.addMarker("ExtendToPivotPosition", new LogCommand("ExtendToPivotPosition"));
+    autoMaps.addMarker("HomeElevator", new LogCommand("HomeElevator"));
+    autoMaps.addMarker("PivotToGround", new LogCommand("PivotToGround"));
+    autoMaps.addMarker("PivotToLow", new LogCommand("PivotToLow"));
+    autoMaps.addMarker("PivotToMid", new LogCommand("PivotToMid"));
     autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
+    autoMaps.addMarker("Yeet Cube", new LogCommand("Cube has been yeeted"));
     // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
     // ElevatorLevel.high));
-    autoMaps.addMarker("HomePivot", new PrintCommand("HomePivot"));
+    autoMaps.addMarker("HomePivot", new LogCommand("HomePivot"));
 
     // Intake Controls
-    autoMaps.addMarker("ConeMode", new PrintCommand("ConeMode"));
-    autoMaps.addMarker("CubeMode", new PrintCommand("CubeMode"));
-    autoMaps.addMarker("Outtake", (new PrintCommand("Outtake")));
-    autoMaps.addMarker("Intake", (new PrintCommand("Intake")));
+    autoMaps.addMarker("ConeMode", new LogCommand("ConeMode"));
+    autoMaps.addMarker("CubeMode", new LogCommand("CubeMode"));
+    autoMaps.addMarker("Outtake", new LogCommand("Outtake"));
+    autoMaps.addMarker("Intake", new LogCommand("Intake"));
 
     // Drivetrain Controls
-    autoMaps.addMarker("AutoExtendDrop", new PrintCommand("AutoExtendDrop"));
+    autoMaps.addMarker("AutoExtendDrop", new LogCommand("AutoExtendDrop"));
     // Create
     // autoMaps.addPath("8-1 Cube", new PathConstraints(4, 3));
     // autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
     // autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1));
     autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
     autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
+    autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
+
   }
 
   @Override
-  public Map<String, Command> initAutoCommands() {
+  public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
     return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap());
   }
 
@@ -164,5 +162,10 @@ public class PracticeBot extends GenericMechanism {
 
   @Override
   protected void initRealOrSim() {
+  }
+
+  @Override
+  public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+    return drive.generateAutoCommand(paths);
   }
 }

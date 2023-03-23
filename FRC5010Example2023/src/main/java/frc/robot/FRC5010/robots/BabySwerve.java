@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -28,61 +30,69 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
 public class BabySwerve extends GenericMechanism {
-    private SwerveConstants swerveConstants;
-    private VisionSystem vision;
-    private Drive drive;
-    
-    public BabySwerve(Mechanism2d visual, ShuffleboardTab displayTab) {
-      super(visual, displayTab);
-      swerveConstants = new SwerveConstants(0.76835, 0.635);
-      swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
-      swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
-      swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0+Math.PI);
-      swerveConstants.setkBackRightAbsoluteOffsetRad(0.21+Math.PI);
-      swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
-      swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
-      swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
-      swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
-      swerveConstants.setSwerveModuleConstants(ThriftySwerveModule.moduleConstants);
-      swerveConstants.configureSwerve(NEO.MAXRPM, NEO550.MAXRPM);
+  private SwerveConstants swerveConstants;
+  private VisionSystem vision;
+  private Drive drive;
 
-        //VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
-        vision = new VisionLimeLightLib("orange", 0, 0, 0, 0, "Driver");
-        /*multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera", 
-          new Transform3d( // This describes the vector between the camera lens to the robot center on the ground
-            new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)), 
-            new Rotation3d(0, Units.degreesToRadians(-20), 0)
-          )
-        );*/
+  public BabySwerve(Mechanism2d visual, ShuffleboardTab displayTab) {
+    super(visual, displayTab);
+    swerveConstants = new SwerveConstants(0.76835, 0.635);
+    swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
+    swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
+    swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0 + Math.PI);
+    swerveConstants.setkBackRightAbsoluteOffsetRad(0.21 + Math.PI);
+    swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
+    swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+    swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
+    swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+    swerveConstants.setSwerveModuleConstants(ThriftySwerveModule.moduleConstants);
+    swerveConstants.configureSwerve(NEO.MAXRPM, NEO550.MAXRPM);
 
-        List<SwervePorts> swervePorts = new ArrayList<>();
-        swervePorts.add(new SwervePorts(1, 2, 0));
-        swervePorts.add(new SwervePorts(7, 8, 1));
-        swervePorts.add(new SwervePorts(3, 4, 2));
-        swervePorts.add(new SwervePorts(5, 6, 3));
+    // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1,
+    // AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
+    vision = new VisionLimeLightLib("orange", 0, 0, 0, 0, "Driver");
+    /*
+     * multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera",
+     * new Transform3d( // This describes the vector between the camera lens to the
+     * robot center on the ground
+     * new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+     * new Rotation3d(0, Units.degreesToRadians(-20), 0)
+     * )
+     * );
+     */
 
-        GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
+    List<SwervePorts> swervePorts = new ArrayList<>();
+    swervePorts.add(new SwervePorts(1, 2, 0));
+    swervePorts.add(new SwervePorts(7, 8, 1));
+    swervePorts.add(new SwervePorts(3, 4, 2));
+    swervePorts.add(new SwervePorts(5, 6, 3));
 
-        drive = new Drive(vision, gyro, Drive.Type.YAGSL_THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
-//        multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
-    }
+    GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-    @Override
-    public void configureButtonBindings(Controller driver, Controller operator) {
-    }
+    drive = new Drive(vision, gyro, Drive.Type.YAGSL_THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
+    // multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
+  }
 
-    @Override
-    public void setupDefaultCommands(Controller driver, Controller operator) {
-      drive.setupDefaultCommands(driver, operator);
-    }
+  @Override
+  public void configureButtonBindings(Controller driver, Controller operator) {
+  }
 
-    @Override
-    protected void initRealOrSim() {
-    }
+  @Override
+  public void setupDefaultCommands(Controller driver, Controller operator) {
+    drive.setupDefaultCommands(driver, operator);
+  }
 
-    @Override
-    public Map<String, Command> initAutoCommands() {
-          return new HashMap<>();
-    }
+  @Override
+  protected void initRealOrSim() {
+  }
+
+  @Override
+  public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
+    return new HashMap<>();
+  }
+
+  @Override
+  public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+    return drive.generateAutoCommand(paths);
+  }
 }
-

@@ -7,7 +7,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5794858446029045,
+        "x": 2.5768928810584892,
         "y": 2.769252083958714
       },
       "holonomicAngle": 180.0,
@@ -80,12 +80,12 @@
         "y": 2.8
       },
       "prevControl": {
-        "x": 5.658652413413118,
-        "y": 2.841980997667579
+        "x": 5.628531828656335,
+        "y": 2.8
       },
       "nextControl": {
-        "x": 5.658652413413118,
-        "y": 2.841980997667579
+        "x": 5.628531828656335,
+        "y": 2.8
       },
       "holonomicAngle": -90.0,
       "isReversal": true,
@@ -104,21 +104,49 @@
     },
     {
       "anchorPoint": {
-        "x": 4.0,
-        "y": 2.8
+        "x": 5.5,
+        "y": 2.7965802295240962
       },
       "prevControl": {
-        "x": 3.8150084798642157,
-        "y": 2.8
+        "x": 5.315008479864216,
+        "y": 2.7965802295240962
       },
-      "nextControl": null,
-      "holonomicAngle": -90.0,
+      "nextControl": {
+        "x": 5.684991520135784,
+        "y": 2.7965802295240962
+      },
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
+          "AutoBalance"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 3.9,
+        "y": 2.8
+      },
+      "prevControl": {
+        "x": 3.2964240070636484,
+        "y": 2.8
+      },
+      "nextControl": null,
+      "holonomicAngle": -180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Yeet Cube",
           "AutoBalance"
         ],
         "executionBehavior": "parallel",

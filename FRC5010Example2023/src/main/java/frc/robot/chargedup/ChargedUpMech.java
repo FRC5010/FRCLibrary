@@ -5,7 +5,10 @@
 package frc.robot.chargedup;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -79,11 +82,16 @@ public class ChargedUpMech extends GenericMechanism {
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
 
+                // Move to current extend level
                 buttonOperator.getButton(1)
                                 .whileTrue(new MoveElevator(elevatorSubsystem, () -> elevatorLevel));
 
+                operator.createUpPovButton().whileTrue(new MoveElevator(elevatorSubsystem, () -> elevatorLevel));
+
                 buttonOperator.getButton(2)
                                 .whileTrue(new HomeElevator(elevatorSubsystem, pivotSubsystem));
+
+                operator.createDownPovButton().whileTrue(new HomeElevator(elevatorSubsystem, pivotSubsystem));
 
                 buttonOperator.getButton(6)
                                 .onTrue(
@@ -95,6 +103,15 @@ public class ChargedUpMech extends GenericMechanism {
 
                                                 ));
 
+                operator.createAButton().onTrue(
+                                new SequentialCommandGroup(
+                                                new InstantCommand(() -> {
+                                                        elevatorLevel = ElevatorLevel.ground;
+                                                }),
+                                                new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
+
+                                ));
+
                 buttonOperator.getButton(5)
                                 .onTrue(
                                                 new SequentialCommandGroup(
@@ -104,6 +121,14 @@ public class ChargedUpMech extends GenericMechanism {
 
                                                 ));
 
+                operator.createXButton().onTrue(
+                                new SequentialCommandGroup(
+                                                new InstantCommand(
+                                                                () -> elevatorLevel = ElevatorLevel.loading),
+                                                new PivotElevator(pivotSubsystem, ElevatorLevel.loading)
+
+                                ));
+
                 buttonOperator.getButton(4)
                                 .onTrue(
                                                 new SequentialCommandGroup(
@@ -112,6 +137,13 @@ public class ChargedUpMech extends GenericMechanism {
                                                                 new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
 
                                                 ));
+                operator.createYButton().onTrue(
+                                new SequentialCommandGroup(
+                                                new InstantCommand(
+                                                                () -> elevatorLevel = ElevatorLevel.medium),
+                                                new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
+
+                                ));
 
                 buttonOperator.getButton(3)
                                 .onTrue(
@@ -119,6 +151,12 @@ public class ChargedUpMech extends GenericMechanism {
                                                                 new InstantCommand(
                                                                                 () -> elevatorLevel = ElevatorLevel.high),
                                                                 new PivotElevator(pivotSubsystem, ElevatorLevel.high)));
+
+                operator.createBButton().onTrue(
+                                new SequentialCommandGroup(
+                                                new InstantCommand(
+                                                                () -> elevatorLevel = ElevatorLevel.high),
+                                                new PivotElevator(pivotSubsystem, ElevatorLevel.high)));
 
                 buttonOperator.getButton(7)
                                 .onTrue(new InstantCommand(() -> {
@@ -134,7 +172,15 @@ public class ChargedUpMech extends GenericMechanism {
                         intakeSubsystem.setIntakeCone();
                 }, intakeSubsystem));
 
+                operator.createLeftBumper().onTrue(new InstantCommand(() -> {
+                        intakeSubsystem.setIntakeCone();
+                }, intakeSubsystem));
+
                 buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {
+                        intakeSubsystem.setIntakeCube();
+                }, intakeSubsystem));
+
+                operator.createRightBumper().onTrue(new InstantCommand(() -> {
                         intakeSubsystem.setIntakeCube();
                 }, intakeSubsystem));
 
@@ -143,10 +189,16 @@ public class ChargedUpMech extends GenericMechanism {
 
                 buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
                 buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); // The deadzone isnt technically
-                                                                                      // necessary
-                                                                                      // but I have seen self movement
-                                                                                      // without
-                                                                                      // it
+
+                driver.setRightTrigger(driver.createRightTrigger());
+                driver.setLeftTrigger(driver.createLeftTrigger());
+
+                operator.setRightTrigger(operator.createRightTrigger());
+                operator.setLeftTrigger(operator.createLeftTrigger());
+                // necessary
+                // but I have seen self movement
+                // without
+                // it
 
                 // new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
                 // .onTrue(new ElevatorPower(elevatorSubsystem, () -> (buttonOperator.getXAxis()
@@ -159,16 +211,21 @@ public class ChargedUpMech extends GenericMechanism {
                 // );
 
                 new Trigger(() -> (Math
-                                .abs(driver.createRightTrigger().get() - driver.createLeftTrigger().get()) > 0.01))
+                                .abs(driver.getRightTrigger() - driver.getLeftTrigger()) > 0.01))
                                 .whileTrue(new IntakeSpin(intakeSubsystem,
-                                                () -> (driver.createRightTrigger().get()
-                                                                - driver.createLeftTrigger().get()) * 1));
+                                                () -> (driver.getRightTrigger()
+                                                                - driver.getLeftTrigger()) * 1));
+
+                new Trigger(() -> (Math
+                                .abs(operator.getRightTrigger()) > 0.01))
+                                .whileTrue(new IntakeSpin(intakeSubsystem,
+                                                () -> (operator.getRightTrigger() * -1)));
 
                 driver.createDownPovButton()
                                 .onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
                 operator.createBButton().onTrue(new HomePivot(pivotSubsystem));
-                operator.setRightYAxis(operator.createRightYAxis().deadzone(.2).negate());
+                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2).negate());
                 operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 
                 driver.createRightBumper().onTrue(new InstantCommand(() -> ledSubsystem.togglePickUp(), ledSubsystem));
@@ -220,7 +277,13 @@ public class ChargedUpMech extends GenericMechanism {
         }
 
         @Override
-        public Map<String, Command> initAutoCommands() {
+        public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
                 return new HashMap<>();
+        }
+
+        @Override
+        public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+                // TODO Auto-generated method stub
+                return null;
         }
 }

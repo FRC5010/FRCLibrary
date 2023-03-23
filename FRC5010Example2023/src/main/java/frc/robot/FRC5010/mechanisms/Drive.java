@@ -52,6 +52,7 @@ public class Drive extends GenericMechanism {
     private List<? extends DrivePorts> motorPorts;
     private Persisted<Double> maxChassisVelocity;
     private Persisted<Double> maxChassisRotation;
+    private BaseAutoBuilder autoBuilder;
 
     public static class Type {
         public static final String DIFF_DRIVE = "DifferentialDrive";
@@ -332,25 +333,29 @@ public class Drive extends GenericMechanism {
                 (SwerveConstants) driveConstants);
     }
 
-    public Map<String, Command> initAutoCommands() {
+    public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
         return new HashMap<>();
     }
 
-    public Map<String, Command> setAutoCommands(Map<String, List<PathPlannerTrajectory>> paths,
-            HashMap<String, Command> eventMap) {
+    public Map<String, List<PathPlannerTrajectory>> setAutoCommands(Map<String, List<PathPlannerTrajectory>> paths,
+            Map<String, Command> eventMap) {
 
-        Map<String, Command> commands = new HashMap<>();
-        BaseAutoBuilder autoBuilder = drivetrain.setAutoBuilder(eventMap);
+        Map<String, List<PathPlannerTrajectory>> commands = new HashMap<>();
+        autoBuilder = drivetrain.setAutoBuilder(eventMap);
 
         for (String name : paths.keySet()) {
             List<PathPlannerTrajectory> path = paths.get(name);
-            commands.put(name, autoBuilder.fullAuto(path).beforeStarting(() -> {
-                drivetrain.resetEncoders();
-                drivetrain.resetOrientation();
-            }));
+            commands.put(name, path);
         }
 
         return commands;
+    }
+
+    public Command generateAutoCommand(List<PathPlannerTrajectory> path) {
+        return autoBuilder.fullAuto(path).beforeStarting(() -> {
+            drivetrain.resetEncoders();
+            drivetrain.resetOrientation();
+        });
     }
 
     public void disabledBehavior() {

@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -44,7 +45,7 @@ public class DefaultRobot extends GenericMechanism {
 
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
-        
+
     }
 
     @Override
@@ -57,7 +58,12 @@ public class DefaultRobot extends GenericMechanism {
     }
 
     @Override
-    public Map<String, Command> initAutoCommands() {
+    public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
         return new HashMap<>();
+    }
+
+    @Override
+    public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+        return drive.generateAutoCommand(paths);
     }
 }

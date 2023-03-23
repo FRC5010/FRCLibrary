@@ -4,7 +4,10 @@
 
 package frc.robot.FRC5010.mechanisms;
 
+import java.util.List;
 import java.util.Map;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -65,7 +68,9 @@ public abstract class GenericMechanism {
 
     }
 
-    public abstract Map<String, Command> initAutoCommands();
+    public abstract Map<String, List<PathPlannerTrajectory>> initAutoCommands();
+
+    public abstract Command generateAutoCommand(List<PathPlannerTrajectory> paths);
 
     public void disabledBehavior() {
 
