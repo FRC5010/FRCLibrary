@@ -23,7 +23,7 @@ public class PivotElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    DataLogManager.log(getName() + " " + elevatorLevel.name());
+    // DataLogManager.log(getName() + " " + elevatorLevel.name());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -36,7 +36,7 @@ public class PivotElevator extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    DataLogManager.log(getName() + " ended " + interrupted);
+    // DataLogManager.log(getName() + " ended " + interrupted);
     pivotSubsystem.stopAndHoldPivot();
   }
 

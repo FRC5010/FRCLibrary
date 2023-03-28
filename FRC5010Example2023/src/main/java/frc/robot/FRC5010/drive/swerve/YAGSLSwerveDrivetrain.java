@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
@@ -312,15 +313,17 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   @Override
   public void drive(ChassisSpeeds direction) {
 
-    chassisSpeeds = direction; // for driving in simulation
-    Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * 0.02,
-        direction.vyMetersPerSecond * 0.02,
-        Rotation2d.fromRadians(direction.omegaRadiansPerSecond * 0.02));
-    Twist2d twistVel = getPoseEstimator().getCurrentPose().log(robotPoseVel);
-    chassisSpeeds = new ChassisSpeeds(twistVel.dx / 0.02, twistVel.dy / 0.02,
-        twistVel.dtheta / 0.02);
-
-    setChassisSpeeds(direction);
+    Translation2d currTranslation = getPoseEstimator().getCurrentPose().getTranslation();
+    if (!DriverStation.isAutonomous() ||
+        (currTranslation.getX() >= 0 && currTranslation.getY() >= 0) &&
+            (currTranslation.getX() <= 26 && currTranslation.getY() <= 27) &&
+            (!Double.isNaN(currTranslation.getX()) &&
+                !Double.isNaN(currTranslation.getY()))) {
+      setChassisSpeeds(direction);
+    } else {
+      System.err.println("******CRITICAL ERROR******: Pose Outside of Bounds " + currTranslation);
+      setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+    }
 
     SmartDashboard.putNumber("Robot Vel X", getRobotVelocity().vxMetersPerSecond);
     SmartDashboard.putNumber("Robot Vel Y", getRobotVelocity().vyMetersPerSecond);

@@ -26,7 +26,7 @@ public class IntakeSpin extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    DataLogManager.log(getName());
+    // DataLogManager.log(getName());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,7 +42,7 @@ public class IntakeSpin extends CommandBase {
   public void end(boolean interrupted) {
     this.intakeSubsystem.stopIntake();
 
-    DataLogManager.log(getName() + " ended. ");
+    // DataLogManager.log(getName() + " ended. ");
   }
 
   // Returns true when the command should end.

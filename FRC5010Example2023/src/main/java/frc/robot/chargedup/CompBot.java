@@ -153,30 +153,38 @@ public class CompBot extends GenericMechanism {
     autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
-    autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels())
-        .beforeStarting(new InstantCommand(() -> DataLogManager.log("Lock Wheels"))));
+    autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
+    // .beforeStarting(new InstantCommand(() -> DataLogManager.log("Lock
+    // Wheels"))));
 
     autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium)
         .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
 
     autoMaps.addMarker("AutoGroundPickUp",
         new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
-            .beforeStarting(new InstantCommand(() -> DataLogManager.log("AutoGroundPickUp")))
+            // .beforeStarting(new InstantCommand(() ->
+            // DataLogManager.log("AutoGroundPickUp")))
             .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground)));
 
     autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
-        .beforeStarting(new InstantCommand(() -> DataLogManager.log("Cube Retract")))
+        // .beforeStarting(new InstantCommand(() -> DataLogManager.log("Cube Retract")))
         .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
             .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem))));
 
     // Create Paths
-    autoMaps.addPath("8-1 Cube", new PathConstraints(2, 1.2));
     autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
-    autoMaps.addPath("Bal Direct 7-2", new PathConstraints(1.75, 1));
+    autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
+    autoMaps.addPath("6-3 Score", new PathConstraints(1.75, 1));
+
+    autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
     autoMaps.addPath("Bal Over 7-2", new PathConstraints(1.75, 1));
     autoMaps.addPath("Bal Over 7-2 Slow", new PathConstraints(1.75, 1));
-    autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
-    autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
+    autoMaps.addPath("Bal Direct 7-2", new PathConstraints(1.75, 1));
+
+    autoMaps.addPath("8-1 Cube", new PathConstraints(2, 1.2));
+    autoMaps.addPath("8-1 Cube Out", new PathConstraints(1.75, 1));
+    autoMaps.addPath("8-1 Score", new PathConstraints(1.75, 1));
+
     // autoMaps.addPath("Command Test", new PathConstraints(1.5, .75));
   }
 
@@ -187,7 +195,7 @@ public class CompBot extends GenericMechanism {
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
     driver.createYButton()
-        .whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createLeftBumper().getAsBoolean(), gyro));
+        .whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createAButton().getAsBoolean(), gyro));
 
     // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
     // drive.getDrivetrain(),

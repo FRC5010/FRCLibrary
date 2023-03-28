@@ -76,6 +76,7 @@ public class PivotSubsystem extends SubsystemBase {
     pivotController.setFeedbackDevice(pivotEncoder);
     pivotController.setOutputRange(-1, 1);
 
+    pivotEncoder.setPosition(ElevatorLevel.medium.getPivotPosition());
     // TODO Set FF and IZ
     pivotController.setFF(0);
     pivotController.setIZone(kIz);

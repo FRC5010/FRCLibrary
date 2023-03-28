@@ -193,8 +193,8 @@ public class ChargedUpMech extends GenericMechanism {
                 driver.setRightTrigger(driver.createRightTrigger());
                 driver.setLeftTrigger(driver.createLeftTrigger());
 
-                operator.setRightTrigger(operator.createRightTrigger());
-                operator.setLeftTrigger(operator.createLeftTrigger());
+                // operator.setRightTrigger(operator.createRightTrigger());
+                // operator.setLeftTrigger(operator.createLeftTrigger());
                 // necessary
                 // but I have seen self movement
                 // without
@@ -216,10 +216,10 @@ public class ChargedUpMech extends GenericMechanism {
                                                 () -> (driver.getRightTrigger()
                                                                 - driver.getLeftTrigger()) * 1));
 
-                new Trigger(() -> (Math
-                                .abs(operator.getRightTrigger()) > 0.01))
-                                .whileTrue(new IntakeSpin(intakeSubsystem,
-                                                () -> (operator.getRightTrigger() * -1)));
+                // new Trigger(() -> (Math
+                // .abs(operator.getRightTrigger()) > 0.01))
+                // .whileTrue(new IntakeSpin(intakeSubsystem,
+                // () -> (operator.getRightTrigger() * -1)));
 
                 driver.createDownPovButton()
                                 .onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));

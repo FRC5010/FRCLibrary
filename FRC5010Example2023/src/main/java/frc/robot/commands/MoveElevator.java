@@ -26,7 +26,7 @@ public class MoveElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    DataLogManager.log(getName() + " " + elevatorLevel.get().name());
+    // DataLogManager.log(getName() + " " + elevatorLevel.get().name());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,7 +43,7 @@ public class MoveElevator extends CommandBase {
     // } else {
     // elevator.stopAndHoldExtend();
     // }
-    DataLogManager.log(getName() + " ended " + interrupted);
+    // DataLogManager.log(getName() + " ended " + interrupted);
 
     elevator.stopAndHoldExtend();
   }

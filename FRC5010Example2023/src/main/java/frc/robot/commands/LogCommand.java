@@ -19,7 +19,7 @@ public class LogCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    DataLogManager.log(message);
+    // DataLogManager.log(message);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -98,9 +98,9 @@ public class RobotContainer extends GenericMechanism {
       /**
        * TODO: Initialize expected vision subsystem
        */
-      DataLogManager.start();
-      DriverStation.startDataLog(DataLogManager.getLog(), false);
-      DataLogManager.logNetworkTables(true);
+      // DataLogManager.start();
+      // DriverStation.startDataLog(DataLogManager.getLog(), false);
+      // DataLogManager.logNetworkTables(true);
     } else {
       NetworkTableInstance instance = NetworkTableInstance.getDefault();
       instance.stopServer();

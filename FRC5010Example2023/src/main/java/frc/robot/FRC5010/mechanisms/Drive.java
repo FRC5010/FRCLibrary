@@ -186,7 +186,7 @@ public class Drive extends GenericMechanism {
         // driver.setRightXAxis(driver.createRightXAxis()
         // .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
-        driver.createLeftBumper().onTrue(new InstantCommand(() -> drivetrain.toggleFieldOrientedDrive()));
+        driver.createBButton().onTrue(new InstantCommand(() -> drivetrain.toggleFieldOrientedDrive()));
         driver.createStartButton().onTrue(new InstantCommand(() -> drivetrain.resetOrientation()));
     }
 
@@ -354,7 +354,6 @@ public class Drive extends GenericMechanism {
     public Command generateAutoCommand(List<PathPlannerTrajectory> path) {
         return autoBuilder.fullAuto(path).beforeStarting(() -> {
             drivetrain.resetEncoders();
-            drivetrain.resetOrientation();
         });
     }
 
