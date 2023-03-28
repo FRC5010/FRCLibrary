@@ -3,14 +3,16 @@
     "Retained Values": {
       "open": false
     },
-    "Transitory Values": {
-      "open": false
+    "persistent": {
+      "Preferences": {
+        "open": true
+      }
     },
     "transitory": {
-      "Shuffleboard": {
+      "FMSInfo": {
         "open": true
       },
-      "SmartDashboard": {
+      "Shuffleboard": {
         "open": true
       }
     },

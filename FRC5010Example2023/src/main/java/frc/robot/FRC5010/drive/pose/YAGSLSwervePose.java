@@ -40,7 +40,6 @@ public class YAGSLSwervePose extends GenericPose {
 
     @Override
     public void resetToPose(Pose2d pose) {
-        drivetrain.zeroGyro();
         drivetrain.resetOdometry(pose);
     }
 

@@ -8,22 +8,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.opencv.video.Video;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
+import frc.robot.FRC5010.Vision.VisionLimeLight;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -56,6 +64,7 @@ public class CompBot extends GenericMechanism {
   private ButtonBoard buttonOperator;
   private LedSubsystem ledSubsystem;
   private GenericGyro gyro;
+  private VisionSystem visionSystem;
 
   public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
     super(visual, displayTab);
@@ -100,6 +109,8 @@ public class CompBot extends GenericMechanism {
                          // ground
             new Translation3d(-Units.inchesToMeters(27.75 / 2), Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)),
             new Rotation3d(0, 0, Units.degreesToRadians(-90))));
+
+    ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
 
     // Ports need to be changed when comp bot is ready
     List<SwervePorts> swervePorts = new ArrayList<>();
