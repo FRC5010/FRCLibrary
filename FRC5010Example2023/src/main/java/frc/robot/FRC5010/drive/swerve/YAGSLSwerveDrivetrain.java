@@ -352,7 +352,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
                                                                // beginning of auto
         new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y
                                          // PID controllers)
-        new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation
+        new PIDConstants(3.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation
                                          // controller)
         swerveDrive::setChassisSpeeds, // Module states consumer used to output to the drive subsystem
         eventMap,

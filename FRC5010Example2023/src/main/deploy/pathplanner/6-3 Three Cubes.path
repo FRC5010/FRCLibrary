@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.651064359821029,
+        "x": 1.85,
         "y": 4.432064633360036
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9421440573650393,
-        "y": 4.682572634376038
+        "x": 5.990868911059942,
+        "y": 5.5960907038351255
       },
       "holonomicAngle": -179.42706130231656,
       "isReversal": false,
@@ -17,8 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake",
-          "HomeElevator"
+          "Outtake"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
@@ -27,22 +26,22 @@
     },
     {
       "anchorPoint": {
-        "x": 5.341239913249059,
-        "y": 4.595858326332038
+        "x": 5.204478866227434,
+        "y": 4.6
       },
       "prevControl": {
-        "x": 4.793149116201536,
-        "y": 4.595858326332038
+        "x": 4.65638806917991,
+        "y": 4.6
       },
       "nextControl": {
-        "x": 5.746365230184173,
-        "y": 4.595858326332038
+        "x": 5.609604183162547,
+        "y": 4.6
       },
       "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": true,
+      "isStopPoint": false,
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",
@@ -77,16 +76,16 @@
     },
     {
       "anchorPoint": {
-        "x": 1.65,
+        "x": 1.85,
         "y": 4.43
       },
       "prevControl": {
-        "x": 6.79611330376507,
-        "y": 5.472636329888045
+        "x": 7.710339061077678,
+        "y": 5.687880454562242
       },
       "nextControl": {
-        "x": 6.79611330376507,
-        "y": 5.472636329888045
+        "x": 7.710339061077678,
+        "y": 5.687880454562242
       },
       "holonomicAngle": 180.0,
       "isReversal": true,
@@ -95,55 +94,32 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "Outtake"
+          "OuttakeSlow"
         ],
         "executionBehavior": "parallel",
-        "waitBehavior": "none",
+        "waitBehavior": "after",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 6.36,
-        "y": 3.362588167484028
+        "x": 7.086168756133296,
+        "y": 4.191707517710263
       },
       "prevControl": {
-        "x": 5.14819667362722,
-        "y": 3.362588167484028
-      },
-      "nextControl": {
-        "x": 5.14819667362722,
-        "y": 3.362588167484028
-      },
-      "holonomicAngle": 0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 7.509097614349077,
-        "y": 6.927509720404057
-      },
-      "prevControl": {
-        "x": 7.210414997753073,
-        "y": 6.089271409312049
+        "x": 7.086168756133296,
+        "y": 6.055853179061135
       },
       "nextControl": null,
-      "holonomicAngle": 0.0,
+      "holonomicAngle": -90.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "HomeElevator"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -158,6 +134,35 @@
       "position": 0.1,
       "names": [
         "HomePivot"
+      ]
+    },
+    {
+      "position": 0.85,
+      "names": [
+        "PivotToGround",
+        "ExtendToGround",
+        "IntakeLong"
+      ]
+    },
+    {
+      "position": 2.1,
+      "names": [
+        "HomeElevator",
+        "PivotToMid",
+        "Intake"
+      ]
+    },
+    {
+      "position": 3.1,
+      "names": [
+        "PivotToGround"
+      ]
+    },
+    {
+      "position": 3.55,
+      "names": [
+        "ExtendToGround",
+        "IntakeLong"
       ]
     }
   ]
