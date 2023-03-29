@@ -73,11 +73,11 @@ public class AutoBalance extends CommandBase {
 
     if (autoBalanceXMode) {
       double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
-      xAxisRate = Math.sin(pitchAngleRadians) * -2.5;
+      xAxisRate = Math.sin(pitchAngleRadians) * -2.2;
     }
     if (autoBalanceYMode) {
       double rollAngleRadians = rollAngleDegrees * (Math.PI / 180.0);
-      yAxisRate = Math.sin(rollAngleRadians) * 2.5;
+      yAxisRate = Math.sin(rollAngleRadians) * 2.2;
     }
 
     SmartDashboard.putNumber("X-Axis Rate", xAxisRate);
