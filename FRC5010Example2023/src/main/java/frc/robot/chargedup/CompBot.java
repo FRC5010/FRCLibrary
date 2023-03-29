@@ -186,6 +186,7 @@ public class CompBot extends GenericMechanism {
     autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
     autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
     autoMaps.addPath("6-3 Score", new PathConstraints(1.75, 1));
+    // autoMaps.addPath("6-3 3 Cube", new PathConstraints(4, 2));
 
     autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
     autoMaps.addPath("Bal Over 7-2", new PathConstraints(1.75, 1));
