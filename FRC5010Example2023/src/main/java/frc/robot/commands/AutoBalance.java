@@ -18,8 +18,14 @@ public class AutoBalance extends CommandBase {
 
   private GenericDrivetrain drivetrain;
 
-  private int offBalanceThreshold = 7;
-  private int onBalanceThreshold = 2;
+  private double maxSpeed = 5;
+  private double balanceSpeed = 2.2;
+  private double currSpeed = maxSpeed;
+
+  private double offBalanceThreshold = 7;
+  private double slowDownThreshold = 4;
+  private double onBalanceThreshold = 2;
+
   private GenericGyro pigeon;
   // private AHRS ahrs = new AHRS(SPI.Port.kMXP);
   private Supplier<Boolean> fieldOrientedDrive;
@@ -52,32 +58,38 @@ public class AutoBalance extends CommandBase {
     double rollAngleDegrees = pigeon.getAngleX();
 
     if (!autoBalanceXMode &&
-        (Math.abs(pitchAngleDegrees) >= Math.abs(offBalanceThreshold))) {
+        (Math.abs(pitchAngleDegrees) >= offBalanceThreshold)) {
       autoBalanceXMode = true;
     } else if (autoBalanceXMode &&
-        (Math.abs(pitchAngleDegrees) <= Math.abs(onBalanceThreshold))) {
+        (Math.abs(pitchAngleDegrees) <= onBalanceThreshold)) {
       autoBalanceXMode = false;
     }
 
     if (!autoBalanceYMode &&
-        (Math.abs(rollAngleDegrees) >= Math.abs(offBalanceThreshold))) {
+        (Math.abs(rollAngleDegrees) >= offBalanceThreshold)) {
       autoBalanceYMode = true;
     } else if (autoBalanceYMode &&
-        (Math.abs(rollAngleDegrees) <= Math.abs(onBalanceThreshold))) {
+        (Math.abs(rollAngleDegrees) <= onBalanceThreshold)) {
       autoBalanceYMode = false;
     }
 
+    if (Math.abs(pitchAngleDegrees) <= slowDownThreshold || Math.abs(rollAngleDegrees) <= slowDownThreshold) {
+      currSpeed = balanceSpeed;
+    } else if (Math.abs(pitchAngleDegrees) >= offBalanceThreshold
+        || Math.abs(rollAngleDegrees) >= offBalanceThreshold) {
+      currSpeed = maxSpeed;
+    }
     // Control drive system automatically,
     // driving in reverse direction of pitch/roll angle,
     // with a magnitude based upon the angle
 
     if (autoBalanceXMode) {
       double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
-      xAxisRate = Math.sin(pitchAngleRadians) * -2.2;
+      xAxisRate = Math.sin(pitchAngleRadians) * -currSpeed;
     }
     if (autoBalanceYMode) {
       double rollAngleRadians = rollAngleDegrees * (Math.PI / 180.0);
-      yAxisRate = Math.sin(rollAngleRadians) * 2.2;
+      yAxisRate = Math.sin(rollAngleRadians) * currSpeed;
     }
 
     SmartDashboard.putNumber("X-Axis Rate", xAxisRate);
