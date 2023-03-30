@@ -324,13 +324,16 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
             (!Double.isNaN(currTranslation.getX()) &&
                 !Double.isNaN(currTranslation.getY()))) {
 
-      // Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * 0.02,
-      // direction.vyMetersPerSecond * 0.02,
-      // Rotation2d.fromRadians(direction.omegaRadiansPerSecond * 0.02));
-      // Twist2d twistVel = getPoseEstimator().getCurrentPose().log(robotPoseVel);
-      // direction = new ChassisSpeeds(twistVel.dx / 0.02, twistVel.dy / 0.02,
-      // twistVel.dtheta / 0.02);
-      setChassisSpeeds(direction);
+      // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
+      // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
+      double dtConstant = 0.01;
+      Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * dtConstant,
+          direction.vyMetersPerSecond * dtConstant,
+          Rotation2d.fromRadians(direction.omegaRadiansPerSecond * dtConstant));
+      Twist2d twistVel = new Pose2d().log(robotPoseVel);
+      ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
+          twistVel.dtheta / dtConstant);
+      setChassisSpeeds(updatedChassisSpeed);
 
     } else {
       System.err.println("******CRITICAL ERROR******: Pose Outside of Bounds " + currTranslation);
