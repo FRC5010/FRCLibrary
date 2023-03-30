@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -54,6 +55,12 @@ public class JoystickToSwerve extends CommandBase {
     // convert to chassis speed class
     ChassisSpeeds chassisSpeeds;
     //
+    // System.out.println(swerveDrive.getGyroRate());
+    // double gyroRate = swerveDrive.getGyroRate() * 0.0;
+    // Rotation2d correctedRotation =
+    // swerveDrive.getPoseEstimator().getGyroRotation2d()
+    // .minus(new Rotation2d(gyroRate));
+
     if (fieldOrientedDrive.get()) {
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
           xSpeed,

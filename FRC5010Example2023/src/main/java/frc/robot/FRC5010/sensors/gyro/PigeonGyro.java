@@ -5,8 +5,10 @@
 package frc.robot.FRC5010.sensors.gyro;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import swervelib.imu.Pigeon2Swerve;
 
 /** Add your docs here. */
 public class PigeonGyro implements GenericGyro {
@@ -43,7 +45,9 @@ public class PigeonGyro implements GenericGyro {
 
     @Override
     public double getRate() {
-        return getRate();
+        double[] vel = new double[3];
+        pigeon2.getRawGyro(vel);
+        return vel[2];
     }
 
     @Override

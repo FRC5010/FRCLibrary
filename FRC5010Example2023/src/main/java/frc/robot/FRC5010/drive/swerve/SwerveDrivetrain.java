@@ -141,6 +141,10 @@ public class SwerveDrivetrain extends GenericDrivetrain {
         return swerveConstants;
     }
 
+    public double getGyroRate() {
+        return gyro.getRate();
+    }
+
     @Override
     public void simulationPeriodic() {
         Pose2d pose = poseEstimator.getCurrentPose();

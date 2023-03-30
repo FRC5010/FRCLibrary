@@ -45,10 +45,12 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   private SwerveDrive swerveDrive;
   private ChassisSpeeds chassisSpeeds;
   private PowerDistribution powerDistributionHub;
+  private GenericGyro gyro;
 
   public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants,
       String swerveType, VisionSystem visionSystem) {
     super(mechVisual, gyro, swerveConstants);
+    this.gyro = gyro;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
       swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive();
@@ -321,7 +323,15 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
             (currTranslation.getX() <= 26 && currTranslation.getY() <= 27) &&
             (!Double.isNaN(currTranslation.getX()) &&
                 !Double.isNaN(currTranslation.getY()))) {
+
+      // Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * 0.02,
+      // direction.vyMetersPerSecond * 0.02,
+      // Rotation2d.fromRadians(direction.omegaRadiansPerSecond * 0.02));
+      // Twist2d twistVel = getPoseEstimator().getCurrentPose().log(robotPoseVel);
+      // direction = new ChassisSpeeds(twistVel.dx / 0.02, twistVel.dy / 0.02,
+      // twistVel.dtheta / 0.02);
       setChassisSpeeds(direction);
+
     } else {
       System.err.println("******CRITICAL ERROR******: Pose Outside of Bounds " + currTranslation);
       setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
@@ -352,7 +362,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
                                                                // beginning of auto
         new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y
                                          // PID controllers)
-        new PIDConstants(3.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation
+        new PIDConstants(2.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation
                                          // controller)
         swerveDrive::setChassisSpeeds, // Module states consumer used to output to the drive subsystem
         eventMap,
