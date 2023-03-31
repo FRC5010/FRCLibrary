@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -34,6 +36,7 @@ import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.commands.JoystickToSwerve;
+import frc.robot.commands.TeleopDrive;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveKinematics2;
@@ -73,13 +76,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
     return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
     // return new TeleopDrive(this,
-    // () -> (Math.abs(driverXbox.getLeftYAxis()) >
-    // OperatorConstants.LEFT_Y_DEADBAND) ? driverXbox.getLeftYAxis() : 0,
-    // () -> (Math.abs(driverXbox.getLeftXAxis()) >
-    // OperatorConstants.LEFT_X_DEADBAND) ? driverXbox.getLeftXAxis() : 0,
-    // () -> (Math.abs(driverXbox.getRightXAxis()) >
-    // OperatorConstants.RIGHT_X_DEADBAND) ? driverXbox.getRightXAxis() : 0,
-    // () -> isFieldOrientedDrive, false, true);
+    // () -> driverXbox.getLeftYAxis(),
+    // () -> driverXbox.getLeftXAxis(),
+    // () -> driverXbox.getRightXAxis(),
+    // () -> isFieldOrientedDrive, true, true);
   }
 
   /**
@@ -326,14 +326,21 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
       // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
       // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-      double dtConstant = 0.01;
+      double dtConstant = 0.009;
       Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * dtConstant,
           direction.vyMetersPerSecond * dtConstant,
           Rotation2d.fromRadians(direction.omegaRadiansPerSecond * dtConstant));
-      Twist2d twistVel = new Pose2d().log(robotPoseVel);
-      ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
+      Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
+
+      ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx /
+          dtConstant, twistVel.dy / dtConstant,
           twistVel.dtheta / dtConstant);
+
       setChassisSpeeds(updatedChassisSpeed);
+
+      // System.out.println((System.currentTimeMillis() - pastTime) / 1000);
+      // pastTime = System.currentTimeMillis();
+      // setChassisSpeeds(direction);
 
     } else {
       System.err.println("******CRITICAL ERROR******: Pose Outside of Bounds " + currTranslation);

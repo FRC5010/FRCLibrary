@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
@@ -56,17 +57,16 @@ public class JoystickToSwerve extends CommandBase {
     ChassisSpeeds chassisSpeeds;
     //
     // System.out.println(swerveDrive.getGyroRate());
-    // double gyroRate = swerveDrive.getGyroRate() * 0.0;
-    // Rotation2d correctedRotation =
-    // swerveDrive.getPoseEstimator().getGyroRotation2d()
-    // .minus(new Rotation2d(gyroRate));
+    double gyroRate = Units.degreesToRadians(swerveDrive.getGyroRate()) * 0.01;
+    Rotation2d correctedRotation = swerveDrive.getHeading()
+        .minus(new Rotation2d(gyroRate));
 
     if (fieldOrientedDrive.get()) {
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
           xSpeed,
           ySpeed,
           turnSpeed,
-          swerveDrive.getHeading());
+          correctedRotation);
     } else {
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnSpeed);
     }

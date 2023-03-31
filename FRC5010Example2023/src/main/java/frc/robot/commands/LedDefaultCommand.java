@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.ElevatorSubsystem;
@@ -14,6 +15,7 @@ public class LedDefaultCommand extends CommandBase {
   LedSubsystem ledSubsystem;
   IntakeSubsystem intakeSubsystem;
   ElevatorSubsystem elevator;
+  private int currDelay = 200;
   private boolean lastState;
 
   public LedDefaultCommand(LedSubsystem ledSubsystem, IntakeSubsystem intakeSubsystem,
@@ -42,7 +44,7 @@ public class LedDefaultCommand extends CommandBase {
         if (elevator.isExtendAtTarget()) {
           ledSubsystem.setSolidColor(210, 255, 0);
         } else {
-          ledSubsystem.setBlink(210, 255, 0, 250);
+          ledSubsystem.setBlink(210, 255, 0, 200);
         }
         // (210, 255, 0);
         // ledSubsystem.speed(1);
@@ -51,7 +53,7 @@ public class LedDefaultCommand extends CommandBase {
         if (elevator.isExtendAtTarget()) {
           ledSubsystem.setSolidColor(100, 0, 255);
         } else {
-          ledSubsystem.setBlink(100, 0, 255, 250);
+          ledSubsystem.setBlink(100, 0, 255, 200);
         }
         // ledSubsystem.setSolidColor(100, 0, 255);
         // ledSubsystem.speed(2);

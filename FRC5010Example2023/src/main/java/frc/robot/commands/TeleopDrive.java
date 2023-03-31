@@ -18,21 +18,19 @@ import swervelib.SwerveController;
 /**
  * An example command that uses an example subsystem.
  */
-public class TeleopDrive extends CommandBase
-{
+public class TeleopDrive extends CommandBase {
 
-  private final YAGSLSwerveDrivetrain  swerve;
-  private final DoubleSupplier   vX;
-  private final DoubleSupplier   vY;
-  private final DoubleSupplier   omega;
-  private final BooleanSupplier  driveMode;
-  private final boolean          isOpenLoop;
+  private final YAGSLSwerveDrivetrain swerve;
+  private final DoubleSupplier vX;
+  private final DoubleSupplier vY;
+  private final DoubleSupplier omega;
+  private final BooleanSupplier driveMode;
+  private final boolean isOpenLoop;
   private final SwerveController controller;
-  private final Timer            timer    = new Timer();
-  private final boolean          headingCorrection;
-  private       double           angle    = 0;
-  private       double           lastTime = 0;
-
+  private final Timer timer = new Timer();
+  private final boolean headingCorrection;
+  private double angle = 0;
+  private double lastTime = 0;
 
   /**
    * Creates a new ExampleCommand.
@@ -40,8 +38,7 @@ public class TeleopDrive extends CommandBase
    * @param swerve The subsystem used by this command.
    */
   public TeleopDrive(YAGSLSwerveDrivetrain swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier omega,
-                     BooleanSupplier driveMode, boolean isOpenLoop, boolean headingCorrection)
-  {
+      BooleanSupplier driveMode, boolean isOpenLoop, boolean headingCorrection) {
     this.swerve = swerve;
     this.vX = vX;
     this.vY = vY;
@@ -50,8 +47,7 @@ public class TeleopDrive extends CommandBase
     this.isOpenLoop = isOpenLoop;
     this.controller = swerve.getSwerveController();
     this.headingCorrection = headingCorrection;
-    if (headingCorrection)
-    {
+    if (headingCorrection) {
       timer.start();
     }
     // Use addRequirements() here to declare subsystem dependencies.
@@ -60,31 +56,27 @@ public class TeleopDrive extends CommandBase
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize()
-  {
-    if (headingCorrection)
-    {
+  public void initialize() {
+    if (headingCorrection) {
       lastTime = timer.get();
     }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute()
-  {
-    double xVelocity   = Math.pow(vX.getAsDouble(), 3);
-    double yVelocity   = Math.pow(vY.getAsDouble(), 3);
-    double angVelocity = Math.pow(omega.getAsDouble(), 3);
+  public void execute() {
+    double xVelocity = Math.pow(vX.getAsDouble(), 1);
+    double yVelocity = Math.pow(vY.getAsDouble(), 1);
+    double angVelocity = Math.pow(omega.getAsDouble(), 1);
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
-    if (headingCorrection)
-    {
+    if (headingCorrection) {
       // Estimate the desired angle in radians.
       angle += (angVelocity * (timer.get() - lastTime)) * controller.config.maxAngularVelocity;
       // Get the desired ChassisSpeeds given the desired angle and current angle.
       ChassisSpeeds correctedChassisSpeeds = controller.getTargetSpeeds(xVelocity, yVelocity, angle,
-                                                                        swerve.getHeading().getRadians());
+          swerve.getHeading().getRadians());
       SmartDashboard.putNumber("desired angle", angle);
       // Drive using given data points.
       swerve.drive(
@@ -93,25 +85,22 @@ public class TeleopDrive extends CommandBase
           driveMode.getAsBoolean(),
           isOpenLoop);
       lastTime = timer.get();
-    } else
-    {
+    } else {
       // Drive using raw values.
       swerve.drive(new Translation2d(xVelocity * controller.config.maxSpeed, yVelocity * controller.config.maxSpeed),
-                   angVelocity * controller.config.maxAngularVelocity,
-                   driveMode.getAsBoolean(), isOpenLoop);
+          angVelocity * controller.config.maxAngularVelocity,
+          driveMode.getAsBoolean(), isOpenLoop);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted)
-  {
+  public void end(boolean interrupted) {
   }
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished()
-  {
+  public boolean isFinished() {
     return false;
   }
 }
