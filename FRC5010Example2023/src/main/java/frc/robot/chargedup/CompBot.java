@@ -165,7 +165,7 @@ public class CompBot extends GenericMechanism {
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
     autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
-    // .beforeStarting(new InstantCommand(() -> DataLogManager.log("Lock
+    // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
     // Wheels"))));
 
     autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium)
@@ -173,12 +173,10 @@ public class CompBot extends GenericMechanism {
 
     autoMaps.addMarker("AutoGroundPickUp",
         new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
-            // .beforeStarting(new InstantCommand(() ->
-            // DataLogManager.log("AutoGroundPickUp")))
             .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground)));
 
     autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
-        // .beforeStarting(new InstantCommand(() -> DataLogManager.log("Cube Retract")))
+        // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Cube Retract")))
         .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
             .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem))));
 
@@ -241,6 +239,8 @@ public class CompBot extends GenericMechanism {
     // LCR.right, swerveConstants));
 
     driver.createBackButton().onTrue(new InstantCommand(() -> drive.getDrivetrain().resetEncoders()));
+    // driver.createLeftBumper().whileTrue(new RunCommand(() ->
+    // swerveDrivetrain.lockWheels(), swerveDrivetrain));
 
     drive.configureButtonBindings(driver, operator);
     elevator.configureButtonBindings(driver, operator);

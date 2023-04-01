@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.BaseAutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +28,7 @@ public abstract class GenericDrivetrain extends SubsystemBase {
 
     public GenericDrivetrain(Mechanism2d mechVisual) {
         this.mechVisual = mechVisual;
-        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
+        Shuffleboard.getTab("Drive").addBoolean("Field Oriented", () -> isFieldOrientedDrive).withPosition(8, 0);
     }
 
     public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator poseEstimator) {
@@ -63,7 +64,6 @@ public abstract class GenericDrivetrain extends SubsystemBase {
 
     public void toggleFieldOrientedDrive() {
         isFieldOrientedDrive = !isFieldOrientedDrive;
-        SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
     }
 
     public void resetOrientation() {

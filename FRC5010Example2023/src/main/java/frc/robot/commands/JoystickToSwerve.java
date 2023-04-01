@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,11 +20,11 @@ public class JoystickToSwerve extends CommandBase {
   /** Creates a new JoystickToSwerve. */
   private SwerveDrivetrain swerveDrive;
   private Joystick driver;
-  private Supplier<Double> xSpdFunction, ySpdFunction, turnSpdFunction;
-  private Supplier<Boolean> fieldOrientedDrive;
+  private DoubleSupplier xSpdFunction, ySpdFunction, turnSpdFunction;
+  private BooleanSupplier fieldOrientedDrive;
 
-  public JoystickToSwerve(SwerveDrivetrain swerveSubsystem, Supplier<Double> xSpdFunction,
-      Supplier<Double> ySpdFunction, Supplier<Double> turnSpdFunction, Supplier<Boolean> fieldOrientedDrive) {
+  public JoystickToSwerve(SwerveDrivetrain swerveSubsystem, DoubleSupplier xSpdFunction,
+      DoubleSupplier ySpdFunction, DoubleSupplier turnSpdFunction, BooleanSupplier fieldOrientedDrive) {
     this.swerveDrive = swerveSubsystem;
     this.xSpdFunction = xSpdFunction;
     this.ySpdFunction = ySpdFunction;
@@ -43,10 +45,10 @@ public class JoystickToSwerve extends CommandBase {
   public void execute() {
     // get values on sticks and deadzone them
 
-    double xSpeed = (xSpdFunction.get());
-    double ySpeed = (ySpdFunction.get());
+    double xSpeed = (xSpdFunction.getAsDouble());
+    double ySpeed = (ySpdFunction.getAsDouble());
 
-    double turnSpeed = (turnSpdFunction.get());
+    double turnSpeed = (turnSpdFunction.getAsDouble());
 
     // limit power
     xSpeed = xSpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
@@ -61,7 +63,7 @@ public class JoystickToSwerve extends CommandBase {
     Rotation2d correctedRotation = swerveDrive.getHeading()
         .minus(new Rotation2d(gyroRate));
 
-    if (fieldOrientedDrive.get()) {
+    if (fieldOrientedDrive.getAsBoolean()) {
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
           xSpeed,
           ySpeed,

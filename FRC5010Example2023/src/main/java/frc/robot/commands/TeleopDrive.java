@@ -7,7 +7,10 @@ package frc.robot.commands;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -65,9 +68,9 @@ public class TeleopDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xVelocity = Math.pow(vX.getAsDouble(), 1);
-    double yVelocity = Math.pow(vY.getAsDouble(), 1);
-    double angVelocity = Math.pow(omega.getAsDouble(), 1);
+    double xVelocity = vX.getAsDouble();
+    double yVelocity = vY.getAsDouble();
+    double angVelocity = omega.getAsDouble() * 0.5;
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
@@ -79,8 +82,19 @@ public class TeleopDrive extends CommandBase {
           swerve.getHeading().getRadians());
       SmartDashboard.putNumber("desired angle", angle);
       // Drive using given data points.
+
+      double dtConstant = 0.009;
+      Pose2d robotPoseVel = new Pose2d(correctedChassisSpeeds.vxMetersPerSecond * dtConstant,
+          correctedChassisSpeeds.vyMetersPerSecond * dtConstant,
+          Rotation2d.fromRadians(correctedChassisSpeeds.omegaRadiansPerSecond * dtConstant));
+      Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
+
+      ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx /
+          dtConstant, twistVel.dy / dtConstant,
+          twistVel.dtheta / dtConstant);
+
       swerve.drive(
-          SwerveController.getTranslation2d(correctedChassisSpeeds),
+          SwerveController.getTranslation2d(updatedChassisSpeed),
           correctedChassisSpeeds.omegaRadiansPerSecond,
           driveMode.getAsBoolean(),
           isOpenLoop);

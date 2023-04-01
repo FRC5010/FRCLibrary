@@ -30,6 +30,7 @@ import frc.robot.FRC5010.robots.BabySwerve;
 import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
 import frc.robot.FRC5010.robots.PracticeBot;
 import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.CompBot;
 
 /**
@@ -98,9 +99,7 @@ public class RobotContainer extends GenericMechanism {
       /**
        * TODO: Initialize expected vision subsystem
        */
-      // DataLogManager.start();
-      // DriverStation.startDataLog(DataLogManager.getLog(), false);
-      // DataLogManager.logNetworkTables(true);
+      WpiDataLogging.start(true);
     } else {
       NetworkTableInstance instance = NetworkTableInstance.getDefault();
       instance.stopServer();

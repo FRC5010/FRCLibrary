@@ -6,6 +6,8 @@ package frc.robot.FRC5010.drive.swerve;
 
 import java.io.File;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
@@ -69,17 +71,13 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   public Command createDefaultCommand(Controller driverXbox) {
     // System.out.println("brrrrr");
-    Supplier<Double> leftX = () -> driverXbox.getLeftXAxis();
-    Supplier<Double> leftY = () -> driverXbox.getLeftYAxis();
-    Supplier<Double> rightX = () -> driverXbox.getRightXAxis();
-    Supplier<Boolean> isFieldOriented = () -> isFieldOrientedDrive;
+    DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
+    DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
+    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
-    return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
-    // return new TeleopDrive(this,
-    // () -> driverXbox.getLeftYAxis(),
-    // () -> driverXbox.getLeftXAxis(),
-    // () -> driverXbox.getRightXAxis(),
-    // () -> isFieldOrientedDrive, true, true);
+    // return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
+    return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented, true, true);
   }
 
   /**

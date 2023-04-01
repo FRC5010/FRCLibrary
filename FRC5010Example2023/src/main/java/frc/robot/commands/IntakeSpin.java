@@ -6,8 +6,8 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.IntakeSubsystem;
 
 public class IntakeSpin extends CommandBase {
@@ -26,7 +26,7 @@ public class IntakeSpin extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // DataLogManager.log(getName());
+    WpiDataLogging.log(getName());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,7 +42,7 @@ public class IntakeSpin extends CommandBase {
   public void end(boolean interrupted) {
     this.intakeSubsystem.stopIntake();
 
-    // DataLogManager.log(getName() + " ended. ");
+    WpiDataLogging.log(getName() + " ended. ");
   }
 
   // Returns true when the command should end.

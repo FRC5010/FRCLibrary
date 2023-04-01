@@ -12,6 +12,7 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,8 +35,7 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.DriverDisplaySubsystem;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.DriveToPosition;
-import frc.robot.commands.DriveToPosition.LCR;
+import frc.robot.commands.JoystickToSwerve;
 import frc.robot.commands.LogCommand;
 
 /** Add your docs here. */
@@ -46,6 +46,7 @@ public class PracticeBot extends GenericMechanism {
   private AutoMaps autoMaps;
   private Drive drive;
   private LedSubsystem ledSubsystem;
+  private SwerveDrivetrain swerveDrivetrain;
 
   public PracticeBot(Mechanism2d visual, ShuffleboardTab displayTab) {
     super(visual, displayTab);
@@ -61,7 +62,12 @@ public class PracticeBot extends GenericMechanism {
     swerveConstants.setSwerveModuleConstants(MK4SwerveModule.MK4_L1);
     swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
+    ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
+
     VisionSystem multiVision = new VisionLimeLightSim("", 0, AprilTags.aprilTagFieldLayout);
+
+    visionTab.addCamera("DriverCam", "DriverCam", "10.50.10.11").withSize(0, 0);
+
     // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1,
     // AprilTags.aprilTagFieldLayout,
     // PoseStrategy.MULTI_TAG_PNP);
@@ -94,7 +100,7 @@ public class PracticeBot extends GenericMechanism {
     driverDisplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 
     autoMaps = new AutoMaps();
-    SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
+    swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
 
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
@@ -136,18 +142,26 @@ public class PracticeBot extends GenericMechanism {
   public void configureButtonBindings(Controller driver, Controller operator) {
     driver.createYButton()
         .whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createStartButton().getAsBoolean(), gyro));
+    driver.createAButton()
+        .whileTrue(new JoystickToSwerve(swerveDrivetrain, () -> 0.5, () -> 0.0, () -> 0.5, () -> true));
 
-    driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.left));
+    // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
+    // drive.getDrivetrain(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+    // ledSubsystem, LCR.left));
 
-    driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.center));
+    // driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
+    // drive.getDrivetrain(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+    // ledSubsystem, LCR.center));
 
-    driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-        () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-        () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(), ledSubsystem, LCR.right));
+    // driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
+    // drive.getDrivetrain(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+    // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+    // ledSubsystem, LCR.right));
 
     SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
     driver.createLeftBumper().whileTrue(new RunCommand(() -> swerveDrivetrain.lockWheels(), swerveDrivetrain));

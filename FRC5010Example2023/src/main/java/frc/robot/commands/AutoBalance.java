@@ -7,11 +7,11 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.FRC5010.telemetery.WpiDataLogging;
 
 public class AutoBalance extends CommandBase {
   /** Creates a new AutoBalance. */
@@ -40,7 +40,7 @@ public class AutoBalance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // DataLogManager.log(getName());
+    WpiDataLogging.log(getName());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -104,7 +104,7 @@ public class AutoBalance extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // DataLogManager.log(getName() + " ended " + interrupted);
+    // WpiDataLogging.log(getName() + " ended " + interrupted);
     drivetrain.drive(new ChassisSpeeds(0, 0, 0));
     drivetrain.lockWheels();
   }
