@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.telemetery.WpiDataLogging;
 
 public class LogCommand extends CommandBase {
   /** Creates a new LogCommand. */
@@ -19,7 +19,7 @@ public class LogCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // DataLogManager.log(message);
+    WpiDataLogging.log(message);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
