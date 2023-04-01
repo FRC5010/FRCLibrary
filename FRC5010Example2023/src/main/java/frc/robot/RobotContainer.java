@@ -99,7 +99,8 @@ public class RobotContainer extends GenericMechanism {
       /**
        * TODO: Initialize expected vision subsystem
        */
-      WpiDataLogging.start(true);
+
+      WpiDataLogging.start(false);
     } else {
       NetworkTableInstance instance = NetworkTableInstance.getDefault();
       instance.stopServer();

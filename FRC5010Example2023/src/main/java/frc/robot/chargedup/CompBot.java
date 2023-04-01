@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -90,7 +91,7 @@ public class CompBot extends GenericMechanism {
     swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
     swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
-    ledSubsystem = new LedSubsystem(1, 287);
+    ledSubsystem = new LedSubsystem(1, 187);
     ledSubsystem.off();
 
     // Will need to be changed for 2023 field
@@ -111,6 +112,7 @@ public class CompBot extends GenericMechanism {
             new Rotation3d(0, 0, Units.degreesToRadians(-90))));
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
+    visionTab.addCamera("DriverCam", "DriverCam", "10.50.10.11").withSize(3, 3);
 
     // Ports need to be changed when comp bot is ready
     List<SwervePorts> swervePorts = new ArrayList<>();
@@ -155,11 +157,12 @@ public class CompBot extends GenericMechanism {
     autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
 
     // Intake Controls
-    autoMaps.addMarker("ConeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem));
+    autoMaps.addMarker("ConeMode",
+        new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem).withTimeout(0.25));
     autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
     autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -1.0).withTimeout(0.25));
     autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
-    autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
+    autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.45).withTimeout(.25)));
     autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
     autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
     // Drivetrain Controls
@@ -173,18 +176,17 @@ public class CompBot extends GenericMechanism {
 
     autoMaps.addMarker("AutoGroundPickUp",
         new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
-            .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground)));
+            .andThen(new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground))
+            .deadlineWith(new IntakeSpin(intakeSubsystem, () -> 1.0)));
 
-    autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.low)
-        // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Cube Retract")))
-        .andThen(new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
-            .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem))));
+    autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
+        .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem)));
 
     // Create Paths
     autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
     autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
     autoMaps.addPath("6-3 Score", new PathConstraints(1.75, 1));
-    autoMaps.addPath("6-3 Three Cubes", new PathConstraints(4, 1.75));
+    autoMaps.addPath("6-3 Three Cubes", new PathConstraints(4, 1.5));
 
     autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
     autoMaps.addPath("Bal Over 7-2", new PathConstraints(1.75, 1));

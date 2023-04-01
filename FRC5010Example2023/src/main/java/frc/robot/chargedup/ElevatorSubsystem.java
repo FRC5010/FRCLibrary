@@ -52,8 +52,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
   private static final double kCarriageMass = 10.0; // kg
 
-  public static final double kMinElevatorHeight = Units.inchesToMeters(24);
-  public static final double kMaxElevatorHeight = Units.inchesToMeters(60);
+  public static final double kMinElevatorHeight = Units.inchesToMeters(30);
+  public static final double kMaxElevatorHeight = Units.inchesToMeters(81);
 
   private double insideTheBumpers = kMinElevatorHeight + 0.1;
   private double outsideTheBumpers = kMinElevatorHeight + 0.5;
@@ -61,7 +61,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   // distance per pulse = (distance per revolution) / (pulses per revolution)
   // = (Pi * D) / ppr
-  private static final double kElevatorEncoderDistPerPulse = Units.inchesToMeters(14.8828);
+  private static final double kElevatorEncoderDistPerPulse = Units.inchesToMeters(15.45);
   // 2.0 * Math.PI * kElevatorDrumRadius / 8192;
 
   private Mechanism2d m_mech2d;
@@ -93,6 +93,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.extendEncoder.setPositionConversionFactor(kElevatorEncoderDistPerPulse);
     this.extendPID = extendPID;
     this.extendConstants = extendConstants;
+
+    this.extendEncoder.setPosition(ElevatorLevel.auto.getExtensionPosition());
 
     this.m_mech2d = mech2d;
     m_mech2dRoot = m_mech2d.getRoot("Elevator Root", 5, 20);
@@ -138,7 +140,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean closeToTarget() {
-    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.15;
+    return Math.abs(getExtendPosition() - this.currentExtendTarget) < 0.15 && usingTarget;
   }
 
   public double getPowerFactor(double pow) {
@@ -245,7 +247,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean atMaxHardStop(double pow) {
-    return getExtendPosition() > 1.78 && pow > 0;
+    return getExtendPosition() > kMaxElevatorHeight && pow > 0;
   }
 
   public void stopExtend() {
@@ -299,11 +301,9 @@ public class ElevatorSubsystem extends SubsystemBase {
       if (isElevatorIn()) {
         setExtendEncoderPosition(kMinElevatorHeight);
       }
-
-      SmartDashboard.putBoolean("Elevator In: ", isElevatorIn());
-
     }
-    SmartDashboard.putNumber("Motor Pow: ", extendMotor.get());
+
+    SmartDashboard.putBoolean("Elevator In: ", isElevatorIn());
 
     SmartDashboard.putNumber("Elevator Position: ", getExtendPosition());
     // SmartDashboard.putNumber("Abs", KFF);
@@ -311,8 +311,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Level", currentLevel.getExtensionPosition());
 
     SmartDashboard.putNumber("Pivot Level", currentLevel.getPivotPosition());
-
-    SmartDashboard.putNumber("Extend Velocity Encoder", extendEncoder.getVelocity());
   }
 
   @Override

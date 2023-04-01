@@ -76,8 +76,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
-    // return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
-    return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented, true, true);
+    return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
+    // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented, true,
+    // true);
   }
 
   /**
@@ -312,13 +313,17 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
   }
 
+  private double lowLimit = Units.inchesToMeters(0);
+  private double highXLimit = Units.feetToMeters(26);
+  private double highYLimit = Units.feetToMeters(27);
+
   @Override
   public void drive(ChassisSpeeds direction) {
 
     Translation2d currTranslation = getPoseEstimator().getCurrentPose().getTranslation();
     if (!DriverStation.isAutonomous() ||
-        (currTranslation.getX() >= 0 && currTranslation.getY() >= 0) &&
-            (currTranslation.getX() <= 26 && currTranslation.getY() <= 27) &&
+        (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit) &&
+            (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit) &&
             (!Double.isNaN(currTranslation.getX()) &&
                 !Double.isNaN(currTranslation.getY()))) {
 

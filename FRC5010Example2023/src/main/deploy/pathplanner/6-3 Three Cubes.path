@@ -27,15 +27,15 @@
     {
       "anchorPoint": {
         "x": 5.204478866227434,
-        "y": 4.6
+        "y": 4.5
       },
       "prevControl": {
         "x": 4.65638806917991,
-        "y": 4.6
+        "y": 4.5
       },
       "nextControl": {
         "x": 5.609604183162547,
-        "y": 4.6
+        "y": 4.5
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -52,15 +52,15 @@
     {
       "anchorPoint": {
         "x": 6.362541763545067,
-        "y": 4.595858326332038
+        "y": 4.5
       },
       "prevControl": {
         "x": 5.977144838905064,
-        "y": 4.595858326332038
+        "y": 4.5
       },
       "nextControl": {
         "x": 5.977144838905064,
-        "y": 4.595858326332038
+        "y": 4.5
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -103,11 +103,11 @@
     },
     {
       "anchorPoint": {
-        "x": 7.086168756133296,
+        "x": 7.25,
         "y": 4.191707517710263
       },
       "prevControl": {
-        "x": 7.086168756133296,
+        "x": 7.25,
         "y": 6.055853179061135
       },
       "nextControl": null,
@@ -118,9 +118,11 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
+          "ConeMode",
+          "PivotToLow",
           "HomeElevator"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -131,7 +133,7 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.1,
+      "position": 0.01,
       "names": [
         "HomePivot"
       ]

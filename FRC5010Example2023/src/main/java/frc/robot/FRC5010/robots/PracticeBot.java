@@ -66,7 +66,7 @@ public class PracticeBot extends GenericMechanism {
 
     VisionSystem multiVision = new VisionLimeLightSim("", 0, AprilTags.aprilTagFieldLayout);
 
-    visionTab.addCamera("DriverCam", "DriverCam", "10.50.10.11").withSize(0, 0);
+    visionTab.addCamera("DriverCam", "DriverCam", "10.50.10.11").withSize(3, 3);
 
     // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1,
     // AprilTags.aprilTagFieldLayout,
@@ -126,10 +126,11 @@ public class PracticeBot extends GenericMechanism {
     // Create
     // autoMaps.addPath("8-1 Cube", new PathConstraints(4, 3));
     // autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
-    // autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1));
+    autoMaps.addPath("6-3 Three Cubes", new PathConstraints(2, 1));
     autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
     autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
     autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
+    autoMaps.addPath("8-1 Three Cubes", new PathConstraints(4, 1.75));
 
   }
 

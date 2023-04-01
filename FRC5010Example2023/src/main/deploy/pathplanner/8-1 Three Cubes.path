@@ -37,7 +37,7 @@
         "x": 4.286073076030724,
         "y": 0.7404128903707305
       },
-      "holonomicAngle": -90.0,
+      "holonomicAngle": -180.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
@@ -62,7 +62,7 @@
         "x": 5.132289773125561,
         "y": 0.7587708405161533
       },
-      "holonomicAngle": -90.0,
+      "holonomicAngle": -180.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
@@ -80,12 +80,12 @@
         "y": 0.8872764915341157
       },
       "prevControl": {
-        "x": 5.2,
-        "y": 0.8872764915341157
+        "x": 5.823068536293992,
+        "y": 0.8119175154184826
       },
       "nextControl": {
-        "x": 5.2,
-        "y": 0.8872764915341157
+        "x": 5.823068536293992,
+        "y": 0.8119175154184826
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -112,7 +112,7 @@
         "x": 4.027921665433767,
         "y": 0.7599999999999998
       },
-      "holonomicAngle": 90.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
@@ -137,7 +137,7 @@
         "x": 3.012971839388263,
         "y": 0.74
       },
-      "holonomicAngle": 90.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
@@ -189,7 +189,7 @@
         "x": 3.599423150370989,
         "y": 0.74
       },
-      "holonomicAngle": 90.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
@@ -207,14 +207,14 @@
         "y": 0.76
       },
       "prevControl": {
-        "x": 4.362020534433183,
-        "y": 0.7599999999999999
+        "x": 4.362155907139624,
+        "y": 0.7695649393192349
       },
       "nextControl": {
-        "x": 6.033294356305714,
-        "y": 0.7599999999999999
+        "x": 6.097519527421366,
+        "y": 0.7204338517093577
       },
-      "holonomicAngle": 90.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
@@ -243,8 +243,9 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "HomeElevator",
-          "Intake"
+          "ConeMode",
+          "PivotToLow",
+          "HomeElevator"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",

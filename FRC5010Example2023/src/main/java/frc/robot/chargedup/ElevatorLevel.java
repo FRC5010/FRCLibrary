@@ -1,11 +1,14 @@
 package frc.robot.chargedup;
 
+import edu.wpi.first.math.util.Units;
+
 public enum ElevatorLevel {
-  ground(1.184, PivotSubsystem.pivotOffset + 0.55),
+  ground(1.373, -11.53),
   low(1.2, -8),
-  loading(0.7325, 23.5052),
-  medium(1.3985, 25.6),
-  high(1.6525, 31.805);
+  loading(0.9797, 26.2986),
+  medium(1.5837, 26.7928),
+  high(2.0585, 30.657),
+  auto(Units.inchesToMeters(30), 31.583);
 
   private double extension, pivot;
 
@@ -16,6 +19,7 @@ public enum ElevatorLevel {
 
   public double getExtensionPosition() {
     return extension;
+
   }
 
   public double getPivotPosition() {

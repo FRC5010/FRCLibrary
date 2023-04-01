@@ -76,7 +76,7 @@ public class PivotSubsystem extends SubsystemBase {
     pivotController.setFeedbackDevice(pivotEncoder);
     pivotController.setOutputRange(-1, 1);
 
-    pivotEncoder.setPosition(ElevatorLevel.medium.getPivotPosition());
+    pivotEncoder.setPosition(ElevatorLevel.auto.getPivotPosition());
     // TODO Set FF and IZ
     pivotController.setFF(0);
     pivotController.setIZone(kIz);
@@ -91,6 +91,7 @@ public class PivotSubsystem extends SubsystemBase {
     this.extendPos = extendPos;
     SmartDashboard.putNumber("Pivot P", pivotPID.getkP());
     SmartDashboard.putBoolean("Override", override);
+
   }
 
   public void setPivotEncoderPosition(double pos) {
@@ -128,7 +129,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public boolean closeToTarget() {
-    return Math.abs(getPivotPosition() - currentPivotTarget) < 1;
+    return Math.abs(getPivotPosition() - currentPivotTarget) < 1 && usingTarget;
   }
 
   public double getPowerFactor(double pow) {
@@ -136,20 +137,25 @@ public class PivotSubsystem extends SubsystemBase {
     double sign = Math.signum(pow);
     boolean closeToTarget = closeToTarget();
     boolean atTarget = isPivotAtTarget();
+
     if (sign > 0) {
 
       if (isPivotMaxHardStop(pow) || atTarget) {
         powerFactor = 0;
+        System.out.println("isPivotMaxHardStop(pow) || atTarget -- 0");
       } else if ((isCloseToMaxHardStop()) || closeToTarget) {
         powerFactor = 0.25;
+        System.out.println("isCloseToMaxHardStop()) || closeToTarget -- 0.25");
       }
 
     } else {
 
       if (isPivotMinHardStop(pow) || atTarget) {
         powerFactor = 0;
+        System.out.println("isPivotMinHardStop(pow) || atTarget -- 0");
       } else if (isCloseToMinHardStop() || closeToTarget) {
         powerFactor = 0.25;
+        System.out.println("isCloseToMinHardStop() || closeToTarget -- 0.25");
       }
 
     }
@@ -213,11 +219,14 @@ public class PivotSubsystem extends SubsystemBase {
 
   public void pivotPow(double pow, boolean feedForward) {
     usingTarget = false;
-    SmartDashboard.putNumber("Pivot Power", pow);
+    SmartDashboard.putNumber("Pivot Power Given", pow);
     SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
     SmartDashboard.putNumber("Pivot Rotation", pivotEncoder.getPosition());
 
-    pivotMotor.set((pow * getPowerFactor(pow) + ((pow == 0) ? (getFeedFowardVoltage() / 12) : 0)));
+    double powerFactor = getPowerFactor(pow);
+    SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
+
+    pivotMotor.set((pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0)));
   }
 
   // public boolean isMovementOk(double pow){
@@ -252,7 +261,7 @@ public class PivotSubsystem extends SubsystemBase {
       SmartDashboard.putBoolean("Pivot Target is good", currentPivotTarget > pivotEncoder.getPosition());
       SmartDashboard.putNumber("Pivot Motor is positive", pivotMotor.get());
     }
-    SmartDashboard.putNumber("Pivot Pow: ", pivotMotor.get());
+    SmartDashboard.putNumber("Pivot Motor Pow: ", pivotMotor.get());
     SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
     // SmartDashboard.putNumber("Abs", KFF);
   }

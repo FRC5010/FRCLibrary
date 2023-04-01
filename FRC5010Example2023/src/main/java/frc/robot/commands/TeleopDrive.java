@@ -71,9 +71,6 @@ public class TeleopDrive extends CommandBase {
     double xVelocity = vX.getAsDouble();
     double yVelocity = vY.getAsDouble();
     double angVelocity = omega.getAsDouble() * 0.5;
-    SmartDashboard.putNumber("vX", xVelocity);
-    SmartDashboard.putNumber("vY", yVelocity);
-    SmartDashboard.putNumber("omega", angVelocity);
     if (headingCorrection) {
       // Estimate the desired angle in radians.
       angle += (angVelocity * (timer.get() - lastTime)) * controller.config.maxAngularVelocity;
@@ -89,9 +86,12 @@ public class TeleopDrive extends CommandBase {
           Rotation2d.fromRadians(correctedChassisSpeeds.omegaRadiansPerSecond * dtConstant));
       Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
 
-      ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx /
-          dtConstant, twistVel.dy / dtConstant,
-          twistVel.dtheta / dtConstant);
+      ChassisSpeeds updatedChassisSpeed = correctedChassisSpeeds;
+      if (driveMode.getAsBoolean()) {
+        updatedChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(twistVel.dx /
+            dtConstant, twistVel.dy / dtConstant,
+            twistVel.dtheta / dtConstant, swerve.getHeading());
+      }
 
       swerve.drive(
           SwerveController.getTranslation2d(updatedChassisSpeed),

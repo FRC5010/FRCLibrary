@@ -6,6 +6,8 @@ package frc.robot.FRC5010.telemetery;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class WpiDataLogging {
@@ -20,6 +22,8 @@ public class WpiDataLogging {
             DataLogManager.start();
             DriverStation.startDataLog(DataLogManager.getLog(), false);
             DataLogManager.logNetworkTables(true);
+
+            Shuffleboard.getTab("Robot").addBoolean("Logging", () -> logging);
         }
     }
 

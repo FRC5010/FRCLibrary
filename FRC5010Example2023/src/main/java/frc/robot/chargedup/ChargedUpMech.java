@@ -41,7 +41,7 @@ public class ChargedUpMech extends GenericMechanism {
         private ButtonBoard buttonOperator;
         private final double kElevatorMaxSpeedLimit = 1;
         private final double kElevatorMinSpeedLimit = 0.25;
-        private final double kSpinMaxSpeed = 0.5;
+        private final double kSpinMaxSpeed = 0.6;
         private final double kSpinLowSpeed = 0.35;
         private double speedLimit = kElevatorMaxSpeedLimit;
         private double intakeSpeedLimit = kSpinMaxSpeed;
@@ -192,6 +192,8 @@ public class ChargedUpMech extends GenericMechanism {
 
                 driver.setRightTrigger(driver.createRightTrigger());
                 driver.setLeftTrigger(driver.createLeftTrigger());
+
+                driver.createUpPovButton().whileTrue(new HomePivot(pivotSubsystem));
 
                 // operator.setRightTrigger(operator.createRightTrigger());
                 // operator.setLeftTrigger(operator.createLeftTrigger());
