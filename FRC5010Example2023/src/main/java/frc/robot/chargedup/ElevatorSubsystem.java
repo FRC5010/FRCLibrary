@@ -53,7 +53,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private static final double kCarriageMass = 10.0; // kg
 
   public static final double kMinElevatorHeight = Units.inchesToMeters(30);
-  public static final double kMaxElevatorHeight = Units.inchesToMeters(81);
+  public static final double kMaxElevatorHeight = ElevatorLevel.high.getExtensionPosition();// Units.inchesToMeters(81);
 
   private double insideTheBumpers = kMinElevatorHeight + 0.1;
   private double outsideTheBumpers = kMinElevatorHeight + 0.5;
@@ -136,7 +136,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean isCloseToMaxHardStop() {
-    return (getExtendPosition() > kMaxElevatorHeight - Units.inchesToMeters(1));
+    return (getExtendPosition() > kMaxElevatorHeight - Units.inchesToMeters(4));
   }
 
   public boolean closeToTarget() {

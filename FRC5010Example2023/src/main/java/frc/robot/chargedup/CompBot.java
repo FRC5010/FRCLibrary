@@ -8,31 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.opencv.video.Video;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionLimeLight;
 import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.commands.ElapseTime;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -47,8 +43,6 @@ import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.DriveToTrajectory;
-import frc.robot.commands.DriveToTrajectory.LCR;
 import frc.robot.commands.HomeElevator;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
@@ -112,7 +106,8 @@ public class CompBot extends GenericMechanism {
             new Rotation3d(0, 0, Units.degreesToRadians(-90))));
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
-    visionTab.addCamera("DriverCam", "DriverCam", "10.50.10.11").withSize(3, 3);
+    visionTab.addCamera("DriverCam", "DriverCam", "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,
+        4);
 
     // Ports need to be changed when comp bot is ready
     List<SwervePorts> swervePorts = new ArrayList<>();
@@ -146,23 +141,33 @@ public class CompBot extends GenericMechanism {
 
     autoMaps.addMarker("ExtendToGround",
         new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground));
+
+    autoMaps.addMarker("ExtendToHigh",
+        new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.high));
+
     autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem,
         ElevatorLevel.ground));
     autoMaps.addMarker("PivotToLow", new PivotElevator(pivotSubsystem,
         ElevatorLevel.low));
     autoMaps.addMarker("PivotToMid", new PivotElevator(pivotSubsystem,
         ElevatorLevel.medium));
-    // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
-    // ElevatorLevel.high));
+    autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
+        ElevatorLevel.high));
     autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
 
     // Intake Controls
     autoMaps.addMarker("ConeMode",
         new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem).withTimeout(0.25));
     autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
+
+    autoMaps.addMarker("CubeModeTimed",
+        new SequentialCommandGroup(
+            new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem),
+            new WaitCommand(.25)));
+
     autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -1.0).withTimeout(0.25));
     autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
-    autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.45).withTimeout(.25)));
+    autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
     autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
     autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
     // Drivetrain Controls
@@ -186,17 +191,17 @@ public class CompBot extends GenericMechanism {
     autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
     autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
     autoMaps.addPath("6-3 Score", new PathConstraints(1.75, 1));
-    autoMaps.addPath("6-3 Three Cubes", new PathConstraints(4, 1.5));
+    autoMaps.addPath("6-3 Three Cubes", new PathConstraints(4, 2));
+    autoMaps.addPath("6-3 Three Cones", new PathConstraints(4, 2.5));
 
     autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
     autoMaps.addPath("Bal Over 7-2", new PathConstraints(1.75, 1));
     autoMaps.addPath("Bal Over 7-2 Slow", new PathConstraints(1.75, 1));
     autoMaps.addPath("Bal Direct 7-2", new PathConstraints(1.75, 1));
 
-    autoMaps.addPath("8-1 Cube", new PathConstraints(2, 1.2));
     autoMaps.addPath("8-1 Cube Out", new PathConstraints(1.75, 1));
     autoMaps.addPath("8-1 Score", new PathConstraints(1.75, 1));
-    autoMaps.addPath("8-1 Three Cubes", new PathConstraints(4, 1.75));
+    autoMaps.addPath("8-1 Three Cubes", new PathConstraints(4, 2));
 
     // autoMaps.addPath("Command Test", new PathConstraints(4, 1.75));
   }
