@@ -27,15 +27,15 @@
     {
       "anchorPoint": {
         "x": 6.2854623786170665,
-        "y": 4.27
+        "y": 4.35
       },
       "prevControl": {
         "x": 2.5768928810584892,
-        "y": 5.016597547740551
+        "y": 5.096597547740551
       },
       "nextControl": {
         "x": 2.5768928810584892,
-        "y": 5.016597547740551
+        "y": 5.096597547740551
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -78,15 +78,15 @@
     },
     {
       "anchorPoint": {
-        "x": 6.5850208973145214,
-        "y": 3.771284088022722
+        "x": 6.53,
+        "y": 3.82
       },
       "prevControl": {
-        "x": 6.038457986006882,
-        "y": 3.9079248158496376
+        "x": 5.9834370886923605,
+        "y": 3.9566407278269153
       },
       "nextControl": null,
-      "holonomicAngle": -57.16306461644572,
+      "holonomicAngle": -54.55,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -94,10 +94,9 @@
       "stopEvent": {
         "names": [
           "ConeMode",
-          "PivotToHigh",
-          "HomeElevator"
+          "Cone Retract"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
