@@ -8,13 +8,13 @@ import java.io.File;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -27,6 +27,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,9 +39,9 @@ import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.commands.JoystickToSwerve;
-import frc.robot.commands.TeleopDrive;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.SwerveModule;
 import swervelib.math.SwerveKinematics2;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -51,6 +52,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   private ChassisSpeeds chassisSpeeds;
   private PowerDistribution powerDistributionHub;
   private GenericGyro gyro;
+  private int issueCounter = 0;
 
   public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants,
       String swerveType, VisionSystem visionSystem) {
@@ -121,6 +123,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public void periodic() {
     swerveDrive.updateOdometry();
     poseEstimator.update();
+    hasIssues();
 
     // SmartDashboard.putNumber("FL Wheel Current",
     // powerDistributionHub.getCurrent(1));
@@ -192,6 +195,30 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    */
   public void postTrajectory(Trajectory trajectory) {
     swerveDrive.postTrajectory(trajectory);
+  }
+
+  @Override
+  public boolean hasIssues() {
+
+    issueCounter++;
+    if (issueCounter > 10) {
+      issueCounter = 0;
+      boolean doesCanIssues = RobotController.getCANStatus().transmitErrorCount
+          + RobotController.getCANStatus().receiveErrorCount > 0;
+
+      Translation2d currTranslation = getPoseEstimator().getCurrentPose().getTranslation();
+      boolean positionOk = (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit) &&
+          (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit) &&
+          (!Double.isNaN(currTranslation.getX()) &&
+              !Double.isNaN(currTranslation.getY()));
+
+      if (doesCanIssues) {
+        System.err.println("********************************CAN no likey********************************");
+      }
+      return !positionOk || doesCanIssues;
+    }
+
+    return false;
   }
 
   public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
@@ -319,36 +346,23 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   @Override
   public void drive(ChassisSpeeds direction) {
+    // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
+    // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
+    double dtConstant = 0.009;
+    Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * dtConstant,
+        direction.vyMetersPerSecond * dtConstant,
+        Rotation2d.fromRadians(direction.omegaRadiansPerSecond * dtConstant));
+    Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
 
-    Translation2d currTranslation = getPoseEstimator().getCurrentPose().getTranslation();
-    if (!DriverStation.isAutonomous() ||
-        (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit) &&
-            (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit) &&
-            (!Double.isNaN(currTranslation.getX()) &&
-                !Double.isNaN(currTranslation.getY()))) {
+    ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx /
+        dtConstant, twistVel.dy / dtConstant,
+        twistVel.dtheta / dtConstant);
 
-      // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
-      // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-      double dtConstant = 0.009;
-      Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * dtConstant,
-          direction.vyMetersPerSecond * dtConstant,
-          Rotation2d.fromRadians(direction.omegaRadiansPerSecond * dtConstant));
-      Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
+    setChassisSpeeds(updatedChassisSpeed);
 
-      ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx /
-          dtConstant, twistVel.dy / dtConstant,
-          twistVel.dtheta / dtConstant);
-
-      setChassisSpeeds(updatedChassisSpeed);
-
-      // System.out.println((System.currentTimeMillis() - pastTime) / 1000);
-      // pastTime = System.currentTimeMillis();
-      // setChassisSpeeds(direction);
-
-    } else {
-      System.err.println("******CRITICAL ERROR******: Pose Outside of Bounds " + currTranslation);
-      setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
-    }
+    // System.out.println((System.currentTimeMillis() - pastTime) / 1000);
+    // pastTime = System.currentTimeMillis();
+    // setChassisSpeeds(direction);
 
     SmartDashboard.putNumber("Robot Vel X", getRobotVelocity().vxMetersPerSecond);
     SmartDashboard.putNumber("Robot Vel Y", getRobotVelocity().vyMetersPerSecond);

@@ -69,7 +69,8 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "OuttakeSlow"
+          "OuttakeSlower",
+          "HomeElevator"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "after",
@@ -139,6 +140,12 @@
       "names": [
         "ExtendToGround",
         "IntakeLong"
+      ]
+    },
+    {
+      "position": 1.9418181818180855,
+      "names": [
+        "ExtendToLoading"
       ]
     }
   ]

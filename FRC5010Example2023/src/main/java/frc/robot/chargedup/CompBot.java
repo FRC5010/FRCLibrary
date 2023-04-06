@@ -93,17 +93,21 @@ public class CompBot extends GenericMechanism {
         PoseStrategy.MULTI_TAG_PNP);
 
     // y = +- 27.75 / 2, x = 2.5, z = 36.75
-    multiVision.addPhotonCamera("LeftCamera",
-        new Transform3d( // This describes the vector between the camera lens to the robot center on the
-                         // ground
-            new Translation3d(Units.inchesToMeters(27.75 / 2), Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)),
-            new Rotation3d(0, 0, Units.degreesToRadians(90))));
+    // multiVision.addPhotonCamera("LeftCamera",
+    // new Transform3d( // This describes the vector between the camera lens to the
+    // robot center on the
+    // // ground
+    // new Translation3d(Units.inchesToMeters(27.75 / 2), Units.inchesToMeters(2.5),
+    // Units.inchesToMeters(36.75)),
+    // new Rotation3d(0, 0, Units.degreesToRadians(90))));
 
-    multiVision.addPhotonCamera("RightCamera",
-        new Transform3d( // This describes the vector between the camera lens to the robot center on the
-                         // ground
-            new Translation3d(-Units.inchesToMeters(27.75 / 2), Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)),
-            new Rotation3d(0, 0, Units.degreesToRadians(-90))));
+    // multiVision.addPhotonCamera("RightCamera",
+    // new Transform3d( // This describes the vector between the camera lens to the
+    // robot center on the
+    // // ground
+    // new Translation3d(-Units.inchesToMeters(27.75 / 2),
+    // Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)),
+    // new Rotation3d(0, 0, Units.degreesToRadians(-90))));
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
     visionTab.addCamera("DriverCam", "DriverCam", "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,
@@ -142,8 +146,14 @@ public class CompBot extends GenericMechanism {
     autoMaps.addMarker("ExtendToGround",
         new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground));
 
+    autoMaps.addMarker("ExtendToLoading",
+        new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.loading).andThen(new WaitCommand(0.1)));
+
     autoMaps.addMarker("ExtendToHigh",
         new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.high));
+
+    autoMaps.addMarker("ExtendToConePickUp",
+        new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.conePickUp));
 
     autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem,
         ElevatorLevel.ground));
@@ -151,13 +161,14 @@ public class CompBot extends GenericMechanism {
         ElevatorLevel.low));
     autoMaps.addMarker("PivotToMid", new PivotElevator(pivotSubsystem,
         ElevatorLevel.medium));
+
     autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
         ElevatorLevel.high));
     autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
 
     // Intake Controls
     autoMaps.addMarker("ConeMode",
-        new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem).withTimeout(0.25));
+        new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem).andThen(new WaitCommand(0.25)));
     autoMaps.addMarker("CubeMode", new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
 
     autoMaps.addMarker("CubeModeTimed",
@@ -166,8 +177,10 @@ public class CompBot extends GenericMechanism {
             new WaitCommand(.25)));
 
     autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -1.0).withTimeout(0.25));
-    autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.55).withTimeout(.25)));
+    autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
+    autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.5).withTimeout(.25)));
     autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
+    autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.2).withTimeout(0.25));
     autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
     autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
     // Drivetrain Controls
@@ -185,6 +198,9 @@ public class CompBot extends GenericMechanism {
             .deadlineWith(new IntakeSpin(intakeSubsystem, () -> 1.0)));
 
     autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
+        .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem)));
+
+    autoMaps.addMarker("Cone Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.high)
         .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem)));
 
     // Create Paths

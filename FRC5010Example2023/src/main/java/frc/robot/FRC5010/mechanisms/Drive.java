@@ -354,7 +354,7 @@ public class Drive extends GenericMechanism {
     public Command generateAutoCommand(List<PathPlannerTrajectory> path) {
         return autoBuilder.fullAuto(path).beforeStarting(() -> {
             drivetrain.resetEncoders();
-        });
+        }).until(() -> drivetrain.hasIssues());
     }
 
     public void disabledBehavior() {

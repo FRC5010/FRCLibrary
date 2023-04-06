@@ -31,7 +31,7 @@ import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 public class PivotSubsystem extends SubsystemBase {
   /** Creates a new PivotSubsystem. */
 
-  public static final double pivotOffset = -13.2; // -14.04;
+  public static final double pivotOffset = ElevatorLevel.ground.getPivotPosition(); // -14.04;
   private final double pivotConversionFactor = 24.242;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;

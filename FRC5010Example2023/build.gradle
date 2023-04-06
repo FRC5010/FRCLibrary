@@ -19,10 +19,10 @@ deploy {
             // want to store a team number in this file.
             team = project.frc.getTeamNumber()
             debug = project.frc.getDebugOrDefault(false)
-
+            //checkImage = false
             artifacts {
                 // First part is artifact name, 2nd is artifact type
-                // getTargetTypeClass is a shortcut to get the class type using a string
+                // getTargetTypeClass is a shortcut tIo get the class type using a string
 
                 frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
                 }

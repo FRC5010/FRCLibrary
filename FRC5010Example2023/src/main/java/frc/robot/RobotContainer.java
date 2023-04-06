@@ -72,6 +72,7 @@ public class RobotContainer extends GenericMechanism {
         RobotConstantsDef.robotVisualV.getInteger());
     SmartDashboard.putData("Robot Visual", mechVisual);
 
+    DriverStation.silenceJoystickConnectionWarning(true);
     alliance = determineAllianceColor();
     initRealOrSim();
 

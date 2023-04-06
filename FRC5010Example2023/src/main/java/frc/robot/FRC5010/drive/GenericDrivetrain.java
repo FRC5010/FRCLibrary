@@ -81,6 +81,10 @@ public abstract class GenericDrivetrain extends SubsystemBase {
                 () -> isFieldOrientedDrive);
     }
 
+    public boolean hasIssues() {
+        return false;
+    }
+
     public void resetEncoders() {
     }
 
