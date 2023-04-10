@@ -7,7 +7,7 @@ public enum ElevatorLevel {
   low(1.2, -8),
   loading(0.9797, 26.2986),
   medium(1.4967, 26.7928),
-  high(1.970, 30.657),
+  high(1.980, 30.657),
   auto(Units.inchesToMeters(30), 31.583),
   conePickUp(1.47, ground.getPivotPosition());
 

@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -66,6 +67,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     }
     poseEstimator = new DrivetrainPoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
+
+    Shuffleboard.getTab("Drive").addBoolean("Has Issues", () -> hasIssues()).withPosition(9, 1);
 
     // swerveDrive.setModuleStates();
     // powerDistributionHub = new PowerDistribution(1, ModuleType.kRev);
@@ -197,12 +200,15 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.postTrajectory(trajectory);
   }
 
+  private int badConnections = 0;
+
   @Override
   public boolean hasIssues() {
 
     issueCounter++;
     if (issueCounter > 10) {
       issueCounter = 0;
+
       boolean doesCanIssues = RobotController.getCANStatus().transmitErrorCount
           + RobotController.getCANStatus().receiveErrorCount > 0;
 
@@ -215,9 +221,15 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
       if (doesCanIssues) {
         System.err.println("********************************CAN no likey********************************");
       }
-      return !positionOk || doesCanIssues;
-    }
 
+      if (doesCanIssues) {
+        badConnections++;
+      } else {
+        badConnections = 0;
+      }
+
+      return badConnections > 5 || !positionOk;
+    }
     return false;
   }
 
@@ -340,7 +352,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
   }
 
-  private double lowLimit = Units.inchesToMeters(0);
+  private double lowLimit = Units.inchesToMeters(-1);
   private double highXLimit = Units.feetToMeters(26);
   private double highYLimit = Units.feetToMeters(27);
 

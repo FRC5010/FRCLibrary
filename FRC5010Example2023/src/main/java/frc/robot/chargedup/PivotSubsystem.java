@@ -142,20 +142,16 @@ public class PivotSubsystem extends SubsystemBase {
 
       if (isPivotMaxHardStop(pow) || atTarget) {
         powerFactor = 0;
-        System.out.println("isPivotMaxHardStop(pow) || atTarget -- 0");
       } else if ((isCloseToMaxHardStop()) || closeToTarget) {
         powerFactor = 0.25;
-        System.out.println("isCloseToMaxHardStop()) || closeToTarget -- 0.25");
       }
 
     } else {
 
       if (isPivotMinHardStop(pow) || atTarget) {
         powerFactor = 0;
-        System.out.println("isPivotMinHardStop(pow) || atTarget -- 0");
       } else if (isCloseToMinHardStop() || closeToTarget) {
         powerFactor = 0.25;
-        System.out.println("isCloseToMinHardStop() || closeToTarget -- 0.25");
       }
 
     }

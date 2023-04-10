@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.DrivePorts;
@@ -188,6 +188,9 @@ public class Drive extends GenericMechanism {
         // Put commands that can be both real and simulation afterwards
         driver.createBButton().onTrue(new InstantCommand(() -> drivetrain.toggleFieldOrientedDrive()));
         driver.createStartButton().onTrue(new InstantCommand(() -> drivetrain.resetOrientation()));
+        driver.createLeftBumper().whileTrue(new RunCommand(() -> {
+            drivetrain.lockWheels();
+        }, drivetrain));
     }
 
     public GenericDrivetrain getDrivetrain() {
@@ -354,7 +357,7 @@ public class Drive extends GenericMechanism {
     public Command generateAutoCommand(List<PathPlannerTrajectory> path) {
         return autoBuilder.fullAuto(path).beforeStarting(() -> {
             drivetrain.resetEncoders();
-        }).until(() -> drivetrain.hasIssues());
+        });// .until(() -> drivetrain.hasIssues());
     }
 
     public void disabledBehavior() {
