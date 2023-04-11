@@ -2,15 +2,15 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.8936892419239386,
-        "y": 4.9919412566097865
+        "x": 1.8726675914890312,
+        "y": 4.933080635392041
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.676114715865795,
-        "y": 4.964613111044405
+        "x": 6.420351302241069,
+        "y": 4.83673140423204
       },
-      "holonomicAngle": -179.42706130231656,
+      "holonomicAngle": -180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -18,34 +18,8 @@
       "stopEvent": {
         "names": [
           "ExtendToHigh",
-          "CubeModeTimed",
-          "HomeElevator"
+          "CubeMode"
         ],
-        "executionBehavior": "sequential",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 5.204478866227434,
-        "y": 4.5
-      },
-      "prevControl": {
-        "x": 4.653831944027524,
-        "y": 4.481815872722655
-      },
-      "nextControl": {
-        "x": 5.609383462572082,
-        "y": 4.513371248286829
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -53,16 +27,16 @@
     },
     {
       "anchorPoint": {
-        "x": 6.362541763545067,
-        "y": 4.5
+        "x": 6.2854623786170665,
+        "y": 4.35
       },
       "prevControl": {
-        "x": 5.977144838905064,
-        "y": 4.5
+        "x": 2.5768928810584892,
+        "y": 5.096597547740551
       },
       "nextControl": {
-        "x": 5.977144838905064,
-        "y": 4.5
+        "x": 2.5768928810584892,
+        "y": 5.096597547740551
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -78,15 +52,15 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8845798600688113,
-        "y": 4.45
+        "x": 1.8,
+        "y": 4.43
       },
       "prevControl": {
-        "x": 6.084004895282518,
+        "x": 6.115989331978664,
         "y": 5.174128893712333
       },
       "nextControl": {
-        "x": 6.084004895282518,
+        "x": 6.115989331978664,
         "y": 5.174128893712333
       },
       "holonomicAngle": 180.0,
@@ -109,12 +83,15 @@
         "y": 3.82
       },
       "prevControl": {
-        "x": 5.97469231302099,
-        "y": 3.953471725125269
+        "x": 4.792049295637055,
+        "y": 6.09890633242805
       },
-      "nextControl": null,
+      "nextControl": {
+        "x": 4.792049295637055,
+        "y": 6.09890633242805
+      },
       "holonomicAngle": -54.55,
-      "isReversal": false,
+      "isReversal": true,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
@@ -127,17 +104,45 @@
         "waitBehavior": "none",
         "waitTime": 0
       }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.7859532834450307,
+        "y": 4.422429710244036
+      },
+      "prevControl": {
+        "x": 5.264160528321059,
+        "y": 4.605493249448038
+      },
+      "nextControl": null,
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "OuttakeSlow"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
     }
   ],
+  "maxVelocity": 4.0,
+  "maxAcceleration": 2.5,
+  "isReversed": null,
   "markers": [
     {
-      "position": 0.1,
+      "position": 0.01,
       "names": [
-        "HomePivot"
+        "HomePivot",
+        "HomeElevator"
       ]
     },
     {
-      "position": 1.1,
+      "position": 0.65,
       "names": [
         "PivotToGround",
         "ExtendToGround",
@@ -145,24 +150,36 @@
       ]
     },
     {
-      "position": 2.1,
+      "position": 1.05,
       "names": [
-        "Intake",
         "HomeElevator",
-        "PivotToHigh"
+        "PivotToMid",
+        "Intake"
       ]
     },
     {
-      "position": 3.1,
+      "position": 2.05,
       "names": [
         "PivotToGround"
       ]
     },
     {
-      "position": 3.71,
+      "position": 2.6,
       "names": [
         "ExtendToGround",
         "IntakeLong"
+      ]
+    },
+    {
+      "position": 1.9418181818180855,
+      "names": [
+        "ExtendToLoading"
+      ]
+    },
+    {
+      "position": 2.0290909090908698,
+      "names": [
+        "HomeElevator"
       ]
     }
   ]

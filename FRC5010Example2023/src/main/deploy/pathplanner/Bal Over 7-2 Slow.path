@@ -17,7 +17,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake"
+          "ExtendToHigh",
+          "OuttakeSlower"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
@@ -132,6 +133,12 @@
       "position": 0.2618181818181732,
       "names": [
         "HomePivot"
+      ]
+    },
+    {
+      "position": 0.029090909090915714,
+      "names": [
+        "HomeElevator"
       ]
     }
   ]
