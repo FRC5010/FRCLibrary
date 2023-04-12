@@ -8,26 +8,35 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /** Add your docs here. */
+
+// ENUM for all colors
 public enum Color {
     WHITE(255, 255, 255),
-    BLACK(0, 0, 0),
+    OFF(0, 0, 0),
     RED(255, 0, 0),
     GREEN(0, 255, 0),
+    BLUE(0, 0, 255),
     ORANGE(255, 50, 30),
-    BLUE(0, 0, 255);
+    PURPLE(100, 0, 255),
+    YELLOW(210, 255, 0);
 
     private Color8Bit color;
 
     private Color(int red, int green, int blue) {
+
+        // using the integers in the enum we make a new Color8Bit
         this.color = new Color8Bit(red, green, blue);
     }
 
     public Color8Bit getColor8Bit() {
+        // using the integers in each enum return the Color8bit
         return color;
     }
 
     public Color8Bit getColor8BitAlpha(double alphaPercent) {
 
+        // change the intensity of the led color.
+        // keeps it between 0 and 100 percent intensity
         alphaPercent = MathUtil.clamp(alphaPercent, 0, 100) / 100;
         int red = (int) (color.red * alphaPercent);
         int green = (int) (color.green * alphaPercent);

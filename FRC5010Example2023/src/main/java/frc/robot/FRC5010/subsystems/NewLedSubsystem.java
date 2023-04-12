@@ -4,14 +4,41 @@
 
 package frc.robot.FRC5010.subsystems;
 
+import java.util.ArrayList;
+
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class NewLedSubsystem extends SubsystemBase {
   /** Creates a new NewLedSubsystem. */
-  public NewLedSubsystem() {}
+  private AddressableLED m_led;
+  private AddressableLEDBuffer m_ledBuffer;
+  private AddressableLEDBuffer m_ledOff;
+
+  private ArrayList<LEDStripSegment> ledStripSegments; // Might need to be implemented differently
+
+  public NewLedSubsystem(int port, int length) {
+    m_led = new AddressableLED(port);
+    m_ledBuffer = new AddressableLEDBuffer(length);
+    m_ledOff = new AddressableLEDBuffer(length);
+
+    m_led.setLength(m_ledBuffer.getLength());
+
+    this.ledStripSegments.add(new LEDStripSegment(0, length, Color.OFF));
+
+    for (int i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledOff.setRGB(i, 0, 0, 0);
+    }
+    // taking the data created above and inserting it into the leds
+    m_led.setData(m_ledBuffer);
+    m_led.start();
+
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
   }
 }

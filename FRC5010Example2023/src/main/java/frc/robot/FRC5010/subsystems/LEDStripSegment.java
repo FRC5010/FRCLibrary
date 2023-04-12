@@ -9,8 +9,9 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 /** Add your docs here. */
 public class LEDStripSegment {
 
-    int start, end;
-    Color color;
+    private int start, end;
+    private String currentLedAction = "ON";
+    private Color color;
 
     public LEDStripSegment(int start, int end, Color color) {
         this.start = start;
@@ -18,19 +19,21 @@ public class LEDStripSegment {
         this.color = color;
     }
 
+    // solid color on
     public Color8Bit on() {
         return color.getColor8Bit();
     }
 
     public Color8Bit off() {
-        return Color.BLACK.getColor8Bit();
+        return Color.OFF.getColor8Bit();
     }
 
+    // blink based on time
     public Color8Bit blink(long onTime, long offTime) {
         if (System.currentTimeMillis() % (onTime + offTime) <= onTime) {
             return color.getColor8Bit();
         }
-        return Color.BLACK.getColor8Bit();
+        return Color.OFF.getColor8Bit();
     }
 
     public Color8Bit flame(int scalar, int currLedPos) {
@@ -49,4 +52,7 @@ public class LEDStripSegment {
 
     }
 
+    public String getCurrentAction() {
+        return currentLedAction;
+    }
 }

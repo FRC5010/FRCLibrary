@@ -41,20 +41,12 @@ public class LedDefaultCommand extends CommandBase {
     if (lastState != ledSubsystem.getLedConeMode()) {
       if (ledSubsystem.getLedConeMode()) {
         // ledSubsystem.setOrbit(210, 255, 0, 0, 0, 0, .1);
-        if (elevator.isExtendAtTarget()) {
-          ledSubsystem.setSolidColor(210, 255, 0);
-        } else {
-          ledSubsystem.setBlink(210, 255, 0, 200);
-        }
+        ledSubsystem.setBlink(210, 255, 0, 200);
         // (210, 255, 0);
         // ledSubsystem.speed(1);
       } else {
         // ledSubsystem.setOrbit(100, 0, 255, 0, 0, 0, .1);
-        if (elevator.isExtendAtTarget()) {
-          ledSubsystem.setSolidColor(100, 0, 255);
-        } else {
-          ledSubsystem.setBlink(100, 0, 255, 200);
-        }
+        ledSubsystem.setBlink(100, 0, 255, 200);
         // ledSubsystem.setSolidColor(100, 0, 255);
         // ledSubsystem.speed(2);
 
