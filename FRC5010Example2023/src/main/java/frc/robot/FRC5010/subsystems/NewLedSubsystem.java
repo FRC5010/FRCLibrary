@@ -16,9 +16,6 @@ public class NewLedSubsystem extends SubsystemBase {
   private AddressableLEDBuffer m_ledBuffer;
   private AddressableLEDBuffer m_ledOff;
 
-  private boolean ledConeMode = false;
-  private Color currColor = Color.OFF;
-  private String currAction = "OFF";
   private ArrayList<LEDStripSegment> ledStripSegments; // Might need to be implemented differently
 
   public NewLedSubsystem(int port, int length) {
@@ -28,8 +25,11 @@ public class NewLedSubsystem extends SubsystemBase {
 
     m_led.setLength(m_ledBuffer.getLength());
 
-    this.ledStripSegments.add(new LEDStripSegment(0, length, currColor));
+    this.ledStripSegments.add(new LEDStripSegment(0, length, Color.OFF));
 
+    for (int i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledOff.setRGB(i, 0, 0, 0);
+    }
     // taking the data created above and inserting it into the leds
     m_led.setData(m_ledBuffer);
     m_led.start();
@@ -41,19 +41,4 @@ public class NewLedSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
   }
-
-  private void setColor(Color color) {
-    for (LEDStripSegment stripSegment : ledStripSegments) {
-      stripSegment.setColor(color);
-    }
-  }
-
-  public void togglePickUp() {
-    ledConeMode = !ledConeMode;
-  }
-
-  public boolean getLedConeMode() {
-    return ledConeMode;
-  }
-
 }
