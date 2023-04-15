@@ -94,8 +94,8 @@ public class CompBot extends GenericMechanism {
                 // y = +- 27.75 / 2, x = 2.5, z = 36.75
                 multiVision.addPhotonCamera("LeftCamera",
                                 new Transform3d( // This describes the vector between the camera lens to the
-                                                // robot center on the
-                                                // ground
+                                                 // robot center on the
+                                                 // ground
                                                 new Translation3d(Units.inchesToMeters(27.75 / 2),
                                                                 Units.inchesToMeters(2.5),
                                                                 Units.inchesToMeters(36.75)),
@@ -103,8 +103,8 @@ public class CompBot extends GenericMechanism {
 
                 multiVision.addPhotonCamera("RightCamera",
                                 new Transform3d( // This describes the vector between the camera lens to the
-                                                // robot center on the
-                                                // ground
+                                                 // robot center on the
+                                                 // ground
                                                 new Translation3d(-Units.inchesToMeters(27.75 / 2),
                                                                 Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)),
                                                 new Rotation3d(0, 0, Units.degreesToRadians(-90))));
@@ -151,6 +151,8 @@ public class CompBot extends GenericMechanism {
                                 new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.loading)
                                                 .andThen(new WaitCommand(0.1)));
 
+                autoMaps.addMarker("ExtendToMid", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium));
+
                 autoMaps.addMarker("ExtendToHigh",
                                 new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.high));
 
@@ -181,11 +183,11 @@ public class CompBot extends GenericMechanism {
                                                                 intakeSubsystem),
                                                 new WaitCommand(.25)));
 
-                autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -1.0).withTimeout(0.25));
+                autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -0.85).withTimeout(0.25));
                 autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
                 autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.5).withTimeout(.25)));
                 autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
-                autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.2).withTimeout(0.25));
+                autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.1).withTimeout(0.25));
                 autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
                 autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
                 // Drivetrain Controls
