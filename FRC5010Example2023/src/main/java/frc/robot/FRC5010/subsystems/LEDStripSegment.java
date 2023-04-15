@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 public class LEDStripSegment {
 
     private int start, end;
-    private String currentLedAction = "ON";
+    private String currentLedAction = "OFF";
     private Color color;
 
     public LEDStripSegment(int start, int end, Color color) {
@@ -21,15 +21,18 @@ public class LEDStripSegment {
 
     // solid color on
     public Color8Bit on() {
+        currentLedAction = "ON";
         return color.getColor8Bit();
     }
 
     public Color8Bit off() {
+        currentLedAction = "OFF";
         return Color.OFF.getColor8Bit();
     }
 
     // blink based on time
     public Color8Bit blink(long onTime, long offTime) {
+        currentLedAction = "BLINK";
         if (System.currentTimeMillis() % (onTime + offTime) <= onTime) {
             return color.getColor8Bit();
         }
@@ -37,19 +40,23 @@ public class LEDStripSegment {
     }
 
     public Color8Bit flame(int scalar, int currLedPos) {
-
+        currentLedAction = "FLAME";
         if (currLedPos < scalar) {
-            return color.getColor8BitAlpha(70 + (Math.random() * 40));
+            return color.getColor8BitAlpha(50 + (Math.random() * 40));
         } else if (currLedPos < scalar * 1.3) {
             return color.getColor8BitAlpha(30 + (Math.random() * 40));
         } else if (currLedPos < scalar * 2) {
-            return color.getColor8BitAlpha(0 + (Math.random() * 40));
+            return color.getColor8BitAlpha(Math.random() * 40);
         }
         return color.getColor8BitAlpha(((Math.random() * 30) - 29) * 20);
     }
 
     public void chase() {
+        currentLedAction = "CHASE";
+    }
 
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public String getCurrentAction() {

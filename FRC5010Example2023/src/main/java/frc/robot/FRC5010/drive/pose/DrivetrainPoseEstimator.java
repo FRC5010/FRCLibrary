@@ -51,9 +51,7 @@ public class DrivetrainPoseEstimator {
 
   private String getFormattedPose() {
     var pose = getCurrentPose();
-    return String.format("(%.2f, %.2f)",
-        Units.metersToInches(pose.getX()),
-        Units.metersToInches(pose.getY()));
+    return String.format("(%.2f, %.2f)", pose.getX(), pose.getY());
   }
 
   public Pose2d getCurrentPose() {

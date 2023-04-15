@@ -109,6 +109,15 @@ public class CompBot extends GenericMechanism {
                                                                 Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)),
                                                 new Rotation3d(0, 0, Units.degreesToRadians(-90))));
 
+                multiVision.addPhotonCamera("ForwardCam",
+                                new Transform3d( // This describes the vector between the camera lens to the
+                                                 // robot center on the
+                                                 // ground
+                                                new Translation3d(-Units.inchesToMeters(9.469),
+                                                                -Units.inchesToMeters(5.525),
+                                                                Units.inchesToMeters(14.146)),
+                                                new Rotation3d(0, 0, 0)));
+
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 visionTab.addCamera("DriverCam", "DriverCam", "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,
                                 4);
