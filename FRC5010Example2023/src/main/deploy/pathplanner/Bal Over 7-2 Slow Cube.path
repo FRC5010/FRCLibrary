@@ -2,40 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.853397745257031,
-        "y": 3.2469690900920267
+        "x": 1.8778355388379817,
+        "y": 2.7330744533101043
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4562153128426254,
-        "y": 3.2679687492616196
-      },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [
-          "Outtake"
-        ],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 4.15614436998105,
-        "y": 2.74
-      },
-      "prevControl": {
-        "x": 3.96051746427079,
-        "y": 2.74
-      },
-      "nextControl": {
-        "x": 4.351771275691309,
-        "y": 2.74
+        "x": 2.0734624445482406,
+        "y": 2.7330744533101043
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -158,37 +131,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8726675914890312,
-        "y": 2.649603856900022
+        "x": 3.7532506448750413,
+        "y": 2.6530262475646205
       },
       "prevControl": {
-        "x": 3.3031512943169616,
-        "y": 2.6405320822180105
-      },
-      "nextControl": {
-        "x": 3.3031512943169616,
-        "y": 2.6405320822180105
-      },
-      "holonomicAngle": 180.0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 3.8574617533850466,
-        "y": 2.6206990875520217
-      },
-      "prevControl": {
-        "x": 2.219524823665034,
-        "y": 2.6206990875520217
+        "x": 4.793877319566338,
+        "y": 2.675897163491901
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -211,13 +159,13 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.11636363636369558,
+      "position": -0.8836363636363044,
       "names": [
         "HomePivot"
       ]
     },
     {
-      "position": 3.05,
+      "position": 2.05,
       "names": [
         "PivotToMid",
         "HomeElevator",
@@ -225,7 +173,7 @@
       ]
     },
     {
-      "position": 2.454545454545454,
+      "position": 1.4545454545454541,
       "names": [
         "PivotToGround",
         "ExtendToGround",
