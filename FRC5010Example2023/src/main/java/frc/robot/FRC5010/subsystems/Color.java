@@ -16,7 +16,7 @@ public enum Color {
     RED(255, 0, 0),
     GREEN(0, 255, 0),
     BLUE(0, 0, 255),
-    ORANGE(255, 50, 30),
+    ORANGE(255, 165, 30),
     PURPLE(100, 0, 255),
     YELLOW(210, 255, 0);
 
@@ -37,7 +37,7 @@ public enum Color {
 
         // change the intensity of the led color.
         // keeps it between 0 and 100 percent intensity
-        alphaPercent = MathUtil.clamp(alphaPercent, 0, 100) / 100;
+        alphaPercent = MathUtil.clamp(alphaPercent, 0, 85) / 100;
         int red = (int) (color.red * alphaPercent);
         int green = (int) (color.green * alphaPercent);
         int blue = (int) (color.blue * alphaPercent);

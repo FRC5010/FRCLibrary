@@ -16,6 +16,10 @@ public class NewLedSubsystem extends SubsystemBase {
   private AddressableLEDBuffer m_ledBuffer;
   private AddressableLEDBuffer m_ledOff;
 
+  private boolean ledConeMode = false;
+  private Color currColor = Color.OFF;
+  private String currAction = "OFF";
+
   private ArrayList<LEDStripSegment> ledStripSegments; // Might need to be implemented differently
 
   public NewLedSubsystem(int port, int length) {
@@ -25,7 +29,7 @@ public class NewLedSubsystem extends SubsystemBase {
 
     m_led.setLength(m_ledBuffer.getLength());
 
-    this.ledStripSegments.add(new LEDStripSegment(0, length, Color.OFF));
+    this.ledStripSegments.add(new LEDStripSegment(0, length, currColor));
 
     for (int i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledOff.setRGB(i, 0, 0, 0);
