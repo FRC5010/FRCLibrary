@@ -17,9 +17,11 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "OuttakeFast"
+          "ExtendToMid",
+          "OuttakeSlow",
+          "HomeElevator"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -76,22 +78,49 @@
     },
     {
       "anchorPoint": {
-        "x": 6.4,
-        "y": 0.72
+        "x": 5.308472927930163,
+        "y": 0.7661756835639195
       },
       "prevControl": {
-        "x": 6.5481769690812115,
-        "y": 0.5249848754242974
+        "x": 5.324645107674291,
+        "y": 0.7661756835639195
       },
       "nextControl": {
-        "x": 6.5481769690812115,
-        "y": 0.5249848754242974
+        "x": 5.324645107674291,
+        "y": 0.7661756835639195
       },
       "holonomicAngle": 0,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "ExtendToGround"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.509196014112427,
+        "y": 0.9148366370912484
+      },
+      "prevControl": {
+        "x": 5.262731096075601,
+        "y": 0.7433047676366398
+      },
+      "nextControl": {
+        "x": 5.262731096075601,
+        "y": 0.7433047676366398
+      },
+      "holonomicAngle": 0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",
@@ -253,7 +282,7 @@
     }
   ],
   "maxVelocity": null,
-  "maxAcceleration": 1.75,
+  "maxAcceleration": 2.0,
   "isReversed": null,
   "markers": [
     {
@@ -263,9 +292,8 @@
       ]
     },
     {
-      "position": 2.5,
+      "position": 3.35,
       "names": [
-        "ExtendToGround",
         "IntakeLong",
         "PivotToGround"
       ]
@@ -279,7 +307,7 @@
       ]
     },
     {
-      "position": 8.5,
+      "position": 9.5,
       "names": [
         "PivotToGround",
         "ExtendToGround",
@@ -287,9 +315,21 @@
       ]
     },
     {
-      "position": 6.1,
+      "position": 7.1,
       "names": [
         "PivotToGround"
+      ]
+    },
+    {
+      "position": 6.763636363636028,
+      "names": [
+        "ExtendToLoading"
+      ]
+    },
+    {
+      "position": 7.272727272726884,
+      "names": [
+        "HomeElevator"
       ]
     }
   ]

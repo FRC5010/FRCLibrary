@@ -227,6 +227,11 @@ public class ChargedUpMech extends GenericMechanism {
                 driver.createDownPovButton()
                                 .onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
+                driver.createXButton().onTrue(new InstantCommand(() -> {
+                        elevatorSubsystem.toggleOverride();
+                        pivotSubsystem.toggleOverride();
+                }, elevatorSubsystem, pivotSubsystem));
+
                 operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2).negate());
                 operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 

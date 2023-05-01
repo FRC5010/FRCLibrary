@@ -195,7 +195,7 @@ public class PivotSubsystem extends SubsystemBase {
     if (override) {
       return false;
     }
-    return !pivotHallEffect.get();
+    return !pivotHallEffect.get(); // && !override;
   }
 
   public boolean isPivotMaxPosition() {

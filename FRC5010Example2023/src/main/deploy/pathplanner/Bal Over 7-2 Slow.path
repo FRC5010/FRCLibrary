@@ -17,10 +17,11 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "ExtendToHigh",
-          "OuttakeSlower"
+          "ExtendToMid",
+          "OuttakeSlow",
+          "HomeElevator"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -77,18 +78,18 @@
     },
     {
       "anchorPoint": {
-        "x": 5.5,
-        "y": 2.7965802295240962
+        "x": 5.62065268361306,
+        "y": 2.8037626267560243
       },
       "prevControl": {
-        "x": 6.499999999999988,
-        "y": 2.7965802295240962
+        "x": 6.620652683613048,
+        "y": 2.8037626267560243
       },
       "nextControl": {
-        "x": 4.780358833444939,
-        "y": 2.7965802295240962
+        "x": 4.9010115170579995,
+        "y": 2.8037626267560243
       },
-      "holonomicAngle": -90.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -110,7 +111,7 @@
         "y": 2.8230324729880234
       },
       "nextControl": null,
-      "holonomicAngle": -90.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -130,15 +131,9 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.2618181818181732,
+      "position": 0.1,
       "names": [
         "HomePivot"
-      ]
-    },
-    {
-      "position": 0.029090909090915714,
-      "names": [
-        "HomeElevator"
       ]
     }
   ]

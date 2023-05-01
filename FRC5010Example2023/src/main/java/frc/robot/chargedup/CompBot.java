@@ -196,7 +196,7 @@ public class CompBot extends GenericMechanism {
                 autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
                 autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.5).withTimeout(.25)));
                 autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
-                autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.1).withTimeout(0.25));
+                autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.2).withTimeout(0.25));
                 autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
                 autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
                 // Drivetrain Controls

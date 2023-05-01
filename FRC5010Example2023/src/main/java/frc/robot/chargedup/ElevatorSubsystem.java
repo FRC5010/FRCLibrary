@@ -72,6 +72,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double currentExtendTarget;
 
   private boolean usingTarget = false;
+  private boolean override = false;
   private ElevatorLevel currentLevel = ElevatorLevel.ground; // Unsure of whether this should be stored in subsystem
 
   // TODO Implement ElevatorFeefForward
@@ -129,6 +130,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Extend P", extendPID.getkP());
 
+  }
+
+  public void toggleOverride() {
+    override = !override;
   }
 
   public boolean isCloseToMinHardStop() {
@@ -243,7 +248,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean atMinHardStop(double pow) {
-    return isElevatorIn() && pow < 0;
+    return isElevatorIn() && pow < 0; // && !override;
   }
 
   public boolean atMaxHardStop(double pow) {
