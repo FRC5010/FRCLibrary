@@ -1,0 +1,94 @@
+{
+  "HALProvider": {
+    "Timing": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Pose/Field": "Field2d",
+      "/Shuffleboard/Robot/Auto Modes": "String Chooser",
+      "/SmartDashboard/Drive Visual": "Mechanism2d",
+      "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Pigeon 2 [11]": "Gyro",
+      "/SmartDashboard/Pigeon 2 [13]": "Gyro",
+      "/SmartDashboard/Robot Visual": "Mechanism2d"
+    },
+    "windows": {
+      "/Shuffleboard/Pose/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Robot/Auto Modes": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Drive Visual": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Visual": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
+    "persistent": {
+      "Preferences": {
+        "open": true
+      }
+    },
+    "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
+      "LiveWindow": {
+        "open": true
+      },
+      "Preferences": {
+        "open": true
+      },
+      "Shuffleboard": {
+        "Pose": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "open": true,
+        "swerve": {
+          "open": true
+        }
+      },
+      "photonvision": {
+        "HP_Wide_Vision_HD": {
+          "open": true
+        },
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    }
+  }
+}
