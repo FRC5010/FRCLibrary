@@ -119,8 +119,8 @@ public class CompBot extends GenericMechanism {
                                                 new Rotation3d(0, 0, 0)));
 
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
-                visionTab.addCamera("DriverCam", "DriverCam", "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,
-                                4);
+                // visionTab.addCamera("DriverCam", "DriverCam",
+                // "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,4);
 
                 // Ports need to be changed when comp bot is ready
                 List<SwervePorts> swervePorts = new ArrayList<>();
