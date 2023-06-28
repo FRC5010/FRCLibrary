@@ -134,6 +134,8 @@ public class Drive extends GenericMechanism {
                 break;
             }
         }
+        drivetrain.resetEncoders();
+        drivetrain.resetOrientation();
     }
 
     private void initializeYAGSLMK4ISwerveDrive() {

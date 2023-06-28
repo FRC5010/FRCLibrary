@@ -76,9 +76,9 @@ public class RobotContainer extends GenericMechanism {
     alliance = determineAllianceColor();
     initRealOrSim();
 
-    initAutoCommands();
     // Configure the button bindings
     configureButtonBindings(driver, operator);
+    initAutoCommands();
   }
 
   public static String WHO_AM_I = "WhoAmI";

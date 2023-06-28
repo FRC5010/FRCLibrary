@@ -23,17 +23,18 @@ public class SwerveDriveConfiguration
    */
   public boolean         invertedIMU = false;
   /**
-   * Max speed in meters per second.
+   * Max module speed in meters per second.
    */
-  public double          maxSpeed;
+  public double          maxSpeed, attainableMaxTranslationalSpeedMetersPerSecond,
+      attainableMaxRotationalVelocityRadiansPerSecond;
   /**
    * Number of modules on the robot.
    */
-  public int             moduleCount;
+  public int            moduleCount;
   /**
    * Swerve Modules.
    */
-  public SwerveModule[]  modules;
+  public SwerveModule[] modules;
 
   /**
    * Create swerve drive configuration.
@@ -52,6 +53,8 @@ public class SwerveDriveConfiguration
     this.moduleCount = moduleConfigs.length;
     this.imu = swerveIMU;
     this.maxSpeed = maxSpeed;
+    this.attainableMaxRotationalVelocityRadiansPerSecond = 0;
+    this.attainableMaxTranslationalSpeedMetersPerSecond = 0;
     this.invertedIMU = invertedIMU;
     this.modules = createModules(moduleConfigs);
     this.moduleLocationsMeters = new Translation2d[moduleConfigs.length];

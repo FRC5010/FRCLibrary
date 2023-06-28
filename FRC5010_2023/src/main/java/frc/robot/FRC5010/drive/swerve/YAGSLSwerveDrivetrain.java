@@ -128,6 +128,12 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     SmartDashboard.putNumber("FR Abs", swerveDrive.getModules()[1].getAbsolutePosition());
     SmartDashboard.putNumber("BL Abs", swerveDrive.getModules()[2].getAbsolutePosition());
     SmartDashboard.putNumber("BR Abs", swerveDrive.getModules()[3].getAbsolutePosition());
+
+    SmartDashboard.putNumber("FL Rel", swerveDrive.getModules()[0].getRelativePosition());
+    SmartDashboard.putNumber("FR Rel", swerveDrive.getModules()[1].getRelativePosition());
+    SmartDashboard.putNumber("BL Rel", swerveDrive.getModules()[2].getRelativePosition());
+    SmartDashboard.putNumber("BR Rel", swerveDrive.getModules()[3].getRelativePosition());
+
     // powerDistributionHub.getCurrent(1));
 
     // SmartDashboard.putNumber("FR Wheel Current",
