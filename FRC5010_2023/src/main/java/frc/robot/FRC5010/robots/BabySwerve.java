@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -38,10 +39,10 @@ public class BabySwerve extends GenericMechanism {
   public BabySwerve(Mechanism2d visual, ShuffleboardTab displayTab) {
     super(visual, displayTab);
     swerveConstants = new SwerveConstants(0.76835, 0.635);
-    swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
-    swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
-    swerveConstants.setkBackLeftAbsoluteOffsetRad(1.0 + Math.PI);
-    swerveConstants.setkBackRightAbsoluteOffsetRad(0.21 + Math.PI);
+    swerveConstants.setkFrontLeftAbsoluteOffsetRad(-0.238);
+    swerveConstants.setkFrontRightAbsoluteOffsetRad(3.14);
+    swerveConstants.setkBackLeftAbsoluteOffsetRad(-1.034);
+    swerveConstants.setkBackRightAbsoluteOffsetRad(-0.214);
     swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
     swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
     swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.4);
@@ -70,7 +71,7 @@ public class BabySwerve extends GenericMechanism {
 
     GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-    drive = new Drive(vision, gyro, Drive.Type.YAGSL_THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
+    drive = new Drive(vision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
     // multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
   }
 
