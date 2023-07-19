@@ -271,10 +271,12 @@ public class SwerveModule {
     } else {
       angle = getRelativePosition();
     }
+
     angle %= 360;
     if (angle < 0.0) {
       angle += 360;
     }
+    System.out.println(moduleNumber + " Angle: " + angle);
 
     return angle;
   }
