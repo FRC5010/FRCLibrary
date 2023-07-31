@@ -31,7 +31,7 @@ import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 public class PivotSubsystem extends SubsystemBase {
   /** Creates a new PivotSubsystem. */
 
-  public static final double pivotOffset = ElevatorLevel.ground.getPivotPosition(); // -14.04;
+  public static final double pivotOffset = ArmLevel.ground.getPivotPosition(); // -14.04;
   private final double pivotConversionFactor = 24.242;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
@@ -52,7 +52,7 @@ public class PivotSubsystem extends SubsystemBase {
   private double currentPivotTarget;
 
   public PivotSubsystem(MotorController5010 pivot, GenericPID pivotPID, MotorModelConstants liftConstants,
-      int pivotHallEffectPort, int pivotMaxHallEffectPort, Supplier<Double> extendPos, Mechanism2d mech2d) {
+      int pivotHallEffectPort, int pivotMaxHallEffectPort, Mechanism2d mech2d) {
     this.currentPivotTarget = 0;
 
     this.pivotMotor = pivot;
@@ -76,7 +76,7 @@ public class PivotSubsystem extends SubsystemBase {
     pivotController.setFeedbackDevice(pivotEncoder);
     pivotController.setOutputRange(-1, 1);
 
-    pivotEncoder.setPosition(ElevatorLevel.auto.getPivotPosition());
+    pivotEncoder.setPosition(ArmLevel.auto.getPivotPosition());
     // TODO Set FF and IZ
     pivotController.setFF(0);
     pivotController.setIZone(kIz);
@@ -177,10 +177,11 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage() {
-    return (0.2 + 0.3 *
-        ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
-            / (ElevatorSubsystem.kMaxElevatorHeight - ElevatorSubsystem.kMinElevatorHeight)))
-        * Math.cos(Units.degreesToRadians(getPivotPosition()));
+    return (0.2 + 0.3 * 1 // replace this with the arm length
+    // ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
+    // / (ElevatorSubsystem.kMaxElevatorHeight -
+    // ElevatorSubsystem.kMinElevatorHeight)))
+        * Math.cos(Units.degreesToRadians(getPivotPosition())));
   }
 
   public boolean isPivotAtTarget() {

@@ -2,7 +2,7 @@ package frc.robot.chargedup;
 
 import edu.wpi.first.math.util.Units;
 
-public enum ElevatorLevel {
+public enum ArmLevel {
   ground(1.345, -10.1),
   low(1.2, -8),
   loading(0.9797, 26.2986),
@@ -13,7 +13,7 @@ public enum ElevatorLevel {
 
   private double extension, pivot;
 
-  private ElevatorLevel(double extension, double pivot) {
+  private ArmLevel(double extension, double pivot) {
     this.extension = extension;
     this.pivot = pivot;
   }
