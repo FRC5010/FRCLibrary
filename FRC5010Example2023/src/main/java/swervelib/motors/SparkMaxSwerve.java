@@ -255,6 +255,10 @@ public class SparkMaxSwerve extends SwerveMotor {
    */
   @Override
   public void burnFlash() {
+    try {
+      Thread.sleep(200);
+    } catch (Exception e) {
+    }
     motor.burnFlash();
   }
 

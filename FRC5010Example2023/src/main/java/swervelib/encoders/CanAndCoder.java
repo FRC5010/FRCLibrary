@@ -8,7 +8,7 @@ import swervelib.motors.SwerveMotor;
 /**
  * SparkMax absolute encoder, attached through the data port.
  */
-public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder {
+public class CanAndCoder extends SwerveAbsoluteEncoder {
 
   /**
    * The {@link AbsoluteEncoder} representing the duty cycle encoder attached to
@@ -22,7 +22,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder {
    *
    * @param motor Motor to create the encoder from.
    */
-  public SparkMaxEncoderSwerve(SwerveMotor motor) {
+  public CanAndCoder(SwerveMotor motor) {
     if (motor.getMotor() instanceof CANSparkMax) {
       encoder = ((CANSparkMax) motor.getMotor()).getAbsoluteEncoder(Type.kDutyCycle);
     } else {
@@ -63,7 +63,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder {
    */
   @Override
   public double getAbsolutePosition() {
-    return (encoder.getPosition());
+    return (encoder.getPosition() * 360);
   }
 
   /**
