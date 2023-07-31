@@ -31,7 +31,7 @@ import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
 import frc.robot.FRC5010.robots.PracticeBot;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
-import frc.robot.chargedup.CompBot;
+import frc.robot.chargedup.CubeCruzer;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -121,7 +121,7 @@ public class RobotContainer extends GenericMechanism {
 
     switch (whichRobot) {
       case Robots.COMP_BOT_2023: {
-        robot = new CompBot(mechVisual, shuffleTab);
+        robot = new CubeCruzer(mechVisual, shuffleTab);
         break;
       }
       case Robots.BABY_SWERVE: {
@@ -137,7 +137,7 @@ public class RobotContainer extends GenericMechanism {
         break;
       }
       default: {
-        robot = new CompBot(mechVisual, shuffleTab);
+        robot = new CubeCruzer(mechVisual, shuffleTab);
         break;
       }
     }

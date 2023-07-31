@@ -27,46 +27,38 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.HomeElevator;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.LedDefaultCommand;
-import frc.robot.commands.MoveElevator;
-import frc.robot.commands.PivotElevator;
+import frc.robot.commands.PivotArm;
 
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {
-        private ElevatorSubsystem elevatorSubsystem;
         private IntakeSubsystem intakeSubsystem;
         private PivotSubsystem pivotSubsystem;
         private ButtonBoard buttonOperator;
-        private final double kElevatorMaxSpeedLimit = 1;
-        private final double kElevatorMinSpeedLimit = 0.25;
+        private final double kArmMaxSpeedLimit = 1;
+        private final double kArmMinSpeedLimit = 0.25;
         private final double kSpinMaxSpeed = 0.6;
         private final double kSpinLowSpeed = 0.35;
-        private double speedLimit = kElevatorMaxSpeedLimit;
+        private double speedLimit = kArmMaxSpeedLimit;
         private double intakeSpeedLimit = kSpinMaxSpeed;
         private boolean ledConePickUp = false;
         private LedSubsystem ledSubsystem;
 
-        private ElevatorLevel elevatorLevel = ElevatorLevel.ground;
+        private ArmLevel armLevel = ArmLevel.ground;
 
         public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator,
                         LedSubsystem ledSubsystem) {
                 super(robotMechVisual, shuffleTab);
                 // use this to PID the Elevator
                 // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
-                this.elevatorSubsystem = new ElevatorSubsystem(
-                                MotorFactory.NEO(11), new GenericPID(8, 0, 0),
-                                new MotorModelConstants(1, 1, 1),
-                                mechVisual, 0, 3, () -> pivotSubsystem.getPivotPosition());
-
                 this.pivotSubsystem = new PivotSubsystem(
                                 MotorFactory.NEO(9),
                                 new GenericPID(12, 0.0, 0.03),
                                 new MotorModelConstants(1, 1, 1),
                                 1, 8,
-                                () -> elevatorSubsystem.getExtendPosition(), mechVisual);
+                                mechVisual);
 
                 this.intakeSubsystem = new IntakeSubsystem(
                                 MotorFactory.NEO(19),
@@ -84,32 +76,22 @@ public class ChargedUpMech extends GenericMechanism {
         public void configureButtonBindings(Controller driver, Controller operator) {
 
                 // Move to current extend level
-                buttonOperator.getButton(1)
-                                .whileTrue(new MoveElevator(elevatorSubsystem, () -> elevatorLevel));
-
-                operator.createUpPovButton().whileTrue(new MoveElevator(elevatorSubsystem, () -> elevatorLevel));
-
-                buttonOperator.getButton(2)
-                                .whileTrue(new HomeElevator(elevatorSubsystem, pivotSubsystem));
-
-                operator.createDownPovButton().whileTrue(new HomeElevator(elevatorSubsystem, pivotSubsystem));
-
                 buttonOperator.getButton(6)
                                 .onTrue(
                                                 new SequentialCommandGroup(
                                                                 new InstantCommand(() -> {
-                                                                        elevatorLevel = ElevatorLevel.ground;
+                                                                        armLevel = ArmLevel.ground;
                                                                 }),
-                                                                new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
+                                                                new PivotArm(pivotSubsystem, ArmLevel.ground)
 
                                                 ));
 
                 operator.createAButton().onTrue(
                                 new SequentialCommandGroup(
                                                 new InstantCommand(() -> {
-                                                        elevatorLevel = ElevatorLevel.ground;
+                                                        armLevel = ArmLevel.ground;
                                                 }),
-                                                new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
+                                                new PivotArm(pivotSubsystem, ArmLevel.ground)
 
                                 ));
 
@@ -117,16 +99,16 @@ public class ChargedUpMech extends GenericMechanism {
                                 .onTrue(
                                                 new SequentialCommandGroup(
                                                                 new InstantCommand(
-                                                                                () -> elevatorLevel = ElevatorLevel.loading),
-                                                                new PivotElevator(pivotSubsystem, ElevatorLevel.loading)
+                                                                                () -> armLevel = ArmLevel.loading),
+                                                                new PivotArm(pivotSubsystem, ArmLevel.loading)
 
                                                 ));
 
                 operator.createXButton().onTrue(
                                 new SequentialCommandGroup(
                                                 new InstantCommand(
-                                                                () -> elevatorLevel = ElevatorLevel.loading),
-                                                new PivotElevator(pivotSubsystem, ElevatorLevel.loading)
+                                                                () -> armLevel = ArmLevel.loading),
+                                                new PivotArm(pivotSubsystem, ArmLevel.loading)
 
                                 ));
 
@@ -134,15 +116,15 @@ public class ChargedUpMech extends GenericMechanism {
                                 .onTrue(
                                                 new SequentialCommandGroup(
                                                                 new InstantCommand(
-                                                                                () -> elevatorLevel = ElevatorLevel.medium),
-                                                                new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
+                                                                                () -> armLevel = ArmLevel.medium),
+                                                                new PivotArm(pivotSubsystem, ArmLevel.medium)
 
                                                 ));
                 operator.createYButton().onTrue(
                                 new SequentialCommandGroup(
                                                 new InstantCommand(
-                                                                () -> elevatorLevel = ElevatorLevel.medium),
-                                                new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
+                                                                () -> armLevel = ArmLevel.medium),
+                                                new PivotArm(pivotSubsystem, ArmLevel.medium)
 
                                 ));
 
@@ -150,23 +132,23 @@ public class ChargedUpMech extends GenericMechanism {
                                 .onTrue(
                                                 new SequentialCommandGroup(
                                                                 new InstantCommand(
-                                                                                () -> elevatorLevel = ElevatorLevel.high),
-                                                                new PivotElevator(pivotSubsystem, ElevatorLevel.high)));
+                                                                                () -> armLevel = ArmLevel.high),
+                                                                new PivotArm(pivotSubsystem, ArmLevel.high)));
 
                 operator.createBButton().onTrue(
                                 new SequentialCommandGroup(
                                                 new InstantCommand(
-                                                                () -> elevatorLevel = ElevatorLevel.high),
-                                                new PivotElevator(pivotSubsystem, ElevatorLevel.high)));
+                                                                () -> armLevel = ArmLevel.high),
+                                                new PivotArm(pivotSubsystem, ArmLevel.high)));
 
                 buttonOperator.getButton(7)
                                 .onTrue(new InstantCommand(() -> {
-                                        speedLimit = kElevatorMinSpeedLimit;
+                                        speedLimit = kArmMinSpeedLimit;
                                         intakeSpeedLimit = kSpinLowSpeed;
                                 }))
                                 .onFalse(new InstantCommand(() -> {
                                         intakeSpeedLimit = kSpinMaxSpeed;
-                                        speedLimit = kElevatorMaxSpeedLimit;
+                                        speedLimit = kArmMaxSpeedLimit;
                                 }));
 
                 buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {
@@ -228,9 +210,8 @@ public class ChargedUpMech extends GenericMechanism {
                                 .onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
                 driver.createXButton().onTrue(new InstantCommand(() -> {
-                        elevatorSubsystem.toggleOverride();
                         pivotSubsystem.toggleOverride();
-                }, elevatorSubsystem, pivotSubsystem));
+                }, pivotSubsystem));
 
                 operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2).negate());
                 operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
@@ -242,36 +223,13 @@ public class ChargedUpMech extends GenericMechanism {
                 return intakeSubsystem;
         }
 
-        public ElevatorSubsystem getElevatorSubsystem() {
-                return elevatorSubsystem;
-        }
-
         public PivotSubsystem getPivotSubsystem() {
                 return pivotSubsystem;
         }
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
-                elevatorSubsystem.setDefaultCommand(new FunctionalCommand(
-                                () -> {
-                                },
-                                () -> {
-                                        pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit
-                                                        + operator.getRightYAxis(), true);
-                                        // elevatorSubsystem.extendPow((elevatorSubsystem.atMinHardStop(buttonOperator.getXAxis())
-                                        // ? 0 : buttonOperator.getXAxis()) * speedLimit - operator.getLeftYAxis());
-                                        elevatorSubsystem.extendPow(buttonOperator.getXAxis() * speedLimit
-                                                        - operator.getLeftYAxis());
-
-                                },
-                                (Boolean interrupted) -> {
-                                        pivotSubsystem.pivotPow(0, true);
-                                        elevatorSubsystem.extendPow(0);
-                                },
-                                () -> false,
-                                elevatorSubsystem));
-
-                ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem, elevatorSubsystem));
+                ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem));
         }
 
         @Override
