@@ -4,7 +4,6 @@
 
 package frc.robot.chargedup;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +21,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
@@ -30,12 +28,9 @@ import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
-import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -60,6 +55,14 @@ public class CubeCruzer extends GenericMechanism {
 
         public CubeCruzer(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
+                swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
+
+                // Baby Swerve values need to be changed
+                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
+                swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+
+                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.1);
+                swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
 
                 ledSubsystem = new LedSubsystem(1, 187);
                 ledSubsystem.off();
@@ -77,23 +80,6 @@ public class CubeCruzer extends GenericMechanism {
                                                                 Units.inchesToMeters(2.5),
                                                                 Units.inchesToMeters(36.75)),
                                                 new Rotation3d(0, 0, Units.degreesToRadians(90))));
-
-                multiVision.addPhotonCamera("RightCamera",
-                                new Transform3d( // This describes the vector between the camera lens to the
-                                                 // robot center on the
-                                                 // ground
-                                                new Translation3d(-Units.inchesToMeters(27.75 / 2),
-                                                                Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)),
-                                                new Rotation3d(0, 0, Units.degreesToRadians(-90))));
-
-                multiVision.addPhotonCamera("ForwardCam",
-                                new Transform3d( // This describes the vector between the camera lens to the
-                                                 // robot center on the
-                                                 // ground
-                                                new Translation3d(-Units.inchesToMeters(9.469),
-                                                                -Units.inchesToMeters(5.525),
-                                                                Units.inchesToMeters(14.146)),
-                                                new Rotation3d(0, 0, 0)));
 
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",

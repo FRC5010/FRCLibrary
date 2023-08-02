@@ -229,6 +229,19 @@ public class ChargedUpMech extends GenericMechanism {
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
+                pivotSubsystem.setDefaultCommand(new FunctionalCommand(
+                                () -> {
+                                },
+                                () -> {
+                                        pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit
+                                                        + operator.getRightYAxis(), true);
+
+                                },
+                                (Boolean interrupted) -> {
+                                        pivotSubsystem.pivotPow(0, true);
+                                },
+                                () -> false,
+                                pivotSubsystem));
                 ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem));
         }
 

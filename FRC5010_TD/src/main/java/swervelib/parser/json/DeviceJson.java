@@ -4,7 +4,7 @@ import com.revrobotics.SparkMaxRelativeEncoder.Type;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
-import swervelib.encoders.CanAndCoder;
+import swervelib.encoders.CanAndCoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.imu.ADIS16448Swerve;
@@ -51,7 +51,7 @@ public class DeviceJson {
       case "attached":
         return null;
       case "canandcoder":
-        return new CanAndCoder(motor);
+        return new CanAndCoderSwerve(motor);
       case "thrifty":
       case "throughbore":
       case "dutycycle":
