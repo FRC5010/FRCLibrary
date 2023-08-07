@@ -54,19 +54,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
     this.m_mech2d = m_mech2d;
     // TODO: Find values for mech 2D once intake is made "0"
-    m_mech2dRoot = m_mech2d.getRoot("Intake Root", 0, 0);
+    m_mech2dRoot = m_mech2d.getRoot("Intake Root", 10, 10);
     m_intakeLeft1Mech2d = m_mech2dRoot.append(
         new MechanismLigament2d(
-            "Intake L1", Units.metersToInches(0), 0));
-    m_intakeLeft2Mech2d = m_mech2dRoot.append(
-        new MechanismLigament2d(
-            "Intake L2", Units.metersToInches(0), 0));
+            "Intake L1", Units.metersToInches(0.1), 0));
     m_intakeRight1Mech2d = m_mech2dRoot.append(
         new MechanismLigament2d(
-            "Intake R1", Units.metersToInches(0), 0));
-    m_intakeRight2Mech2d = m_mech2dRoot.append(
-        new MechanismLigament2d(
-            "Intake R2", Units.metersToInches(0), 0));
+            "Intake R1", Units.metersToInches(0.1), 0));
 
     intakeController.setP(intakePID.getkP());
     intakeController.setI(intakePID.getkI());
@@ -79,12 +73,16 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setVelocity(double velocity) {
     this.setPoint = velocity;
     intakeController.setReference(this.setPoint, CANSparkMax.ControlType.kVelocity, 0);
+    m_intakeLeft1Mech2d.setAngle(velocity / 5500 * 360);
+    m_intakeRight1Mech2d.setAngle(velocity / 5500 * 360);
   }
 
   public void stopIntake() {
     this.setPoint = 0;
     // intakeController.setReference(0, CANSparkMax.ControlType.kVelocity, 0);
     intake.set(0);
+    m_intakeLeft1Mech2d.setAngle(0);
+    m_intakeRight1Mech2d.setAngle(0);
   }
 
   public void toggleIntake() {
@@ -108,6 +106,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void setMotor(double speed) {
     intake.set(speed);
+    m_intakeLeft1Mech2d.setAngle(speed * 360);
+    m_intakeRight1Mech2d.setAngle(speed * 360);
   }
 
   public boolean isIntakeCone() {

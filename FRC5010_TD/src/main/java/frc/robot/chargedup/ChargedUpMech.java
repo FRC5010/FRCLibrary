@@ -66,7 +66,7 @@ public class ChargedUpMech extends GenericMechanism {
                                 new MotorModelConstants(0, 0, 0),
                                 new GenericPID(0.003, 0, 0),
                                 new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
-                                robotMechVisual);
+                                mechVisual);
                 // TODO: Set up IntakeSubsystem add correct values please
                 this.buttonOperator = buttonOperator;
                 this.ledSubsystem = ledSubsystem;
