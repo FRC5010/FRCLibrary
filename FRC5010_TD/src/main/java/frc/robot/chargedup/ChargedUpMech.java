@@ -56,7 +56,7 @@ public class ChargedUpMech extends GenericMechanism {
                 this.pivotSubsystem = new PivotSubsystem(
                                 MotorFactory.NEO(9),
                                 new GenericPID(12, 0.0, 0.03),
-                                new MotorModelConstants(1, 1, 1),
+                                new MotorModelConstants(0.25, 4.51, 0),
                                 1, 8,
                                 mechVisual);
 
