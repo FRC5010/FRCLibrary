@@ -68,9 +68,9 @@ public class PivotSubsystem extends SubsystemBase {
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
 
-    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
-        40, 2, Units.degreesToRadians(-20),
-        Units.degreesToRadians(60), false);
+    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 9,
+        0.48, 0.82, Units.degreesToRadians(0),
+        Units.degreesToRadians(150), true);
 
     pivotFeedforward = new ArmFeedforward(liftConstants.getkS(), liftConstants.getkF(), liftConstants.getkV());
 
@@ -186,11 +186,13 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage() {
-    return (0.2 + 0.3 * 1 // replace this with the arm length
+    return pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
+
+    // (0.2 + 0.3 * 1 // replace this with the arm length
     // ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
     // / (ElevatorSubsystem.kMaxElevatorHeight -
     // ElevatorSubsystem.kMinElevatorHeight)))
-        * Math.cos(Units.degreesToRadians(getPivotPosition())));
+    // * Math.cos(Units.degreesToRadians(getPivotPosition())));
   }
 
   public boolean isPivotAtTarget() {
