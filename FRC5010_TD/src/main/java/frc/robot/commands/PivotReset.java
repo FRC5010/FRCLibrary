@@ -5,13 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.chargedup.PivotSubsystem;
+import frc.robot.chargedup.CubeCruzerPivotSubsystem;
 
 public class PivotReset extends CommandBase {
-  private PivotSubsystem pivotSubsystem;
+  private CubeCruzerPivotSubsystem pivotSubsystem;
 
   /** Creates a new PivotReset. */
-  public PivotReset(PivotSubsystem pivotSubsystem) {
+  public PivotReset(CubeCruzerPivotSubsystem pivotSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.pivotSubsystem = pivotSubsystem;
     addRequirements(pivotSubsystem);

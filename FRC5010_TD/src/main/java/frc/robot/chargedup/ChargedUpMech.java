@@ -35,7 +35,7 @@ import frc.robot.commands.PivotArm;
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {
         private IntakeSubsystem intakeSubsystem;
-        private PivotSubsystem pivotSubsystem;
+        private CubeCruzerPivotSubsystem pivotSubsystem;
         private ButtonBoard buttonOperator;
         private final double kArmMaxSpeedLimit = 1;
         private final double kArmMinSpeedLimit = 0.25;
@@ -53,10 +53,10 @@ public class ChargedUpMech extends GenericMechanism {
                 super(robotMechVisual, shuffleTab);
                 // use this to PID the Elevator
                 // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
-                this.pivotSubsystem = new PivotSubsystem(
+                this.pivotSubsystem = new CubeCruzerPivotSubsystem(
                                 MotorFactory.NEO(9),
                                 new GenericPID(12, 0.0, 0.03),
-                                new MotorModelConstants(0.25, 4.51, 0),
+                                new MotorModelConstants(0.25, 2.125, 0),
                                 1, 8,
                                 mechVisual);
 
@@ -223,7 +223,7 @@ public class ChargedUpMech extends GenericMechanism {
                 return intakeSubsystem;
         }
 
-        public PivotSubsystem getPivotSubsystem() {
+        public CubeCruzerPivotSubsystem getPivotSubsystem() {
                 return pivotSubsystem;
         }
 

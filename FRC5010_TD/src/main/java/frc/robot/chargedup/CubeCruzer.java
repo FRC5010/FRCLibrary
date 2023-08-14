@@ -100,7 +100,7 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps = new AutoMaps();
                 SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
                 IntakeSubsystem intakeSubsystem = ((ChargedUpMech) cubeArm).getIntakeSubsystem();
-                PivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
+                CubeCruzerPivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
 
                 // Elevator Controls
 
@@ -126,7 +126,7 @@ public class CubeCruzer extends GenericMechanism {
                                                 new WaitCommand(.25)));
 
                 autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -0.85).withTimeout(0.25));
-                autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
+                autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -1.0).withTimeout(.25)));
                 autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.5).withTimeout(.25)));
                 autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
                 autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.2).withTimeout(0.25));
@@ -135,11 +135,20 @@ public class CubeCruzer extends GenericMechanism {
                 // Drivetrain Controls
                 autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
                 autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
+
+                autoMaps.addMarker("CheeseStickOut", new InstantCommand(() -> swerveDrivetrain.lockWheels())); // Add
+                                                                                                               // CheesestickOut
+                                                                                                               // command
+                autoMaps.addMarker("CheeseStickIn", new InstantCommand(() -> swerveDrivetrain.lockWheels())); // Add
+                                                                                                              // CheesestickIn
+                                                                                                              // command
+
                 // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
                 // Wheels"))));
 
                 // Create Paths
                 autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
+                autoMaps.addPath("6-3 Cube Multi", new PathConstraints(2, 1));
                 autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
                 autoMaps.addPath("6-3 Score", new PathConstraints(1.75, 1));
                 autoMaps.addPath("6-3 Three Piece", new PathConstraints(4, 2));
@@ -150,6 +159,7 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addPath("Bal Direct 7-2", new PathConstraints(1.75, 1));
 
                 autoMaps.addPath("8-1 Cube Out", new PathConstraints(1.75, 1));
+                autoMaps.addPath("8-1 Cube Multi", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Score", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Three Piece", new PathConstraints(4, 2));
 

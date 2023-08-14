@@ -7,14 +7,14 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.ArmLevel;
-import frc.robot.chargedup.PivotSubsystem;
+import frc.robot.chargedup.CubeCruzerPivotSubsystem;
 
 public class PivotArm extends CommandBase {
-  PivotSubsystem pivotSubsystem;
+  CubeCruzerPivotSubsystem pivotSubsystem;
   ArmLevel elevatorLevel;
 
   /** Creates a new PivotElevator. */
-  public PivotArm(PivotSubsystem pivot, ArmLevel elevatorLevel) {
+  public PivotArm(CubeCruzerPivotSubsystem pivot, ArmLevel elevatorLevel) {
     this.pivotSubsystem = pivot;
     this.elevatorLevel = elevatorLevel;
     addRequirements(pivot);

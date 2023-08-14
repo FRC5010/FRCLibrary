@@ -3,13 +3,13 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.chargedup.PivotSubsystem;
+import frc.robot.chargedup.CubeCruzerPivotSubsystem;
 
 public class PivotPower extends CommandBase {
-    private PivotSubsystem elevatorSubsystem;
+    private CubeCruzerPivotSubsystem elevatorSubsystem;
     private Supplier<Double> moveSpeed;
 
-    public PivotPower(PivotSubsystem elevatorSubsystem, Supplier<Double> moveSpeed) {
+    public PivotPower(CubeCruzerPivotSubsystem elevatorSubsystem, Supplier<Double> moveSpeed) {
         this.moveSpeed = moveSpeed;
         this.elevatorSubsystem = elevatorSubsystem;
         addRequirements(this.elevatorSubsystem);
