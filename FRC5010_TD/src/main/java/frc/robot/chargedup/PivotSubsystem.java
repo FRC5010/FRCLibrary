@@ -52,7 +52,7 @@ public class PivotSubsystem extends SubsystemBase {
   private double currentPivotTarget;
 
   public PivotSubsystem(MotorController5010 pivot, GenericPID pivotPID, MotorModelConstants liftConstants,
-      int pivotHallEffectPort, int pivotMaxHallEffectPort, Supplier<Double> extendPos, Mechanism2d mech2d) {
+      int pivotHallEffectPort, int pivotMaxHallEffectPort, Mechanism2d mech2d) {
     this.currentPivotTarget = 0;
 
     this.pivotMotor = pivot;
@@ -177,8 +177,10 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage() {
-    return (0.2 + 0.3 *
-        Math.cos(Units.degreesToRadians(getPivotPosition())));
+    return 0;/*
+              * (0.2 + 0.3 *
+              * Math.cos(Units.degreesToRadians(getPivotPosition())));
+              */
   }
 
   public boolean isPivotAtTarget() {
@@ -221,6 +223,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
 
     pivotMotor.set((pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0)));
+    SmartDashboard.putNumber("getFeedFowardVoltage", getFeedFowardVoltage());
   }
 
   // public boolean isMovementOk(double pow){

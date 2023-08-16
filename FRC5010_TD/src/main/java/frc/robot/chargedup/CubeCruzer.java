@@ -100,7 +100,7 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps = new AutoMaps();
                 SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
                 IntakeSubsystem intakeSubsystem = ((ChargedUpMech) cubeArm).getIntakeSubsystem();
-                CubeCruzerPivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
+                PivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
 
                 // Elevator Controls
 

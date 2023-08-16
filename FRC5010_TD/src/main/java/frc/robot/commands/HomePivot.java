@@ -7,12 +7,13 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.CubeCruzerPivotSubsystem;
+import frc.robot.chargedup.PivotSubsystem;
 
 public class HomePivot extends CommandBase {
   /** Creates a new HomePivot. */
-  CubeCruzerPivotSubsystem pivotSubsystem;
+  PivotSubsystem pivotSubsystem;
 
-  public HomePivot(CubeCruzerPivotSubsystem pivotSubsystem) {
+  public HomePivot(PivotSubsystem pivotSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.pivotSubsystem = pivotSubsystem;
     addRequirements(pivotSubsystem);

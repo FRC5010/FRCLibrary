@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.FRC5010.constants.GenericPID;
@@ -35,7 +34,7 @@ import frc.robot.commands.PivotArm;
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {
         private IntakeSubsystem intakeSubsystem;
-        private CubeCruzerPivotSubsystem pivotSubsystem;
+        private PivotSubsystem pivotSubsystem;
         private ButtonBoard buttonOperator;
         private final double kArmMaxSpeedLimit = 1;
         private final double kArmMinSpeedLimit = 0.25;
@@ -53,7 +52,7 @@ public class ChargedUpMech extends GenericMechanism {
                 super(robotMechVisual, shuffleTab);
                 // use this to PID the Elevator
                 // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
-                this.pivotSubsystem = new CubeCruzerPivotSubsystem(
+                this.pivotSubsystem = new PivotSubsystem(
                                 MotorFactory.NEO(9),
                                 new GenericPID(12, 0.0, 0.03),
                                 new MotorModelConstants(0.25, 2.125, 0),
@@ -223,7 +222,7 @@ public class ChargedUpMech extends GenericMechanism {
                 return intakeSubsystem;
         }
 
-        public CubeCruzerPivotSubsystem getPivotSubsystem() {
+        public PivotSubsystem getPivotSubsystem() {
                 return pivotSubsystem;
         }
 
