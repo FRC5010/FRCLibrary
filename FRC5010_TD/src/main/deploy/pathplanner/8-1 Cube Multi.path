@@ -18,7 +18,7 @@
       "stopEvent": {
         "names": [
           "PivotToHigh",
-          "Outtake"
+          "OuttakeFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -45,9 +45,10 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
+          "PivotToGround",
           "Intake"
         ],
-        "executionBehavior": "sequential",
+        "executionBehavior": "parallelDeadline",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -72,9 +73,12 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "Outake"
+          "PivotToHigh",
+          "CheeseStickOut",
+          "OuttakeFast",
+          "CheeseStickIn"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -99,9 +103,10 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
+          "PivotToGround",
           "Intake"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "parallelDeadline",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -126,7 +131,10 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "OuttakeFast"
+          "PivotToHigh",
+          "CheeseStickOut",
+          "OuttakeFast",
+          "CheeseStickIn"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
@@ -153,9 +161,10 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
+          "PivotToGround",
           "Intake"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "parallelDeadline",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -177,9 +186,10 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
+          "PivotToHigh",
           "OuttakeFast"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -192,38 +202,37 @@
     {
       "position": 0.07999999999999739,
       "names": [
-        "PivotToGround"
+        "PivotToLow"
       ]
     },
     {
       "position": 1.5272727272727273,
       "names": [
-        "event",
-        "PivotToHigh"
+        "PivotToMid"
       ]
     },
     {
       "position": 2.5090909090909097,
       "names": [
-        "PivotToGround"
+        "PivotToLow"
       ]
     },
     {
       "position": 3.38181818181818,
       "names": [
-        "PivotToHigh"
+        "PivotToMid"
       ]
     },
     {
       "position": 4.745454545454537,
       "names": [
-        "PivotToGround"
+        "PivotToLow"
       ]
     },
     {
       "position": 5.672727272727258,
       "names": [
-        "PivotToHigh"
+        "PivotToMid"
       ]
     }
   ]

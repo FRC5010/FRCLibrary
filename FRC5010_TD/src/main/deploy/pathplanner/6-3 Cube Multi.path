@@ -74,7 +74,9 @@
       "stopEvent": {
         "names": [
           "PivotToHigh",
-          "OuttakeFast"
+          "CheeseStickOut",
+          "OuttakeFast",
+          "CheeseStickIn"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -130,7 +132,9 @@
       "stopEvent": {
         "names": [
           "PivotToHigh",
-          "OuttakeFast"
+          "CheeseStickOut",
+          "OuttakeFast",
+          "CheeseStickIn"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -183,7 +187,9 @@
       "stopEvent": {
         "names": [
           "PivotToHigh",
-          "OuttakeFast"
+          "CheeseStickOut",
+          "OuttakeFast",
+          "CheeseStickIn"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
