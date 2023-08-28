@@ -37,6 +37,7 @@ import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
+import frc.robot.commands.CheeseStickCommand;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.PivotArm;
@@ -52,6 +53,7 @@ public class CubeCruzer extends GenericMechanism {
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
         private VisionSystem visionSystem;
+        private CheeseStick cheeseStick;
 
         public CubeCruzer(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
@@ -102,6 +104,8 @@ public class CubeCruzer extends GenericMechanism {
                 IntakeSubsystem intakeSubsystem = ((ChargedUpMech) cubeArm).getIntakeSubsystem();
                 PivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
 
+                cheeseStick = new CheeseStick(null, null, visual); // TODO: Add Motors and Stuff cause its brokey
+
                 // Elevator Controls
 
                 autoMaps.addMarker("PivotToGround", new PivotArm(pivotSubsystem,
@@ -136,12 +140,8 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
                 autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
 
-                autoMaps.addMarker("CheeseStickOut", new InstantCommand(() -> swerveDrivetrain.lockWheels())); // Add
-                                                                                                               // CheesestickOut
-                                                                                                               // command
-                autoMaps.addMarker("CheeseStickIn", new InstantCommand(() -> swerveDrivetrain.lockWheels())); // Add
-                                                                                                              // CheesestickIn
-                                                                                                              // command
+                autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90, cheeseStick));
+                autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
 
                 // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
                 // Wheels"))));
