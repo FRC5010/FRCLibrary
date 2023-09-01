@@ -174,7 +174,7 @@ public class Drive extends GenericMechanism {
 
         driver.setLeftXAxis(driver.createLeftXAxis().negate().deadzone(0.08).cubed());
         driver.setLeftYAxis(driver.createLeftYAxis().negate().deadzone(0.08).cubed());
-        driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.05));
+        driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.08));
         // driver.createXButton().whileTrue(new ChaseTag((SwerveDrivetrain) drivetrain,
         // () -> drivetrain.getPoseEstimator().getCurrentPose()));
 

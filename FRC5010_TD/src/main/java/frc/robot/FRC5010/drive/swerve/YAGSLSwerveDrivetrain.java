@@ -37,6 +37,7 @@ import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.commands.JoystickToSwerve;
+import frc.robot.commands.TeleopDrive;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveKinematics2;
@@ -77,9 +78,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
-    return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
-    // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented, true,
-    // true);
+    // return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
+    return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented, true,
+        true);
   }
 
   /**

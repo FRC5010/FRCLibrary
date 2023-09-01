@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -33,6 +35,7 @@ public class PivotSubsystem extends SubsystemBase {
 
   public static final double pivotOffset = ArmLevel.ground.getPivotPosition(); // -14.04;
   private final double pivotConversionFactor = 24.242;
+  private final double pivotMaxLimit = 150;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
@@ -50,6 +53,8 @@ public class PivotSubsystem extends SubsystemBase {
   private boolean usingTarget = false;
 
   private double currentPivotTarget;
+  private MechanismLigament2d pivotArmSim;
+  private MechanismRoot2d mech2dRoot;
 
   public PivotSubsystem(MotorController5010 pivot, GenericPID pivotPID, MotorModelConstants liftConstants,
       int pivotHallEffectPort, int pivotMaxHallEffectPort, Mechanism2d mech2d) {
@@ -64,9 +69,10 @@ public class PivotSubsystem extends SubsystemBase {
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
 
+    SmartDashboard.putNumber("MOI", SingleJointedArmSim.estimateMOI(0.82, 8.5));
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
-        40, 2, Units.degreesToRadians(-20),
-        Units.degreesToRadians(60), false);
+        SingleJointedArmSim.estimateMOI(0.82, 8.5), 0.82, Units.degreesToRadians(0),
+        Units.degreesToRadians(pivotMaxLimit), true);
 
     pivotFeedforward = new ArmFeedforward(liftConstants.getkS(), liftConstants.getkF(), liftConstants.getkV());
 
@@ -92,10 +98,15 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot P", pivotPID.getkP());
     SmartDashboard.putBoolean("Override", override);
 
+    mech2dRoot = mech2d.getRoot("Intake Root", 10, 10);
+    pivotArmSim = mech2dRoot.append(
+        new MechanismLigament2d(
+            "Pivot Arm", Units.metersToInches(0.75), 0));
   }
 
   public void setPivotEncoderPosition(double pos) {
     this.pivotEncoder.setPosition(pos);
+    pivotArmSim.setAngle(pos);
   }
 
   public double getPivotPosition() {
@@ -177,10 +188,13 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage() {
-    return 0;/*
-              * (0.2 + 0.3 *
-              * Math.cos(Units.degreesToRadians(getPivotPosition())));
-              */
+    return pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
+
+    // (0.2 + 0.3 * 1 // replace this with the arm length
+    // ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
+    // / (ElevatorSubsystem.kMaxElevatorHeight -
+    // ElevatorSubsystem.kMinElevatorHeight)))
+    // * Math.cos(Units.degreesToRadians(getPivotPosition())));
   }
 
   public boolean isPivotAtTarget() {
@@ -202,7 +216,7 @@ public class PivotSubsystem extends SubsystemBase {
     if (override) {
       return false;
     }
-    return getPivotPosition() > 33.5;
+    return getPivotPosition() > pivotMaxLimit;
   }
 
   public void toggleOverride() {
@@ -221,9 +235,9 @@ public class PivotSubsystem extends SubsystemBase {
 
     double powerFactor = getPowerFactor(pow);
     SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
-
-    pivotMotor.set((pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0)));
-    SmartDashboard.putNumber("getFeedFowardVoltage", getFeedFowardVoltage());
+    double pivotPow = (pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0));
+    SmartDashboard.putNumber("pivotPow", pivotPow);
+    pivotMotor.set(pivotPow);
   }
 
   // public boolean isMovementOk(double pow){
@@ -260,6 +274,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
     SmartDashboard.putNumber("Pivot Motor Pow: ", pivotMotor.get());
     SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
+    pivotArmSim.setAngle(getPivotPosition());
     // SmartDashboard.putNumber("Abs", KFF);
   }
 

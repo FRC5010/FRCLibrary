@@ -7,7 +7,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.ArmLevel;
-import frc.robot.chargedup.CubeCruzerPivotSubsystem;
 import frc.robot.chargedup.PivotSubsystem;
 
 public class PivotArm extends CommandBase {
