@@ -78,9 +78,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
-    // return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
-    return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented, true,
-        true);
+    return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
+    // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented, true,
+    // true);
   }
 
   /**

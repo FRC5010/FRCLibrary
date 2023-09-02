@@ -37,7 +37,7 @@ public class ChargedUpMech extends GenericMechanism {
         private PivotSubsystem pivotSubsystem;
         private ButtonBoard buttonOperator;
         private final double kArmMaxSpeedLimit = 1;
-        private final double kArmMinSpeedLimit = 0.25;
+        private final double kArmMinSpeedLimit = 0.1;
         private final double kSpinMaxSpeed = 0.6;
         private final double kSpinLowSpeed = 0.35;
         private double speedLimit = kArmMaxSpeedLimit;
@@ -64,7 +64,6 @@ public class ChargedUpMech extends GenericMechanism {
                                 MotorFactory.NEO(18),
                                 new MotorModelConstants(0, 0, 0),
                                 new GenericPID(0.003, 0, 0),
-                                new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
                                 mechVisual);
                 // TODO: Set up IntakeSubsystem add correct values please
                 this.buttonOperator = buttonOperator;
@@ -232,8 +231,8 @@ public class ChargedUpMech extends GenericMechanism {
                                 () -> {
                                 },
                                 () -> {
-                                        pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit
-                                                        + operator.getRightYAxis(), true);
+                                        pivotSubsystem.pivotPow((buttonOperator.getYAxis()
+                                                        + operator.getRightYAxis()) * speedLimit, true);
 
                                 },
                                 (Boolean interrupted) -> {

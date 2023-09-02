@@ -8,9 +8,12 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 
 /** Add your docs here. */
-public class VisionLimeLightLib extends VisionSystem{
+public class VisionLimeLightLib extends VisionSystem {
+
+    protected DrivetrainPoseEstimator drivetrainPoseEstimator = null;
 
     public VisionLimeLightLib(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
         super(name, colIndex, fieldLayout);
@@ -21,9 +24,10 @@ public class VisionLimeLightLib extends VisionSystem{
             String driverTabeName) {
         super(name, camHeight, camAngle, targetHeight, colIndex, driverTabeName);
     }
+
     protected void init() {
     }
-    
+
     public void update() {
         updateViaNetworkTable(name);
     }
@@ -32,14 +36,20 @@ public class VisionLimeLightLib extends VisionSystem{
         VisionValuesLimeLight rawValues = new VisionValuesLimeLight();
         double[] cameraPose = LimelightHelpers.getTargetPose_RobotSpace(name);
         double[] robotPose = LimelightHelpers.getBotpose(name);
-        updateValues(rawValues, 
-        () -> LimelightHelpers.getTX(name), 
-        () -> LimelightHelpers.getTY(name), 
-        () -> LimelightHelpers.getTA(name), 
-        () -> LimelightHelpers.isValid(name), 
-        () -> LimelightHelpers.getLatency_Pipeline(name), 
-        () -> new Pose3d(new Translation3d(cameraPose[0], cameraPose[1], cameraPose[2]), new Rotation3d(cameraPose[3], cameraPose[4], cameraPose[5])),
-        () -> new Pose3d(new Translation3d(robotPose[0], robotPose[1], robotPose[2]), new Rotation3d(robotPose[3], robotPose[4], robotPose[5])).toPose2d());
+        updateValues(rawValues,
+                () -> LimelightHelpers.getTX(name),
+                () -> LimelightHelpers.getTY(name),
+                () -> LimelightHelpers.getTA(name),
+                () -> LimelightHelpers.isValid(name),
+                () -> LimelightHelpers.getLatency_Pipeline(name),
+                () -> new Pose3d(new Translation3d(cameraPose[0], cameraPose[1], cameraPose[2]),
+                        new Rotation3d(cameraPose[3], cameraPose[4], cameraPose[5])),
+                () -> new Pose3d(new Translation3d(robotPose[0], robotPose[1], robotPose[2]),
+                        new Rotation3d(robotPose[3], robotPose[4], robotPose[5])).toPose2d());
+    }
+
+    public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator drivetrainPoseEstimator) {
+        this.drivetrainPoseEstimator = drivetrainPoseEstimator;
     }
 
     @Override
@@ -49,8 +59,10 @@ public class VisionLimeLightLib extends VisionSystem{
 
     @Override
     public void setLight(boolean on) {
-        if(on) LimelightHelpers.setLEDMode_ForceOn(name);
-        else LimelightHelpers.setLEDMode_ForceOff(name);
+        if (on)
+            LimelightHelpers.setLEDMode_ForceOn(name);
+        else
+            LimelightHelpers.setLEDMode_ForceOff(name);
     }
 
     @Override
@@ -59,8 +71,10 @@ public class VisionLimeLightLib extends VisionSystem{
     }
 
     public void toggleLight() {
-        if(isLightOn()) setLight(false);
-        else setLight(true);
+        if (isLightOn())
+            setLight(false);
+        else
+            setLight(true);
     }
 
     @Override
@@ -70,13 +84,16 @@ public class VisionLimeLightLib extends VisionSystem{
 
     @Override
     public void setSnapshotMode(int snapVal) {
-        if(snapVal == 0) LimelightHelpers.resetSnapshotMode(name);
-        else if(snapVal == 1) LimelightHelpers.takeSnapshot(name);
-        else assert false : " setSnapshotMode Integer out of bounds, accepted values = 1,2";
+        if (snapVal == 0)
+            LimelightHelpers.resetSnapshotMode(name);
+        else if (snapVal == 1)
+            LimelightHelpers.takeSnapshot(name);
+        else
+            assert false : " setSnapshotMode Integer out of bounds, accepted values = 1,2";
     }
 
-    public void setPiPMode(int pipVal){
-        switch(pipVal){
+    public void setPiPMode(int pipVal) {
+        switch (pipVal) {
             case 1:
                 LimelightHelpers.setStreamMode_Standard(name);
                 break;

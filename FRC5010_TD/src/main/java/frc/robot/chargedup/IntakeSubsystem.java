@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -19,14 +18,11 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private String intakeState;
   private MotorController5010 intake;
   private SparkMaxPIDController intakeController;
   private MotorModelConstants intakeConstants;
   private GenericPID intakePID;
   private GenericEncoder intakeEncoder;
-
-  private DoubleSolenoid intakeSolenoid;
 
   private double setPoint = 0;
   private double KFF = 0;
@@ -42,15 +38,13 @@ public class IntakeSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2,
       MotorModelConstants intakeConstants, GenericPID intakePID,
-      DoubleSolenoid intakeSolenoid, Mechanism2d m_mech2d) {
+      Mechanism2d m_mech2d) {
     this.intake = intake.invert(false);
     intake2.setFollow(intake, true);
     this.intakeController = ((CANSparkMax) intake).getPIDController();
     this.intakeEncoder = intake.getMotorEncoder();
     this.intakeConstants = intakeConstants;
     this.intakePID = intakePID;
-    this.intakeSolenoid = intakeSolenoid;
-    intakeSolenoid.set(DoubleSolenoid.Value.kOff);
 
     this.m_mech2d = m_mech2d;
     // TODO: Find values for mech 2D once intake is made "0"
@@ -86,22 +80,16 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void toggleIntake() {
-    if (intakeSolenoid.isFwdSolenoidDisabled()) {
-      setIntakeCone();
-    }
-    intakeSolenoid.toggle();
+
   }
 
   public void setIntakeCube() { // Cube
-    intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
   }
 
   public void setIntakeCone() { // Cone
-    intakeSolenoid.set(DoubleSolenoid.Value.kForward);
   }
 
   public void disableIntake() {
-    intakeSolenoid.set(DoubleSolenoid.Value.kOff);
   }
 
   public void setMotor(double speed) {
@@ -111,16 +99,11 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public boolean isIntakeCone() {
-    return intakeSolenoid.get().equals(DoubleSolenoid.Value.kForward);
+    return false;
   }
 
   @Override
   public void periodic() {
-    if (isIntakeCone()) {
-      intakeState = "Cone";
-    } else {
-      intakeState = "Cube";
-    }
 
     // This method will be called once per scheduler run
     // Shuffleboard.getTab("Robot").addString("Intake Mode Cone/Cube", () ->

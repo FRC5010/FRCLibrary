@@ -7,14 +7,9 @@ package frc.robot.chargedup;
 import java.util.List;
 import java.util.Map;
 
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -37,7 +32,6 @@ import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.CheeseStickCommand;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.PivotArm;
@@ -70,18 +64,9 @@ public class CubeCruzer extends GenericMechanism {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout,
-                                PoseStrategy.MULTI_TAG_PNP);
+                VisionLimeLightSim multiVision = new VisionLimeLightSim("orange", 1, AprilTags.aprilTagFieldLayout);
 
                 // y = +- 27.75 / 2, x = 2.5, z = 36.75
-                multiVision.addPhotonCamera("LeftCamera",
-                                new Transform3d( // This describes the vector between the camera lens to the
-                                                 // robot center on the
-                                                 // ground
-                                                new Translation3d(Units.inchesToMeters(27.75 / 2),
-                                                                Units.inchesToMeters(2.5),
-                                                                Units.inchesToMeters(36.75)),
-                                                new Rotation3d(0, 0, Units.degreesToRadians(90))));
 
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
@@ -104,7 +89,9 @@ public class CubeCruzer extends GenericMechanism {
                 IntakeSubsystem intakeSubsystem = ((ChargedUpMech) cubeArm).getIntakeSubsystem();
                 PivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
 
-                cheeseStick = new CheeseStick(null, null, visual); // TODO: Add Motors and Stuff cause its brokey
+                // TODO: RE-ADD
+                // cheeseStick = new CheeseStick(null, null, visual); // TODO: Add Motors and
+                // Stuff cause its brokey
 
                 // Elevator Controls
 
@@ -140,8 +127,10 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
                 autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
 
-                autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90, cheeseStick));
-                autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
+                // TODO: RE-ADD
+                // autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90,
+                // cheeseStick));
+                // autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
 
                 // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
                 // Wheels"))));

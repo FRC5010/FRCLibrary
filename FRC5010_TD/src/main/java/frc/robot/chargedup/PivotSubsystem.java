@@ -6,9 +6,9 @@ package frc.robot.chargedup;
 
 import java.util.function.Supplier;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -34,13 +34,13 @@ public class PivotSubsystem extends SubsystemBase {
   /** Creates a new PivotSubsystem. */
 
   public static final double pivotOffset = ArmLevel.ground.getPivotPosition(); // -14.04;
-  private final double pivotConversionFactor = 24.242;
+  private final double pivotConversionFactor = 360;
   private final double pivotMaxLimit = 150;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
   private GenericPID pivotPID;
-  private RelativeEncoder pivotEncoder;
+  private AbsoluteEncoder pivotEncoder;
   private SimulatedEncoder pivotSimEncoder = new SimulatedEncoder(10, 11);
   private DigitalInput pivotHallEffect, pivotMaxHallEffect;
   private ArmFeedforward pivotFeedforward;
@@ -63,7 +63,7 @@ public class PivotSubsystem extends SubsystemBase {
     this.pivotMotor = pivot;
     this.pivotMotor.setInverted(false);
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
-    this.pivotEncoder = ((CANSparkMax) pivot).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+    this.pivotEncoder = ((CANSparkMax) pivot).getAbsoluteEncoder(Type.kDutyCycle);
     pivotEncoder.setPositionConversionFactor(this.pivotConversionFactor);
     this.pivotEncoder.setInverted(true);
     this.pivotPID = pivotPID;
@@ -82,7 +82,6 @@ public class PivotSubsystem extends SubsystemBase {
     pivotController.setFeedbackDevice(pivotEncoder);
     pivotController.setOutputRange(-1, 1);
 
-    pivotEncoder.setPosition(ArmLevel.auto.getPivotPosition());
     // TODO Set FF and IZ
     pivotController.setFF(0);
     pivotController.setIZone(kIz);
@@ -105,7 +104,6 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public void setPivotEncoderPosition(double pos) {
-    this.pivotEncoder.setPosition(pos);
     pivotArmSim.setAngle(pos);
   }
 
@@ -188,7 +186,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage() {
-    return pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
+    return 0;// pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
 
     // (0.2 + 0.3 * 1 // replace this with the arm length
     // ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
@@ -237,6 +235,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
     double pivotPow = (pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0));
     SmartDashboard.putNumber("pivotPow", pivotPow);
+
     pivotMotor.set(pivotPow);
   }
 
