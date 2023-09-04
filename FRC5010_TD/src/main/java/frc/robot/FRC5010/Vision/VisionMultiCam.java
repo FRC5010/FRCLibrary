@@ -57,37 +57,35 @@ public class VisionMultiCam extends VisionSystem {
     }
 
     public void updateFromCamera(VisionSystem camera, String path) {
+        camera.update();
         var camResult = camera.getRawValues();
-        updateBatchValues(rawValues,
+        updateBatchValues(rawValues, camera.getName(),
                 () -> camResult.getAngleX(),
                 () -> camResult.getAngleY(),
+                () -> camResult.getDistance(),
                 () -> camResult.getArea(),
-                () -> camResult.valid,
-                () -> camResult.getLatency(),
-                () -> camResult.cameraToTarget,
-                () -> camResult.robotPoses);
+                () -> camResult.getValid(),
+                () -> camResult.getLatency(camera.getName()),
+                () -> camResult.getCameraPoses(),
+                () -> camResult.getRobotPoses());
     }
 
-    protected void updateBatchValues(VisionValues rawValues,
-            DoubleSupplier angleXSup, DoubleSupplier angleYSup,
+    protected void updateBatchValues(VisionValues rawValues, String camera,
+            DoubleSupplier angleXSup, DoubleSupplier angleYSup, DoubleSupplier distanceSup,
             DoubleSupplier areaSup, BooleanSupplier validSup, DoubleSupplier latencySup,
-            Supplier<List<Pose3d>> cameraPoseSupplier,
-            Supplier<List<Pose2d>> robotPoseSupplier) {
+            Supplier<Map<String, Pose3d>> cameraPoseSupplier,
+            Supplier<Map<String, Pose2d>> robotPoseSupplier) {
         boolean valid = validSup.getAsBoolean();
         if (valid) {
             // calculating distance
-            double angleX = angleXSup.getAsDouble();
-            double angleY = angleYSup.getAsDouble();
-            double distance = (targetHeight - camHeight)
-                    / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
             this.rawValues = rawValues;
             rawValues
                     .setValid(valid)
-                    .setLatency(latencySup.getAsDouble())
-                    .setYaw(angleX)
-                    .setPitch(angleY)
+                    .addLatency(camera, latencySup.getAsDouble())
+                    .setYaw(angleXSup.getAsDouble())
+                    .setPitch(angleYSup.getAsDouble())
                     .setArea(areaSup.getAsDouble())
-                    .setDistance(distance)
+                    .setDistance(distanceSup.getAsDouble())
                     .addCameraPoses(cameraPoseSupplier.get())
                     .addRobotPoses(robotPoseSupplier.get());
             // smoothedValues.averageValues(rawValues, 5);

@@ -6,6 +6,7 @@ package frc.robot.FRC5010.drive.pose;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -80,10 +81,11 @@ public class DrivetrainPoseEstimator {
 
   public void update() {
     poseTracker.updateLocalMeasurements();
-
-    for (Pose2d robotPose : vision.getRawValues().getRobotPoses()) {
+    Map<String, Pose2d> poses = vision.getRawValues().getRobotPoses();
+    for (String camera : poses.keySet()) {
+      Pose2d robotPose = poses.get(camera);
       if (null != robotPose) {
-        double imageCaptureTime = vision.getRawValues().getLatency();
+        double imageCaptureTime = vision.getRawValues().getLatency(camera);
         // field2d.getObject("MyRobot" +
         // ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);
         if (RobotState.isDisabled()
