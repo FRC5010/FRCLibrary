@@ -5,16 +5,24 @@
 package frc.robot.FRC5010.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 
 /** Add your docs here. */
 public class VisionLimeLightSim extends VisionSystem {
 
+    protected DrivetrainPoseEstimator drivetrainPoseEstimator = null;
+
     public VisionLimeLightSim(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
         super(name, colIndex, fieldLayout);
     }
-    
+
+    public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator drivetrainPoseEstimator) {
+        this.drivetrainPoseEstimator = drivetrainPoseEstimator;
+    }
+
     @Override
-    public void setPipeline(int pipeline) {}
+    public void setPipeline(int pipeline) {
+    }
 
     @Override
     public void setLight(boolean on) {
@@ -36,5 +44,5 @@ public class VisionLimeLightSim extends VisionSystem {
     @Override
     public void update() {
     }
-    
+
 }

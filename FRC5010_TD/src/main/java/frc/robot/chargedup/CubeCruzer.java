@@ -7,14 +7,9 @@ package frc.robot.chargedup;
 import java.util.List;
 import java.util.Map;
 
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -25,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -53,6 +47,7 @@ public class CubeCruzer extends GenericMechanism {
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
         private VisionSystem visionSystem;
+        private CheeseStick cheeseStick;
 
         public CubeCruzer(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
@@ -103,6 +98,10 @@ public class CubeCruzer extends GenericMechanism {
                 IntakeSubsystem intakeSubsystem = ((ChargedUpMech) cubeArm).getIntakeSubsystem();
                 PivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
 
+                // TODO: RE-ADD
+                // cheeseStick = new CheeseStick(null, null, visual); // TODO: Add Motors and
+                // Stuff cause its brokey
+
                 // Elevator Controls
 
                 autoMaps.addMarker("PivotToGround", new PivotArm(pivotSubsystem,
@@ -127,7 +126,7 @@ public class CubeCruzer extends GenericMechanism {
                                                 new WaitCommand(.25)));
 
                 autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -0.85).withTimeout(0.25));
-                autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
+                autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -1.0).withTimeout(.25)));
                 autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.5).withTimeout(.25)));
                 autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
                 autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.2).withTimeout(0.25));
@@ -136,11 +135,18 @@ public class CubeCruzer extends GenericMechanism {
                 // Drivetrain Controls
                 autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
                 autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
+
+                // TODO: RE-ADD
+                // autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90,
+                // cheeseStick));
+                // autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
+
                 // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
                 // Wheels"))));
 
                 // Create Paths
                 autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
+                autoMaps.addPath("6-3 Cube Multi", new PathConstraints(2, 1));
                 autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
                 autoMaps.addPath("6-3 Score", new PathConstraints(1.75, 1));
                 autoMaps.addPath("6-3 Three Piece", new PathConstraints(4, 2));
@@ -151,6 +157,7 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addPath("Bal Direct 7-2", new PathConstraints(1.75, 1));
 
                 autoMaps.addPath("8-1 Cube Out", new PathConstraints(1.75, 1));
+                autoMaps.addPath("8-1 Cube Multi", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Score", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Three Piece", new PathConstraints(4, 2));
 

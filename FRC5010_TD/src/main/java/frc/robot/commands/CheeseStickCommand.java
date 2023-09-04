@@ -4,45 +4,42 @@
 
 package frc.robot.commands;
 
+import javax.swing.text.Position;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.telemetery.WpiDataLogging;
-import frc.robot.chargedup.PivotSubsystem;
-import frc.robot.chargedup.PivotSubsystem;
+import frc.robot.chargedup.CheeseStick;
 
-public class HomePivot extends CommandBase {
-  /** Creates a new HomePivot. */
-  PivotSubsystem pivotSubsystem;
+public class CheeseStickCommand extends CommandBase {
+  /** Creates a new CheeseStick. */
+  private double position;
+  private CheeseStick cheeseStick;
 
-  public HomePivot(PivotSubsystem pivotSubsystem) {
+  public CheeseStickCommand(double position, CheeseStick cheeseStick) {
+    this.position = position;
+    this.cheeseStick = cheeseStick;
     // Use addRequirements() here to declare subsystem dependencies.
-    this.pivotSubsystem = pivotSubsystem;
-    addRequirements(pivotSubsystem);
+    addRequirements(cheeseStick);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    WpiDataLogging.log(getName());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    pivotSubsystem.runPivotToTarget(-45);
-
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    WpiDataLogging.log(getName() + " ended " + interrupted);
-
-    pivotSubsystem.stopAndHoldPivot();
+    cheeseStick.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return pivotSubsystem.isPivotMinHallEffect();
+    return Math.abs(cheeseStick.rotateToSetPoint(position)) < 2;
   }
 }

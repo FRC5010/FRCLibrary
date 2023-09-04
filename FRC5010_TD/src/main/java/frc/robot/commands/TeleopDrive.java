@@ -7,10 +7,7 @@ package frc.robot.commands;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -68,40 +65,28 @@ public class TeleopDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xVelocity = vX.getAsDouble();
-    double yVelocity = vY.getAsDouble();
-    double angVelocity = omega.getAsDouble() * 0.5;
+    double xVelocity = Math.pow(vX.getAsDouble(), 3);
+    double yVelocity = Math.pow(vY.getAsDouble(), 3);
+    double angVelocity = Math.pow(omega.getAsDouble(), 3);
+    SmartDashboard.putNumber("vX", xVelocity);
+    SmartDashboard.putNumber("vY", yVelocity);
+    SmartDashboard.putNumber("omega", angVelocity);
     if (headingCorrection) {
       // Estimate the desired angle in radians.
       angle += (angVelocity * (timer.get() - lastTime)) * controller.config.maxAngularVelocity;
       // Get the desired ChassisSpeeds given the desired angle and current angle.
-      ChassisSpeeds correctedChassisSpeeds = controller.getTargetSpeeds(xVelocity, yVelocity, angle,
+      ChassisSpeeds correctedChassisSpeeds = controller.getTargetSpeeds(yVelocity, xVelocity, angle,
           swerve.getHeading().getRadians());
-      SmartDashboard.putNumber("desired angle", angle);
       // Drive using given data points.
-
-      double dtConstant = 0.009;
-      Pose2d robotPoseVel = new Pose2d(correctedChassisSpeeds.vxMetersPerSecond * dtConstant,
-          correctedChassisSpeeds.vyMetersPerSecond * dtConstant,
-          Rotation2d.fromRadians(correctedChassisSpeeds.omegaRadiansPerSecond * dtConstant));
-      Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
-
-      ChassisSpeeds updatedChassisSpeed = correctedChassisSpeeds;
-      if (driveMode.getAsBoolean()) {
-        updatedChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(twistVel.dx /
-            dtConstant, twistVel.dy / dtConstant,
-            twistVel.dtheta / dtConstant, swerve.getHeading());
-      }
-
       swerve.drive(
-          SwerveController.getTranslation2d(updatedChassisSpeed),
+          SwerveController.getTranslation2d(correctedChassisSpeeds),
           correctedChassisSpeeds.omegaRadiansPerSecond,
           driveMode.getAsBoolean(),
           isOpenLoop);
       lastTime = timer.get();
     } else {
       // Drive using raw values.
-      swerve.drive(new Translation2d(xVelocity * controller.config.maxSpeed, yVelocity * controller.config.maxSpeed),
+      swerve.drive(new Translation2d(yVelocity * controller.config.maxSpeed, xVelocity * controller.config.maxSpeed),
           angVelocity * controller.config.maxAngularVelocity,
           driveMode.getAsBoolean(), isOpenLoop);
     }

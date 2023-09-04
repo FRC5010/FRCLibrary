@@ -6,9 +6,9 @@ package frc.robot.chargedup;
 
 import java.util.function.Supplier;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -20,8 +20,6 @@ import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -30,17 +28,16 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 
-public class PivotSubsystem extends SubsystemBase {
+public class CompPivotSubsystem extends SubsystemBase {
   /** Creates a new PivotSubsystem. */
 
   public static final double pivotOffset = ArmLevel.ground.getPivotPosition(); // -14.04;
-  private final double pivotConversionFactor = 360;
-  private final double pivotMaxLimit = 150;
+  private final double pivotConversionFactor = 24.242;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
   private GenericPID pivotPID;
-  private AbsoluteEncoder pivotEncoder;
+  private RelativeEncoder pivotEncoder;
   private SimulatedEncoder pivotSimEncoder = new SimulatedEncoder(10, 11);
   private DigitalInput pivotHallEffect, pivotMaxHallEffect;
   private ArmFeedforward pivotFeedforward;
@@ -53,26 +50,23 @@ public class PivotSubsystem extends SubsystemBase {
   private boolean usingTarget = false;
 
   private double currentPivotTarget;
-  private MechanismLigament2d pivotArmSim;
-  private MechanismRoot2d mech2dRoot;
 
-  public PivotSubsystem(MotorController5010 pivot, GenericPID pivotPID, MotorModelConstants liftConstants,
+  public CompPivotSubsystem(MotorController5010 pivot, GenericPID pivotPID, MotorModelConstants liftConstants,
       int pivotHallEffectPort, int pivotMaxHallEffectPort, Mechanism2d mech2d) {
     this.currentPivotTarget = 0;
 
     this.pivotMotor = pivot;
     this.pivotMotor.setInverted(false);
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
-    this.pivotEncoder = ((CANSparkMax) pivot).getAbsoluteEncoder(Type.kDutyCycle);
+    this.pivotEncoder = ((CANSparkMax) pivot).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
     pivotEncoder.setPositionConversionFactor(this.pivotConversionFactor);
     this.pivotEncoder.setInverted(true);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
 
-    SmartDashboard.putNumber("MOI", SingleJointedArmSim.estimateMOI(0.82, 8.5));
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
-        SingleJointedArmSim.estimateMOI(0.82, 8.5), 0.82, Units.degreesToRadians(0),
-        Units.degreesToRadians(pivotMaxLimit), true);
+        40, 2, Units.degreesToRadians(-20),
+        Units.degreesToRadians(60), false);
 
     pivotFeedforward = new ArmFeedforward(liftConstants.getkS(), liftConstants.getkF(), liftConstants.getkV());
 
@@ -82,6 +76,7 @@ public class PivotSubsystem extends SubsystemBase {
     pivotController.setFeedbackDevice(pivotEncoder);
     pivotController.setOutputRange(-1, 1);
 
+    pivotEncoder.setPosition(ArmLevel.auto.getPivotPosition());
     // TODO Set FF and IZ
     pivotController.setFF(0);
     pivotController.setIZone(kIz);
@@ -97,14 +92,10 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot P", pivotPID.getkP());
     SmartDashboard.putBoolean("Override", override);
 
-    mech2dRoot = mech2d.getRoot("Intake Root", 10, 10);
-    pivotArmSim = mech2dRoot.append(
-        new MechanismLigament2d(
-            "Pivot Arm", Units.metersToInches(0.75), 0));
   }
 
   public void setPivotEncoderPosition(double pos) {
-    pivotArmSim.setAngle(pos);
+    this.pivotEncoder.setPosition(pos);
   }
 
   public double getPivotPosition() {
@@ -186,13 +177,10 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage() {
-    return 0;// pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
-
-    // (0.2 + 0.3 * 1 // replace this with the arm length
-    // ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
-    // / (ElevatorSubsystem.kMaxElevatorHeight -
-    // ElevatorSubsystem.kMinElevatorHeight)))
-    // * Math.cos(Units.degreesToRadians(getPivotPosition())));
+    return 0;/*
+              * (0.2 + 0.3 *
+              * Math.cos(Units.degreesToRadians(getPivotPosition())));
+              */
   }
 
   public boolean isPivotAtTarget() {
@@ -214,7 +202,7 @@ public class PivotSubsystem extends SubsystemBase {
     if (override) {
       return false;
     }
-    return getPivotPosition() > pivotMaxLimit;
+    return getPivotPosition() > 33.5;
   }
 
   public void toggleOverride() {
@@ -233,10 +221,9 @@ public class PivotSubsystem extends SubsystemBase {
 
     double powerFactor = getPowerFactor(pow);
     SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
-    double pivotPow = (pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0));
-    SmartDashboard.putNumber("pivotPow", pivotPow);
 
-    pivotMotor.set(pivotPow);
+    pivotMotor.set((pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0)));
+    SmartDashboard.putNumber("getFeedFowardVoltage", getFeedFowardVoltage());
   }
 
   // public boolean isMovementOk(double pow){
@@ -273,7 +260,6 @@ public class PivotSubsystem extends SubsystemBase {
     }
     SmartDashboard.putNumber("Pivot Motor Pow: ", pivotMotor.get());
     SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
-    pivotArmSim.setAngle(getPivotPosition());
     // SmartDashboard.putNumber("Abs", KFF);
   }
 
