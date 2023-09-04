@@ -56,8 +56,7 @@ public class ChargedUpMech extends GenericMechanism {
                                 MotorFactory.NEO(9),
                                 new GenericPID(12, 0.0, 0.03),
                                 new MotorModelConstants(0.25, 2.125, 0),
-                                1, 8,
-                                mechVisual);
+                                mechVisual, shuffleTab);
 
                 this.intakeSubsystem = new IntakeSubsystem(
                                 MotorFactory.NEO(19),

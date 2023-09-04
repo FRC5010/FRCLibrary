@@ -11,26 +11,26 @@ import frc.robot.chargedup.PivotSubsystem;
 
 public class PivotArm extends CommandBase {
   PivotSubsystem pivotSubsystem;
-  ArmLevel elevatorLevel;
+  ArmLevel armLevel;
 
   /** Creates a new PivotElevator. */
   public PivotArm(PivotSubsystem pivot, ArmLevel elevatorLevel) {
     this.pivotSubsystem = pivot;
-    this.elevatorLevel = elevatorLevel;
+    this.armLevel = elevatorLevel;
     addRequirements(pivot);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    WpiDataLogging.log(getName() + " " + elevatorLevel.name());
+    WpiDataLogging.log(getName() + " " + armLevel.name());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
 
   @Override
   public void execute() {
-    pivotSubsystem.runPivotToTarget(elevatorLevel.getPivotPosition());
+    pivotSubsystem.runPivotToTarget(armLevel.getPivotPosition());
   }
 
   // Called once the command ends or is interrupted.
@@ -43,10 +43,8 @@ public class PivotArm extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double goalPos = pivotSubsystem.getPivotTarget();
-    double currPos = elevatorLevel.getPivotPosition();
     return pivotSubsystem.isPivotAtTarget()
         || (pivotSubsystem.isPivotMaxPosition() && pivotSubsystem.getVelocity() > 0)
-        || (pivotSubsystem.isPivotMinHallEffect() && pivotSubsystem.getVelocity() < 0);
+        || (pivotSubsystem.isPivotMinPosition() && pivotSubsystem.getVelocity() < 0);
   }
 }

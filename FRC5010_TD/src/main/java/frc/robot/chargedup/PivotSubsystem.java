@@ -4,8 +4,6 @@
 
 package frc.robot.chargedup;
 
-import java.util.function.Supplier;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
@@ -14,8 +12,8 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -33,21 +31,17 @@ import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 public class PivotSubsystem extends SubsystemBase {
   /** Creates a new PivotSubsystem. */
 
-  public static final double pivotOffset = ArmLevel.ground.getPivotPosition(); // -14.04;
   private final double pivotConversionFactor = 360;
   private final double pivotMaxLimit = 150;
+  private final double pivotMinLimit = 0;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
   private GenericPID pivotPID;
   private AbsoluteEncoder pivotEncoder;
   private SimulatedEncoder pivotSimEncoder = new SimulatedEncoder(10, 11);
-  private DigitalInput pivotHallEffect, pivotMaxHallEffect;
   private ArmFeedforward pivotFeedforward;
   private SingleJointedArmSim pivotSim;
-
-  private double kIz = 0;
-  private Supplier<Double> extendPos;
 
   private boolean override = false;
   private boolean usingTarget = false;
@@ -55,9 +49,10 @@ public class PivotSubsystem extends SubsystemBase {
   private double currentPivotTarget;
   private MechanismLigament2d pivotArmSim;
   private MechanismRoot2d mech2dRoot;
+  ShuffleboardTab shuffleTab;
 
   public PivotSubsystem(MotorController5010 pivot, GenericPID pivotPID, MotorModelConstants liftConstants,
-      int pivotHallEffectPort, int pivotMaxHallEffectPort, Mechanism2d mech2d) {
+      Mechanism2d mech2d, ShuffleboardTab shuffleTab) {
     this.currentPivotTarget = 0;
 
     this.pivotMotor = pivot;
@@ -68,34 +63,34 @@ public class PivotSubsystem extends SubsystemBase {
     this.pivotEncoder.setInverted(true);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
+    this.shuffleTab = shuffleTab;
 
     SmartDashboard.putNumber("MOI", SingleJointedArmSim.estimateMOI(0.82, 8.5));
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
         SingleJointedArmSim.estimateMOI(0.82, 8.5), 0.82, Units.degreesToRadians(0),
         Units.degreesToRadians(pivotMaxLimit), true);
 
-    pivotFeedforward = new ArmFeedforward(liftConstants.getkS(), liftConstants.getkF(), liftConstants.getkV());
+    pivotFeedforward = new ArmFeedforward(pivotConstants.getkS(), pivotConstants.getkF(), pivotConstants.getkV());
 
     pivotController.setP(pivotPID.getkP());
     pivotController.setI(pivotPID.getkI());
     pivotController.setD(pivotPID.getkD());
     pivotController.setFeedbackDevice(pivotEncoder);
     pivotController.setOutputRange(-1, 1);
-
-    // TODO Set FF and IZ
     pivotController.setFF(0);
-    pivotController.setIZone(kIz);
-    pivotController.setSmartMotionMaxVelocity(3000, 0);
-    pivotController.setSmartMotionMinOutputVelocity(0, 0);
-    pivotController.setSmartMotionMaxAccel(100, 0);
-    pivotController.setSmartMotionAllowedClosedLoopError(0.1, 0);
 
-    this.pivotHallEffect = new DigitalInput(pivotHallEffectPort);
-    this.pivotMaxHallEffect = new DigitalInput(pivotMaxHallEffectPort);
+    shuffleTab.addDouble("Pivot FF", this::getFeedFowardVoltage);
+    if (Robot.isReal()) {
 
-    this.extendPos = extendPos;
-    SmartDashboard.putNumber("Pivot P", pivotPID.getkP());
-    SmartDashboard.putBoolean("Override", override);
+      shuffleTab.addBoolean("Pivot Max", this::isPivotMaxPosition);
+      shuffleTab.addBoolean("Pivot Target is good", () -> currentPivotTarget > pivotEncoder.getPosition());
+    }
+    shuffleTab.addNumber("Pivot Motor Pow: ", () -> pivotMotor.get());
+    shuffleTab.addDouble("Pivot Position: ", this::getPivotPosition);
+    shuffleTab.addBoolean("Override", () -> override);
+
+    SmartDashboard.putNumber("Pivot kG", pivotConstants.getkF());
+    SmartDashboard.putNumber("Pivot kP", pivotPID.getkP());
 
     mech2dRoot = mech2d.getRoot("Intake Root", 10, 10);
     pivotArmSim = mech2dRoot.append(
@@ -130,11 +125,11 @@ public class PivotSubsystem extends SubsystemBase {
   // }
 
   public boolean isCloseToMinHardStop() {
-    return (getPivotPosition() < -10);
+    return (getPivotPosition() < pivotMinLimit + 5);
   }
 
   public boolean isCloseToMaxHardStop() {
-    return (getPivotPosition() > 30);
+    return (getPivotPosition() > pivotMaxLimit - 5);
   }
 
   public boolean closeToTarget() {
@@ -168,7 +163,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   private boolean isPivotMinHardStop(double pow) {
-    return isPivotMinHallEffect() && pow < 0;
+    return pow < 0 && pivotEncoder.getPosition() < 0;
   }
 
   private boolean isPivotMaxHardStop(double pow) {
@@ -178,7 +173,7 @@ public class PivotSubsystem extends SubsystemBase {
   public void runPivotToTarget(double position) {
     this.currentPivotTarget = position;
     usingTarget = true;
-    double kP = pivotPID.getkP();// SmartDashboard.getNumber("Pivot P", pivotPID.getkP());
+    double kP = SmartDashboard.getNumber("Pivot kP", pivotPID.getkP());
     double kF = getFeedFowardVoltage();
     double positionSig = Math.signum(this.currentPivotTarget - getPivotPosition());
     double pow = kP * positionSig;
@@ -186,7 +181,11 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getFeedFowardVoltage() {
-    return 0;// pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
+    Double pivotKG = SmartDashboard.getNumber("Pivot kG", pivotConstants.getkF());
+    pivotFeedforward = new ArmFeedforward(pivotConstants.getkS(), pivotKG, 0);
+    double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
+    SmartDashboard.putNumber("Pivot FF", ff);
+    return 0;
 
     // (0.2 + 0.3 * 1 // replace this with the arm length
     // ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
@@ -203,18 +202,18 @@ public class PivotSubsystem extends SubsystemBase {
     return this.currentPivotTarget;
   }
 
-  public boolean isPivotMinHallEffect() {
-    if (override) {
-      return false;
-    }
-    return !pivotHallEffect.get(); // && !override;
-  }
-
   public boolean isPivotMaxPosition() {
     if (override) {
       return false;
     }
     return getPivotPosition() > pivotMaxLimit;
+  }
+
+  public boolean isPivotMinPosition() {
+    if (override) {
+      return false;
+    }
+    return getPivotPosition() > pivotMinLimit;
   }
 
   public void toggleOverride() {
@@ -229,7 +228,6 @@ public class PivotSubsystem extends SubsystemBase {
     usingTarget = false;
     SmartDashboard.putNumber("Pivot Power Given", pow);
     SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
-    SmartDashboard.putNumber("Pivot Rotation", pivotEncoder.getPosition());
 
     double powerFactor = getPowerFactor(pow);
     SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
@@ -254,27 +252,12 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public boolean atMinHardStop() {
-    // TODO: Test if encoder is greater
-    return isPivotMinHallEffect() && pivotEncoder.getVelocity() < 0;
+    return pivotEncoder.getVelocity() < 0 && pivotEncoder.getPosition() < 0;
   }
 
   @Override
   public void periodic() {
-    if (Robot.isReal()) {
-
-      if (isPivotMinHallEffect()) {
-        setPivotEncoderPosition(pivotOffset);
-      }
-
-      SmartDashboard.putBoolean("Pivot In: ", isPivotMinHallEffect());
-      SmartDashboard.putBoolean("Pivot Max", isPivotMaxPosition());
-      SmartDashboard.putBoolean("Pivot Target is good", currentPivotTarget > pivotEncoder.getPosition());
-      SmartDashboard.putNumber("Pivot Motor is positive", pivotMotor.get());
-    }
-    SmartDashboard.putNumber("Pivot Motor Pow: ", pivotMotor.get());
-    SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
     pivotArmSim.setAngle(getPivotPosition());
-    // SmartDashboard.putNumber("Abs", KFF);
   }
 
   @Override

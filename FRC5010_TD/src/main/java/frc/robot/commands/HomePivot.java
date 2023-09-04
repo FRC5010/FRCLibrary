@@ -7,7 +7,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.PivotSubsystem;
-import frc.robot.chargedup.PivotSubsystem;
 
 public class HomePivot extends CommandBase {
   /** Creates a new HomePivot. */
@@ -43,6 +42,6 @@ public class HomePivot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return pivotSubsystem.isPivotMinHallEffect();
+    return pivotSubsystem.isPivotMinPosition();
   }
 }
