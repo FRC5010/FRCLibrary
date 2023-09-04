@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.FRC5010.commands;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -29,49 +29,51 @@ public class DriveToTrajectory extends CommandBase {
   public static enum LCR {
     left, center, right
   }
-    
+
   private SwerveDrivetrain swerveDrivetrain;
 
   private PathPlannerTrajectory trajectory;
-  private PathPlannerState currentSetpoint; 
+  private PathPlannerState currentSetpoint;
 
-	private PIDController translationController, thetaController;
-	private PPHolonomicDriveController driveController;
+  private PIDController translationController, thetaController;
+  private PPHolonomicDriveController driveController;
 
-	private Pose2d currentPose;
-  private Pose2d targetPose; 
+  private Pose2d currentPose;
+  private Pose2d targetPose;
   private Pose2d kPositionTolerance = new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(3));
-  
-  private Timer timer; 
-  private PathConstraints constraints; 
 
-  private double yOffset; 
-  private double xOffset; 
+  private Timer timer;
+  private PathConstraints constraints;
+
+  private double yOffset;
+  private double xOffset;
 
   // Heading based on alliance color
-  private Rotation2d desiredHeading;  
-  
+  private Rotation2d desiredHeading;
+
   public DriveToTrajectory(SwerveDrivetrain swerveDrivetrain, LCR relativePosition, SwerveConstants constants) {
     this.swerveDrivetrain = swerveDrivetrain;
 
-    constraints = new PathConstraints(constants.getkTeleDriveMaxSpeedMetersPerSecond(), constants.getkTeleDriveMaxAccelerationUnitsPerSecond()); 
-    timer = new Timer(); 
+    constraints = new PathConstraints(constants.getkTeleDriveMaxSpeedMetersPerSecond(),
+        constants.getkTeleDriveMaxAccelerationUnitsPerSecond());
+    timer = new Timer();
 
     translationController = new PIDController(1, 0, 0);
     thetaController = new PIDController(0.25, 0, 0);
 
     desiredHeading = DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(180) : new Rotation2d(0);
-    xOffset = desiredHeading.getDegrees() == 180 ? TargetConstants.tagToRobotXOffset : -TargetConstants.tagToRobotXOffset; 
+    xOffset = desiredHeading.getDegrees() == 180 ? TargetConstants.tagToRobotXOffset
+        : -TargetConstants.tagToRobotXOffset;
 
-    switch(relativePosition){
+    switch (relativePosition) {
       case left:
         yOffset = -TargetConstants.tagToConeYOffset;
-        break; 
+        break;
       case right:
-        yOffset = TargetConstants.tagToConeYOffset; 
-        break; 
+        yOffset = TargetConstants.tagToConeYOffset;
+        break;
       default:
-        yOffset = 0; 
+        yOffset = 0;
         break;
     }
 
@@ -82,22 +84,24 @@ public class DriveToTrajectory extends CommandBase {
   @Override
   public void initialize() {
 
-    int closestTagID = swerveDrivetrain.getPoseEstimator().getClosestTagToRobot(); 
+    int closestTagID = swerveDrivetrain.getPoseEstimator().getClosestTagToRobot();
 
-    currentPose = swerveDrivetrain.getPoseEstimator().getCurrentPose(); 
-    targetPose = AprilTags.aprilTagFieldLayout.getTagPose(closestTagID).get().toPose2d();  
-    
-    PathPoint startPoint = new PathPoint(new Translation2d(currentPose.getX(), currentPose.getY()), swerveDrivetrain.getPoseEstimator().getGyroRotation2d());
-    PathPoint endPoint = new PathPoint(new Translation2d(targetPose.getX() + xOffset, targetPose.getY() + yOffset), desiredHeading);
+    currentPose = swerveDrivetrain.getPoseEstimator().getCurrentPose();
+    targetPose = AprilTags.aprilTagFieldLayout.getTagPose(closestTagID).get().toPose2d();
 
-    trajectory = PathPlanner.generatePath(constraints, startPoint, endPoint); 
+    PathPoint startPoint = new PathPoint(new Translation2d(currentPose.getX(), currentPose.getY()),
+        swerveDrivetrain.getPoseEstimator().getGyroRotation2d());
+    PathPoint endPoint = new PathPoint(new Translation2d(targetPose.getX() + xOffset, targetPose.getY() + yOffset),
+        desiredHeading);
+
+    trajectory = PathPlanner.generatePath(constraints, startPoint, endPoint);
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    driveController = new PPHolonomicDriveController(translationController, translationController, thetaController); 
+    driveController = new PPHolonomicDriveController(translationController, translationController, thetaController);
     driveController.setTolerance(kPositionTolerance);
 
-    timer.reset(); 
+    timer.reset();
     timer.start();
   }
 
@@ -114,7 +118,7 @@ public class DriveToTrajectory extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    timer.stop();   
+    timer.stop();
     timer.reset();
     driveController.setEnabled(false);
   }
