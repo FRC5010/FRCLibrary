@@ -7,7 +7,6 @@
 
 package frc.robot.FRC5010.Vision;
 
-import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -32,7 +31,7 @@ public abstract class VisionSystem extends SubsystemBase {
   protected double CAMERA_CAL_ANGLE = 0;
   protected ShuffleboardLayout driverLayout;
   protected VisionConstants constants;
-  protected AprilTagFieldLayout fieldLayout; 
+  protected AprilTagFieldLayout fieldLayout;
   // variables needed to process new variables, plus the new variables
   // angles
 
@@ -42,7 +41,7 @@ public abstract class VisionSystem extends SubsystemBase {
     rawValues = new VisionValues();
     smoothedValues = new VisionValues();
     constants = new VisionConstants();
-    this.fieldLayout = fieldLayout; 
+    this.fieldLayout = fieldLayout;
     ShuffleboardTab driverTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
     visionLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex, 0).withSize(3, 5);
   }
@@ -92,8 +91,6 @@ public abstract class VisionSystem extends SubsystemBase {
 
   public abstract void update();
 
-
-
   public VisionValues getRawValues() {
     return rawValues;
   }
@@ -113,7 +110,8 @@ public abstract class VisionSystem extends SubsystemBase {
       // calculating distance
       double angleX = angleXSup.getAsDouble();
       double angleY = angleYSup.getAsDouble();
-      double distance = (targetHeight - camHeight) / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
+      double distance = (targetHeight - camHeight)
+          / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
       this.rawValues = rawValues;
       rawValues
           .setValid(valid)
@@ -124,7 +122,7 @@ public abstract class VisionSystem extends SubsystemBase {
           .setDistance(distance)
           .addCameraPose(cameraPoseSupplier.get())
           .addRobotPose(robotPoseSupplier.get());
-      //smoothedValues.averageValues(rawValues, 5);
+      // smoothedValues.averageValues(rawValues, 5);
     } else {
       rawValues = new VisionValues();
       smoothedValues = new VisionValues();
@@ -175,8 +173,8 @@ public abstract class VisionSystem extends SubsystemBase {
     return smoothedValues.getValid();
   }
 
-  public AprilTagFieldLayout getFieldLayout(){
-    return fieldLayout; 
+  public AprilTagFieldLayout getFieldLayout() {
+    return fieldLayout;
   }
 
   public void calibarateCamAngle(double angleY) {
