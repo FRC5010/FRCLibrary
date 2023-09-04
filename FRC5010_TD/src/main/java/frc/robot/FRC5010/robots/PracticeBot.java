@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.commands.JoystickToSwerve;
+import frc.robot.FRC5010.commands.LogCommand;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -35,8 +37,6 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.DriverDisplaySubsystem;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.JoystickToSwerve;
-import frc.robot.commands.LogCommand;
 
 /** Add your docs here. */
 public class PracticeBot extends GenericMechanism {
