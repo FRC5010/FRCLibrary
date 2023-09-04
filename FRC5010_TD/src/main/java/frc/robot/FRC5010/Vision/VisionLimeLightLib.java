@@ -8,7 +8,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 
 /** Add your docs here. */
 public class VisionLimeLightLib extends VisionSystem {
@@ -44,10 +43,6 @@ public class VisionLimeLightLib extends VisionSystem {
                         new Rotation3d(cameraPose[3], cameraPose[4], cameraPose[5])),
                 () -> new Pose3d(new Translation3d(robotPose[0], robotPose[1], robotPose[2]),
                         new Rotation3d(robotPose[3], robotPose[4], robotPose[5])).toPose2d());
-    }
-
-    public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator drivetrainPoseEstimator) {
-        this.drivetrainPoseEstimator = drivetrainPoseEstimator;
     }
 
     @Override

@@ -137,7 +137,7 @@ public class RobotContainer extends GenericMechanism {
         break;
       }
       default: {
-        robot = new CubeCruzer(mechVisual, shuffleTab);
+        robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
         break;
       }
     }

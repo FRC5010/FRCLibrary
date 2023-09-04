@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionConstantDefs;
-import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -65,14 +65,8 @@ public class CurtsLaptopSimulator extends GenericMechanism {
         swerveConstants.setSwerveModuleConstants(ThriftySwerveModule.moduleConstants);
         swerveConstants.configureSwerve(NEO.MAXRPM, NEO550.MAXRPM);
 
-        VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1,
-                AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS);
-        multiVision.addPhotonCamera(Persisted.stringVal(VisionConstantDefs.LAPTOP_CAMERA),
-                new Transform3d(
-                        // This describes the vector between the camera lens to the robot center on the
-                        // ground
-                        new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
-                        new Rotation3d(0, Units.degreesToRadians(-20), 0)));
+        VisionMultiCam multiVision = new VisionMultiCam("Vision", 0,
+                AprilTags.aprilTagFieldLayout);
         List<SwervePorts> swervePorts = new ArrayList<>();
         swervePorts.add(new SwervePorts(1, 2, 0));
         swervePorts.add(new SwervePorts(7, 8, 1));
@@ -82,7 +76,13 @@ public class CurtsLaptopSimulator extends GenericMechanism {
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
         drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
-        multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
+        multiVision.addPhotonCamera(Persisted.stringVal(VisionConstantDefs.LAPTOP_CAMERA), 1,
+                new Transform3d(
+                        // This describes the vector between the camera lens to the robot center on the
+                        // ground
+                        new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+                        new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+                PoseStrategy.AVERAGE_BEST_TARGETS, drive.getDrivetrain().getPoseEstimator());
     }
 
     @Override
