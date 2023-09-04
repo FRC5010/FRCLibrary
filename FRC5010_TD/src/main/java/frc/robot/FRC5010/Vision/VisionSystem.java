@@ -43,7 +43,8 @@ public abstract class VisionSystem extends SubsystemBase {
     constants = new VisionConstants();
     this.fieldLayout = fieldLayout;
     ShuffleboardTab driverTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
-    visionLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex, 0).withSize(3, 5);
+    visionLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
+        .withPosition(colIndex, 0).withSize(1, 5);
   }
 
   // more specific values to define the camera
@@ -56,10 +57,10 @@ public abstract class VisionSystem extends SubsystemBase {
     this.camAngle = camAngle;
     this.targetHeight = targetHeight;
     constants = new VisionConstants();
-    updateValues = true;
     CAMERA_CAL_ANGLE = Math.toDegrees(Math.tanh((targetHeight - camHeight) / VisionConstants.CAMERA_CAL_DISTANCE));
     ShuffleboardTab visionTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
-    visionLayout = visionTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex, 0).withSize(3, 5);
+    visionLayout = visionTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
+        .withPosition(colIndex, 0).withSize(1, 5);
 
     visionLayout.addNumber(name + " Distance", this::getDistance).withSize(1, 1);
     visionLayout.addBoolean(name + " Has Target", this::isValidTarget).withSize(1, 1);
@@ -74,8 +75,8 @@ public abstract class VisionSystem extends SubsystemBase {
     // RobotContainer::getDriverMode).withSize(1, 1);
 
     ShuffleboardTab driverTab = Shuffleboard.getTab(driverTabeName);
-    driverLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid).withPosition(colIndex + 1, 0).withSize(1,
-        1);
+    driverLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
+        .withPosition(colIndex + 1, 0).withSize(1, 1);
     driverLayout.addBoolean("Limelight On", this::isLightOn);
   }
 
@@ -95,9 +96,15 @@ public abstract class VisionSystem extends SubsystemBase {
     return rawValues;
   }
 
+  public void setUpdateValues(boolean update) {
+    updateValues = update;
+  }
+
   @Override
   public void periodic() {
-    update();
+    if (updateValues) {
+      update();
+    }
   }
 
   protected void updateValues(VisionValues rawValues,
@@ -115,13 +122,13 @@ public abstract class VisionSystem extends SubsystemBase {
       this.rawValues = rawValues;
       rawValues
           .setValid(valid)
-          .setLatency(latencySup.getAsDouble())
+          .addLatency(name, latencySup.getAsDouble())
           .setYaw(angleX)
           .setPitch(angleY)
           .setArea(areaSup.getAsDouble())
           .setDistance(distance)
-          .addCameraPose(cameraPoseSupplier.get())
-          .addRobotPose(robotPoseSupplier.get());
+          .addCameraPose(name, cameraPoseSupplier.get())
+          .addRobotPose(name, robotPoseSupplier.get());
       // smoothedValues.averageValues(rawValues, 5);
     } else {
       rawValues = new VisionValues();

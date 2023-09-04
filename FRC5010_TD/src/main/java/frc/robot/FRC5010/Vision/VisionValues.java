@@ -7,8 +7,8 @@
 
 package frc.robot.FRC5010.Vision;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -24,20 +24,20 @@ public class VisionValues {
     // TODO: If you ever get rid of a networkentry variable in opensight, update
     // vision classes
 
-    protected boolean valid = false;
-    protected double latency = 0.0;
-    protected double angleX = 0.0;
-    protected double angleY = 0.0;
+    protected Boolean valid = false;
+    protected Map<String, Double> latencies = new HashMap<>();
+    protected Double angleX = 0.0;
+    protected Double angleY = 0.0;
     // distance
-    protected double distance = 0.0;
-    
-    protected double area = 0.0;
-    protected List<Pose3d> cameraToTarget = new ArrayList<>();
-    protected List<Pose2d> robotPoses = new ArrayList<>();
+    protected Double distance = 0.0;
+
+    protected Double area = 0.0;
+    protected Map<String, Pose3d> cameraToTarget = new HashMap<>();
+    protected Map<String, Pose2d> robotPoses = new HashMap<>();
 
     protected int count = 0;
 
-    public VisionValues() {        
+    public VisionValues() {
     }
 
     public void averageValues(VisionValues rawValues, int maxCount) {
@@ -49,113 +49,119 @@ public class VisionValues {
         distance = ((count - 1) * distance + rawValues.getDistance()) / count;
     }
 
-    public boolean getValid() {
+    public Boolean getValid() {
         return valid;
     }
 
-    public double getAngleX() {
+    public Double getAngleX() {
         return angleX;
     }
 
-    public double getAngleY() {
+    public Double getAngleY() {
         return angleY;
     }
 
-    public double getDistance() {
+    public Double getDistance() {
         return distance;
     }
-    
-    public double getDistanceViaArea() {
-        return 0;
+
+    public Double getDistanceViaArea() {
+        return 0.0;
     }
 
-    public double getArea() {
+    public Double getArea() {
         return area;
     }
-    
-    public double getLatency() {
-        return latency;
+
+    public Double getLatency(String camera) {
+        return latencies.get(camera);
     }
 
-    public VisionValues setArea(double area) {
+    public VisionValues setArea(Double area) {
         this.area = area;
         return this;
     }
 
-    public VisionValues setPitch(double pitch) {
+    public VisionValues setPitch(Double pitch) {
         this.angleY = pitch;
         return this;
     }
 
-    public VisionValues setYaw(double yaw) {
+    public VisionValues setYaw(Double yaw) {
         this.angleX = yaw;
         return this;
     }
 
-    public VisionValues setDistance(double distance) {
+    public VisionValues setDistance(Double distance) {
         this.distance = distance;
         return this;
     }
 
-    public VisionValues setLatency(double latency) {
-        this.latency = latency;
+    public VisionValues addLatency(String camera, Double latency) {
+        latencies.put(camera, latency);
         return this;
     }
 
-    public VisionValues setValid(boolean valid) {
+    public VisionValues setValid(Boolean valid) {
         this.valid = valid;
         return this;
     }
 
     public Pose3d getCameraPose() {
-        return cameraToTarget.size() > 0? cameraToTarget.get(0) : new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
-    } 
+        return cameraToTarget.size() > 0 ? cameraToTarget.values().iterator().next()
+                : new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+    }
 
-    public VisionValues addCameraPose(Pose3d camPose) {
-        cameraToTarget.add(camPose);
+    public VisionValues addCameraPose(String camera, Pose3d camPose) {
+        cameraToTarget.put(camera, camPose);
         return this;
     }
 
-    public VisionValues addCameraPoses(List<Pose3d> camPose) {
-        cameraToTarget.addAll(camPose);
+    public VisionValues addCameraPoses(Map<String, Pose3d> camPoses) {
+        cameraToTarget.putAll(camPoses);
         return this;
     }
 
-    public Pose3d getCameraToTarget(int i) {
+    public Map<String, Pose3d> getCameraPoses() {
+        return cameraToTarget;
+    }
+
+    public Pose3d getCameraToTarget(String camera) {
         Pose3d pose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
-        if (i < cameraToTarget.size()) {
-            if (null != cameraToTarget.get(i)) {
-                pose = cameraToTarget.get(i);
+        if (cameraToTarget.containsKey(camera)) {
+            if (null != cameraToTarget.get(camera)) {
+                pose = cameraToTarget.get(camera);
             }
         }
         return pose;
     }
 
     public Pose2d getRobotPose() {
-        return robotPoses.size() > 0? robotPoses.get(0) : new Pose2d(0, 0, new Rotation2d(0, 0));
-    } 
+        return robotPoses.size() > 0 ? robotPoses.values().iterator().next()
+                : new Pose2d(0, 0, new Rotation2d(0, 0));
+    }
 
-    public VisionValues addRobotPose(Pose2d robotPose) {
-        robotPoses.add(robotPose);
+    public VisionValues addRobotPose(String camera, Pose2d robotPose) {
+        robotPoses.put(camera, robotPose);
         return this;
     }
 
-    public VisionValues addRobotPoses(List<Pose2d> robotPose) {
-        robotPoses.addAll(robotPose);
+    public VisionValues addRobotPoses(Map<String, Pose2d> robotPoses) {
+        robotPoses.putAll(robotPoses);
         return this;
     }
 
-    public Pose2d getRobotPose(int i) {
+    public Pose2d getRobotPose(String camera) {
         Pose2d pose = new Pose2d(0, 0, new Rotation2d(0, 0));
-        if (i < robotPoses.size()) {
-            if (null != robotPoses.get(i)) {
-                pose = robotPoses.get(i);
+        if (robotPoses.containsKey(camera)) {
+            if (null != robotPoses.get(camera)) {
+                pose = robotPoses.get(camera);
             }
         }
         return pose;
     }
 
-    public List<Pose2d> getRobotPoses() {
+    public Map<String, Pose2d> getRobotPoses() {
         return robotPoses;
     }
 
