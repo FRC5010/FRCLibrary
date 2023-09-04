@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionLimeLightSim;
+import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -64,10 +64,10 @@ public class CubeCruzer extends GenericMechanism {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                VisionLimeLightSim multiVision = new VisionLimeLightSim("orange", 1, AprilTags.aprilTagFieldLayout);
+                VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
+                multiVision.addLimeLightCamera("orange", 1);
 
                 // y = +- 27.75 / 2, x = 2.5, z = 36.75
-
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
                 // "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,4);
@@ -76,8 +76,17 @@ public class CubeCruzer extends GenericMechanism {
 
                 drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, null, swerveConstants);
                 // Uncomment when using PhotonVision
+                // multiVision.addPhotonCamera("LeftCamera", 1,
+                // new Transform3d( // This describes the vector between the camera lens to the
+                // // robot center on the
+                // // ground
+                // new Translation3d(Units.inchesToMeters(27.75 / 2),
+                // Units.inchesToMeters(2.5),
+                // Units.inchesToMeters(36.75)),
+                // new Rotation3d(0, 0, Units.degreesToRadians(90))),
+                // PoseStrategy.MULTI_TAG_PNP,
+                // drive.getDrivetrain().getPoseEstimator());
 
-                multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
                 driverDiplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 
                 buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());

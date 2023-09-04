@@ -116,6 +116,11 @@ public class VisionValues {
         return this;
     }
 
+    public VisionValues addCameraPoses(List<Pose3d> camPose) {
+        cameraToTarget.addAll(camPose);
+        return this;
+    }
+
     public Pose3d getCameraToTarget(int i) {
         Pose3d pose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
         if (i < cameraToTarget.size()) {
@@ -132,6 +137,11 @@ public class VisionValues {
 
     public VisionValues addRobotPose(Pose2d robotPose) {
         robotPoses.add(robotPose);
+        return this;
+    }
+
+    public VisionValues addRobotPoses(List<Pose2d> robotPose) {
+        robotPoses.addAll(robotPose);
         return this;
     }
 

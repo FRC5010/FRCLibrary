@@ -13,8 +13,6 @@ import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 /** Add your docs here. */
 public class VisionLimeLightLib extends VisionSystem {
 
-    protected DrivetrainPoseEstimator drivetrainPoseEstimator = null;
-
     public VisionLimeLightLib(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
         super(name, colIndex, fieldLayout);
         init();
