@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.FRC5010.commands.LedDefaultCommand;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
@@ -28,7 +29,6 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.LedDefaultCommand;
 import frc.robot.commands.PivotArm;
 
 /** Add your docs here. */
