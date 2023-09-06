@@ -4,14 +4,14 @@
 
 package frc.robot.FRC5010.sensors.gyro;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 /** Add your docs here. */
 public class PigeonGyro implements GenericGyro {
-    private final Pigeon2 pigeon2;
+    private final WPI_Pigeon2 pigeon2;
 
     public PigeonGyro(int valueCAN) {
-        pigeon2 = new Pigeon2(valueCAN);
+        pigeon2 = new WPI_Pigeon2(valueCAN);
     }
 
     @Override
