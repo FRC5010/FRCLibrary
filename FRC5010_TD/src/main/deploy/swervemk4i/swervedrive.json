@@ -2,7 +2,7 @@
   "maxSpeed": 16,
   "optimalVoltage": 12,
   "imu": {
-    "type": "pigeon2",
+    "type": "navx_mxp",
     "id": 13,
     "canbus": ""
   },

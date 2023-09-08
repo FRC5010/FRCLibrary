@@ -10,8 +10,6 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -59,8 +57,9 @@ public class ChargedUpMech extends GenericMechanism {
                                 mechVisual, shuffleTab);
 
                 this.intakeSubsystem = new IntakeSubsystem(
-                                MotorFactory.NEO(19),
-                                MotorFactory.NEO(18),
+                                MotorFactory.NEO(10),
+                                MotorFactory.NEO(11),
+                                MotorFactory.NEO(12),
                                 new MotorModelConstants(0, 0, 0),
                                 new GenericPID(0.003, 0, 0),
                                 mechVisual);

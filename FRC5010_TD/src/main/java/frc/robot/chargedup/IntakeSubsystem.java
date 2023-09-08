@@ -36,11 +36,12 @@ public class IntakeSubsystem extends SubsystemBase {
   private MechanismLigament2d m_intakeRight2Mech2d;
 
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2,
+  public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2, MotorController5010 intake3,
       MotorModelConstants intakeConstants, GenericPID intakePID,
       Mechanism2d m_mech2d) {
     this.intake = intake.invert(false);
     intake2.setFollow(intake, true);
+    intake3.setFollow(intake, false);
     this.intakeController = ((CANSparkMax) intake).getPIDController();
     this.intakeEncoder = intake.getMotorEncoder();
     this.intakeConstants = intakeConstants;
