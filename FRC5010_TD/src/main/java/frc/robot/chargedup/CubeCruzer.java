@@ -175,7 +175,7 @@ public class CubeCruzer extends GenericMechanism {
                                 .whileTrue(new AutoBalance(drive.getDrivetrain(),
                                                 () -> !driver.createAButton().getAsBoolean(), gyro));
 
-                // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
+                // driver.createBButtdon().whileTrue(new DriveToPosition((SwerveDrivetrain)
                 // drive.getDrivetrain(),
                 // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
                 // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
