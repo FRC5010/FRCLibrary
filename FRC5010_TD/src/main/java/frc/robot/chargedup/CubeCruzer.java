@@ -112,7 +112,7 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addMarker("PivotToLow", new PivotArm(pivotSubsystem,
                                 ArmLevel.low));
                 autoMaps.addMarker("PivotToMid", new PivotArm(pivotSubsystem,
-                                ArmLevel.medium));
+                                ArmLevel.home));
 
                 autoMaps.addMarker("PivotToHigh", new PivotArm(pivotSubsystem,
                                 ArmLevel.high));

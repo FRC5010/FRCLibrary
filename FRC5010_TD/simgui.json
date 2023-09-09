@@ -16,7 +16,8 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 [11]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
-      "/SmartDashboard/Robot Visual": "Mechanism2d"
+      "/SmartDashboard/Robot Visual": "Mechanism2d",
+      "/SmartDashboard/navX-Sensor[1]": "Gyro"
     },
     "windows": {
       "/Shuffleboard/Pose/Field": {
