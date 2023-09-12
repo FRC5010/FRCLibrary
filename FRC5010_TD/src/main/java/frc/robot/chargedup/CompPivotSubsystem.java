@@ -76,7 +76,7 @@ public class CompPivotSubsystem extends SubsystemBase {
     pivotController.setFeedbackDevice(pivotEncoder);
     pivotController.setOutputRange(-1, 1);
 
-    pivotEncoder.setPosition(ArmLevel.auto.getPivotPosition());
+    // pivotEncoder.setPosition(ArmLevel.auto.getPivotPosition());
     // TODO Set FF and IZ
     pivotController.setFF(0);
     pivotController.setIZone(kIz);

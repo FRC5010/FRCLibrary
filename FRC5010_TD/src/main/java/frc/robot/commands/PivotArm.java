@@ -31,12 +31,14 @@ public class PivotArm extends CommandBase {
   @Override
   public void execute() {
     pivotSubsystem.runPivotToTarget(armLevel.getPivotPosition());
+    System.out.println("Running to target " + armLevel.name() + " " + armLevel.getPivotPosition());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     WpiDataLogging.log(getName() + " ended " + interrupted);
+    System.out.println("Ended PivotArm");
     pivotSubsystem.stopAndHoldPivot();
   }
 
@@ -44,7 +46,7 @@ public class PivotArm extends CommandBase {
   @Override
   public boolean isFinished() {
     return pivotSubsystem.isPivotAtTarget()
-        || (pivotSubsystem.isPivotMaxPosition() && pivotSubsystem.getVelocity() > 0)
-        || (pivotSubsystem.isPivotMinPosition() && pivotSubsystem.getVelocity() < 0);
+        || (pivotSubsystem.isPivotMaxPosition() && pivotSubsystem.getVelocity() > 0.1)
+        || (pivotSubsystem.isPivotMinPosition() && pivotSubsystem.getVelocity() < -0.1);
   }
 }

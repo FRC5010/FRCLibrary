@@ -3,24 +3,16 @@ package frc.robot.chargedup;
 import edu.wpi.first.math.util.Units;
 
 public enum ArmLevel {
-  ground(1.345, -10.1),
-  low(1.2, -8),
-  loading(0.9797, 26.2986),
-  medium(1.4967, 26.7928),
-  high(1.980, 30.657),
-  auto(Units.inchesToMeters(30), 31.583),
-  conePickUp(1.47, ground.getPivotPosition());
+  ground(0),
+  low(45),
+  middle(45),
+  home(105),
+  high(140);
 
-  private double extension, pivot;
+  private double pivot;
 
-  private ArmLevel(double extension, double pivot) {
-    this.extension = extension;
+  private ArmLevel(double pivot) {
     this.pivot = pivot;
-  }
-
-  public double getExtensionPosition() {
-    return extension;
-
   }
 
   public double getPivotPosition() {

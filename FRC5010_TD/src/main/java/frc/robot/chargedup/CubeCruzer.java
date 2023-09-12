@@ -11,6 +11,7 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -29,6 +30,7 @@ import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
@@ -73,7 +75,7 @@ public class CubeCruzer extends GenericMechanism {
                 // visionTab.addCamera("DriverCam", "DriverCam",
                 // "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,4);
 
-                gyro = new PigeonGyro(13);
+                gyro = new NavXGyro(Port.kMXP);
 
                 drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, null, swerveConstants);
                 // Uncomment when using PhotonVision
@@ -110,7 +112,7 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addMarker("PivotToLow", new PivotArm(pivotSubsystem,
                                 ArmLevel.low));
                 autoMaps.addMarker("PivotToMid", new PivotArm(pivotSubsystem,
-                                ArmLevel.medium));
+                                ArmLevel.home));
 
                 autoMaps.addMarker("PivotToHigh", new PivotArm(pivotSubsystem,
                                 ArmLevel.high));
@@ -175,7 +177,7 @@ public class CubeCruzer extends GenericMechanism {
                                 .whileTrue(new AutoBalance(drive.getDrivetrain(),
                                                 () -> !driver.createAButton().getAsBoolean(), gyro));
 
-                // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
+                // driver.createBButtdon().whileTrue(new DriveToPosition((SwerveDrivetrain)
                 // drive.getDrivetrain(),
                 // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
                 // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),

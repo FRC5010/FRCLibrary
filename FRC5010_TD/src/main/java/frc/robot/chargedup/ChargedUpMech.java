@@ -10,8 +10,6 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -54,13 +52,14 @@ public class ChargedUpMech extends GenericMechanism {
                 // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
                 this.pivotSubsystem = new PivotSubsystem(
                                 MotorFactory.NEO(9),
-                                new GenericPID(12, 0.0, 0.03),
-                                new MotorModelConstants(0.25, 2.125, 0),
+                                new GenericPID(2, 0.0, 0),
+                                new MotorModelConstants(0.25, 0.8, 0),
                                 mechVisual, shuffleTab);
 
                 this.intakeSubsystem = new IntakeSubsystem(
-                                MotorFactory.NEO(19),
-                                MotorFactory.NEO(18),
+                                MotorFactory.NEO(11),
+                                MotorFactory.NEO(12),
+                                MotorFactory.NEO(10),
                                 new MotorModelConstants(0, 0, 0),
                                 new GenericPID(0.003, 0, 0),
                                 mechVisual);
@@ -96,16 +95,16 @@ public class ChargedUpMech extends GenericMechanism {
                                 .onTrue(
                                                 new SequentialCommandGroup(
                                                                 new InstantCommand(
-                                                                                () -> armLevel = ArmLevel.loading),
-                                                                new PivotArm(pivotSubsystem, ArmLevel.loading)
+                                                                                () -> armLevel = ArmLevel.middle),
+                                                                new PivotArm(pivotSubsystem, ArmLevel.middle)
 
                                                 ));
 
                 operator.createXButton().onTrue(
                                 new SequentialCommandGroup(
                                                 new InstantCommand(
-                                                                () -> armLevel = ArmLevel.loading),
-                                                new PivotArm(pivotSubsystem, ArmLevel.loading)
+                                                                () -> armLevel = ArmLevel.middle),
+                                                new PivotArm(pivotSubsystem, ArmLevel.middle)
 
                                 ));
 
@@ -113,15 +112,15 @@ public class ChargedUpMech extends GenericMechanism {
                                 .onTrue(
                                                 new SequentialCommandGroup(
                                                                 new InstantCommand(
-                                                                                () -> armLevel = ArmLevel.medium),
-                                                                new PivotArm(pivotSubsystem, ArmLevel.medium)
+                                                                                () -> armLevel = ArmLevel.home),
+                                                                new PivotArm(pivotSubsystem, ArmLevel.home)
 
                                                 ));
                 operator.createYButton().onTrue(
                                 new SequentialCommandGroup(
                                                 new InstantCommand(
-                                                                () -> armLevel = ArmLevel.medium),
-                                                new PivotArm(pivotSubsystem, ArmLevel.medium)
+                                                                () -> armLevel = ArmLevel.home),
+                                                new PivotArm(pivotSubsystem, ArmLevel.home)
 
                                 ));
 
@@ -167,7 +166,7 @@ public class ChargedUpMech extends GenericMechanism {
                 buttonOperator.getButton(10)
                                 .whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-intakeSpeedLimit, -1)));
 
-                buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
+                buttonOperator.setYAxis(buttonOperator.createYAxis().deadzone(0.05));
                 buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); // The deadzone isnt technically
 
                 driver.setRightTrigger(driver.createRightTrigger());
@@ -210,7 +209,7 @@ public class ChargedUpMech extends GenericMechanism {
                         pivotSubsystem.toggleOverride();
                 }, pivotSubsystem));
 
-                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2).negate());
+                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2));
                 operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 
                 driver.createRightBumper().onTrue(new InstantCommand(() -> ledSubsystem.togglePickUp(), ledSubsystem));

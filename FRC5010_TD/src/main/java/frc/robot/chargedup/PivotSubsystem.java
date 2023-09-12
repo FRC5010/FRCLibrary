@@ -8,10 +8,12 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -26,22 +28,25 @@ import frc.robot.Robot;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
+import frc.robot.FRC5010.sensors.encoder.RevEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 
 public class PivotSubsystem extends SubsystemBase {
   /** Creates a new PivotSubsystem. */
 
   private final double pivotConversionFactor = 360;
-  private final double pivotMaxLimit = 150;
-  private final double pivotMinLimit = 0;
+  private final double pivotMaxLimit = 146;
+  private final double pivotMinLimit = -5;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
   private GenericPID pivotPID;
-  private AbsoluteEncoder pivotEncoder;
+  private AbsoluteEncoder pivotAbsEncoder;
+  private RevEncoder internalEncoder;
   private SimulatedEncoder pivotSimEncoder = new SimulatedEncoder(10, 11);
   private ArmFeedforward pivotFeedforward;
   private SingleJointedArmSim pivotSim;
+  private double encoderUpdateCounter;
 
   private boolean override = false;
   private boolean usingTarget = false;
@@ -56,14 +61,18 @@ public class PivotSubsystem extends SubsystemBase {
     this.currentPivotTarget = 0;
 
     this.pivotMotor = pivot;
-    this.pivotMotor.setInverted(false);
+    this.pivotMotor.setInverted(true);
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
-    this.pivotEncoder = ((CANSparkMax) pivot).getAbsoluteEncoder(Type.kDutyCycle);
-    pivotEncoder.setPositionConversionFactor(this.pivotConversionFactor);
-    this.pivotEncoder.setInverted(true);
+    this.pivotAbsEncoder = ((CANSparkMax) pivot).getAbsoluteEncoder(Type.kDutyCycle);
+    ((CANSparkMax) pivot).setIdleMode(IdleMode.kBrake);
+    pivotAbsEncoder.setPositionConversionFactor(this.pivotConversionFactor);
+    this.pivotAbsEncoder.setInverted(true);
+    this.internalEncoder = (RevEncoder) pivotMotor.getMotorEncoder();
+    this.internalEncoder.setPositionConversion(4.9);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
     this.shuffleTab = shuffleTab;
+    this.encoderUpdateCounter = 500;
 
     SmartDashboard.putNumber("MOI", SingleJointedArmSim.estimateMOI(0.82, 8.5));
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
@@ -75,22 +84,30 @@ public class PivotSubsystem extends SubsystemBase {
     pivotController.setP(pivotPID.getkP());
     pivotController.setI(pivotPID.getkI());
     pivotController.setD(pivotPID.getkD());
-    pivotController.setFeedbackDevice(pivotEncoder);
+    pivotController.setFeedbackDevice(pivotAbsEncoder);
     pivotController.setOutputRange(-1, 1);
     pivotController.setFF(0);
 
     shuffleTab.addDouble("Pivot FF", this::getFeedFowardVoltage);
     if (Robot.isReal()) {
 
+      shuffleTab.addBoolean("Pivot Min", this::isPivotMinPosition);
       shuffleTab.addBoolean("Pivot Max", this::isPivotMaxPosition);
-      shuffleTab.addBoolean("Pivot Target is good", () -> currentPivotTarget > pivotEncoder.getPosition());
+      shuffleTab.addDouble("Pivot Target", () -> currentPivotTarget);
     }
+
     shuffleTab.addNumber("Pivot Motor Pow: ", () -> pivotMotor.get());
     shuffleTab.addDouble("Pivot Position: ", this::getPivotPosition);
+    shuffleTab.addDouble("Internal Position: ", () -> internalEncoder.getPosition());
+
+    shuffleTab.addDouble("Pivot Velocity: ", this::getVelocity);
     shuffleTab.addBoolean("Override", () -> override);
+    shuffleTab.addDouble("PivotABS ", () -> getAbsPosition());
+    shuffleTab.addBoolean("Is Pivot At Target", this::isPivotAtTarget);
 
     SmartDashboard.putNumber("Pivot kG", pivotConstants.getkF());
     SmartDashboard.putNumber("Pivot kP", pivotPID.getkP());
+    SmartDashboard.putNumber("Pivot kD", pivotPID.getkD());
 
     mech2dRoot = mech2d.getRoot("Intake Root", 10, 10);
     pivotArmSim = mech2dRoot.append(
@@ -103,11 +120,17 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getPivotPosition() {
+    double position;
     if (Robot.isReal()) {
-      return pivotEncoder.getPosition();
+      position = internalEncoder.getPosition();
     } else {
-      return pivotSimEncoder.getPosition();
+      position = pivotSimEncoder.getPosition();
     }
+
+    if (position > 180) {
+      position -= 360;
+    }
+    return position;
   }
 
   // public void setPivotPosition(double position) {
@@ -124,6 +147,28 @@ public class PivotSubsystem extends SubsystemBase {
   // }
   // }
 
+  public void ensureSafePivotCurrent() {
+    CANSparkMax pivot = (CANSparkMax) pivotMotor.getMotor();
+    double pivotCurrent = pivot.getOutputCurrent();
+    if (pivotCurrent > 80) {
+      System.out.println("Overcurrent!");
+      pivot.stopMotor();
+    }
+  }
+
+  public double getAbsPosition() {
+    return (pivotAbsEncoder.getPosition() + 143.9) % 360;
+  }
+
+  public void updateInternalEncoder() {
+    encoderUpdateCounter++;
+    double absPosition = getAbsPosition();
+    if (absPosition != 0 && encoderUpdateCounter > 500) {
+      internalEncoder.setPosition(absPosition);
+      encoderUpdateCounter = 0;
+    }
+  }
+
   public boolean isCloseToMinHardStop() {
     return (getPivotPosition() < pivotMinLimit + 5);
   }
@@ -133,21 +178,21 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public boolean closeToTarget() {
-    return Math.abs(getPivotPosition() - currentPivotTarget) < 1 && usingTarget;
+    return Math.abs(getPivotPosition() - currentPivotTarget) < 5;
   }
 
   public double getPowerFactor(double pow) {
     double powerFactor = 1;
     double sign = Math.signum(pow);
     boolean closeToTarget = closeToTarget();
-    boolean atTarget = isPivotAtTarget();
+    boolean atTarget = isPivotAtTarget() && usingTarget;
 
     if (sign > 0) {
 
       if (isPivotMaxHardStop(pow) || atTarget) {
         powerFactor = 0;
       } else if ((isCloseToMaxHardStop()) || closeToTarget) {
-        powerFactor = 0.25;
+        powerFactor = 0.5;
       }
 
     } else {
@@ -155,7 +200,7 @@ public class PivotSubsystem extends SubsystemBase {
       if (isPivotMinHardStop(pow) || atTarget) {
         powerFactor = 0;
       } else if (isCloseToMinHardStop() || closeToTarget) {
-        powerFactor = 0.25;
+        powerFactor = 0.5;
       }
 
     }
@@ -163,7 +208,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   private boolean isPivotMinHardStop(double pow) {
-    return pow < 0 && pivotEncoder.getPosition() < 0;
+    return pow < 0 && isPivotMinPosition();
   }
 
   private boolean isPivotMaxHardStop(double pow) {
@@ -174,6 +219,7 @@ public class PivotSubsystem extends SubsystemBase {
     this.currentPivotTarget = position;
     usingTarget = true;
     double kP = SmartDashboard.getNumber("Pivot kP", pivotPID.getkP());
+    double kD = SmartDashboard.getNumber("Pivot kD", pivotPID.getkD());
     double kF = getFeedFowardVoltage();
     double positionSig = Math.signum(this.currentPivotTarget - getPivotPosition());
     double pow = kP * positionSig;
@@ -184,8 +230,8 @@ public class PivotSubsystem extends SubsystemBase {
     Double pivotKG = SmartDashboard.getNumber("Pivot kG", pivotConstants.getkF());
     pivotFeedforward = new ArmFeedforward(pivotConstants.getkS(), pivotKG, 0);
     double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
-    SmartDashboard.putNumber("Pivot FF", ff);
-    return 0;
+    SmartDashboard.putNumber("Pivot calc FF", ff);
+    return ff;
 
     // (0.2 + 0.3 * 1 // replace this with the arm length
     // ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
@@ -195,7 +241,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public boolean isPivotAtTarget() {
-    return Math.abs(getPivotPosition() - this.currentPivotTarget) < 0.05 && usingTarget;
+    return Math.abs(getPivotPosition() - this.currentPivotTarget) < 1.0;
   }
 
   public double getPivotTarget() {
@@ -213,7 +259,7 @@ public class PivotSubsystem extends SubsystemBase {
     if (override) {
       return false;
     }
-    return getPivotPosition() > pivotMinLimit;
+    return getPivotPosition() <= pivotMinLimit;
   }
 
   public void toggleOverride() {
@@ -221,7 +267,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getVelocity() {
-    return pivotEncoder.getVelocity();
+    return pivotAbsEncoder.getVelocity();
   }
 
   public void pivotPow(double pow, boolean feedForward) {
@@ -252,12 +298,14 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public boolean atMinHardStop() {
-    return pivotEncoder.getVelocity() < 0 && pivotEncoder.getPosition() < 0;
+    return pivotAbsEncoder.getVelocity() < 0 && getAbsPosition() < 0;
   }
 
   @Override
   public void periodic() {
     pivotArmSim.setAngle(getPivotPosition());
+    updateInternalEncoder();
+    ensureSafePivotCurrent();
   }
 
   @Override
