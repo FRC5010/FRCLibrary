@@ -2,46 +2,47 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.6606992829370293,
-        "y": 4.412794787128036
+        "x": 1.7859532834450307,
+        "y": 4.432064633360036
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6703342060530295,
-        "y": 4.403159864012036
+        "x": 1.795588206561031,
+        "y": 4.422429710244035
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake"
+          "PivotToHigh",
+          "OuttakeFast"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 2.541092100729137,
-        "y": 4.471264063783477
+        "x": 3.8189220609210466,
+        "y": 4.605493249448038
       },
       "prevControl": {
-        "x": 2.541092100729137,
-        "y": 4.451994217551476
+        "x": 3.8189220609210466,
+        "y": 4.586223403216038
       },
       "nextControl": null,
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "HomePivot"
+          "PivotToGround"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",

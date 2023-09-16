@@ -32,7 +32,7 @@ public class DrivetrainPoseEstimator {
 
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
     tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(0, 4);
-    tab.addNumber("Pose Degrees", () -> getCurrentPose().getRotation().getDegrees()).withPosition(1, 4);
+    tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees())).withPosition(1, 4);
     tab.add(field2d);
 
     for (AprilTag at : vision.getFieldLayout().getTags()) {

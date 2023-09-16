@@ -24,8 +24,7 @@ public class NavXGyro implements GenericGyro {
 
     @Override
     public double getAngle() {
-
-        return gyro.getAngle();
+        return -gyro.getAngle();
     }
 
     @Override
@@ -50,7 +49,7 @@ public class NavXGyro implements GenericGyro {
 
     @Override
     public double getAngleZ() {
-        return gyro.getAngle();
+        return -gyro.getAngle();
     }
 
     public AHRS getRawGyro() {

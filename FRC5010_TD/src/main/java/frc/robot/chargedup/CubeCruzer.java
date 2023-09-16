@@ -81,7 +81,6 @@ public class CubeCruzer extends GenericMechanism {
                 // "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,4);
 
                 gyro = new NavXGyro(Port.kMXP);
-                shuffleTab.addDouble("Gyro Rotation", () -> ((NavXGyro) gyro).getRawGyro().getRawGyroY() * 0.1);
 
                 drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, null, swerveConstants);
                 // Uncomment when using PhotonVision
@@ -151,13 +150,13 @@ public class CubeCruzer extends GenericMechanism {
                 // Wheels"))));
 
                 // Create Paths
-                autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
+                // autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
                 autoMaps.addPath("6-3 Cube Multi", new PathConstraints(2, 1));
                 autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1));
                 autoMaps.addPath("6-3 Score", new PathConstraints(1.75, 1));
-                autoMaps.addPath("6-3 Three Piece", new PathConstraints(4, 2));
+                // autoMaps.addPath("6-3 Three Piece", new PathConstraints(4, 2));
 
-                autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1.2));
+                // autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1.2));
                 autoMaps.addPath("Bal Over 7-2", new PathConstraints(1.75, 1));
                 autoMaps.addPath("Bal Over 7-2 Slow", new PathConstraints(1.75, 1));
                 autoMaps.addPath("Bal Direct 7-2", new PathConstraints(1.75, 1));
@@ -165,7 +164,7 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addPath("8-1 Cube Out", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Cube Multi", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Score", new PathConstraints(1.75, 1));
-                autoMaps.addPath("8-1 Three Piece", new PathConstraints(4, 2));
+                // autoMaps.addPath("8-1 Three Piece", new PathConstraints(4, 2));
                 autoMaps.addPath("Command Test", new PathConstraints(1.75, 1));
 
         }

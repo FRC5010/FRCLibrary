@@ -40,6 +40,7 @@ public class CheeseStickCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return cheeseStick.rotateToSetPoint(position);
+    return true;
+    // return cheeseStick.rotateToSetPoint(position);
   }
 }
