@@ -33,8 +33,13 @@ public class IntakeSpin extends CommandBase {
   @Override
   public void execute() {
     double velocity = (this.spinVelocity.get());
+    if (velocity > 0) {
+      velocity *= .25;
+    }
     // this.intakeSubsystem.setVelocity(velocity);
     this.intakeSubsystem.setMotor(velocity);
+    WpiDataLogging.log("Intake Current:" + intakeSubsystem.getMotorCurrent()); // Message for Logging to see Intake
+                                                                               // Current Spike
   }
 
   // Called once the command ends or is interrupted.

@@ -3,10 +3,10 @@
   "optimalVoltage": 12,
   "imu": {
     "type": "navx_mxp",
-    "id": 13,
+    "id": 15,
     "canbus": ""
   },
-  "invertedIMU": false,
+  "invertedIMU": true,
   "modules": [
     "frontleft.json",
     "frontright.json",

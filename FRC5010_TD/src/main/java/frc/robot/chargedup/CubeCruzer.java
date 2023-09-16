@@ -7,6 +7,7 @@ package frc.robot.chargedup;
 import java.util.List;
 import java.util.Map;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -17,16 +18,19 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
+import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
+import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -35,6 +39,7 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
+import frc.robot.commands.CheeseStickCommand;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.PivotArm;
@@ -76,6 +81,7 @@ public class CubeCruzer extends GenericMechanism {
                 // "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,4);
 
                 gyro = new NavXGyro(Port.kMXP);
+                shuffleTab.addDouble("Gyro Rotation", () -> ((NavXGyro) gyro).getRawGyro().getRawGyroY() * 0.1);
 
                 drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, null, swerveConstants);
                 // Uncomment when using PhotonVision
@@ -101,9 +107,7 @@ public class CubeCruzer extends GenericMechanism {
                 IntakeSubsystem intakeSubsystem = ((ChargedUpMech) cubeArm).getIntakeSubsystem();
                 PivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
 
-                // TODO: RE-ADD
-                // cheeseStick = new CheeseStick(null, null, visual); // TODO: Add Motors and
-                // Stuff cause its brokey
+                cheeseStick = ((ChargedUpMech) cubeArm).getCheeseStick();
 
                 // Elevator Controls
 
@@ -140,9 +144,8 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
 
                 // TODO: RE-ADD
-                // autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90,
-                // cheeseStick));
-                // autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
+                autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90, cheeseStick));
+                autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
 
                 // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
                 // Wheels"))));
@@ -163,6 +166,7 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addPath("8-1 Cube Multi", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Score", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Three Piece", new PathConstraints(4, 2));
+                autoMaps.addPath("Command Test", new PathConstraints(1.75, 1));
 
         }
         // autoMaps.addPath("Command Test", new PathConstraints(4, 1.75));
@@ -211,6 +215,7 @@ public class CubeCruzer extends GenericMechanism {
 
                 drive.configureButtonBindings(driver, operator);
                 cubeArm.configureButtonBindings(driver, operator);
+
         }
 
         @Override

@@ -52,4 +52,8 @@ public class NavXGyro implements GenericGyro {
     public double getAngleZ() {
         return gyro.getAngle();
     }
+
+    public AHRS getRawGyro() {
+        return gyro;
+    }
 }
