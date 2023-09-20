@@ -40,6 +40,7 @@ public class IntakeSubsystem extends SubsystemBase {
       MotorModelConstants intakeConstants, GenericPID intakePID,
       Mechanism2d m_mech2d) {
     this.intake = intake.invert(false);
+
     intake2.setFollow(intake, true);
     intakeRoller = intake3.invert(true);
     this.intakeController = ((CANSparkMax) intake).getPIDController();

@@ -74,13 +74,14 @@ public class CubeCruzer extends GenericMechanism {
                 // Will need to be changed for 2023 field
                 VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
                 multiVision.addLimeLightCamera("orange", 1);
+                multiVision.setUpdateValues(true);
 
                 // y = +- 27.75 / 2, x = 2.5, z = 36.75
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
                 // "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,4);
 
-                gyro = new NavXGyro(Port.kMXP);
+                gyro = new PigeonGyro(15);
 
                 drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, null, swerveConstants);
                 // Uncomment when using PhotonVision
@@ -143,8 +144,9 @@ public class CubeCruzer extends GenericMechanism {
                 autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
 
                 // TODO: RE-ADD
-                autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90, cheeseStick));
-                autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
+                // autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90,
+                // cheeseStick));
+                // autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
 
                 // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
                 // Wheels"))));
