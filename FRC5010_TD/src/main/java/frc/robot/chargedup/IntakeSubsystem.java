@@ -40,8 +40,9 @@ public class IntakeSubsystem extends SubsystemBase {
       MotorModelConstants intakeConstants, GenericPID intakePID,
       Mechanism2d m_mech2d) {
     this.intake = intake.invert(false);
+
     intake2.setFollow(intake, true);
-    intakeRoller = intake3;
+    intakeRoller = intake3.invert(true);
     this.intakeController = ((CANSparkMax) intake).getPIDController();
     this.intakeEncoder = intake.getMotorEncoder();
     this.intakeConstants = intakeConstants;
@@ -99,6 +100,11 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intakeLeft1Mech2d.setAngle(speed * 360);
     m_intakeRight1Mech2d.setAngle(speed * 360);
     intakeRoller.set(speed);
+  }
+
+  public double getMotorCurrent() {
+    CANSparkMax motor = (CANSparkMax) intake.getMotor();
+    return motor.getOutputCurrent();
   }
 
   public boolean isIntakeCone() {

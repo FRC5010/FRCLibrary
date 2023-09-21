@@ -17,7 +17,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake"
+          "PivotToHigh",
+          "OuttakeFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -52,12 +53,5 @@
   "maxVelocity": 1.0,
   "maxAcceleration": 0.4,
   "isReversed": null,
-  "markers": [
-    {
-      "position": 0.13818181818181446,
-      "names": [
-        "HomePivot"
-      ]
-    }
-  ]
+  "markers": []
 }

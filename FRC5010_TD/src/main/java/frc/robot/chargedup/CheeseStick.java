@@ -20,53 +20,61 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.motors.MotorController5010;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 
 public class CheeseStick extends SubsystemBase {
   private MotorController5010 stick;
   private GenericPID PID;
   private Mechanism2d mech2d;
-  private SimulatedEncoder stickSimEncoder = new SimulatedEncoder(10, 11);
+  private SimulatedEncoder stickSimEncoder = new SimulatedEncoder(20, 21);
   private SingleJointedArmSim stickSim;
   private MechanismRoot2d simRoot;
   private MechanismLigament2d simCheeseStick;
-  private AbsoluteEncoder stickEncoder;
+  private GenericEncoder stickEncoder;
 
   /** Creates a new CheeseStick. */
   public CheeseStick(MotorController5010 stick, GenericPID PID, Mechanism2d mech2d) {
 
-    this.stick = stick;
+    this.stick = stick.invert(true);
+
     this.PID = PID;
     this.mech2d = mech2d;
     this.simRoot = mech2d.getRoot("CheeseStick", 50, 50);
     this.simCheeseStick = new MechanismLigament2d("Cheese Stick", 10, 0);
     simRoot.append(simCheeseStick);
-    stickEncoder = ((CANSparkMax) stick.getMotor()).getAbsoluteEncoder(Type.kDutyCycle);
-    stickEncoder.setPositionConversionFactor(360);
-
+    stickEncoder = stick.getMotorEncoder();
+    stickEncoder.setPosition(0);
+    stickEncoder.setInverted(true);
+    stickEncoder.setPositionConversion(14.33);
   }
 
-  public double rotateToSetPoint(double position) {
+  public boolean rotateToSetPoint(double position) {
     double current = stickEncoder.getPosition();
     double error = (position - current);
     double power = 0;
-    if (Math.signum(error) > 0) {
-      power = 0.5;
-      if (current > 85) {
-        power = 0.25;
-      }
+    if (position == 90 && current < 85) {
+      power = 0.25;
+    } else if (position == 0 && current > 5) {
+      power = -0.25;
     } else {
-      power = -0.5;
-      if (current < 10) {
-        power = 0.25;
-      }
+      power = 0;
     }
+
+    if (Math.abs(error) < 20) {
+      power *= 0.2;
+    }
+
     stick.set(power);
-    return error;
+    return 0 == power;
   }
 
   public void stop() {
     stick.set(0);
+  }
+
+  public double getPosition() {
+    return stickEncoder.getPosition();
   }
 
   @Override

@@ -16,19 +16,20 @@ import frc.robot.FRC5010.sensors.encoder.RevEncoder;
 public class GenericRevBrushlessMotor extends CANSparkMax implements MotorController5010 {
     protected int currentLimit;
 
-    public GenericRevBrushlessMotor(int port, int currentLimit){
+    public GenericRevBrushlessMotor(int port, int currentLimit) {
         super(port, MotorType.kBrushless);
+        super.restoreFactoryDefaults();
         super.setSmartCurrentLimit(currentLimit);
         this.currentLimit = currentLimit;
     }
-    
+
     @Override
     /** Sets up the same motor hardware and current limit */
     public MotorController5010 duplicate(int port) {
         MotorController5010 duplicate = new GenericRevBrushlessMotor(port, currentLimit);
         return duplicate;
     }
-    
+
     @Override
     public MotorController5010 setCurrentLimit(int limit) {
         this.currentLimit = limit;
@@ -41,6 +42,7 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
         super.setOpenLoopRampRate(rate);
         return this;
     }
+
     @Override
     public MotorController5010 setFollow(MotorController5010 motor) {
         super.follow((CANSparkMax) motor.getMotor());
@@ -52,6 +54,7 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
         super.follow((CANSparkMax) motor.getMotor(), inverted);
         return this;
     }
+
     @Override
     public MotorController5010 invert(boolean inverted) {
         super.setInverted(inverted);
@@ -59,20 +62,22 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
     }
 
     @Override
-    public GenericEncoder getMotorEncoder(){
+    public GenericEncoder getMotorEncoder() {
         return new RevEncoder(super.getEncoder());
     }
 
     @Override
-    public GenericEncoder getMotorEncoder(Type sensorType, int countsPerRev){
+    public GenericEncoder getMotorEncoder(Type sensorType, int countsPerRev) {
         return new RevEncoder(super.getEncoder(sensorType, countsPerRev));
     }
+
     @Override
     public MotorController getMotor() {
         return this;
     }
+
     @Override
     public void factoryDefault() {
         super.restoreFactoryDefaults();
-    }    
+    }
 }

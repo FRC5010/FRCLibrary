@@ -17,7 +17,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake"
+          "PivotToHigh",
+          "OuttakeFast"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",

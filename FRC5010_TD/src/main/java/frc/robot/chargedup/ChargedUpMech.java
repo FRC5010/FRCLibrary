@@ -25,6 +25,7 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
+import frc.robot.commands.CheeseStickCommand;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.PivotArm;
@@ -42,6 +43,7 @@ public class ChargedUpMech extends GenericMechanism {
         private double intakeSpeedLimit = kSpinMaxSpeed;
         private boolean ledConePickUp = false;
         private LedSubsystem ledSubsystem;
+        private CheeseStick cheeseStick;
 
         private ArmLevel armLevel = ArmLevel.ground;
 
@@ -66,6 +68,10 @@ public class ChargedUpMech extends GenericMechanism {
                 // TODO: Set up IntakeSubsystem add correct values please
                 this.buttonOperator = buttonOperator;
                 this.ledSubsystem = ledSubsystem;
+                shuffleTab.addDouble("Intake current", intakeSubsystem::getMotorCurrent);
+
+                cheeseStick = new CheeseStick(MotorFactory.NEO(13), new GenericPID(0, 0, 0), robotMechVisual);
+                shuffleTab.addDouble("CheeseStick Position", cheeseStick::getPosition);
         }
 
         @Override
@@ -212,7 +218,11 @@ public class ChargedUpMech extends GenericMechanism {
                 operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2));
                 operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 
-                driver.createRightBumper().onTrue(new InstantCommand(() -> ledSubsystem.togglePickUp(), ledSubsystem));
+                driver.createRightBumper()
+                                .whileTrue(new CheeseStickCommand(90, cheeseStick)
+                                                .andThen(new IntakeSpin(intakeSubsystem, () -> -1.0)))
+                                .onFalse(new CheeseStickCommand(0, cheeseStick));
+
         }
 
         public IntakeSubsystem getIntakeSubsystem() {
@@ -221,6 +231,10 @@ public class ChargedUpMech extends GenericMechanism {
 
         public PivotSubsystem getPivotSubsystem() {
                 return pivotSubsystem;
+        }
+
+        public CheeseStick getCheeseStick() {
+                return cheeseStick;
         }
 
         @Override
