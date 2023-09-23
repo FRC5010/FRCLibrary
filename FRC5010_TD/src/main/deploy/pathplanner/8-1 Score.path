@@ -10,38 +10,39 @@
         "x": 1.7088738985170298,
         "y": 1.0502066196440099
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake"
+          "PivotToHigh",
+          "OuttakeFast"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 2.5663820558410366,
-        "y": 1.040571696528009
+        "x": 5.3797796057130585,
+        "y": 0.9345875422520085
       },
       "prevControl": {
-        "x": 2.5567471327250373,
-        "y": 1.040571696528009
+        "x": 5.370144682597059,
+        "y": 0.9345875422520085
       },
       "nextControl": null,
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "HomePivot"
+          "PivotToGround"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",

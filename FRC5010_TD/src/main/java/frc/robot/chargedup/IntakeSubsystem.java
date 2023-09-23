@@ -23,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private MotorModelConstants intakeConstants;
   private GenericPID intakePID;
   private GenericEncoder intakeEncoder;
-
+  private MotorController5010 intakeRoller;
   private double setPoint = 0;
   private double KFF = 0;
   private double kIz = 0;
@@ -36,11 +36,13 @@ public class IntakeSubsystem extends SubsystemBase {
   private MechanismLigament2d m_intakeRight2Mech2d;
 
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2,
+  public IntakeSubsystem(MotorController5010 intake, MotorController5010 intake2, MotorController5010 intake3,
       MotorModelConstants intakeConstants, GenericPID intakePID,
       Mechanism2d m_mech2d) {
     this.intake = intake.invert(false);
+
     intake2.setFollow(intake, true);
+    intakeRoller = intake3.invert(true);
     this.intakeController = ((CANSparkMax) intake).getPIDController();
     this.intakeEncoder = intake.getMotorEncoder();
     this.intakeConstants = intakeConstants;
@@ -77,6 +79,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intake.set(0);
     m_intakeLeft1Mech2d.setAngle(0);
     m_intakeRight1Mech2d.setAngle(0);
+    intakeRoller.set(0);
   }
 
   public void toggleIntake() {
@@ -96,6 +99,12 @@ public class IntakeSubsystem extends SubsystemBase {
     intake.set(speed);
     m_intakeLeft1Mech2d.setAngle(speed * 360);
     m_intakeRight1Mech2d.setAngle(speed * 360);
+    intakeRoller.set(speed);
+  }
+
+  public double getMotorCurrent() {
+    CANSparkMax motor = (CANSparkMax) intake.getMotor();
+    return motor.getOutputCurrent();
   }
 
   public boolean isIntakeCone() {

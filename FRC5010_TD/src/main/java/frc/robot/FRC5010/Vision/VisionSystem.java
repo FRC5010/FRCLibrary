@@ -9,11 +9,14 @@ package frc.robot.FRC5010.Vision;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -45,6 +48,9 @@ public abstract class VisionSystem extends SubsystemBase {
     ShuffleboardTab driverTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
     visionLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
         .withPosition(colIndex, 0).withSize(1, 5);
+    visionLayout.addBoolean("Has Target", this::isValidTarget);
+    visionLayout.addNumber(name + " Distance", this::getDistance).withSize(1, 1);
+    visionLayout.addNumber("Fiducial", () -> getRawValues().getFiducialId());
   }
 
   // more specific values to define the camera
@@ -62,8 +68,8 @@ public abstract class VisionSystem extends SubsystemBase {
     visionLayout = visionTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
         .withPosition(colIndex, 0).withSize(1, 5);
 
-    visionLayout.addNumber(name + " Distance", this::getDistance).withSize(1, 1);
     visionLayout.addBoolean(name + " Has Target", this::isValidTarget).withSize(1, 1);
+    visionLayout.addNumber(name + " Distance", this::getDistance).withSize(1, 1);
     visionLayout.addNumber(name + " X Angle", this::getAngleX).withSize(1, 1);
     visionLayout.addNumber(name + " Y Angle", this::getAngleY).withSize(1, 1);
     // visionLayout.addNumber(name + " Horizontal", this::getHorizontal).withSize(1,
@@ -110,6 +116,7 @@ public abstract class VisionSystem extends SubsystemBase {
   protected void updateValues(VisionValues rawValues,
       DoubleSupplier angleXSup, DoubleSupplier angleYSup,
       DoubleSupplier areaSup, BooleanSupplier validSup, DoubleSupplier latencySup,
+      IntSupplier fidSup,
       Supplier<Pose3d> cameraPoseSupplier,
       Supplier<Pose2d> robotPoseSupplier) {
     boolean valid = validSup.getAsBoolean();
@@ -117,8 +124,17 @@ public abstract class VisionSystem extends SubsystemBase {
       // calculating distance
       double angleX = angleXSup.getAsDouble();
       double angleY = angleYSup.getAsDouble();
-      double distance = (targetHeight - camHeight)
-          / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
+      double distance = 0;
+      if (angleX != 0 || angleY != 0) {
+        distance = (targetHeight - camHeight)
+            / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
+      } else if (null != cameraPoseSupplier.get() && null != robotPoseSupplier.get()) {
+        Pose3d targetPose = cameraPoseSupplier.get();
+        Pose2d robotPose = robotPoseSupplier.get();
+        Translation3d targetTrans = new Translation3d(targetPose.getX(), targetPose.getY(), targetPose.getZ());
+        Translation2d robotTrans = new Translation2d(robotPose.getX(), robotPose.getY());
+        distance = robotTrans.getDistance(targetTrans.toTranslation2d());
+      }
       this.rawValues = rawValues;
       rawValues
           .setValid(valid)
@@ -127,7 +143,8 @@ public abstract class VisionSystem extends SubsystemBase {
           .setPitch(angleY)
           .setArea(areaSup.getAsDouble())
           .setDistance(distance)
-          .addCameraPose(name, cameraPoseSupplier.get())
+          .setFiducialId(fidSup.getAsInt())
+          .addTargetVector(name, cameraPoseSupplier.get())
           .addRobotPose(name, robotPoseSupplier.get());
       // smoothedValues.averageValues(rawValues, 5);
     } else {

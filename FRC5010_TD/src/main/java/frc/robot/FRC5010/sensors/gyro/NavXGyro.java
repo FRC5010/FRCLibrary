@@ -11,9 +11,11 @@ import edu.wpi.first.wpilibj.SPI;
 /** Add your docs here. */
 public class NavXGyro implements GenericGyro {
     AHRS gyro;
+
     public NavXGyro(SPI.Port kmxp) {
         gyro = new AHRS(kmxp);
     }
+
     @Override
     public void reset() {
         gyro.reset();
@@ -22,14 +24,14 @@ public class NavXGyro implements GenericGyro {
 
     @Override
     public double getAngle() {
-        
-        return gyro.getAngle();
+        return -gyro.getAngle();
     }
 
     @Override
     public double getRate() {
-        return getRate();
+        return gyro.getRate();
     }
+
     @Override
     public void setAngle(double angle) {
         gyro.setAngleAdjustment(angle);
@@ -39,12 +41,18 @@ public class NavXGyro implements GenericGyro {
     public double getAngleX() {
         return gyro.getRoll();
     }
+
     @Override
     public double getAngleY() {
         return gyro.getPitch();
     }
+
     @Override
     public double getAngleZ() {
-        return gyro.getAngle();
+        return -gyro.getAngle();
+    }
+
+    public AHRS getRawGyro() {
+        return gyro;
     }
 }

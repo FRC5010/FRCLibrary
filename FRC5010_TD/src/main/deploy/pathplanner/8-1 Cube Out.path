@@ -10,16 +10,17 @@
         "x": 2.6723662101170373,
         "y": 0.7804287723960073
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake"
+          "PivotToHigh",
+          "OuttakeFast"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -37,13 +38,15 @@
         "x": 5.480004797384772,
         "y": 0.8119175154184826
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "PivotToMid"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -90,8 +93,11 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "PivotToGround",
+          "Intake"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -100,12 +106,5 @@
   "maxVelocity": 2.0,
   "maxAcceleration": 1.75,
   "isReversed": null,
-  "markers": [
-    {
-      "position": 0.07999999999999739,
-      "names": [
-        "HomePivot"
-      ]
-    }
-  ]
+  "markers": []
 }

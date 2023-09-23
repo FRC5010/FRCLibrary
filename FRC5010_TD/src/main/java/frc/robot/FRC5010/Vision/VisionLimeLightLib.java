@@ -5,9 +5,8 @@
 package frc.robot.FRC5010.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
 
 /** Add your docs here. */
 public class VisionLimeLightLib extends VisionSystem {
@@ -31,18 +30,18 @@ public class VisionLimeLightLib extends VisionSystem {
 
     private void updateViaNetworkTable(String name) {
         VisionValuesLimeLight rawValues = new VisionValuesLimeLight();
-        double[] cameraPose = LimelightHelpers.getTargetPose_RobotSpace(name);
-        double[] robotPose = LimelightHelpers.getBotpose(name);
+        Pose2d robotPose2d = LimelightHelpers.getBotPose2d(name);
         updateValues(rawValues,
                 () -> LimelightHelpers.getTX(name),
                 () -> LimelightHelpers.getTY(name),
                 () -> LimelightHelpers.getTA(name),
-                () -> LimelightHelpers.isValid(name),
-                () -> LimelightHelpers.getLatency_Pipeline(name),
-                () -> new Pose3d(new Translation3d(cameraPose[0], cameraPose[1], cameraPose[2]),
-                        new Rotation3d(cameraPose[3], cameraPose[4], cameraPose[5])),
-                () -> new Pose3d(new Translation3d(robotPose[0], robotPose[1], robotPose[2]),
-                        new Rotation3d(robotPose[3], robotPose[4], robotPose[5])).toPose2d());
+                () -> LimelightHelpers.getTV(name),
+                () -> Timer.getFPGATimestamp() -
+                        ((LimelightHelpers.getLatency_Pipeline(name) +
+                                LimelightHelpers.getLatency_Capture(name)) * 0.001),
+                () -> Double.valueOf(LimelightHelpers.getFiducialID(name)).intValue(),
+                () -> fieldLayout.getTagPose(rawValues.getFiducialId()).orElse(null),
+                () -> robotPose2d);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class VisionLimeLightLib extends VisionSystem {
 
     @Override
     public boolean isLightOn() {
-        return LimelightHelpers.isLightOn(name);
+        return false;
     }
 
     public void toggleLight() {
@@ -77,12 +76,13 @@ public class VisionLimeLightLib extends VisionSystem {
 
     @Override
     public void setSnapshotMode(int snapVal) {
-        if (snapVal == 0)
-            LimelightHelpers.resetSnapshotMode(name);
-        else if (snapVal == 1)
-            LimelightHelpers.takeSnapshot(name);
-        else
-            assert false : " setSnapshotMode Integer out of bounds, accepted values = 1,2";
+        // if (snapVal == 0)
+        // LimelightHelpers.resetSnapshotMode(name);
+        // else if (snapVal == 1)
+        // LimelightHelpers.takeSnapshot(name);
+        // else
+        // assert false : " setSnapshotMode Integer out of bounds, accepted values =
+        // 1,2";
     }
 
     public void setPiPMode(int pipVal) {

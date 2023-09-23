@@ -8,6 +8,8 @@ import frc.robot.chargedup.PivotSubsystem;
 public class PivotPower extends CommandBase {
     private PivotSubsystem pivotSubsystem;
     private Supplier<Double> moveSpeed;
+    private double prevSpeed;
+    private double holdPos;
 
     public PivotPower(PivotSubsystem elevatorSubsystem, Supplier<Double> moveSpeed) {
         this.moveSpeed = moveSpeed;
@@ -22,20 +24,12 @@ public class PivotPower extends CommandBase {
 
     @Override
     public void execute() {
-        // double currentPosition = this.elevatorSubsystem.getPivotPosition();
-        // double speed = (this.moveSpeed.get());
-        // double newPosition = currentPosition + speed;
+        double currentPosition = this.pivotSubsystem.getPivotPosition();
 
-        // if (newPosition > 1H.0) {newPosition = 1.0;}
-        // if (newPosition < -1.0) {newPosition = -1.0;}
+        double speed = this.moveSpeed.get() * 0.1;
+        prevSpeed = speed;
 
-        // this.elevatorSubsystem.setPivotPosition(newPosition);
-
-        // TODO: Sankalp believes it doesn't work \/
-        if (!pivotSubsystem.isPivotMaxPosition() || !pivotSubsystem.isPivotMinPosition()) {
-            double speed = this.moveSpeed.get();
-            pivotSubsystem.pivotPow(speed, true);
-        }
+        pivotSubsystem.pivotPow(speed, true);
     }
 
     @Override

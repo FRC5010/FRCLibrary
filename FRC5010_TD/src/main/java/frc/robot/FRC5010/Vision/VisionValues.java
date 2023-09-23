@@ -32,10 +32,11 @@ public class VisionValues {
     protected Double distance = 0.0;
 
     protected Double area = 0.0;
-    protected Map<String, Pose3d> cameraToTarget = new HashMap<>();
+    protected Map<String, Pose3d> robotToTarget = new HashMap<>();
     protected Map<String, Pose2d> robotPoses = new HashMap<>();
 
     protected int count = 0;
+    private int fiducialId = 0;
 
     public VisionValues() {
     }
@@ -107,30 +108,39 @@ public class VisionValues {
         return this;
     }
 
-    public Pose3d getCameraPose() {
-        return cameraToTarget.size() > 0 ? cameraToTarget.values().iterator().next()
+    public int getFiducialId() {
+        return fiducialId;
+    }
+
+    public VisionValues setFiducialId(int id) {
+        fiducialId = id;
+        return this;
+    }
+
+    public Pose3d getTargetVector() {
+        return robotToTarget.size() > 0 ? robotToTarget.values().iterator().next()
                 : new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
     }
 
-    public VisionValues addCameraPose(String camera, Pose3d camPose) {
-        cameraToTarget.put(camera, camPose);
+    public VisionValues addTargetVector(String camera, Pose3d camPose) {
+        robotToTarget.put(camera, camPose);
         return this;
     }
 
-    public VisionValues addCameraPoses(Map<String, Pose3d> camPoses) {
-        cameraToTarget.putAll(camPoses);
+    public VisionValues addTargetVectors(Map<String, Pose3d> camPoses) {
+        robotToTarget.putAll(camPoses);
         return this;
     }
 
-    public Map<String, Pose3d> getCameraPoses() {
-        return cameraToTarget;
+    public Map<String, Pose3d> getTargetVectors() {
+        return robotToTarget;
     }
 
-    public Pose3d getCameraToTarget(String camera) {
+    public Pose3d getRobotToTarget(String camera) {
         Pose3d pose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
-        if (cameraToTarget.containsKey(camera)) {
-            if (null != cameraToTarget.get(camera)) {
-                pose = cameraToTarget.get(camera);
+        if (robotToTarget.containsKey(camera)) {
+            if (null != robotToTarget.get(camera)) {
+                pose = robotToTarget.get(camera);
             }
         }
         return pose;

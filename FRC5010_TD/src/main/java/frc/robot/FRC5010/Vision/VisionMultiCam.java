@@ -43,11 +43,13 @@ public class VisionMultiCam extends VisionSystem {
         cameras.put(name,
                 new VisionPhoton(name, colIndex, fieldLayout, strategy, drivetrainPoseEstimator, cameraToRobot));
         names.add(name);
+        updateValues = true;
     }
 
     public void addLimeLightCamera(String name, int colIndex) {
         cameras.put(name, new VisionLimeLightLib(name, colIndex, fieldLayout));
         names.add(name);
+        updateValues = true;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class VisionMultiCam extends VisionSystem {
                 () -> camResult.getArea(),
                 () -> camResult.getValid(),
                 () -> camResult.getLatency(camera.getName()),
-                () -> camResult.getCameraPoses(),
+                () -> camResult.getTargetVectors(),
                 () -> camResult.getRobotPoses());
     }
 
@@ -86,7 +88,7 @@ public class VisionMultiCam extends VisionSystem {
                     .setPitch(angleYSup.getAsDouble())
                     .setArea(areaSup.getAsDouble())
                     .setDistance(distanceSup.getAsDouble())
-                    .addCameraPoses(cameraPoseSupplier.get())
+                    .addTargetVectors(cameraPoseSupplier.get())
                     .addRobotPoses(robotPoseSupplier.get());
             // smoothedValues.averageValues(rawValues, 5);
         } else {

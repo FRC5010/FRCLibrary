@@ -61,8 +61,7 @@ public class VisionPhoton extends VisionSystem {
             }
         }
         var camResult = camera.getLatestResult();
-        Pose2d robotPoseEstInit = new Pose2d();
-        Pose3d trackedTargetPose = new Pose3d();
+        Pose3d robotPoseEstInit = new Pose3d();
         var targetInit = new PhotonTrackedTarget();
         double deltaTimeInit = Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
         if (camResult.hasTargets()) {
@@ -71,15 +70,14 @@ public class VisionPhoton extends VisionSystem {
             Optional<EstimatedRobotPose> result = poseEstimator.update();
 
             if (result.isPresent() && result.get().estimatedPose != null) {
-                robotPoseEstInit = result.get().estimatedPose.toPose2d();
+                robotPoseEstInit = result.get().estimatedPose;
                 deltaTimeInit = result.get().timestampSeconds;
-                referencePose = robotPoseEstInit;
-                // System.out.println("Vision: " + robotPoseEstInit.toString());
+                referencePose = robotPoseEstInit.toPose2d();
             } else {
                 robotPoseEstInit = null;
             }
         }
-        Pose2d robotPoseEst = robotPoseEstInit;
+        Pose2d robotPoseEst = robotPoseEstInit.toPose2d();
         double deltaTime = deltaTimeInit;
         var target = targetInit;
         updateValues(rawValues,
@@ -88,7 +86,8 @@ public class VisionPhoton extends VisionSystem {
                 () -> target.getArea(),
                 () -> camResult.hasTargets(),
                 () -> deltaTime,
-                () -> fieldLayout.getTagPose(target.getFiducialId()).orElse(trackedTargetPose),
+                () -> target.getFiducialId(),
+                () -> fieldLayout.getTagPose(target.getFiducialId()).orElse(null),
                 () -> robotPoseEst);
     }
 

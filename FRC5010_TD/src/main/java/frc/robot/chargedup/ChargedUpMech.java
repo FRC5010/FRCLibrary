@@ -10,8 +10,6 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +25,7 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
+import frc.robot.commands.CheeseStickCommand;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.PivotArm;
@@ -42,8 +41,8 @@ public class ChargedUpMech extends GenericMechanism {
         private final double kSpinLowSpeed = 0.35;
         private double speedLimit = kArmMaxSpeedLimit;
         private double intakeSpeedLimit = kSpinMaxSpeed;
-        private boolean ledConePickUp = false;
         private LedSubsystem ledSubsystem;
+        private CheeseStick cheeseStick;
 
         private ArmLevel armLevel = ArmLevel.ground;
 
@@ -54,19 +53,24 @@ public class ChargedUpMech extends GenericMechanism {
                 // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
                 this.pivotSubsystem = new PivotSubsystem(
                                 MotorFactory.NEO(9),
-                                new GenericPID(12, 0.0, 0.03),
-                                new MotorModelConstants(0.25, 2.125, 0),
+                                new GenericPID(2, 0.0, 0),
+                                new MotorModelConstants(0.25, 0.8, 0),
                                 mechVisual, shuffleTab);
 
                 this.intakeSubsystem = new IntakeSubsystem(
-                                MotorFactory.NEO(19),
-                                MotorFactory.NEO(18),
+                                MotorFactory.NEO(11),
+                                MotorFactory.NEO(12),
+                                MotorFactory.NEO(10),
                                 new MotorModelConstants(0, 0, 0),
                                 new GenericPID(0.003, 0, 0),
                                 mechVisual);
                 // TODO: Set up IntakeSubsystem add correct values please
                 this.buttonOperator = buttonOperator;
                 this.ledSubsystem = ledSubsystem;
+                shuffleTab.addDouble("Intake current", intakeSubsystem::getMotorCurrent);
+
+                cheeseStick = new CheeseStick(MotorFactory.NEO(13), new GenericPID(0, 0, 0), robotMechVisual);
+                shuffleTab.addDouble("CheeseStick Position", cheeseStick::getPosition);
         }
 
         @Override
@@ -96,16 +100,16 @@ public class ChargedUpMech extends GenericMechanism {
                                 .onTrue(
                                                 new SequentialCommandGroup(
                                                                 new InstantCommand(
-                                                                                () -> armLevel = ArmLevel.loading),
-                                                                new PivotArm(pivotSubsystem, ArmLevel.loading)
+                                                                                () -> armLevel = ArmLevel.middle),
+                                                                new PivotArm(pivotSubsystem, ArmLevel.middle)
 
                                                 ));
 
                 operator.createXButton().onTrue(
                                 new SequentialCommandGroup(
                                                 new InstantCommand(
-                                                                () -> armLevel = ArmLevel.loading),
-                                                new PivotArm(pivotSubsystem, ArmLevel.loading)
+                                                                () -> armLevel = ArmLevel.middle),
+                                                new PivotArm(pivotSubsystem, ArmLevel.middle)
 
                                 ));
 
@@ -113,15 +117,15 @@ public class ChargedUpMech extends GenericMechanism {
                                 .onTrue(
                                                 new SequentialCommandGroup(
                                                                 new InstantCommand(
-                                                                                () -> armLevel = ArmLevel.medium),
-                                                                new PivotArm(pivotSubsystem, ArmLevel.medium)
+                                                                                () -> armLevel = ArmLevel.home),
+                                                                new PivotArm(pivotSubsystem, ArmLevel.home)
 
                                                 ));
                 operator.createYButton().onTrue(
                                 new SequentialCommandGroup(
                                                 new InstantCommand(
-                                                                () -> armLevel = ArmLevel.medium),
-                                                new PivotArm(pivotSubsystem, ArmLevel.medium)
+                                                                () -> armLevel = ArmLevel.home),
+                                                new PivotArm(pivotSubsystem, ArmLevel.home)
 
                                 ));
 
@@ -167,7 +171,7 @@ public class ChargedUpMech extends GenericMechanism {
                 buttonOperator.getButton(10)
                                 .whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-intakeSpeedLimit, -1)));
 
-                buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
+                buttonOperator.setYAxis(buttonOperator.createYAxis().deadzone(0.05));
                 buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); // The deadzone isnt technically
 
                 driver.setRightTrigger(driver.createRightTrigger());
@@ -210,10 +214,14 @@ public class ChargedUpMech extends GenericMechanism {
                         pivotSubsystem.toggleOverride();
                 }, pivotSubsystem));
 
-                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2).negate());
+                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2));
                 operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 
-                driver.createRightBumper().onTrue(new InstantCommand(() -> ledSubsystem.togglePickUp(), ledSubsystem));
+                driver.createRightBumper()
+                                .whileTrue(new CheeseStickCommand(90, cheeseStick)
+                                                .andThen(new IntakeSpin(intakeSubsystem, () -> -1.0)))
+                                .onFalse(new CheeseStickCommand(0, cheeseStick));
+
         }
 
         public IntakeSubsystem getIntakeSubsystem() {
@@ -222,6 +230,10 @@ public class ChargedUpMech extends GenericMechanism {
 
         public PivotSubsystem getPivotSubsystem() {
                 return pivotSubsystem;
+        }
+
+        public CheeseStick getCheeseStick() {
+                return cheeseStick;
         }
 
         @Override
