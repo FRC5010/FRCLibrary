@@ -1,7 +1,5 @@
 package frc.robot.chargedup;
 
-import edu.wpi.first.math.util.Units;
-
 public enum ArmLevel {
   ground(0),
   low(45),

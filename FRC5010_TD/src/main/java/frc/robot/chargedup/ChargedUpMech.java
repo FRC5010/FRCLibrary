@@ -41,7 +41,6 @@ public class ChargedUpMech extends GenericMechanism {
         private final double kSpinLowSpeed = 0.35;
         private double speedLimit = kArmMaxSpeedLimit;
         private double intakeSpeedLimit = kSpinMaxSpeed;
-        private boolean ledConePickUp = false;
         private LedSubsystem ledSubsystem;
         private CheeseStick cheeseStick;
 
