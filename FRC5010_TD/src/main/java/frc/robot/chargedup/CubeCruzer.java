@@ -75,15 +75,15 @@ public class CubeCruzer extends GenericMechanism {
                 VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
                 multiVision.addLimeLightCamera("orange", 1);
                 multiVision.setUpdateValues(true);
+                visionSystem = multiVision;
 
-                // y = +- 27.75 / 2, x = 2.5, z = 36.75
-                ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
+                // ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
                 // "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,4);
 
                 gyro = new PigeonGyro(15);
 
-                drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, null, swerveConstants);
+                drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, null, swerveConstants);
                 // Uncomment when using PhotonVision
                 // multiVision.addPhotonCamera("LeftCamera", 1,
                 // new Transform3d( // This describes the vector between the camera lens to the

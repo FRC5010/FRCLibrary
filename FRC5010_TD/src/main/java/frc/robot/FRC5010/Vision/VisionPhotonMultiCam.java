@@ -38,10 +38,10 @@ public class VisionPhotonMultiCam extends VisionSystem {
    */
 
   // makes a new limelight that is vertical, portrait
-  public VisionPhotonMultiCam(String name, int colIndex, 
-    AprilTagFieldLayout fieldLayout, PoseStrategy strategy) {
+  public VisionPhotonMultiCam(String name, int colIndex,
+      AprilTagFieldLayout fieldLayout, PoseStrategy strategy) {
     super(name, colIndex, fieldLayout);
-    this.fieldLayout = fieldLayout; 
+    this.fieldLayout = fieldLayout;
     this.strategy = strategy;
   }
 
@@ -49,12 +49,12 @@ public class VisionPhotonMultiCam extends VisionSystem {
     cameras.add(new PhotonCamera(name));
     names.add(name);
     poseEstimators.add(
-      new PhotonPoseEstimator(fieldLayout, strategy, cameras.get(cameras.size() - 1), cameraToRobot));
+        new PhotonPoseEstimator(fieldLayout, strategy, cameras.get(cameras.size() - 1), cameraToRobot));
     init(name);
   }
 
   protected void init(String name) {
-      visionLayout.addNumber(name + " FidId", this::getTargetFiducial).withSize(1, 1);
+    visionLayout.addNumber(name + " FidId", this::getTargetFiducial).withSize(1, 1);
   }
 
   @Override
@@ -88,7 +88,7 @@ public class VisionPhotonMultiCam extends VisionSystem {
         robotPoseEstInit = result.get().estimatedPose.toPose2d();
         deltaTimeInit = result.get().timestampSeconds;
         referencePose = robotPoseEstInit;
-        //System.out.println("Vision: " + robotPoseEstInit.toString());
+        // System.out.println("Vision: " + robotPoseEstInit.toString());
       } else {
         robotPoseEstInit = null;
       }
@@ -102,6 +102,7 @@ public class VisionPhotonMultiCam extends VisionSystem {
         () -> target.getArea(),
         () -> camResult.hasTargets(),
         () -> deltaTime,
+        () -> target.getFiducialId(),
         () -> fieldLayout.getTagPose(target.getFiducialId()).orElse(trackedTargetPose),
         () -> robotPoseEst);
   }
