@@ -75,7 +75,7 @@ public class VisionValues {
     }
 
     public Double getLatency(String camera) {
-        return latencies.get(camera);
+        return null == latencies.get(camera) ? 0.0 : latencies.get(camera);
     }
 
     public VisionValues setArea(Double area) {
