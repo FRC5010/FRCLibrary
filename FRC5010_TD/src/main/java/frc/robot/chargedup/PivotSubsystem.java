@@ -36,7 +36,7 @@ public class PivotSubsystem extends SubsystemBase {
 
   private final double pivotConversionFactor = 360;
   private final double pivotMaxLimit = 146;
-  private final double pivotMinLimit = -5;
+  private final double pivotMinLimit = 4;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
@@ -68,11 +68,11 @@ public class PivotSubsystem extends SubsystemBase {
     pivotAbsEncoder.setPositionConversionFactor(this.pivotConversionFactor);
     this.pivotAbsEncoder.setInverted(true);
     this.internalEncoder = (RevEncoder) pivotMotor.getMotorEncoder();
-    this.internalEncoder.setPositionConversion(4.9);
+    this.internalEncoder.setPositionConversion(5);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
     this.shuffleTab = shuffleTab;
-    this.encoderUpdateCounter = 500;
+    this.encoderUpdateCounter = 20;
 
     SmartDashboard.putNumber("MOI", SingleJointedArmSim.estimateMOI(0.82, 8.5));
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
@@ -163,7 +163,7 @@ public class PivotSubsystem extends SubsystemBase {
   public void updateInternalEncoder() {
     encoderUpdateCounter++;
     double absPosition = getAbsPosition();
-    if (absPosition != 0 && encoderUpdateCounter > 500) {
+    if (absPosition != 0 && encoderUpdateCounter > 20) {
       internalEncoder.setPosition(absPosition);
       encoderUpdateCounter = 0;
     }
@@ -271,16 +271,21 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public void pivotPow(double pow, boolean feedForward) {
-    usingTarget = false;
-    SmartDashboard.putNumber("Pivot Power Given", pow);
-    SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
+    if (pow != 0 || !usingTarget) {
+      usingTarget = false;
 
-    double powerFactor = getPowerFactor(pow);
-    SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
-    double pivotPow = (pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0));
-    SmartDashboard.putNumber("pivotPow", pivotPow);
+      SmartDashboard.putNumber("Pivot Power Given", pow);
+      SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
 
-    pivotMotor.set(pivotPow);
+      double powerFactor = getPowerFactor(pow);
+      SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
+      double pivotPow = (pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0));
+      SmartDashboard.putNumber("pivotPow", pivotPow);
+
+      pivotMotor.set(pivotPow);
+    } else {
+      runPivotToTarget(currentPivotTarget);
+    }
   }
 
   // public boolean isMovementOk(double pow){

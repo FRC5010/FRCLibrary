@@ -7,12 +7,13 @@ package frc.robot.FRC5010.Vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.FRC5010.Vision.LimelightHelpers.LimelightResults;
 
 /** Add your docs here. */
 public class VisionLimeLightLib extends VisionSystem {
 
     public VisionLimeLightLib(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
-        super(name, colIndex, fieldLayout);
+        super("limelight-" + name, colIndex, fieldLayout);
         init();
     }
 
@@ -29,19 +30,22 @@ public class VisionLimeLightLib extends VisionSystem {
     }
 
     private void updateViaNetworkTable(String name) {
-        VisionValuesLimeLight rawValues = new VisionValuesLimeLight();
-        Pose2d robotPose2d = LimelightHelpers.getBotPose2d(name);
-        updateValues(rawValues,
-                () -> LimelightHelpers.getTX(name),
-                () -> LimelightHelpers.getTY(name),
-                () -> LimelightHelpers.getTA(name),
-                () -> LimelightHelpers.getTV(name),
-                () -> Timer.getFPGATimestamp() -
-                        ((LimelightHelpers.getLatency_Pipeline(name) +
-                                LimelightHelpers.getLatency_Capture(name)) * 0.001),
-                () -> Double.valueOf(LimelightHelpers.getFiducialID(name)).intValue(),
-                () -> fieldLayout.getTagPose(rawValues.getFiducialId()).orElse(null),
-                () -> robotPose2d);
+        LimelightResults results = LimelightHelpers.getLatestResults(name);
+        if (results.targetingResults.valid) {
+            VisionValuesLimeLight rawValues = new VisionValuesLimeLight();
+            Pose2d robotPose2d = LimelightHelpers.getBotPose2d(name);
+            updateValues(rawValues,
+                    () -> LimelightHelpers.getTX(name),
+                    () -> LimelightHelpers.getTY(name),
+                    () -> LimelightHelpers.getTA(name),
+                    () -> LimelightHelpers.getTV(name),
+                    () -> Timer.getFPGATimestamp() -
+                            ((LimelightHelpers.getLatency_Pipeline(name) +
+                                    LimelightHelpers.getLatency_Capture(name)) * 0.001),
+                    () -> Double.valueOf(LimelightHelpers.getFiducialID(name)).intValue(),
+                    () -> fieldLayout.getTagPose(rawValues.getFiducialId()).orElse(null),
+                    () -> robotPose2d);
+        }
     }
 
     @Override

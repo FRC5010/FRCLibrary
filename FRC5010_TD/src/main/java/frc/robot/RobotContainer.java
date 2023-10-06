@@ -183,6 +183,7 @@ public class RobotContainer extends GenericMechanism {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+
     return generateAutoCommand(command.getSelected());
   }
 

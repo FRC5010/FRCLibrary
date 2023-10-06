@@ -15,6 +15,7 @@ public class IntakeSpin extends CommandBase {
   private Supplier<Double> spinVelocity;
   private IntakeSubsystem intakeSubsystem;
   private boolean stopIntake = false;
+  private int stopCount = 0;
 
   /** Creates a new IntakeSpin. */
   public IntakeSpin(IntakeSubsystem intakeSubsystem, Supplier<Double> spinVelocity) {
@@ -29,6 +30,7 @@ public class IntakeSpin extends CommandBase {
   public void initialize() {
     WpiDataLogging.log(getName());
     stopIntake = false;
+    stopCount = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,7 +40,20 @@ public class IntakeSpin extends CommandBase {
     if (velocity > 0) {
       velocity *= .25;
     }
-    if (stopIntake || 20 < intakeSubsystem.getMotorCurrent()) {
+
+    if (20 < intakeSubsystem.getMotorCurrent()) {
+      stopCount++;
+
+      if (stopCount > 20) {
+        stopIntake = true;
+      }
+
+    } else if (velocity == 0) {
+      stopCount = 0;
+      stopIntake = false;
+    }
+
+    if (stopIntake) {
       velocity = 0;
       stopIntake = true;
     }
