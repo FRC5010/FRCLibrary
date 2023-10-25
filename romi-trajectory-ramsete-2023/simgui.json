@@ -1,0 +1,57 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "RomiGyro": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalOutput[3]": "Digital Output",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/Shuffleboard/Pose/Field": "Field2d",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/field": "Field2d"
+    }
+  },
+  "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
+    "transitory": {
+      "Shuffleboard": {
+        "Pose": {
+          "open": true
+        },
+        "Vision": {
+          "Pi Camera Vision": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "SendableChooser[0]": {
+          "open": true
+        },
+        "open": true
+      },
+      "photonvision": {
+        "open": true
+      }
+    }
+  }
+}
