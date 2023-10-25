@@ -17,35 +17,12 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Outtake"
+          "ExtendToMid",
+          "OuttakeSlow",
+          "HomeElevator"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 5.42282750756657,
-        "y": 4.654231391201726
-      },
-      "prevControl": {
-        "x": 5.615525969886572,
-        "y": 4.641849843361706
-      },
-      "nextControl": {
-        "x": 5.230129045246568,
-        "y": 4.666612939041746
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
         "waitTime": 0
       }
     },

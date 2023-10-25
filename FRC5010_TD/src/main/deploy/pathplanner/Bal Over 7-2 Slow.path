@@ -19,7 +19,7 @@
         "names": [
           "ExtendToMid",
           "OuttakeSlow",
-          "HomeElevator"
+          "ExtendToLow"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -133,6 +133,7 @@
     {
       "position": 0.1,
       "names": [
+        "HomeElevator",
         "HomePivot"
       ]
     }
