@@ -1,7 +1,7 @@
 package frc.robot.chargedup;
 
 public enum ArmLevel {
-  ground(4),
+  ground(3),
   low(45),
   middle(45),
   home(105),
