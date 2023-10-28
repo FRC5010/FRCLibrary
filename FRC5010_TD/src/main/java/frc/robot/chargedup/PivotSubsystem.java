@@ -36,7 +36,7 @@ public class PivotSubsystem extends SubsystemBase {
 
   private final double pivotConversionFactor = 360;
   private final double pivotMaxLimit = 146;
-  private final double pivotMinLimit = 4;
+  private final double pivotMinLimit = 3;
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
@@ -157,7 +157,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getAbsPosition() {
-    return (pivotAbsEncoder.getPosition() + 143.9) % 360;
+    return (pivotAbsEncoder.getPosition()) % 360;
   }
 
   public void updateInternalEncoder() {
