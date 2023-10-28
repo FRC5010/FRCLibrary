@@ -16,10 +16,7 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "PivotToHigh",
-          "OuttakeFast"
-        ],
+        "names": [],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
@@ -77,15 +74,15 @@
     },
     {
       "anchorPoint": {
-        "x": 5.62065268361306,
+        "x": 6.12,
         "y": 2.8037626267560243
       },
       "prevControl": {
-        "x": 6.620652683613048,
+        "x": 7.119999999999988,
         "y": 2.8037626267560243
       },
       "nextControl": {
-        "x": 4.9010115170579995,
+        "x": 5.4003588334449395,
         "y": 2.8037626267560243
       },
       "holonomicAngle": 0.0,
