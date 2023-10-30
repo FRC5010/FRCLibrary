@@ -8,46 +8,49 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
-import frc.robot.chargedup.IntakeSubsystem;
+import frc.robot.chargedup.ElevatorLevel;
+import frc.robot.chargedup.ElevatorSubsystem;
 
-public class IntakeSpin extends CommandBase {
+public class MoveElevator extends CommandBase {
+  ElevatorSubsystem elevator;
+  Supplier<ElevatorLevel> elevatorLevel;
 
-  private Supplier<Double> spinVelocity;
-  private IntakeSubsystem intakeSubsystem;
-
-  /** Creates a new IntakeSpin. */
-  public IntakeSpin(IntakeSubsystem intakeSubsystem, Supplier<Double> spinVelocity) {
+  /** Creates a new MoveElevator. */
+  public MoveElevator(ElevatorSubsystem elevator, Supplier<ElevatorLevel> elevatorLevel) {
+    this.elevator = elevator;
+    this.elevatorLevel = elevatorLevel;
     // Use addRequirements() here to declare subsystem dependencies.
-    this.intakeSubsystem = intakeSubsystem;
-    this.spinVelocity = spinVelocity;
-    addRequirements(this.intakeSubsystem);
+    addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    WpiDataLogging.log(getName());
+    WpiDataLogging.log(getName() + " " + elevatorLevel.get().name());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double velocity = (this.spinVelocity.get());
-    // this.intakeSubsystem.setVelocity(velocity);
-    this.intakeSubsystem.setMotor(velocity);
+    elevator.runExtendToTarget(elevatorLevel.get().getExtensionPosition());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.intakeSubsystem.stopIntake();
+    // if (interrupted){
+    // elevator.stopExtend();
+    // } else {
+    // elevator.stopAndHoldExtend();
+    // }
+    WpiDataLogging.log(getName() + " ended " + interrupted);
 
-    WpiDataLogging.log(getName() + " ended. ");
+    elevator.stopAndHoldExtend();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return elevator.isExtendAtTarget();
   }
 }

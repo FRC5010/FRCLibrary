@@ -75,7 +75,7 @@ public class CurtsLaptopSimulator extends GenericMechanism {
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants);
+        drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants, "");
         multiVision.addPhotonCamera(Persisted.stringVal(VisionConstantDefs.LAPTOP_CAMERA), 1,
                 new Transform3d(
                         // This describes the vector between the camera lens to the robot center on the

@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +32,11 @@ import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.robots.BabySwerve;
 import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
+import frc.robot.FRC5010.robots.DefaultRobot;
 import frc.robot.FRC5010.robots.PracticeBot;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
+import frc.robot.chargedup.CompBot;
 import frc.robot.chargedup.CubeCruzer;
 
 /**
@@ -86,6 +92,7 @@ public class RobotContainer extends GenericMechanism {
 
   // Robot types
   public static class Robots {
+    public static final String CC_BOT_2023 = "[0, -128, 47, 51, 23, -35]";
     public static final String COMP_BOT_2023 = "2023CompBot";
     public static final String BABY_SWERVE = "BabySwerve";
     public static final String PRACTICE_BOT = "PracticeBot";
@@ -119,27 +126,41 @@ public class RobotContainer extends GenericMechanism {
     whoAmI = new Persisted<>(WHO_AM_I, String.class);
     String whichRobot = whoAmI.get();
 
-    switch (whichRobot) {
-      case Robots.COMP_BOT_2023: {
-        robot = new CubeCruzer(mechVisual, shuffleTab);
-        break;
+    NetworkInterface myNI;
+    try {
+      myNI = NetworkInterface.networkInterfaces().findFirst().orElse(null);
+      byte[] MAC_ADDRESS = myNI.getHardwareAddress();
+      whichRobot = Arrays.toString(MAC_ADDRESS);
+      SmartDashboard.putString("MAC ADDRESS", whichRobot.toString());
+      switch (whichRobot) {
+        case Robots.CC_BOT_2023: {
+          robot = new CubeCruzer(mechVisual, shuffleTab);
+          break;
+        }
+        case Robots.COMP_BOT_2023: {
+          robot = new CompBot(mechVisual, shuffleTab);
+          break;
+        }
+        case Robots.BABY_SWERVE: {
+          robot = new BabySwerve(mechVisual, shuffleTab);
+          break;
+        }
+        case Robots.PRACTICE_BOT: {
+          robot = new PracticeBot(mechVisual, shuffleTab);
+          break;
+        }
+        case Robots.CURTS_LAPTOP_SIM: {
+          robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
+          break;
+        }
+        default: {
+          robot = new DefaultRobot(mechVisual, shuffleTab);
+          break;
+        }
       }
-      case Robots.BABY_SWERVE: {
-        robot = new BabySwerve(mechVisual, shuffleTab);
-        break;
-      }
-      case Robots.PRACTICE_BOT: {
-        robot = new PracticeBot(mechVisual, shuffleTab);
-        break;
-      }
-      case Robots.CURTS_LAPTOP_SIM: {
-        robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
-        break;
-      }
-      default: {
-        robot = new CubeCruzer(mechVisual, shuffleTab);
-        break;
-      }
+    } catch (SocketException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 

@@ -4,23 +4,21 @@
 
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
-import frc.robot.chargedup.IntakeSubsystem;
+import frc.robot.chargedup.ElevatorSubsystem;
+import frc.robot.chargedup.PivotSubsystem;
 
-public class IntakeSpin extends CommandBase {
+public class HomeElevator extends CommandBase {
+  ElevatorSubsystem elevatorSubsystem;
+  PivotSubsystem pivot;
 
-  private Supplier<Double> spinVelocity;
-  private IntakeSubsystem intakeSubsystem;
-
-  /** Creates a new IntakeSpin. */
-  public IntakeSpin(IntakeSubsystem intakeSubsystem, Supplier<Double> spinVelocity) {
+  /** Creates a new HomeElevator. */
+  public HomeElevator(ElevatorSubsystem elevatorSubsystem, PivotSubsystem pivot) {
+    this.elevatorSubsystem = elevatorSubsystem;
+    this.pivot = pivot;
+    addRequirements(elevatorSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
-    this.intakeSubsystem = intakeSubsystem;
-    this.spinVelocity = spinVelocity;
-    addRequirements(this.intakeSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -32,22 +30,19 @@ public class IntakeSpin extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double velocity = (this.spinVelocity.get());
-    // this.intakeSubsystem.setVelocity(velocity);
-    this.intakeSubsystem.setMotor(velocity);
+    this.elevatorSubsystem.runExtendToTarget(0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.intakeSubsystem.stopIntake();
-
-    WpiDataLogging.log(getName() + " ended. ");
+    WpiDataLogging.log(getName() + " ended " + interrupted);
+    this.elevatorSubsystem.stopAndHoldExtend();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return this.elevatorSubsystem.isElevatorIn();
   }
 }
