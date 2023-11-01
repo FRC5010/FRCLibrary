@@ -134,7 +134,7 @@ public class RobotContainer extends GenericMechanism {
       SmartDashboard.putString("MAC ADDRESS", whichRobot.toString());
       switch (whichRobot) {
         case Robots.CC_BOT_2023: {
-          robot = new CubeCruzer(mechVisual, shuffleTab);
+          robot = new CubeCruzer(mechVisual, shuffleTab); 
           break;
         }
         case Robots.COMP_BOT_2023: {
