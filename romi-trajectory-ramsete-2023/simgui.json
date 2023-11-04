@@ -39,6 +39,12 @@
           "Pi Camera Vision": {
             "open": true
           },
+          "PiCamera Vision": {
+            "open": true
+          },
+          "Romi Vision": {
+            "open": true
+          },
           "open": true
         },
         "open": true
@@ -50,6 +56,9 @@
         "open": true
       },
       "photonvision": {
+        "PiCamera": {
+          "open": true
+        },
         "open": true
       }
     }
