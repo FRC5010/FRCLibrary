@@ -43,7 +43,10 @@ public class VisionLimeLightLib extends VisionSystem {
                             ((LimelightHelpers.getLatency_Pipeline(name) +
                                     LimelightHelpers.getLatency_Capture(name)) * 0.001),
                     () -> Double.valueOf(LimelightHelpers.getFiducialID(name)).intValue(),
-                    () -> fieldLayout.getTagPose(rawValues.getFiducialId()).orElse(null),
+                    () -> fieldLayout
+                            .getTagPose(
+                                    ((int) results.targetingResults.targets_Fiducials[0].fiducialID))
+                            .orElse(null),
                     () -> robotPose2d);
         }
     }

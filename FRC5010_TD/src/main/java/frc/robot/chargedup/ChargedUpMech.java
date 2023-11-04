@@ -10,6 +10,8 @@ import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.FRC5010.commands.LedDefaultCommand;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
@@ -25,252 +26,270 @@ import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.CheeseStickCommand;
+import frc.robot.commands.HomeElevator;
 import frc.robot.commands.HomePivot;
 import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.PivotArm;
+import frc.robot.commands.LedDefaultCommand;
+import frc.robot.commands.MoveElevator;
+import frc.robot.commands.PivotElevator;
 
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {
-        private IntakeSubsystem intakeSubsystem;
-        private PivotSubsystem pivotSubsystem;
-        private ButtonBoard buttonOperator;
-        private final double kArmMaxSpeedLimit = 1;
-        private final double kArmMinSpeedLimit = 0.1;
-        private final double kSpinMaxSpeed = 0.6;
-        private final double kSpinLowSpeed = 0.35;
-        private double speedLimit = kArmMaxSpeedLimit;
-        private double intakeSpeedLimit = kSpinMaxSpeed;
-        private LedSubsystem ledSubsystem;
-        private CheeseStick cheeseStick;
+	private ElevatorSubsystem elevatorSubsystem;
+	private IntakeSubsystem intakeSubsystem;
+	private PivotSubsystem pivotSubsystem;
+	private ButtonBoard buttonOperator;
+	private final double kElevatorMaxSpeedLimit = 1;
+	private final double kElevatorMinSpeedLimit = 0.25;
+	private final double kSpinMaxSpeed = 0.6;
+	private final double kSpinLowSpeed = 0.35;
+	private double speedLimit = kElevatorMaxSpeedLimit;
+	private double intakeSpeedLimit = kSpinMaxSpeed;
+	private boolean ledConePickUp = false;
+	private LedSubsystem ledSubsystem;
 
-        private ArmLevel armLevel = ArmLevel.ground;
+	private ElevatorLevel elevatorLevel = ElevatorLevel.ground;
 
-        public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator,
-                        LedSubsystem ledSubsystem) {
-                super(robotMechVisual, shuffleTab);
-                // use this to PID the Elevator
-                // https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
-                this.pivotSubsystem = new PivotSubsystem(
-                                MotorFactory.NEO(9),
-                                new GenericPID(2, 0.0, 0),
-                                new MotorModelConstants(0.25, 0.8, 0),
-                                mechVisual, shuffleTab);
+	public ChargedUpMech(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab, ButtonBoard buttonOperator,
+			LedSubsystem ledSubsystem) {
+		super(robotMechVisual, shuffleTab);
+		// use this to PID the Elevator
+		// https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
+		this.elevatorSubsystem = new ElevatorSubsystem(
+				MotorFactory.NEO(11), new GenericPID(8, 0, 0),
+				new MotorModelConstants(1, 1, 1),
+				mechVisual, 0, 3, () -> pivotSubsystem.getPivotPosition());
 
-                this.intakeSubsystem = new IntakeSubsystem(
-                                MotorFactory.NEO(11),
-                                MotorFactory.NEO(12),
-                                MotorFactory.NEO(10),
-                                new MotorModelConstants(0, 0, 0),
-                                new GenericPID(0.003, 0, 0),
-                                mechVisual);
-                // TODO: Set up IntakeSubsystem add correct values please
-                this.buttonOperator = buttonOperator;
-                this.ledSubsystem = ledSubsystem;
-                shuffleTab.addDouble("Intake current", intakeSubsystem::getMotorCurrent);
+		this.pivotSubsystem = new PivotSubsystem(
+				MotorFactory.NEO(9),
+				new GenericPID(12, 0.0, 0.03),
+				new MotorModelConstants(1, 1, 1),
+				1, 8,
+				() -> elevatorSubsystem.getExtendPosition(), mechVisual);
 
-                cheeseStick = new CheeseStick(MotorFactory.NEO(13), new GenericPID(0, 0, 0), robotMechVisual);
-                shuffleTab.addDouble("CheeseStick Position", cheeseStick::getPosition);
-        }
+		this.intakeSubsystem = new IntakeSubsystem(
+				MotorFactory.NEO(19),
+				MotorFactory.NEO(18),
+				new MotorModelConstants(0, 0, 0),
+				new GenericPID(0.003, 0, 0),
+				new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
+				robotMechVisual);
+		// TODO: Set up IntakeSubsystem add correct values please
+		this.buttonOperator = buttonOperator;
+		this.ledSubsystem = ledSubsystem;
+	}
 
-        @Override
-        public void configureButtonBindings(Controller driver, Controller operator) {
+	@Override
+	public void configureButtonBindings(Controller driver, Controller operator) {
 
-                // Move to current extend level
-                buttonOperator.getButton(6)
-                                .onTrue(
-                                                new SequentialCommandGroup(
-                                                                new InstantCommand(() -> {
-                                                                        armLevel = ArmLevel.ground;
-                                                                }),
-                                                                new PivotArm(pivotSubsystem, ArmLevel.ground)
+		// Move to current extend level
+		buttonOperator.getButton(1)
+				.whileTrue(new MoveElevator(elevatorSubsystem, () -> elevatorLevel));
 
-                                                ));
+		operator.createUpPovButton().whileTrue(new MoveElevator(elevatorSubsystem, () -> elevatorLevel));
 
-                operator.createAButton().onTrue(
-                                new SequentialCommandGroup(
-                                                new InstantCommand(() -> {
-                                                        armLevel = ArmLevel.ground;
-                                                }),
-                                                new PivotArm(pivotSubsystem, ArmLevel.ground)
+		buttonOperator.getButton(2)
+				.whileTrue(new HomeElevator(elevatorSubsystem, pivotSubsystem));
 
-                                ));
+		operator.createDownPovButton().whileTrue(new HomeElevator(elevatorSubsystem, pivotSubsystem));
 
-                buttonOperator.getButton(5)
-                                .onTrue(
-                                                new SequentialCommandGroup(
-                                                                new InstantCommand(
-                                                                                () -> armLevel = ArmLevel.middle),
-                                                                new PivotArm(pivotSubsystem, ArmLevel.middle)
+		buttonOperator.getButton(6)
+				.onTrue(
+						new SequentialCommandGroup(
+								new InstantCommand(() -> {
+									elevatorLevel = ElevatorLevel.ground;
+								}),
+								new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
 
-                                                ));
+						));
 
-                operator.createXButton().onTrue(
-                                new SequentialCommandGroup(
-                                                new InstantCommand(
-                                                                () -> armLevel = ArmLevel.middle),
-                                                new PivotArm(pivotSubsystem, ArmLevel.middle)
+		operator.createAButton().onTrue(
+				new SequentialCommandGroup(
+						new InstantCommand(() -> {
+							elevatorLevel = ElevatorLevel.ground;
+						}),
+						new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
 
-                                ));
+				));
 
-                buttonOperator.getButton(4)
-                                .onTrue(
-                                                new SequentialCommandGroup(
-                                                                new InstantCommand(
-                                                                                () -> armLevel = ArmLevel.home),
-                                                                new PivotArm(pivotSubsystem, ArmLevel.home)
+		buttonOperator.getButton(5)
+				.onTrue(
+						new SequentialCommandGroup(
+								new InstantCommand(
+										() -> elevatorLevel = ElevatorLevel.loading),
+								new PivotElevator(pivotSubsystem, ElevatorLevel.loading)
 
-                                                ));
-                operator.createYButton().onTrue(
-                                new SequentialCommandGroup(
-                                                new InstantCommand(
-                                                                () -> armLevel = ArmLevel.home),
-                                                new PivotArm(pivotSubsystem, ArmLevel.home)
+						));
 
-                                ));
+		operator.createXButton().onTrue(
+				new SequentialCommandGroup(
+						new InstantCommand(
+								() -> elevatorLevel = ElevatorLevel.loading),
+						new PivotElevator(pivotSubsystem, ElevatorLevel.loading)
 
-                buttonOperator.getButton(3)
-                                .onTrue(
-                                                new SequentialCommandGroup(
-                                                                new InstantCommand(
-                                                                                () -> armLevel = ArmLevel.high),
-                                                                new PivotArm(pivotSubsystem, ArmLevel.high)));
+				));
 
-                operator.createBButton().onTrue(
-                                new SequentialCommandGroup(
-                                                new InstantCommand(
-                                                                () -> armLevel = ArmLevel.high),
-                                                new PivotArm(pivotSubsystem, ArmLevel.high)));
+		buttonOperator.getButton(4)
+				.onTrue(
+						new SequentialCommandGroup(
+								new InstantCommand(
+										() -> elevatorLevel = ElevatorLevel.medium),
+								new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
 
-                buttonOperator.getButton(7)
-                                .onTrue(new InstantCommand(() -> {
-                                        speedLimit = kArmMinSpeedLimit;
-                                        intakeSpeedLimit = kSpinLowSpeed;
-                                }))
-                                .onFalse(new InstantCommand(() -> {
-                                        intakeSpeedLimit = kSpinMaxSpeed;
-                                        speedLimit = kArmMaxSpeedLimit;
-                                }));
+						));
+		operator.createYButton().onTrue(
+				new SequentialCommandGroup(
+						new InstantCommand(
+								() -> elevatorLevel = ElevatorLevel.medium),
+						new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
 
-                buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {
-                        intakeSubsystem.setIntakeCone();
-                }, intakeSubsystem));
+				));
 
-                operator.createLeftBumper().onTrue(new InstantCommand(() -> {
-                        intakeSubsystem.setIntakeCone();
-                }, intakeSubsystem));
+		buttonOperator.getButton(3)
+				.onTrue(
+						new SequentialCommandGroup(
+								new InstantCommand(
+										() -> elevatorLevel = ElevatorLevel.high),
+								new PivotElevator(pivotSubsystem, ElevatorLevel.high)));
 
-                buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {
-                        intakeSubsystem.setIntakeCube();
-                }, intakeSubsystem));
+		operator.createBButton().onTrue(
+				new SequentialCommandGroup(
+						new InstantCommand(
+								() -> elevatorLevel = ElevatorLevel.high),
+						new PivotElevator(pivotSubsystem, ElevatorLevel.high)));
 
-                operator.createRightBumper().onTrue(new InstantCommand(() -> {
-                        intakeSubsystem.setIntakeCube();
-                }, intakeSubsystem));
+		buttonOperator.getButton(7)
+				.onTrue(new InstantCommand(() -> {
+					speedLimit = kElevatorMinSpeedLimit;
+					intakeSpeedLimit = kSpinLowSpeed;
+				}))
+				.onFalse(new InstantCommand(() -> {
+					intakeSpeedLimit = kSpinMaxSpeed;
+					speedLimit = kElevatorMaxSpeedLimit;
+				}));
 
-                buttonOperator.getButton(10)
-                                .whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-intakeSpeedLimit, -1)));
+		buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {
+			intakeSubsystem.setIntakeCone();
+		}, intakeSubsystem));
 
-                buttonOperator.setYAxis(buttonOperator.createYAxis().deadzone(0.05));
-                buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); // The deadzone isnt technically
+		operator.createLeftBumper().onTrue(new InstantCommand(() -> {
+			intakeSubsystem.setIntakeCone();
+		}, intakeSubsystem));
 
-                driver.setRightTrigger(driver.createRightTrigger());
-                driver.setLeftTrigger(driver.createLeftTrigger());
+		buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {
+			intakeSubsystem.setIntakeCube();
+		}, intakeSubsystem));
 
-                driver.createUpPovButton().whileTrue(new HomePivot(pivotSubsystem));
+		operator.createRightBumper().onTrue(new InstantCommand(() -> {
+			intakeSubsystem.setIntakeCube();
+		}, intakeSubsystem));
 
-                operator.setRightTrigger(operator.createRightTrigger());
-                operator.setLeftTrigger(operator.createLeftTrigger());
-                // necessary
-                // but I have seen self movement
-                // without
-                // it
+		buttonOperator.getButton(10)
+				.whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-intakeSpeedLimit, -1)));
 
-                // new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
-                // .onTrue(new ElevatorPower(elevatorSubsystem, () -> (buttonOperator.getXAxis()
-                // * speedLimit))
-                // );
+		buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
+		buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); // The deadzone isnt technically
 
-                // new Trigger(() -> (Math.abs(buttonOperator.getYAxis()) > 0.01))
-                // .onTrue(new PivotPower(pivotSubsystem, () -> (buttonOperator.getYAxis() *
-                // speedLimit))
-                // );
+		driver.setRightTrigger(driver.createRightTrigger());
+		driver.setLeftTrigger(driver.createLeftTrigger());
 
-                new Trigger(() -> (Math
-                                .abs(driver.getRightTrigger() - driver.getLeftTrigger()) > 0.01))
-                                .whileTrue(new IntakeSpin(intakeSubsystem,
-                                                () -> (driver.getRightTrigger()
-                                                                - driver.getLeftTrigger()) * 1));
+		driver.createUpPovButton().whileTrue(new HomePivot(pivotSubsystem));
 
-                new Trigger(() -> (Math
-                                .abs(operator.getRightTrigger()) > 0.01))
-                                .whileTrue(new IntakeSpin(intakeSubsystem,
-                                                () -> (operator.getRightTrigger() * -1)));
+		operator.setRightTrigger(operator.createRightTrigger());
+		operator.setLeftTrigger(operator.createLeftTrigger());
+		// necessary
+		// but I have seen self movement
+		// without
+		// it
 
-                driver.createDownPovButton()
-                                .onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
+		// new Trigger(() -> (Math.abs(buttonOperator.getXAxis()) > 0.01))
+		// .onTrue(new ElevatorPower(elevatorSubsystem, () -> (buttonOperator.getXAxis()
+		// * speedLimit))
+		// );
 
-                driver.createXButton().onTrue(new InstantCommand(() -> {
-                        pivotSubsystem.toggleOverride();
-                }, pivotSubsystem));
+		// new Trigger(() -> (Math.abs(buttonOperator.getYAxis()) > 0.01))
+		// .onTrue(new PivotPower(pivotSubsystem, () -> (buttonOperator.getYAxis() *
+		// speedLimit))
+		// );
 
-                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2));
-                operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
+		new Trigger(() -> (Math
+				.abs(driver.getRightTrigger() - driver.getLeftTrigger()) > 0.01))
+				.whileTrue(new IntakeSpin(intakeSubsystem,
+						() -> (driver.getRightTrigger()
+								- driver.getLeftTrigger()) * 1));
 
-                driver.createRightBumper()
-                                .whileTrue(new CheeseStickCommand(90, cheeseStick)
-                                                .andThen(new IntakeSpin(intakeSubsystem, () -> -1.0)))
-                                .onFalse(new CheeseStickCommand(0, cheeseStick));
+		new Trigger(() -> (Math
+				.abs(operator.getRightTrigger()) > 0.01))
+				.whileTrue(new IntakeSpin(intakeSubsystem,
+						() -> (operator.getRightTrigger() * -1)));
 
-        }
+		driver.createDownPovButton()
+				.onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
 
-        public IntakeSubsystem getIntakeSubsystem() {
-                return intakeSubsystem;
-        }
+		driver.createXButton().onTrue(new InstantCommand(() -> {
+			elevatorSubsystem.toggleOverride();
+			pivotSubsystem.toggleOverride();
+		}, elevatorSubsystem, pivotSubsystem));
 
-        public PivotSubsystem getPivotSubsystem() {
-                return pivotSubsystem;
-        }
+		operator.setRightYAxis(operator.createRightYAxis().deadzone(0.2).negate());
+		operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.2));
 
-        public CheeseStick getCheeseStick() {
-                return cheeseStick;
-        }
+		driver.createRightBumper().onTrue(new InstantCommand(() -> ledSubsystem.togglePickUp(), ledSubsystem));
+	}
 
-        @Override
-        public void setupDefaultCommands(Controller driver, Controller operator) {
-                pivotSubsystem.setDefaultCommand(new FunctionalCommand(
-                                () -> {
-                                },
-                                () -> {
-                                        pivotSubsystem.pivotPow((buttonOperator.getYAxis()
-                                                        + operator.getRightYAxis()) * speedLimit, true);
+	public IntakeSubsystem getIntakeSubsystem() {
+		return intakeSubsystem;
+	}
 
-                                },
-                                (Boolean interrupted) -> {
-                                        pivotSubsystem.pivotPow(0, true);
-                                },
-                                () -> false,
-                                pivotSubsystem));
-                ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem));
-        }
+	public ElevatorSubsystem getElevatorSubsystem() {
+		return elevatorSubsystem;
+	}
 
-        @Override
-        public void disabledBehavior() {
-                ledSubsystem.setRainbow();
-        }
+	public PivotSubsystem getPivotSubsystem() {
+		return pivotSubsystem;
+	}
 
-        @Override
-        protected void initRealOrSim() {
-        }
+	@Override
+	public void setupDefaultCommands(Controller driver, Controller operator) {
+		elevatorSubsystem.setDefaultCommand(new FunctionalCommand(
+				() -> {
+				},
+				() -> {
+					pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit
+							+ operator.getRightYAxis(), true);
+					// elevatorSubsystem.extendPow((elevatorSubsystem.atMinHardStop(buttonOperator.getXAxis())
+					// ? 0 : buttonOperator.getXAxis()) * speedLimit - operator.getLeftYAxis());
+					elevatorSubsystem.extendPow(buttonOperator.getXAxis() * speedLimit
+							- operator.getLeftYAxis());
 
-        @Override
-        public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
-                return new HashMap<>();
-        }
+				},
+				(Boolean interrupted) -> {
+					pivotSubsystem.pivotPow(0, true);
+					elevatorSubsystem.extendPow(0);
+				},
+				() -> false,
+				elevatorSubsystem));
 
-        @Override
-        public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
-                // TODO Auto-generated method stub
-                return null;
-        }
+		ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem, elevatorSubsystem));
+	}
+
+	@Override
+	public void disabledBehavior() {
+		ledSubsystem.setRainbow();
+	}
+
+	@Override
+	protected void initRealOrSim() {
+	}
+
+	@Override
+	public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
+		return new HashMap<>();
+	}
+
+	@Override
+	public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -51,6 +51,10 @@ public abstract class VisionSystem extends SubsystemBase {
     visionLayout.addBoolean("Has Target", this::isValidTarget);
     visionLayout.addNumber(name + " Distance", this::getDistance).withSize(1, 1);
     visionLayout.addNumber("Fiducial", () -> getRawValues().getFiducialId());
+    visionLayout.addNumber("Robot Pose X", () -> getRawValues().getRobotPose().getX());
+    visionLayout.addNumber("Robot Pose Y", () -> getRawValues().getRobotPose().getY());
+    visionLayout.addNumber("Target Pose X", () -> getRawValues().getTargetVector().getX());
+    visionLayout.addNumber("Target Pose Y", () -> getRawValues().getTargetVector().getY());
   }
 
   // more specific values to define the camera
@@ -125,17 +129,18 @@ public abstract class VisionSystem extends SubsystemBase {
       double angleX = angleXSup.getAsDouble();
       double angleY = angleYSup.getAsDouble();
       double distance = 0;
-      if (angleX != 0 || angleY != 0) {
-        distance = (targetHeight - camHeight)
-            / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
-      } else if (null != cameraPoseSupplier.get() && null != robotPoseSupplier.get()) {
+      if (null != cameraPoseSupplier.get() && null != robotPoseSupplier.get()) {
         Pose3d targetPose = cameraPoseSupplier.get();
         Pose2d robotPose = robotPoseSupplier.get();
         Translation3d targetTrans = new Translation3d(targetPose.getX(), targetPose.getY(), targetPose.getZ());
         Translation2d robotTrans = new Translation2d(robotPose.getX(), robotPose.getY());
         distance = robotTrans.getDistance(targetTrans.toTranslation2d());
+      } else if (angleX != 0 || angleY != 0) {
+        distance = (targetHeight - camHeight)
+            / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
       }
       this.rawValues = rawValues;
+      this.smoothedValues = rawValues;
       rawValues
           .setValid(valid)
           .addLatency(name, latencySup.getAsDouble())
