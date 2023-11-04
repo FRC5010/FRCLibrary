@@ -40,7 +40,7 @@ public class DefaultRobot extends GenericMechanism {
 
         List<DrivePorts> motorPorts = new ArrayList<>();
 
-        drive = new Drive(vision, gyro, Drive.Type.DIFF_DRIVE, motorPorts, driveConstants);
+        drive = new Drive(vision, gyro, Drive.Type.DIFF_DRIVE, motorPorts, driveConstants, "");
     }
 
     @Override

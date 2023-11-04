@@ -4,14 +4,17 @@
 
 package frc.robot;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -21,16 +24,17 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.robots.BabySwerve;
 import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
+import frc.robot.FRC5010.robots.DefaultRobot;
 import frc.robot.FRC5010.robots.PracticeBot;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
+import frc.robot.chargedup.CompBot;
 import frc.robot.chargedup.CubeCruzer;
 
 /**
@@ -86,10 +90,11 @@ public class RobotContainer extends GenericMechanism {
 
   // Robot types
   public static class Robots {
+    public static final String CC_BOT_2023 = "[0, -128, 47, 51, 23, -35]";
     public static final String COMP_BOT_2023 = "2023CompBot";
     public static final String BABY_SWERVE = "BabySwerve";
     public static final String PRACTICE_BOT = "PracticeBot";
-    public static final String CURTS_LAPTOP_SIM = "CurtsLaptop";
+    public static final String CURTS_LAPTOP_SIM = "D2:57:7B:3E:C0:47";
   }
 
   /**
@@ -97,10 +102,6 @@ public class RobotContainer extends GenericMechanism {
    */
   protected void initRealOrSim() {
     if (RobotBase.isReal()) {
-      /**
-       * TODO: Initialize expected vision subsystem
-       */
-
       WpiDataLogging.start(false);
     } else {
       NetworkTableInstance instance = NetworkTableInstance.getDefault();
@@ -115,13 +116,44 @@ public class RobotContainer extends GenericMechanism {
     robotFactory();
   }
 
+  private String whoAmI() {
+    try {
+      NetworkInterface myNI = NetworkInterface.networkInterfaces().filter(it -> {
+        try {
+          byte[] MA = it.getHardwareAddress();
+          return null != MA;
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        return false;
+      }).findFirst().orElse(NetworkInterface.networkInterfaces().findFirst().get());
+      byte[] MAC_ADDRESS = myNI.getHardwareAddress();
+      final List<Byte> macList = new ArrayList<>();
+      if (null != MAC_ADDRESS) {
+        for (byte b : MAC_ADDRESS) {
+          macList.add(b);
+        }
+      }
+      String whichRobot = macList.stream().map(it -> String.format("%02X", it))
+          .collect(Collectors.joining(":"));
+      SmartDashboard.putString("MAC ADDRESS", whichRobot.toString());
+      return whichRobot.toString();
+    } catch (SocketException e) {
+      e.printStackTrace();
+    }
+    return "unknown";
+  }
+
   private void robotFactory() {
-    whoAmI = new Persisted<>(WHO_AM_I, String.class);
-    String whichRobot = whoAmI.get();
+    String whichRobot = whoAmI();
 
     switch (whichRobot) {
-      case Robots.COMP_BOT_2023: {
+      case Robots.CC_BOT_2023: {
         robot = new CubeCruzer(mechVisual, shuffleTab);
+        break;
+      }
+      case Robots.COMP_BOT_2023: {
+        robot = new CompBot(mechVisual, shuffleTab);
         break;
       }
       case Robots.BABY_SWERVE: {
@@ -137,7 +169,7 @@ public class RobotContainer extends GenericMechanism {
         break;
       }
       default: {
-        robot = new CubeCruzer(mechVisual, shuffleTab);
+        robot = new DefaultRobot(mechVisual, shuffleTab);
         break;
       }
     }

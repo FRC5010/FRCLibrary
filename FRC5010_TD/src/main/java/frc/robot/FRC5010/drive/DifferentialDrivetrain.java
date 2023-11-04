@@ -116,11 +116,13 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
   public static DifferentialDrivetrainSim driveSim;
 
   public void initSimulation() {
-    KvLinear = new Persisted<>(DriveConstantsDef.KV_DRIVE_LINEAR, Double.class);
-    KaLinear = new Persisted<>(DriveConstantsDef.KA_DRIVE_LINEAR, Double.class);
-    KvAngular = new Persisted<>(DriveConstantsDef.KV_DRIVE_ANGULAR, Double.class);
-    KaAngular = new Persisted<>(DriveConstantsDef.KA_DRIVE_ANGULAR, Double.class);
-    motorRotationsPerWheelRotation = new Persisted<>(DriveConstantsDef.MOTOR_ROT_PER_WHEEL_ROT, Double.class);
+    KvLinear = new Persisted<>(DriveConstantsDef.KV_DRIVE_LINEAR, 1.3984);
+    KaLinear = new Persisted<>(DriveConstantsDef.KA_DRIVE_LINEAR, 0.27137);
+    motorRotationsPerWheelRotation = new Persisted<>(DriveConstantsDef.MOTOR_ROT_PER_WHEEL_ROT, 10.71);
+
+    KvAngular = new Persisted<>(DriveConstantsDef.KV_DRIVE_ANGULAR, 0.5 / 180);
+    KaAngular = new Persisted<>(DriveConstantsDef.KA_DRIVE_ANGULAR, 0.03);
+    motorRotationsPerWheelRotation = new Persisted<>(DriveConstantsDef.MOTOR_ROT_PER_WHEEL_ROT, 10.71);
     kTrackwidthMeters = new Persisted<>(DriveConstantsDef.TRACK_WIDTH, Double.class);
 
     driveSim = new DifferentialDrivetrainSim(

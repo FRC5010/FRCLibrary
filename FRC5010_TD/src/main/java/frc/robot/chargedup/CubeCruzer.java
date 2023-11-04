@@ -7,55 +7,40 @@ package frc.robot.chargedup;
 import java.util.List;
 import java.util.Map;
 
-import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.SPI.Port;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
-import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
-import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.CheeseStickCommand;
-import frc.robot.commands.HomePivot;
-import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.PivotArm;
 
 /** Add your docs here. */
 public class CubeCruzer extends GenericMechanism {
         private SwerveConstants swerveConstants;
         private Drive drive;
         private DriverDisplaySubsystem driverDiplay;
-        private GenericMechanism cubeArm;
         private AutoMaps autoMaps;
         private ButtonBoard buttonOperator;
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
         private VisionSystem visionSystem;
-        private CheeseStick cheeseStick;
 
         public CubeCruzer(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
@@ -83,7 +68,8 @@ public class CubeCruzer extends GenericMechanism {
 
                 gyro = new PigeonGyro(15);
 
-                drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_MK4I_SWERVE_DRIVE, null, swerveConstants);
+                drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
+                                "swervemk4icc");
                 // Uncomment when using PhotonVision
                 // multiVision.addPhotonCamera("LeftCamera", 1,
                 // new Transform3d( // This describes the vector between the camera lens to the
@@ -100,52 +86,14 @@ public class CubeCruzer extends GenericMechanism {
 
                 buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
                 buttonOperator.createButtons(11);
-                cubeArm = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator, ledSubsystem);
 
                 autoMaps = new AutoMaps();
                 SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
-                IntakeSubsystem intakeSubsystem = ((ChargedUpMech) cubeArm).getIntakeSubsystem();
-                PivotSubsystem pivotSubsystem = ((ChargedUpMech) cubeArm).getPivotSubsystem();
-
-                cheeseStick = ((ChargedUpMech) cubeArm).getCheeseStick();
 
                 // Elevator Controls
-
-                autoMaps.addMarker("PivotToGround", new PivotArm(pivotSubsystem,
-                                ArmLevel.ground));
-                autoMaps.addMarker("PivotToLow", new PivotArm(pivotSubsystem,
-                                ArmLevel.low));
-                autoMaps.addMarker("PivotToMid", new PivotArm(pivotSubsystem,
-                                ArmLevel.home));
-
-                autoMaps.addMarker("PivotToHigh", new PivotArm(pivotSubsystem,
-                                ArmLevel.high));
-                autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
-
-                // Intake Controls
-                autoMaps.addMarker("CubeMode",
-                                new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-
-                autoMaps.addMarker("CubeModeTimed",
-                                new SequentialCommandGroup(
-                                                new InstantCommand(() -> intakeSubsystem.setIntakeCube(),
-                                                                intakeSubsystem),
-                                                new WaitCommand(.25)));
-
-                autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -0.85).withTimeout(0.25));
-                autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -1.0).withTimeout(.25)));
-                autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.5).withTimeout(.25)));
-                autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
-                autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.2).withTimeout(0.25));
-                autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
-                autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
                 // Drivetrain Controls
                 autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
                 autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
-
-                // TODO: RE-ADD
-                autoMaps.addMarker("CheeseStickOut", new CheeseStickCommand(90, cheeseStick));
-                autoMaps.addMarker("CheeseStickIn", new CheeseStickCommand(0, cheeseStick));
 
                 // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
                 // Wheels"))));
@@ -214,14 +162,12 @@ public class CubeCruzer extends GenericMechanism {
                 driver.createBackButton().onTrue(new InstantCommand(() -> drive.getDrivetrain().resetEncoders()));
 
                 drive.configureButtonBindings(driver, operator);
-                cubeArm.configureButtonBindings(driver, operator);
 
         }
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
                 drive.setupDefaultCommands(driver, operator);
-                cubeArm.setupDefaultCommands(driver, operator);
         }
 
         @Override
