@@ -67,7 +67,6 @@ public class VisionPhoton extends VisionSystem {
         double deltaTimeInit = Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
         if (camResult.hasTargets()) {
             targetInit = camResult.getBestTarget();
-            ((VisionValuesPhotonCamera) rawValues).setFiducialId(targetInit.getFiducialId());
             Optional<EstimatedRobotPose> result = poseEstimator.update();
 
             if (result.isPresent() && result.get().estimatedPose != null) {

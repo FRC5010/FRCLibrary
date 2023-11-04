@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -62,38 +59,43 @@ public class VisionMultiCam extends VisionSystem {
         camera.update();
         var camResult = camera.getRawValues();
         updateBatchValues(rawValues, camera.getName(),
-                () -> camResult.getAngleX(),
-                () -> camResult.getAngleY(),
-                () -> camResult.getDistance(),
-                () -> camResult.getArea(),
-                () -> camResult.getValid(),
-                () -> camResult.getLatency(camera.getName()),
-                () -> camResult.getTargetVectors(),
-                () -> camResult.getRobotPoses());
+                camResult.getAngleX(),
+                camResult.getAngleY(),
+                camResult.getDistance(),
+                camResult.getArea(),
+                camResult.getValid(),
+                camResult.getLatency(camera.getName()),
+                camResult.getFiducialIds(),
+                camResult.getTargetVectors(),
+                camResult.getRobotPoses());
     }
 
     protected void updateBatchValues(VisionValues rawValues, String camera,
-            DoubleSupplier angleXSup, DoubleSupplier angleYSup, DoubleSupplier distanceSup,
-            DoubleSupplier areaSup, BooleanSupplier validSup, DoubleSupplier latencySup,
-            Supplier<Map<String, Pose3d>> cameraPoseSupplier,
-            Supplier<Map<String, Pose2d>> robotPoseSupplier) {
-        boolean valid = validSup.getAsBoolean();
+            Double angleXSup, Double angleYSup, Double distanceSup,
+            Double areaSup, Boolean validSup, Double latencySup, Map<String, Integer> fiducialID,
+            Map<String, Pose3d> cameraPoseSupplier,
+            Map<String, Pose2d> robotPoseSupplier) {
+        boolean valid = validSup;
         if (valid) {
             // calculating distance
             this.rawValues = rawValues;
             rawValues
-                    .setValid(valid)
-                    .addLatency(camera, latencySup.getAsDouble())
-                    .setYaw(angleXSup.getAsDouble())
-                    .setPitch(angleYSup.getAsDouble())
-                    .setArea(areaSup.getAsDouble())
-                    .setDistance(distanceSup.getAsDouble())
-                    .addTargetVectors(cameraPoseSupplier.get())
-                    .addRobotPoses(robotPoseSupplier.get());
-            // smoothedValues.averageValues(rawValues, 5);
+                    .setValid(rawValues.valid || valid)
+                    .setYaw(angleXSup)
+                    .setPitch(angleYSup)
+                    .setDistance(distanceSup)
+                    .addLatency(camera, latencySup)
+                    .addFiducialIds(fiducialID)
+                    .addTargetVectors(cameraPoseSupplier)
+                    .addRobotPoses(robotPoseSupplier);
+            if (smoothValues) {        
+                smoothedValues.averageValues(rawValues, 5);
+            } else {
+                smoothedValues = rawValues;
+            }
         } else {
             rawValues = new VisionValues();
-            smoothedValues = new VisionValues();
+            smoothedValues.deprecateValues();;
         }
     }
 

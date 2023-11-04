@@ -36,7 +36,7 @@ public class VisionValues {
     protected Map<String, Pose2d> robotPoses = new HashMap<>();
 
     protected int count = 0;
-    private int fiducialId = 0;
+    private Map<String, Integer> fiducialIds = new HashMap<>();
 
     public VisionValues() {
     }
@@ -48,8 +48,40 @@ public class VisionValues {
         angleX = ((count - 1) * angleX + rawValues.getAngleX()) / count;
         angleY = ((count - 1) * angleY + rawValues.getAngleY()) / count;
         distance = ((count - 1) * distance + rawValues.getDistance()) / count;
+
+        latencies = rawValues.getLatencies();
+        fiducialIds = rawValues.getFiducialIds();
+        robotPoses = rawValues.getRobotPoses();
+        robotToTarget = rawValues.getTargetVectors();
     }
 
+    public void storeValues(VisionValues rawValues, int maxCount) {
+        count++;
+        count = Math.min(count, maxCount);
+        valid = count >= maxCount;
+        angleX = rawValues.getAngleX();
+        angleY = rawValues.angleY;
+        distance = rawValues.getDistance();
+        latencies = rawValues.getLatencies();
+        fiducialIds = rawValues.getFiducialIds();
+        robotPoses = rawValues.getRobotPoses();
+        robotToTarget = rawValues.getTargetVectors();
+    }
+
+    public void deprecateValues() {
+        count--;
+        count = Math.max(0, count);
+        valid = count > 0;
+        if (!valid) {
+            angleX = 0.0;
+            angleY = 0.0;
+            distance = 0.0;
+            latencies = new HashMap<>();
+            fiducialIds = new HashMap<>();
+            robotPoses = new HashMap<>();
+            robotToTarget = new HashMap<>();
+        }
+    }
     public Boolean getValid() {
         return valid;
     }
@@ -76,6 +108,10 @@ public class VisionValues {
 
     public Double getLatency(String camera) {
         return null == latencies.get(camera) ? 0.0 : latencies.get(camera);
+    }
+
+    public Map<String, Double> getLatencies() {
+        return latencies;
     }
 
     public VisionValues setArea(Double area) {
@@ -109,11 +145,20 @@ public class VisionValues {
     }
 
     public int getFiducialId() {
-        return fiducialId;
+        return fiducialIds.size() > 0 ? fiducialIds.values().iterator().next() : -1;
     }
 
-    public VisionValues setFiducialId(int id) {
-        fiducialId = id;
+    public VisionValues addFiducialId(String camera, int id) {
+        fiducialIds.put(camera, id);
+        return this;
+    }
+
+    public Map<String, Integer> getFiducialIds() {
+        return fiducialIds;
+    }
+
+    public VisionValues addFiducialIds(Map<String, Integer> fids) {
+        fiducialIds.putAll(fids);
         return this;
     }
 
