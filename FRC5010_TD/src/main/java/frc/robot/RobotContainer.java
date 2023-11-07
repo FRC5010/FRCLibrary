@@ -90,11 +90,12 @@ public class RobotContainer extends GenericMechanism {
 
   // Robot types
   public static class Robots {
-    public static final String CC_BOT_2023 = "[0, -128, 47, 51, 23, -35]";
-    public static final String COMP_BOT_2023 = "2023CompBot";
+    public static final String CC_BOT_2023 = "00:80:2F:33:17:DD";
+    public static final String COMP_BOT_2023 = "00:80:2F:33:04:33";
     public static final String BABY_SWERVE = "BabySwerve";
     public static final String PRACTICE_BOT = "PracticeBot";
     public static final String CURTS_LAPTOP_SIM = "D2:57:7B:3E:C0:47";
+
   }
 
   /**
