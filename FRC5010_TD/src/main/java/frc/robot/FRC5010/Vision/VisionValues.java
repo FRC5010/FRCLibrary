@@ -82,6 +82,7 @@ public class VisionValues {
             robotToTarget = new HashMap<>();
         }
     }
+
     public Boolean getValid() {
         return valid;
     }
@@ -202,7 +203,7 @@ public class VisionValues {
     }
 
     public VisionValues addRobotPoses(Map<String, Pose2d> robotPoses) {
-        robotPoses.putAll(robotPoses);
+        this.robotPoses.putAll(robotPoses);
         return this;
     }
 
