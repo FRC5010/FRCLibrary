@@ -54,15 +54,16 @@ public abstract class VisionSystem extends SubsystemBase {
     visionLayout.addNumber("Distance", this::getDistance).withSize(1, 1);
     visionLayout.addNumber("Fiducial", () -> getRawValues().getFiducialId());
     visionLayout.addNumber("Robot Pose X",
-        () -> null != smoothedValues.getRobotPose() ? getRawValues().getRobotPose().getX() : -1);
+        () -> null != smoothedValues.getRobotPose() ? smoothedValues.getRobotPose().getX() : -1);
     visionLayout.addNumber("Robot Pose Y",
-        () -> null != smoothedValues.getRobotPose() ? getRawValues().getRobotPose().getY() : -1);
+        () -> null != smoothedValues.getRobotPose() ? smoothedValues.getRobotPose().getY() : -1);
     visionLayout.addNumber("Target Pose X",
-        () -> null != smoothedValues.getTargetVector() ? getRawValues().getTargetVector().getX() : -1);
+        () -> null != smoothedValues.getTargetVector() ? smoothedValues.getTargetVector().getX() : -1);
     visionLayout.addNumber("Target Pose Y",
-        () -> null != smoothedValues.getTargetVector() ? getRawValues().getTargetVector().getY() : -1);
+        () -> null != smoothedValues.getTargetVector() ? smoothedValues.getTargetVector().getY() : -1);
     visionLayout.addNumber("Target Pose Z",
-        () -> null != smoothedValues.getTargetVector() ? getRawValues().getTargetVector().getZ() : -1);
+        () -> null != smoothedValues.getTargetVector() ? smoothedValues.getTargetVector().getZ() : -1);
+    visionLayout.addNumber("Camera Latency", () -> smoothedValues.getLatency());
   }
 
   // more specific values to define the camera
@@ -96,6 +97,10 @@ public abstract class VisionSystem extends SubsystemBase {
     driverLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
         .withPosition(colIndex + 1, 0).withSize(1, 1);
     driverLayout.addBoolean("Limelight On", this::isLightOn);
+  }
+
+  public String getCameraName() {
+    return name;
   }
 
   public abstract void setPipeline(int pipeline);

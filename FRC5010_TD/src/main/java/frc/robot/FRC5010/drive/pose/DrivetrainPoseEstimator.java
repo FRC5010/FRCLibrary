@@ -86,8 +86,7 @@ public class DrivetrainPoseEstimator {
       Pose2d robotPose = poses.get(camera);
       if (null != robotPose) {
         double imageCaptureTime = vision.getRawValues().getLatency(camera);
-        // field2d.getObject("MyRobot" +
-        // ((VisionValuesPhotonCamera)vision.getRawValues()).getFiducialId()).setPose(robotPose);
+
         if (RobotState.isDisabled()
             || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())) {
           poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);

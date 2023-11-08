@@ -111,6 +111,10 @@ public class VisionValues {
         return null == latencies.get(camera) ? 0.0 : latencies.get(camera);
     }
 
+    public Double getLatency() {
+        return latencies.size() > 0 ? latencies.values().iterator().next() : 0.0;
+    }
+
     public Map<String, Double> getLatencies() {
         return latencies;
     }
