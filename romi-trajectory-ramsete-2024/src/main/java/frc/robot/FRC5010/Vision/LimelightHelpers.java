@@ -391,7 +391,7 @@ public class LimelightHelpers {
 
     private static Pose2d toPose2D(double[] inData) {
         if (inData.length < 6) {
-            System.err.println("Bad LL 2D Pose Data!");
+            System.err.println("Bad LL 2D Pose Data! Length = " + inData.length);
             return new Pose2d();
         }
         Translation2d tran2d = new Translation2d(inData[0], inData[1]);

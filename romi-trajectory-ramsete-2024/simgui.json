@@ -1,0 +1,17 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Pose/Field": "Field2d",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/field": "Field2d"
+    }
+  },
+  "NetworkTables": {
+    "persistent": {
+      "photonvision": {
+        "open": true
+      }
+    }
+  }
+}

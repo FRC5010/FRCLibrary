@@ -58,7 +58,7 @@ public class VisionMultiCam extends VisionSystem {
     public void updateFromCamera(VisionSystem camera, String path) {
         camera.update();
         var camResult = camera.getRawValues();
-        updateBatchValues(rawValues, camera.getName(),
+        updateBatchValues(camera.getName(),
                 camResult.getAngleX(),
                 camResult.getAngleY(),
                 camResult.getDistance(),
@@ -70,15 +70,13 @@ public class VisionMultiCam extends VisionSystem {
                 camResult.getRobotPoses());
     }
 
-    protected void updateBatchValues(VisionValues rawValues, String camera,
+    protected void updateBatchValues(String camera,
             Double angleXSup, Double angleYSup, Double distanceSup,
             Double areaSup, Boolean validSup, Double latencySup, Map<String, Integer> fiducialID,
             Map<String, Pose3d> cameraPoseSupplier,
             Map<String, Pose2d> robotPoseSupplier) {
         boolean valid = validSup;
         if (valid) {
-            // calculating distance
-            this.rawValues = rawValues;
             rawValues
                     .setValid(rawValues.valid || valid)
                     .setYaw(angleXSup)
@@ -88,14 +86,14 @@ public class VisionMultiCam extends VisionSystem {
                     .addFiducialIds(fiducialID)
                     .addTargetVectors(cameraPoseSupplier)
                     .addRobotPoses(robotPoseSupplier);
-            if (smoothValues) {        
+            if (smoothValues) {
                 smoothedValues.averageValues(rawValues, 5);
             } else {
                 smoothedValues = rawValues;
             }
         } else {
             rawValues = new VisionValues();
-            smoothedValues.deprecateValues();;
+            smoothedValues.deprecateValues();
         }
     }
 
