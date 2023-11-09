@@ -58,13 +58,13 @@ public class VisionMultiCam extends VisionSystem {
     public void updateFromCamera(VisionSystem camera, String path) {
         camera.update();
         var camResult = camera.getRawValues();
-        updateBatchValues(rawValues, camera.getName(),
+        updateBatchValues(rawValues, camera.getCameraName(),
                 camResult.getAngleX(),
                 camResult.getAngleY(),
                 camResult.getDistance(),
                 camResult.getArea(),
                 camResult.getValid(),
-                camResult.getLatency(camera.getName()),
+                camResult.getLatency(),
                 camResult.getFiducialIds(),
                 camResult.getTargetVectors(),
                 camResult.getRobotPoses());
