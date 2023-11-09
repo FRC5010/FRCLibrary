@@ -63,6 +63,7 @@ public abstract class VisionSystem extends SubsystemBase {
         () -> null != rawValues.getTargetVector() ? getRawValues().getTargetVector().getY() : -1);
     visionLayout.addNumber("Target Pose Z",
         () -> null != rawValues.getTargetVector() ? getRawValues().getTargetVector().getZ() : -1);
+    visionLayout.addNumber("Camera Latency", () -> smoothedValues.getLatency());
   }
 
   // more specific values to define the camera
@@ -96,6 +97,10 @@ public abstract class VisionSystem extends SubsystemBase {
     driverLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
         .withPosition(colIndex + 1, 0).withSize(1, 1);
     driverLayout.addBoolean("Limelight On", this::isLightOn);
+  }
+
+  public String getCameraName() {
+    return name;
   }
 
   public abstract void setPipeline(int pipeline);

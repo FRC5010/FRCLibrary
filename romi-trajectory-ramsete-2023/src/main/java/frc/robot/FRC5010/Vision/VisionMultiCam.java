@@ -58,21 +58,21 @@ public class VisionMultiCam extends VisionSystem {
     public void updateFromCamera(VisionSystem camera, String path) {
         camera.update();
         var camResult = camera.getRawValues();
-        updateBatchValues(camera.getName(),
+        updateBatchValues(
                 camResult.getAngleX(),
                 camResult.getAngleY(),
                 camResult.getDistance(),
                 camResult.getArea(),
                 camResult.getValid(),
-                camResult.getLatency(camera.getName()),
+                camResult.getLatencies(),
                 camResult.getFiducialIds(),
                 camResult.getTargetVectors(),
                 camResult.getRobotPoses());
     }
 
-    protected void updateBatchValues(String camera,
+    protected void updateBatchValues(
             Double angleXSup, Double angleYSup, Double distanceSup,
-            Double areaSup, Boolean validSup, Double latencySup, Map<String, Integer> fiducialID,
+            Double areaSup, Boolean validSup, Map<String,Double> latencySup, Map<String, Integer> fiducialID,
             Map<String, Pose3d> cameraPoseSupplier,
             Map<String, Pose2d> robotPoseSupplier) {
         boolean valid = validSup;
@@ -82,7 +82,7 @@ public class VisionMultiCam extends VisionSystem {
                     .setYaw(angleXSup)
                     .setPitch(angleYSup)
                     .setDistance(distanceSup)
-                    .addLatency(camera, latencySup)
+                    .addLatencies(latencySup)
                     .addFiducialIds(fiducialID)
                     .addTargetVectors(cameraPoseSupplier)
                     .addRobotPoses(robotPoseSupplier);
