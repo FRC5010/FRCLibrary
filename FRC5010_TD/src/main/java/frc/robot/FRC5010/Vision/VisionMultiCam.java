@@ -58,19 +58,19 @@ public class VisionMultiCam extends VisionSystem {
     public void updateFromCamera(VisionSystem camera, String path) {
         camera.update();
         var camResult = camera.getRawValues();
-        updateBatchValues(rawValues, camera.getName(),
+        updateBatchValues(rawValues, camera.getCameraName(),
                 camResult.getAngleX(),
                 camResult.getAngleY(),
                 camResult.getDistance(),
                 camResult.getArea(),
                 camResult.getValid(),
-                camResult.getLatency(camera.getName()),
+                camResult.getLatency(),
                 camResult.getFiducialIds(),
                 camResult.getTargetVectors(),
                 camResult.getRobotPoses());
     }
 
-    protected void updateBatchValues(VisionValues rawValues, String camera,
+    protected void updateBatchValues(VisionValues rValues, String camera,
             Double angleXSup, Double angleYSup, Double distanceSup,
             Double areaSup, Boolean validSup, Double latencySup, Map<String, Integer> fiducialID,
             Map<String, Pose3d> cameraPoseSupplier,
@@ -78,7 +78,7 @@ public class VisionMultiCam extends VisionSystem {
         boolean valid = validSup;
         if (valid) {
             // calculating distance
-            this.rawValues = rawValues;
+            this.rawValues = rValues;
             rawValues
                     .setValid(rawValues.valid || valid)
                     .setYaw(angleXSup)
@@ -88,14 +88,14 @@ public class VisionMultiCam extends VisionSystem {
                     .addFiducialIds(fiducialID)
                     .addTargetVectors(cameraPoseSupplier)
                     .addRobotPoses(robotPoseSupplier);
-            if (smoothValues) {        
+            if (smoothValues) {
                 smoothedValues.averageValues(rawValues, 5);
             } else {
-                smoothedValues = rawValues;
+                smoothedValues = this.rawValues;
             }
         } else {
             rawValues = new VisionValues();
-            smoothedValues.deprecateValues();;
+            smoothedValues.deprecateValues();
         }
     }
 

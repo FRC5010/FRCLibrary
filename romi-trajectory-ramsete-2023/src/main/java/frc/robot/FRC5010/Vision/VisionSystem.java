@@ -53,10 +53,17 @@ public abstract class VisionSystem extends SubsystemBase {
     visionLayout.addBoolean("Has Target", this::isValidTarget);
     visionLayout.addNumber("Distance", this::getDistance).withSize(1, 1);
     visionLayout.addNumber("Fiducial", () -> getRawValues().getFiducialId());
-    visionLayout.addNumber("Robot Pose X", () -> null != smoothedValues.getRobotPose() ? getRawValues().getRobotPose().getX() : -1);
-    visionLayout.addNumber("Robot Pose Y", () -> null != smoothedValues.getRobotPose() ? getRawValues().getRobotPose().getY() : -1);
-    visionLayout.addNumber("Target Pose X", () -> null != smoothedValues.getTargetVector() ? getRawValues().getTargetVector().getX() : -1);
-    visionLayout.addNumber("Target Pose Y", () -> null != smoothedValues.getTargetVector() ? getRawValues().getTargetVector().getY() : -1);
+    visionLayout.addNumber("Robot Pose X",
+        () -> null != smoothedValues.getRobotPose() ? smoothedValues.getRobotPose().getX() : -1);
+    visionLayout.addNumber("Robot Pose Y",
+        () -> null != smoothedValues.getRobotPose() ? smoothedValues.getRobotPose().getY() : -1);
+    visionLayout.addNumber("Target Pose X",
+        () -> null != rawValues.getTargetVector() ? getRawValues().getTargetVector().getX() : -1);
+    visionLayout.addNumber("Target Pose Y",
+        () -> null != rawValues.getTargetVector() ? getRawValues().getTargetVector().getY() : -1);
+    visionLayout.addNumber("Target Pose Z",
+        () -> null != rawValues.getTargetVector() ? getRawValues().getTargetVector().getZ() : -1);
+    visionLayout.addNumber("Camera Latency", () -> smoothedValues.getLatency());
   }
 
   // more specific values to define the camera
@@ -90,6 +97,10 @@ public abstract class VisionSystem extends SubsystemBase {
     driverLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
         .withPosition(colIndex + 1, 0).withSize(1, 1);
     driverLayout.addBoolean("Limelight On", this::isLightOn);
+  }
+
+  public String getCameraName() {
+    return name;
   }
 
   public abstract void setPipeline(int pipeline);
@@ -140,11 +151,12 @@ public abstract class VisionSystem extends SubsystemBase {
       } else if (angleX != 0 || angleY != 0) {
         distance = (targetHeight - camHeight)
             / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
-            if (areaSup.getAsDouble() != 0) {
-              // This exact calculation would need to be determined on a camera by camera basis
-              double areaDistance = areaSup.getAsDouble() * 0; // conversion factor
-              distance = (distance * 1.0 + areaDistance * 0.0); // weighting factors
-            }    
+        if (areaSup.getAsDouble() != 0) {
+          // This exact calculation would need to be determined on a camera by camera
+          // basis
+          double areaDistance = areaSup.getAsDouble() * 0; // conversion factor
+          distance = (distance * 1.0 + areaDistance * 0.0); // weighting factors
+        }
       }
       this.rawValues = rawValues;
       rawValues
@@ -157,7 +169,7 @@ public abstract class VisionSystem extends SubsystemBase {
           .addFiducialId(name, fidSup.getAsInt())
           .addTargetVector(name, cameraPoseSupplier.get())
           .addRobotPose(name, robotPoseSupplier.get());
-      if (smoothValues) {    
+      if (smoothValues) {
         smoothedValues.averageValues(rawValues, 5);
       } else {
         smoothedValues.storeValues(rawValues, 5);

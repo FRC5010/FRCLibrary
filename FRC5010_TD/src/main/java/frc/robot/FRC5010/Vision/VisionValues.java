@@ -82,6 +82,7 @@ public class VisionValues {
             robotToTarget = new HashMap<>();
         }
     }
+
     public Boolean getValid() {
         return valid;
     }
@@ -108,6 +109,10 @@ public class VisionValues {
 
     public Double getLatency(String camera) {
         return null == latencies.get(camera) ? 0.0 : latencies.get(camera);
+    }
+
+    public Double getLatency() {
+        return latencies.size() > 0 ? latencies.values().iterator().next() : 0.0;
     }
 
     public Map<String, Double> getLatencies() {
@@ -202,7 +207,7 @@ public class VisionValues {
     }
 
     public VisionValues addRobotPoses(Map<String, Pose2d> robotPoses) {
-        robotPoses.putAll(robotPoses);
+        this.robotPoses.putAll(robotPoses);
         return this;
     }
 
