@@ -7,6 +7,8 @@ package frc.robot.FRC5010.Vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.Vision.LimelightHelpers.LimelightResults;
 
 /** Add your docs here. */
@@ -33,7 +35,9 @@ public class VisionLimeLightLib extends VisionSystem {
         LimelightResults results = LimelightHelpers.getLatestResults(name);
         if (results.targetingResults.valid) {
             VisionValuesLimeLight rawValues = new VisionValuesLimeLight();
-            Pose2d robotPose2d = LimelightHelpers.getBotPose2d(name);
+            Pose2d robotPose2d = RobotContainer.getAlliance().equals(Alliance.Red)
+                    ? LimelightHelpers.getBotPose2d_wpiBlue(name)
+                    : LimelightHelpers.getBotPose2d_wpiBlue(name);
             updateValues(rawValues,
                     () -> LimelightHelpers.getTX(name),
                     () -> LimelightHelpers.getTY(name),
@@ -43,10 +47,15 @@ public class VisionLimeLightLib extends VisionSystem {
                             ((LimelightHelpers.getLatency_Pipeline(name) +
                                     LimelightHelpers.getLatency_Capture(name)) * 0.001),
                     () -> Double.valueOf(LimelightHelpers.getFiducialID(name)).intValue(),
-                    () -> fieldLayout
-                            .getTagPose(
-                                    ((int) results.targetingResults.targets_Fiducials[0].fiducialID))
-                            .orElse(null),
+                    () -> {
+                        if (results.targetingResults.targets_Fiducials.length == 0) {
+                            return null;
+                        }
+                        return fieldLayout
+                                .getTagPose(
+                                        ((int) results.targetingResults.targets_Fiducials[0].fiducialID))
+                                .orElse(null);
+                    },
                     () -> robotPose2d);
         }
     }

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -58,6 +59,7 @@ public class RobotContainer {
   // Create SmartDashboard chooser for autonomous routines
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
   private VisionMultiCam vision;
+  private static Alliance alliance;
 
   // NOTE: The I/O pin functionality of the 5 exposed I/O pins depends on the hardware "overlay"
   // that is specified when launching the wpilib-ws server on the Romi raspberry pi.
@@ -72,6 +74,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    alliance = DriverStation.getAlliance();
     vision = new VisionMultiCam("Romi", 0, AprilTags.aprilTagRoomLayout);
     m_drivetrain = new Drivetrain(vision);
     vision.setDrivetrainPoseEstimator(m_drivetrain.getPoseEstimator());
@@ -84,6 +87,9 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
+  public static Alliance getAlliance() {
+    return alliance;
+  }
   /**
    * Generate a trajectory following Ramsete command
    * 
