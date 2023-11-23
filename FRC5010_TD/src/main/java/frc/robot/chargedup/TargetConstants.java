@@ -9,7 +9,7 @@ import edu.wpi.first.math.util.Units;
 /** Add your docs here. */
 public class TargetConstants {
     public static double tagToConeYOffset = Units.inchesToMeters(33); 
-    public static double tagToRobotXOffset = Units.inchesToMeters(19);     
+    public static double tagToRobotXOffset = Units.inchesToMeters(30);     
     public static double tagToLoadingStation = Units.inchesToMeters(27.5);
     public static double tagToRobotLoadingStationXOffset = Units.inchesToMeters(30);
 }

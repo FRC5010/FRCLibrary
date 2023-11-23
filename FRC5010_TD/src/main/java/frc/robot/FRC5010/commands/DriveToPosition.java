@@ -139,9 +139,9 @@ public class DriveToPosition extends CommandBase {
 
     // System.out.println(robotPose);
     xSpeed = xController.calculate(robotPose2d.getX())
-        * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 0.5;
+        * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
     ySpeed = yController.calculate(robotPose2d.getY())
-        * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond() * 0.5;
+        * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
     thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians())
         * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
 
