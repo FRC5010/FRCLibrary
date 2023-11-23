@@ -25,8 +25,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionPhotonMultiCam;
+import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.commands.DriveToPosition;
+import frc.robot.FRC5010.commands.DriveToPosition.LCR;
 import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -75,10 +77,10 @@ public class CompBot extends GenericMechanism {
                 // swerveConstants.setkBackLeftAbsoluteOffsetRad(0); //
                 // swerveConstants.setkBackRightAbsoluteOffsetRad(0);
 
-                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
+                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(10);
                 swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
-                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.1);
+                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
                 swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
 
                 swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
@@ -88,35 +90,7 @@ public class CompBot extends GenericMechanism {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout,
-                                PoseStrategy.MULTI_TAG_PNP);
-
-                // y = +- 27.75 / 2, x = 2.5, z = 36.75
-                multiVision.addPhotonCamera("LeftCamera",
-                                new Transform3d( // This describes the vector between the camera lens to the
-                                                 // robot center on the
-                                                 // ground
-                                                new Translation3d(Units.inchesToMeters(27.75 / 2),
-                                                                Units.inchesToMeters(2.5),
-                                                                Units.inchesToMeters(36.75)),
-                                                new Rotation3d(0, 0, Units.degreesToRadians(90))));
-
-                multiVision.addPhotonCamera("RightCamera",
-                                new Transform3d( // This describes the vector between the camera lens to the
-                                                 // robot center on the
-                                                 // ground
-                                                new Translation3d(-Units.inchesToMeters(27.75 / 2),
-                                                                Units.inchesToMeters(2.5), Units.inchesToMeters(36.75)),
-                                                new Rotation3d(0, 0, Units.degreesToRadians(-90))));
-
-                multiVision.addPhotonCamera("ForwardCam",
-                                new Transform3d( // This describes the vector between the camera lens to the
-                                                 // robot center on the
-                                                 // ground
-                                                new Translation3d(-Units.inchesToMeters(9.469),
-                                                                -Units.inchesToMeters(5.525),
-                                                                Units.inchesToMeters(14.146)),
-                                                new Rotation3d(0, 0, 0)));
+                VisionMultiCam multiVision = new VisionMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout);
 
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
@@ -135,8 +109,16 @@ public class CompBot extends GenericMechanism {
                 drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, swervePorts, swerveConstants,
                                 "swervemk4i");
                 // Uncomment when using PhotonVision
+                multiVision.addPhotonCamera("ForwardCam", 4,
+                                new Transform3d( // This describes the vector between the camera lens to the
+                                                 // robot center on the
+                                                 // ground
+                                                new Translation3d(-Units.inchesToMeters(9.469),
+                                                                -Units.inchesToMeters(5.525),
+                                                                Units.inchesToMeters(14.146)),
+                                                new Rotation3d(0, 0, 0)),
+                                PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
 
-                multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
                 driverDiplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 
                 buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
@@ -249,23 +231,20 @@ public class CompBot extends GenericMechanism {
                                 .whileTrue(new AutoBalance(drive.getDrivetrain(),
                                                 () -> !driver.createAButton().getAsBoolean(), gyro));
 
-                // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
-                // drive.getDrivetrain(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                // ledSubsystem, LCR.left));
+                driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+                                ledSubsystem, LCR.center));
 
-                // driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
-                // drive.getDrivetrain(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                // ledSubsystem, LCR.center));
+                driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+                                ledSubsystem, LCR.left));
 
-                // driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
-                // drive.getDrivetrain(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                // ledSubsystem, LCR.right));
+                driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+                                ledSubsystem, LCR.right));
 
                 // driver.createBButton()
                 // .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(),
