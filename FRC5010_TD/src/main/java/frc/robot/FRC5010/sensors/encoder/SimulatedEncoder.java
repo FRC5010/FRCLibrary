@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.simulation.EncoderSim;
 public class SimulatedEncoder implements GenericEncoder {
     Encoder encoder;
     EncoderSim encoderSim;
+    boolean inverted = false;
 
     public SimulatedEncoder(Encoder encoder) {
         this.encoder = encoder;
@@ -23,7 +24,7 @@ public class SimulatedEncoder implements GenericEncoder {
     }
 
     private void init() {
-        encoderSim = new EncoderSim(encoder); 
+        encoderSim = new EncoderSim(encoder);
     }
 
     @Override
@@ -38,27 +39,35 @@ public class SimulatedEncoder implements GenericEncoder {
 
     @Override
     public void reset() {
+        encoder.reset();
         encoderSim.resetData();
     }
+
     @Override
     public void setPosition(double position) {
-       encoderSim.setDistance(position);
+        encoderSim.setDistance(position);
     }
+
     @Override
     public void setRate(double rate) {
         encoderSim.setRate(rate);
     }
+
     @Override
     public void setPositionConversion(double conversion) {
         encoder.setDistancePerPulse(conversion);
+        encoderSim.setDistancePerPulse(conversion);
     }
+
     @Override
-    public void setVelocityConversion(double conversion) {     
+    public void setVelocityConversion(double conversion) {
+        encoder.setDistancePerPulse(conversion);
+        encoderSim.setDistancePerPulse(conversion);
     }
 
     @Override
     public void setInverted(boolean inverted) {
-        // TODO Auto-generated method stub
-        
+        encoderSim.setDirection(inverted);
+        this.inverted = inverted;
     }
 }

@@ -35,7 +35,10 @@ public abstract class VisionSystem extends SubsystemBase {
   protected ShuffleboardLayout driverLayout;
   protected VisionConstants constants;
   protected AprilTagFieldLayout fieldLayout;
-  protected boolean smoothValues = false;
+  protected boolean isSmoothingValues = false;
+  protected int smoothingCount = 5;
+  protected double angleDistanceWeight = 1.0;
+  protected double areaDistanceWeight = 0.0;
 
   // variables needed to process new variables, plus the new variables
   // angles
@@ -58,11 +61,11 @@ public abstract class VisionSystem extends SubsystemBase {
     visionLayout.addNumber("Robot Pose Y",
         () -> null != smoothedValues.getRobotPose() ? smoothedValues.getRobotPose().getY() : -1);
     visionLayout.addNumber("Target Pose X",
-        () -> null != rawValues.getTargetVector() ? getRawValues().getTargetVector().getX() : -1);
+        () -> null != smoothedValues.getTargetVector() ? smoothedValues.getTargetVector().getX() : -1);
     visionLayout.addNumber("Target Pose Y",
-        () -> null != rawValues.getTargetVector() ? getRawValues().getTargetVector().getY() : -1);
+        () -> null != smoothedValues.getTargetVector() ? smoothedValues.getTargetVector().getY() : -1);
     visionLayout.addNumber("Target Pose Z",
-        () -> null != rawValues.getTargetVector() ? getRawValues().getTargetVector().getZ() : -1);
+        () -> null != smoothedValues.getTargetVector() ? smoothedValues.getTargetVector().getZ() : -1);
     visionLayout.addNumber("Camera Latency", () -> smoothedValues.getLatency());
   }
 
@@ -85,13 +88,6 @@ public abstract class VisionSystem extends SubsystemBase {
     visionLayout.addNumber(name + " Distance", this::getDistance).withSize(1, 1);
     visionLayout.addNumber(name + " X Angle", this::getAngleX).withSize(1, 1);
     visionLayout.addNumber(name + " Y Angle", this::getAngleY).withSize(1, 1);
-    // visionLayout.addNumber(name + " Horizontal", this::getHorizontal).withSize(1,
-    // 1);
-    // visionLayout.addNumber(name + " Vertical", this::getVertical).withSize(1, 1);
-    // visionLayout.addNumber(name + " Cal Angle", this::getCalAngle).withSize(1,
-    // 1);
-    // visionLayout.addBoolean(name + " Driver Mode",
-    // RobotContainer::getDriverMode).withSize(1, 1);
 
     ShuffleboardTab driverTab = Shuffleboard.getTab(driverTabeName);
     driverLayout = driverTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
@@ -151,11 +147,11 @@ public abstract class VisionSystem extends SubsystemBase {
       } else if (angleX != 0 || angleY != 0) {
         distance = (targetHeight - camHeight)
             / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
-        if (areaSup.getAsDouble() != 0) {
+        if (0 != areaDistanceWeight && 0 != areaSup.getAsDouble()) {
           // This exact calculation would need to be determined on a camera by camera
-          // basis
+          // basis, right now the weighting factor ignores the area
           double areaDistance = areaSup.getAsDouble() * 0; // conversion factor
-          distance = (distance * 1.0 + areaDistance * 0.0); // weighting factors
+          distance = (distance * angleDistanceWeight + areaDistance * areaDistanceWeight); // weighting factors
         }
       }
       this.rawValues = rawValues;
@@ -169,7 +165,7 @@ public abstract class VisionSystem extends SubsystemBase {
           .addFiducialId(name, fidSup.getAsInt())
           .addTargetVector(name, cameraPoseSupplier.get())
           .addRobotPose(name, robotPoseSupplier.get());
-      if (smoothValues) {
+      if (isSmoothingValues) {
         smoothedValues.averageValues(rawValues, 5);
       } else {
         smoothedValues.storeValues(rawValues, 5);
@@ -200,15 +196,15 @@ public abstract class VisionSystem extends SubsystemBase {
   }
 
   public double getDistance() {
-    return smoothValues ? smoothedValues.getDistance() : getRawDistance();
+    return smoothedValues.getDistance();
   }
 
   public double getAngleX() {
-    return smoothValues ? smoothedValues.getAngleX() : getRawAngleX();
+    return smoothedValues.getAngleX();
   }
 
   public double getAngleY() {
-    return smoothValues ? smoothedValues.getAngleY() : getRawAngleY();
+    return smoothedValues.getAngleY();
   }
 
   public double getCalAngle() {
@@ -220,11 +216,11 @@ public abstract class VisionSystem extends SubsystemBase {
   }
 
   public boolean isValidTarget() {
-    return smoothValues ? smoothedValues.getValid() : isRawValidTarget();
+    return smoothedValues.getValid();
   }
 
   public void setValueSmooting(boolean smooth) {
-    smoothValues = smooth;
+    isSmoothingValues = smooth;
   }
 
   public AprilTagFieldLayout getFieldLayout() {

@@ -9,24 +9,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionConstantDefs;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.commands.DriveToPosition;
+import frc.robot.FRC5010.commands.DriveToPosition.LCR;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.drive.swerve.ThriftySwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.mechanisms.GenericMechanism;
@@ -35,6 +30,7 @@ import frc.robot.FRC5010.motors.hardware.NEO550;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.NavXGyro;
+import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 
 /**
  * To setup a copy of this class
@@ -50,6 +46,7 @@ import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 public class CurtsLaptopSimulator extends GenericMechanism {
     Drive drive;
     SwerveConstants swerveConstants;
+    private DriverDisplaySubsystem driverDiplay;
 
     public CurtsLaptopSimulator(Mechanism2d visual, ShuffleboardTab displayTab) {
         super(visual, displayTab);
@@ -75,18 +72,38 @@ public class CurtsLaptopSimulator extends GenericMechanism {
 
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-        drive = new Drive(multiVision, gyro, Drive.Type.THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants, "");
-        multiVision.addPhotonCamera(Persisted.stringVal(VisionConstantDefs.LAPTOP_CAMERA), 1,
-                new Transform3d(
-                        // This describes the vector between the camera lens to the robot center on the
-                        // ground
-                        new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
-                        new Rotation3d(0, Units.degreesToRadians(-20), 0)),
-                PoseStrategy.AVERAGE_BEST_TARGETS, drive.getDrivetrain().getPoseEstimator());
+        drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, swervePorts, swerveConstants,
+                "swervemk4i");
+        // multiVision.addPhotonCamera(Persisted.stringVal(VisionConstantDefs.LAPTOP_CAMERA),
+        // 1,
+        // new Transform3d(
+        // // This describes the vector between the camera lens to the robot center on
+        // the
+        // // ground
+        // new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+        // new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+        // PoseStrategy.AVERAGE_BEST_TARGETS, drive.getDrivetrain().getPoseEstimator());
+        driverDiplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
     }
 
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
+        drive.configureButtonBindings(driver, operator);
+        driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+                null, LCR.center));
+
+        driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+                null, LCR.left));
+
+        driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+                null, LCR.right));
+
     }
 
     @Override

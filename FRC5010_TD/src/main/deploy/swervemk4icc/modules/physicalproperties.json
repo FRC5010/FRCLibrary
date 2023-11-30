@@ -1,8 +1,7 @@
 {
-  "wheelDiameter": 4,
-  "gearRatio": {
-    "drive": 6.12,
-    "angle": 21.42
+  "conversionFactor": {
+    "drive": 0.05215454470665408,
+    "angle": 16.806722689075627
   },
   "currentLimit": {
     "drive": 40,
@@ -13,5 +12,5 @@
     "angle": 0.05
   },
   "wheelGripCoefficientOfFriction": 1.19,
-  "angleMotorFreeSpeedRPM": 5676
+  "optimalVoltage": 12
 }

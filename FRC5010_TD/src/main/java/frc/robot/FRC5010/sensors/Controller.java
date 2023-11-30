@@ -150,7 +150,13 @@ public class Controller {
     }
 
     private static enum POVDirs {
-        UP, RIGHT, DOWN, LEFT
+        UP(0), RIGHT(90), DOWN(180), LEFT(270);
+
+        public int direction;
+
+        private POVDirs(int direction) {
+            this.direction = direction;
+        }
     }
 
     public Controller(int port) {
@@ -305,22 +311,22 @@ public class Controller {
     }
 
     public POVButton createUpPovButton() {
-        UP = new POVButton(joystick, POVDirs.UP.ordinal());
+        UP = new POVButton(joystick, POVDirs.UP.direction);
         return UP;
     }
 
     public POVButton createDownPovButton() {
-        DOWN = new POVButton(joystick, POVDirs.DOWN.ordinal());
+        DOWN = new POVButton(joystick, POVDirs.DOWN.direction);
         return DOWN;
     }
 
     public POVButton createLeftPovButton() {
-        LEFT = new POVButton(joystick, POVDirs.LEFT.ordinal());
+        LEFT = new POVButton(joystick, POVDirs.LEFT.direction);
         return LEFT;
     }
 
     public POVButton createRightPovButton() {
-        RIGHT = new POVButton(joystick, POVDirs.RIGHT.ordinal());
+        RIGHT = new POVButton(joystick, POVDirs.RIGHT.direction);
         return RIGHT;
     }
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -33,6 +34,8 @@ public class PivotSubsystem extends SubsystemBase {
 
   public static final double pivotOffset = ElevatorLevel.ground.getPivotPosition(); // -14.04;
   private final double pivotConversionFactor = 24.242;
+  private final double pivotMaxLimit = 33.5;
+  private final double pivotMinLimit = ElevatorLevel.ground.getPivotPosition();
   private MotorController5010 pivotMotor;
   private SparkMaxPIDController pivotController;
   private MotorModelConstants pivotConstants;
@@ -60,13 +63,20 @@ public class PivotSubsystem extends SubsystemBase {
     this.pivotController = ((CANSparkMax) pivot).getPIDController();
     this.pivotEncoder = ((CANSparkMax) pivot).getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
     pivotEncoder.setPositionConversionFactor(this.pivotConversionFactor);
+    pivotSimEncoder.setPositionConversion(0.1);
     this.pivotEncoder.setInverted(true);
     this.pivotPID = pivotPID;
     this.pivotConstants = liftConstants;
-
-    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
-        40, 2, Units.degreesToRadians(-20),
-        Units.degreesToRadians(60), false);
+    SmartDashboard.putNumber("Pivot kG", pivotConstants.getkF());
+    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 125,
+        SingleJointedArmSim.estimateMOI(2, 24), 2, Units.degreesToRadians(pivotMinLimit),
+        Units.degreesToRadians(pivotMaxLimit), true);
+    SmartDashboard.putNumber("MOI", SingleJointedArmSim.estimateMOI(2, 19));
+    // From CC Code
+    // pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
+    // SingleJointedArmSim.estimateMOI(0.82, 8.5), 0.82,
+    // Units.degreesToRadians(pivotMinLimit),
+    // Units.degreesToRadians(pivotMaxLimit), true);
 
     pivotFeedforward = new ArmFeedforward(liftConstants.getkS(), liftConstants.getkF(), liftConstants.getkV());
 
@@ -106,26 +116,12 @@ public class PivotSubsystem extends SubsystemBase {
     }
   }
 
-  // public void setPivotPosition(double position) {
-  // this.currentPivotTarget = position;
-  // SmartDashboard.putNumber("Pivot Target", currentPivotTarget);
-  // if (Robot.isReal()) {
-  // SmartDashboard.putNumber("Pivot FF", getFeedFowardVoltage());
-  // pivotController.setFF(getFeedFowardVoltage() / currentPivotTarget);
-  // pivotController.setReference(this.currentPivotTarget,
-  // CANSparkMax.ControlType.kPosition, 0);
-
-  // } else {
-  // pivotPow((currentPivotTarget - getPivotPosition())/100);
-  // }
-  // }
-
   public boolean isCloseToMinHardStop() {
-    return (getPivotPosition() < -10);
+    return (getPivotPosition() < (pivotMinLimit + 5));
   }
 
   public boolean isCloseToMaxHardStop() {
-    return (getPivotPosition() > 30);
+    return (getPivotPosition() > (pivotMaxLimit - 5));
   }
 
   public boolean closeToTarget() {
@@ -136,18 +132,16 @@ public class PivotSubsystem extends SubsystemBase {
     double powerFactor = 1;
     double sign = Math.signum(pow);
     boolean closeToTarget = closeToTarget();
-    boolean atTarget = isPivotAtTarget();
+    boolean atTarget = isPivotAtTarget() && usingTarget;
 
     if (sign > 0) {
-
       if (isPivotMaxHardStop(pow) || atTarget) {
         powerFactor = 0;
-      } else if ((isCloseToMaxHardStop()) || closeToTarget) {
+      } else if (isCloseToMaxHardStop()) {
         powerFactor = 0.25;
       }
 
     } else {
-
       if (isPivotMinHardStop(pow) || atTarget) {
         powerFactor = 0;
       } else if (isCloseToMinHardStop() || closeToTarget) {
@@ -155,6 +149,7 @@ public class PivotSubsystem extends SubsystemBase {
       }
 
     }
+    SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
     return powerFactor;
   }
 
@@ -166,25 +161,64 @@ public class PivotSubsystem extends SubsystemBase {
     return isPivotMaxPosition() && pow > 0;
   }
 
-  public void runPivotToTarget(double position) {
-    this.currentPivotTarget = position;
+  public void initializeRunToTarget(double position) {
     usingTarget = true;
-    double kP = pivotPID.getkP();// SmartDashboard.getNumber("Pivot P", pivotPID.getkP());
-    double kF = getFeedFowardVoltage();
-    double positionSig = Math.signum(this.currentPivotTarget - getPivotPosition());
-    double pow = kP * positionSig;
-    pivotMotor.setVoltage((pow * getPowerFactor(pow)) + kF);
+    runPivotToTarget(position);
+  }
+
+  public void runPivotToTarget(double position) {
+    if (usingTarget) {
+      this.currentPivotTarget = position;
+      double kP = SmartDashboard.getNumber("Pivot P", pivotPID.getkP());
+      double kF = getFeedFowardVoltage();
+      double error = this.currentPivotTarget - getPivotPosition();
+      double pow = kP * error;
+      if (RobotBase.isReal()) {
+        pivotMotor.setVoltage((pow * getPowerFactor(pow)) + kF);
+      } else {
+        pivotMotor.set(((pow * getPowerFactor(pow)) + kF) / 12.0);
+      }
+    }
   }
 
   public double getFeedFowardVoltage() {
-    return (0.2 + 0.3 *
-        ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
-            / (ElevatorSubsystem.kMaxElevatorHeight - ElevatorSubsystem.kMinElevatorHeight)))
-        * Math.cos(Units.degreesToRadians(getPivotPosition()));
+    if (RobotBase.isReal()) {
+      return (0.1 + 0.3 *
+          ((extendPos.get() - ElevatorSubsystem.kMinElevatorHeight)
+              / (ElevatorSubsystem.kMaxElevatorHeight -
+                  ElevatorSubsystem.kMinElevatorHeight)))
+          * Math.cos(Units.degreesToRadians(getPivotPosition()));
+    } else {
+      // From CC code
+      Double pivotKG = SmartDashboard.getNumber("Pivot kG",
+          pivotConstants.getkF());
+      pivotFeedforward = new ArmFeedforward(pivotConstants.getkS(), pivotKG, 0);
+      double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
+      SmartDashboard.putNumber("Pivot calc FF", ff);
+      return ff;
+    }
+  }
+
+  public void pivotPow(double pow, boolean feedForward) {
+    if (!usingTarget || (usingTarget && pow != 0)) {
+      usingTarget = false;
+
+      double powerFactor = getPowerFactor(pow);
+      SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
+      double ff = getFeedFowardVoltage() / 12.0;
+      SmartDashboard.putNumber("Pivot Power FF", ff);
+
+      pivotMotor.set((pow * powerFactor) + ff);
+    }
+    SmartDashboard.putNumber("Pivot Power Given", pow);
+  }
+
+  public void stopPivot() {
+    pivotMotor.set(0);
   }
 
   public boolean isPivotAtTarget() {
-    return Math.abs(getPivotPosition() - this.currentPivotTarget) < 0.05 && usingTarget;
+    return (Math.abs(getPivotPosition() - this.currentPivotTarget) < 1 && usingTarget) || !usingTarget;
   }
 
   public double getPivotTarget() {
@@ -195,14 +229,18 @@ public class PivotSubsystem extends SubsystemBase {
     if (override) {
       return false;
     }
-    return !pivotHallEffect.get(); // && !override;
+    if (RobotBase.isReal()) {
+      return !pivotHallEffect.get(); // && !override;
+    } else {
+      return getPivotPosition() < pivotMinLimit;
+    }
   }
 
   public boolean isPivotMaxPosition() {
     if (override) {
       return false;
     }
-    return getPivotPosition() > 33.5;
+    return getPivotPosition() > pivotMaxLimit;
   }
 
   public void toggleOverride() {
@@ -210,33 +248,20 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getVelocity() {
-    return pivotEncoder.getVelocity();
-  }
-
-  public void pivotPow(double pow, boolean feedForward) {
-    usingTarget = false;
-    SmartDashboard.putNumber("Pivot Power Given", pow);
-    SmartDashboard.putNumber("Pivot Current", ((CANSparkMax) pivotMotor).getOutputCurrent());
-    SmartDashboard.putNumber("Pivot Rotation", pivotEncoder.getPosition());
-
-    double powerFactor = getPowerFactor(pow);
-    SmartDashboard.putNumber("Pivot Power Factor", powerFactor);
-
-    pivotMotor.set((pow * powerFactor + ((pow == 0 && feedForward) ? (getFeedFowardVoltage() / 12) : 0)));
-  }
-
-  // public boolean isMovementOk(double pow){
-  // if (Math.signum(pow) > 1 && isPivotMax()){
-
-  // }
-  // }
-
-  public void stopPivot() {
-    pivotMotor.set(0);
+    if (RobotBase.isReal()) {
+      return pivotEncoder.getVelocity();
+    } else {
+      return pivotSimEncoder.getVelocity();
+    }
   }
 
   public void stopAndHoldPivot() {
-    pivotMotor.setVoltage(getFeedFowardVoltage());
+    usingTarget = false;
+    if (RobotBase.isReal()) {
+      pivotMotor.setVoltage(getFeedFowardVoltage());
+    } else {
+      pivotMotor.set(getFeedFowardVoltage() / 12.0);
+    }
   }
 
   public boolean atMinHardStop() {
@@ -254,9 +279,9 @@ public class PivotSubsystem extends SubsystemBase {
 
       SmartDashboard.putBoolean("Pivot In: ", isPivotMinHallEffect());
       SmartDashboard.putBoolean("Pivot Max", isPivotMaxPosition());
-      SmartDashboard.putBoolean("Pivot Target is good", currentPivotTarget > pivotEncoder.getPosition());
-      SmartDashboard.putNumber("Pivot Motor is positive", pivotMotor.get());
     }
+    SmartDashboard.putBoolean("Pivot UsingTgt: ", usingTarget);
+    SmartDashboard.putBoolean("Pivot At Target: ", isPivotAtTarget());
     SmartDashboard.putNumber("Pivot Motor Pow: ", pivotMotor.get());
     SmartDashboard.putNumber("Pivot Position: ", getPivotPosition());
     // SmartDashboard.putNumber("Abs", KFF);

@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -60,7 +61,7 @@ public class CompBot extends GenericMechanism {
         private ButtonBoard buttonOperator;
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
-        private VisionSystem visionSystem;
+        private VisionMultiCam visionSystem;
 
         public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
@@ -90,7 +91,7 @@ public class CompBot extends GenericMechanism {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                VisionMultiCam multiVision = new VisionMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout);
+                visionSystem = new VisionMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout);
 
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
@@ -106,18 +107,8 @@ public class CompBot extends GenericMechanism {
 
                 gyro = new PigeonGyro(13);
 
-                drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, swervePorts, swerveConstants,
+                drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, swervePorts, swerveConstants,
                                 "swervemk4i");
-                // Uncomment when using PhotonVision
-                multiVision.addPhotonCamera("ForwardCam", 4,
-                                new Transform3d( // This describes the vector between the camera lens to the
-                                                 // robot center on the
-                                                 // ground
-                                                new Translation3d(-Units.inchesToMeters(9.469),
-                                                                -Units.inchesToMeters(5.525),
-                                                                Units.inchesToMeters(14.146)),
-                                                new Rotation3d(0, 0, 0)),
-                                PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
 
                 driverDiplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 
@@ -218,6 +209,7 @@ public class CompBot extends GenericMechanism {
                 autoMaps.addPath("8-1 Score", new PathConstraints(1.75, 1));
                 autoMaps.addPath("8-1 Three Piece", new PathConstraints(4, 2));
 
+                initRealOrSim();
         }
         // autoMaps.addPath("Command Test", new PathConstraints(4, 1.75));
 
@@ -272,6 +264,19 @@ public class CompBot extends GenericMechanism {
 
         @Override
         protected void initRealOrSim() {
+                if (RobotBase.isReal()) {
+                        // Uncomment when using PhotonVision
+                        visionSystem.addPhotonCamera("ForwardCam", 4,
+                                        new Transform3d( // This describes the vector between the camera lens to the
+                                                         // robot center on the
+                                                         // ground
+                                                        new Translation3d(-Units.inchesToMeters(9.469),
+                                                                        -Units.inchesToMeters(5.525),
+                                                                        Units.inchesToMeters(14.146)),
+                                                        new Rotation3d(0, 0, 0)),
+                                        PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
+
+                }
         }
 
         @Override

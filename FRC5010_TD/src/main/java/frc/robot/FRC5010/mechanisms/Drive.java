@@ -150,7 +150,10 @@ public class Drive extends GenericMechanism {
                 drivetrain.setDefaultCommand(defaultDriveCommand);
             }
         } else {
-
+            if (defaultDriveCommand == null) {
+                this.defaultDriveCommand = drivetrain.createDefaultCommand(driver);
+                drivetrain.setDefaultCommand(defaultDriveCommand);
+            }
         }
 
     }

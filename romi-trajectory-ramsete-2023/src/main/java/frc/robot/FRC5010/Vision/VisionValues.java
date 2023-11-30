@@ -60,7 +60,7 @@ public class VisionValues {
         count = Math.min(count, maxCount);
         valid = count >= maxCount;
         angleX = rawValues.getAngleX();
-        angleY = rawValues.angleY;
+        angleY = rawValues.getAngleY();
         distance = rawValues.getDistance();
         latencies = rawValues.getLatencies();
         fiducialIds = rawValues.getFiducialIds();

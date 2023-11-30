@@ -19,6 +19,7 @@ public class MoveElevator extends CommandBase {
   public MoveElevator(ElevatorSubsystem elevator, Supplier<ElevatorLevel> elevatorLevel) {
     this.elevator = elevator;
     this.elevatorLevel = elevatorLevel;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
   }
@@ -26,7 +27,9 @@ public class MoveElevator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    ElevatorSubsystem.setElevatorTargetLevel(elevatorLevel.get());
     WpiDataLogging.log(getName() + " " + elevatorLevel.get().name());
+    elevator.initializeRunToTarget(elevatorLevel.get().getExtensionPosition());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,11 +41,6 @@ public class MoveElevator extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // if (interrupted){
-    // elevator.stopExtend();
-    // } else {
-    // elevator.stopAndHoldExtend();
-    // }
     WpiDataLogging.log(getName() + " ended " + interrupted);
 
     elevator.stopAndHoldExtend();
