@@ -10,8 +10,8 @@
     "canbus": null
   },
   "encoder": {
-    "type": "cancoder",
-    "id": 11,
+    "type": "thrifty",
+    "id": 1,
     "canbus": null
   },
   "inverted": {

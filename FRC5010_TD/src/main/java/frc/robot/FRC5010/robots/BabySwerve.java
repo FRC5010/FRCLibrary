@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightLib;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -50,7 +51,7 @@ public class BabySwerve extends GenericMechanism {
 
     // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1,
     // AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
-    vision = new VisionLimeLightLib("orange", 0, 0, 0, 0, "Driver");
+    vision = new VisionLimeLightLib("orange", 2, AprilTags.aprilTagFieldLayout);
     /*
      * multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera",
      * new Transform3d( // This describes the vector between the camera lens to the
@@ -70,11 +71,11 @@ public class BabySwerve extends GenericMechanism {
     GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
     drive = new Drive(vision, gyro, Drive.Type.YAGSL_THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants, "");
-    // multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
   }
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
+    drive.configureButtonBindings(driver, operator);
   }
 
   @Override

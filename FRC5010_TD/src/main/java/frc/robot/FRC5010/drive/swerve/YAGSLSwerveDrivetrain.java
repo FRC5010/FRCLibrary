@@ -75,13 +75,13 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     // In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     // The encoder resolution per motor revolution is 1 per motor revolution.
-    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(21.42, 1);
+    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(150 / 7, 1);
     // Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER
     // RESOLUTION).
     // In this case the wheel diameter is 4 inches.
     // The gear ratio is 6.75 motor revolutions per wheel rotation.
     // The encoder resolution per motor revolution is 1 per motor revolution.
-    double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.12, 1);
+    double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 8.14, 1);
     System.out.println("\"conversionFactor\": {");
     System.out.println("\t\"angle\": " + angleConversionFactor + ",");
     System.out.println("\t\"drive\": " + driveConversionFactor);
