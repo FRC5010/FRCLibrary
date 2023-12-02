@@ -86,10 +86,10 @@ public class VisionMultiCam extends VisionSystem {
                     .addFiducialIds(fiducialID)
                     .addTargetVectors(cameraPoseSupplier)
                     .addRobotPoses(robotPoseSupplier);
-            if (smoothValues) {
+            if (isSmoothingValues) {
                 smoothedValues.averageValues(rawValues, 5);
             } else {
-                smoothedValues = rawValues;
+                smoothedValues.storeValues(rawValues, 5);
             }
         } else {
             rawValues = new VisionValues();

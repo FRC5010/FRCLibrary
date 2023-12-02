@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.ElevatorLevel;
+import frc.robot.chargedup.ElevatorSubsystem;
 import frc.robot.chargedup.PivotSubsystem;
 
 public class PivotElevator extends CommandBase {
@@ -24,6 +25,8 @@ public class PivotElevator extends CommandBase {
   @Override
   public void initialize() {
     WpiDataLogging.log(getName() + " " + elevatorLevel.name());
+    ElevatorSubsystem.setElevatorTargetLevel(elevatorLevel);
+    pivotSubsystem.initializeRunToTarget(elevatorLevel.getPivotPosition());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

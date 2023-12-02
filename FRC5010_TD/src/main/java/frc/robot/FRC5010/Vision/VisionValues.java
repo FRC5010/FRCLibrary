@@ -60,7 +60,7 @@ public class VisionValues {
         count = Math.min(count, maxCount);
         valid = count >= maxCount;
         angleX = rawValues.getAngleX();
-        angleY = rawValues.angleY;
+        angleY = rawValues.getAngleY();
         distance = rawValues.getDistance();
         latencies = rawValues.getLatencies();
         fiducialIds = rawValues.getFiducialIds();
@@ -144,6 +144,11 @@ public class VisionValues {
         return this;
     }
 
+    public VisionValues addLatencies(Map<String, Double> lats) {
+        latencies.putAll(lats);
+        return this;
+    }
+
     public VisionValues setValid(Boolean valid) {
         this.valid = valid;
         return this;
@@ -202,12 +207,14 @@ public class VisionValues {
     }
 
     public VisionValues addRobotPose(String camera, Pose2d robotPose) {
-        robotPoses.put(camera, robotPose);
+        if (null != robotPose) {
+            robotPoses.put(camera, robotPose);
+        }
         return this;
     }
 
-    public VisionValues addRobotPoses(Map<String, Pose2d> robotPoses) {
-        this.robotPoses.putAll(robotPoses);
+    public VisionValues addRobotPoses(Map<String, Pose2d> rPoses) {
+        this.robotPoses.putAll(rPoses);
         return this;
     }
 

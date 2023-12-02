@@ -5,6 +5,7 @@
 package frc.robot.FRC5010.drive.swerve;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -19,20 +20,24 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
-import frc.robot.FRC5010.commands.TeleopDrive;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
@@ -40,47 +45,69 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
-import swervelib.math.SwerveKinematics2;
+import swervelib.SwerveModule;
+import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 /** Add your docs here. */
 public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
-  private SwerveDrive swerveDrive;
-  private ChassisSpeeds chassisSpeeds;
-  private PowerDistribution powerDistributionHub;
-  private GenericGyro gyro;
-  private int issueCounter = 0;
+  /**
+   * Swerve drive object.
+   */
+  private final SwerveDrive swerveDrive;
+
+  /**
+   * Maximum speed of the robot in meters per second, used to limit acceleration.
+   */
+  public double maximumSpeed = Units.feetToMeters(14.5);
 
   public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants,
       String swerveType, VisionSystem visionSystem) {
     super(mechVisual, gyro, swerveConstants);
-    this.gyro = gyro;
+
+    /** 5010 Code */
+    this.maximumSpeed = swerveConstants.getkPhysicalMaxSpeedMetersPerSecond();
+    /** END 5010 Code */
+
+    // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
+    // In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
+    // The encoder resolution per motor revolution is 1 per motor revolution.
+    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(21.42, 1);
+    // Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER
+    // RESOLUTION).
+    // In this case the wheel diameter is 4 inches.
+    // The gear ratio is 6.75 motor revolutions per wheel rotation.
+    // The encoder resolution per motor revolution is 1 per motor revolution.
+    double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.12, 1);
+    System.out.println("\"conversionFactor\": {");
+    System.out.println("\t\"angle\": " + angleConversionFactor + ",");
+    System.out.println("\t\"drive\": " + driveConversionFactor);
+    System.out.println("}");
+
+    // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
+    // objects being created.
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
-      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive();
+      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
     } catch (Exception e) {
       System.out.println(e.getMessage());
+      throw new RuntimeException(e);
     }
+    swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via
+                                             // angle.
+
+    /** 5010 Code */
     poseEstimator = new DrivetrainPoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
 
     Shuffleboard.getTab("Drive").addBoolean("Has Issues", () -> hasIssues()).withPosition(9, 1);
-
-    // swerveDrive.setModuleStates();
-    // powerDistributionHub = new PowerDistribution(1, ModuleType.kRev);
-  }
-
-  public Command createDefaultCommand(Controller driverXbox) {
-    // System.out.println("brrrrr");
-    DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
-    DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
-    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
-    BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
-
-    return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
-    // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented, true,
-    // true);
+    if (RobotBase.isSimulation() || useGlass) {
+      initGlassWidget();
+    }
   }
 
   /**
@@ -105,18 +132,21 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    *                      relativity.
    * @param fieldRelative Drive mode. True for field-relative, false for
    *                      robot-relative.
-   * @param isOpenLoop    Whether to use closed-loop velocity control. Set to true
-   *                      to disable closed-loop.
    */
-
-  public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-
-    swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop);
+  public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
+    swerveDrive.drive(translation,
+        rotation,
+        fieldRelative,
+        false); // Open loop is disabled since it shouldn't be used most of the time.
   }
 
-  @Override
-  public void stop() {
-    swerveDrive.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+  /**
+   * Drive the robot given a chassis field oriented velocity.
+   *
+   * @param velocity Velocity according to the field.
+   */
+  public void driveFieldOriented(ChassisSpeeds velocity) {
+    swerveDrive.driveFieldOriented(velocity);
   }
 
   @Override
@@ -124,18 +154,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.updateOdometry();
     poseEstimator.update();
     hasIssues();
-
-    // SmartDashboard.putNumber("FL Wheel Current",
-    // powerDistributionHub.getCurrent(1));
-
-    // SmartDashboard.putNumber("FR Wheel Current",
-    // powerDistributionHub.getCurrent(18));
-
-    // SmartDashboard.putNumber("BL Wheel Current",
-    // powerDistributionHub.getCurrent(3));
-
-    // SmartDashboard.putNumber("BR Wheel Current",
-    // powerDistributionHub.getCurrent(15));
+    if (RobotBase.isSimulation() || useGlass) {
+      updateGlassWidget();
+    }
   }
 
   @Override
@@ -145,9 +166,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   /**
    * Get the swerve drive kinematics object.
    *
-   * @return {@link SwerveKinematics2} of the swerve drive.
+   * @return {@link SwerveDriveKinematics} of the swerve drive.
    */
-  public SwerveKinematics2 getKinematics() {
+  public SwerveDriveKinematics getKinematics() {
     return swerveDrive.kinematics;
   }
 
@@ -161,7 +182,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    * @param initialHolonomicPose The pose to set the odometry to
    */
   public void resetOdometry(Pose2d initialHolonomicPose) {
+    /** 5010 Code */
     swerveDrive.setGyro(new Rotation3d(0, 0, initialHolonomicPose.getRotation().getRadians()));
+    /** END 5010 Code */
     swerveDrive.resetOdometry(initialHolonomicPose);
   }
 
@@ -197,55 +220,12 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.postTrajectory(trajectory);
   }
 
-  private int badConnections = 0;
-
-  @Override
-  public boolean hasIssues() {
-
-    issueCounter++;
-    if (issueCounter > 10) {
-      issueCounter = 0;
-
-      boolean doesCanIssues = RobotController.getCANStatus().transmitErrorCount
-          + RobotController.getCANStatus().receiveErrorCount > 0;
-
-      Translation2d currTranslation = getPoseEstimator().getCurrentPose().getTranslation();
-      boolean positionOk = (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit) &&
-          (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit) &&
-          (!Double.isNaN(currTranslation.getX()) &&
-              !Double.isNaN(currTranslation.getY()));
-
-      if (doesCanIssues) {
-        System.err.println("********************************CAN no likey********************************");
-      }
-
-      if (doesCanIssues) {
-        badConnections++;
-      } else {
-        badConnections = 0;
-      }
-
-      return badConnections > 5 || !positionOk;
-    }
-    return false;
-  }
-
-  public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
-    swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime, true, 1);
-  }
-
   /**
    * Resets the gyro angle to zero and resets odometry to the same position, but
    * facing toward 0.
    */
   public void zeroGyro() {
     swerveDrive.zeroGyro();
-  }
-
-  @Override
-  public void resetEncoders() {
-    swerveDrive.resetEncoders();
-    swerveDrive.synchronizeModuleEncoders();
   }
 
   /**
@@ -295,7 +275,11 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle) {
     xInput = Math.pow(xInput, 3);
     yInput = Math.pow(yInput, 3);
-    return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angle.getRadians(), getHeading().getRadians());
+    return swerveDrive.swerveController.getTargetSpeeds(xInput,
+        yInput,
+        angle.getRadians(),
+        getHeading().getRadians(),
+        maximumSpeed);
   }
 
   /**
@@ -346,12 +330,32 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    * Add a fake vision reading for testing purposes.
    */
   public void addFakeVisionReading() {
-    swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
+    swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
   }
 
-  private double lowLimit = Units.inchesToMeters(-1);
-  private double highXLimit = Units.feetToMeters(26);
-  private double highYLimit = Units.feetToMeters(27);
+  /** 5010 Code */
+
+  public Command createDefaultCommand(Controller driverXbox) {
+    // System.out.println("brrrrr");
+    DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
+    DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
+    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
+
+    return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
+    // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented);
+  }
+
+  @Override
+  public void stop() {
+    swerveDrive.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+  }
+
+  @Override
+  public void resetEncoders() {
+    swerveDrive.resetEncoders();
+    swerveDrive.synchronizeModuleEncoders();
+  }
 
   @Override
   public void drive(ChassisSpeeds direction) {
@@ -407,5 +411,102 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
         this // The drive subsystem. Used to properly set the requirements of path following
              // commands
     );
+  }
+
+  private int issueCheckCycles = 0;
+  private int issueCount = 0;
+  private static boolean useGlass = false;
+  private Map<Integer, MechanismRoot2d> visualRoots = new HashMap<>();
+  private Map<Integer, MechanismLigament2d> motorDials = new HashMap<>();
+  private Map<Integer, MechanismLigament2d> absEncDials = new HashMap<>();
+  private Map<Integer, MechanismLigament2d> expectDials = new HashMap<>();
+
+  private int badConnections = 0;
+  private double lowLimit = Units.inchesToMeters(-1);
+  private double highXLimit = Units.feetToMeters(26);
+  private double highYLimit = Units.feetToMeters(27);
+
+  @Override
+  public boolean hasIssues() {
+
+    issueCheckCycles++;
+    if (issueCheckCycles > 10) {
+      issueCheckCycles = 0;
+
+      boolean doesCanHaveIssues = RobotController.getCANStatus().transmitErrorCount
+          + RobotController.getCANStatus().receiveErrorCount > 0;
+
+      Translation2d currTranslation = getPoseEstimator().getCurrentPose().getTranslation();
+      boolean positionOk = (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit) &&
+          (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit) &&
+          (!Double.isNaN(currTranslation.getX()) &&
+              !Double.isNaN(currTranslation.getY()));
+
+      if (doesCanHaveIssues) {
+        badConnections++;
+      } else {
+        badConnections = 0;
+      }
+      if (!positionOk) {
+        issueCount++;
+      } else {
+        issueCount = 0;
+      }
+
+      if (badConnections > 5) {
+        System.err.println("********************************CAN is being flakey********************************");
+      }
+      if (issueCount > 5) {
+        System.err
+            .println("********************************Robot position is off field********************************");
+      }
+
+      return badConnections > 5 || !positionOk;
+    }
+    return false;
+  }
+
+  public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
+    swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime);
+  }
+
+  public static void useGlass(boolean shouldUseGlass) {
+    useGlass = shouldUseGlass;
+  }
+
+  public void initGlassWidget() {
+    SwerveModule[] modules = swerveDrive.getModules();
+    visualRoots.put(0, mechVisual.getRoot("frontleft", 15, 45));
+    visualRoots.put(1, mechVisual.getRoot("frontright", 45, 45));
+    visualRoots.put(2, mechVisual.getRoot("backleft", 15, 15));
+    visualRoots.put(3, mechVisual.getRoot("backright", 45, 15));
+    for (int i = 0; i < modules.length; i++) {
+      visualRoots.get(i).append(
+          new MechanismLigament2d(i + "-vert", 10, 90, 6.0, new Color8Bit(50, 50, 50)));
+      visualRoots.get(i).append(
+          new MechanismLigament2d(i + "-hori", 10, 0, 6.0, new Color8Bit(50, 50, 50)));
+      motorDials.put(i, visualRoots.get(i).append(
+          new MechanismLigament2d(i + "-motor", 10.0, 90, 6.0, new Color8Bit(Color.kYellow))));
+      absEncDials.put(i, visualRoots.get(i).append(
+          new MechanismLigament2d(i + "-Abs", 10, 90, 6, new Color8Bit(Color.kBlue))));
+      expectDials.put(i, visualRoots.get(i).append(
+          new MechanismLigament2d(i + "-Exp", 10, 90, 6, new Color8Bit(Color.kRed))));
+    }
+  }
+
+  public void updateGlassWidget() {
+    SwerveModule[] modules = swerveDrive.getModules();
+    for (int moduleKey = 0; moduleKey < modules.length; moduleKey++) {
+      double turningDeg = modules[moduleKey].getRelativePosition();
+      double absEncDeg = modules[moduleKey].getAbsolutePosition();
+      SmartDashboard.putNumber("Motor Ang: " + moduleKey, turningDeg);
+      SmartDashboard.putNumber("Abs Angle: " + moduleKey, absEncDeg);
+      // This method will be called once per scheduler run
+      absEncDials.get(moduleKey).setAngle(absEncDeg + 90);
+      motorDials.get(moduleKey).setAngle(turningDeg + 90);
+      motorDials.get(moduleKey).setLength(10 * modules[moduleKey].getAngleMotor().getVelocity() + 2);
+      expectDials.get(moduleKey).setLength(10 * modules[moduleKey].getDriveMotor().getVelocity() + 2);
+      expectDials.get(moduleKey).setAngle(modules[moduleKey].getState().angle.getDegrees() + 90);
+    }
   }
 }
