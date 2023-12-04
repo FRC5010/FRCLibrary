@@ -48,6 +48,7 @@ public class VisionPhoton extends VisionSystem {
 
     @Override
     public void update() {
+        rawValues.clearValues();
         updateViaNetworkTable(camera, poseEstimator, name);
     }
 
@@ -66,7 +67,7 @@ public class VisionPhoton extends VisionSystem {
         double deltaTimeInit = Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
         if (camResult.hasTargets()) {
             targetInit = camResult.getBestTarget();
-            Optional<EstimatedRobotPose> result = poseEstimator.update(camResult);
+            Optional<EstimatedRobotPose> result = poseEstimator.update();
 
             if (result.isPresent() && result.get().estimatedPose != null) {
                 robotPoseEstInit = result.get().estimatedPose;
@@ -79,7 +80,6 @@ public class VisionPhoton extends VisionSystem {
         Pose2d robotPoseEst = null == robotPoseEstInit ? null : robotPoseEstInit.toPose2d();
         double deltaTime = deltaTimeInit;
         var target = targetInit;
-        rawValues = new VisionValues();
         updateValues(rawValues,
                 () -> target.getYaw(),
                 () -> target.getPitch(),
@@ -104,7 +104,7 @@ public class VisionPhoton extends VisionSystem {
     // aka use name whenever you use getTable()
 
     public int getTargetFiducial() {
-        return ((VisionValuesPhotonCamera) rawValues).getFiducialId();
+        return smoothedValues.getFiducialId();
     }
 
     public void setLight(boolean on) {

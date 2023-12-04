@@ -33,7 +33,7 @@ public class VisionLimeLightLib extends VisionSystem {
 
     private void updateViaNetworkTable(String name) {
         LimelightResults results = LimelightHelpers.getLatestResults(name);
-        rawValues = new VisionValuesLimeLight();
+        rawValues.clearValues();
         if (results.targetingResults.valid) {
 
             Pose2d robotPose2d = RobotContainer.getAlliance().equals(Alliance.Red)

@@ -48,7 +48,7 @@ public class VisionPhoton extends VisionSystem {
 
     @Override
     public void update() {
-        rawValues = new VisionValuesPhotonCamera();
+        rawValues.clearValues();
         updateViaNetworkTable(camera, poseEstimator, name);
     }
 
@@ -104,7 +104,7 @@ public class VisionPhoton extends VisionSystem {
     // aka use name whenever you use getTable()
 
     public int getTargetFiducial() {
-        return ((VisionValuesPhotonCamera) rawValues).getFiducialId();
+        return rawValues.getFiducialId();
     }
 
     public void setLight(boolean on) {

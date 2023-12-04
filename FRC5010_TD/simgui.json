@@ -5,6 +5,14 @@
         "header": {
           "open": true
         }
+      },
+      "window": {
+        "visible": false
+      }
+    },
+    "RoboRIO": {
+      "RoboRIO Input": {
+        "open": true
       }
     },
     "Timing": {
@@ -23,10 +31,17 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 [11]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
+      "/SmartDashboard/Pigeon 2 [15]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
-      "/SmartDashboard/navX-Sensor[1]": "Gyro"
+      "/SmartDashboard/navX-Sensor[1]": "Gyro",
+      "/SmartDashboard/navX-Sensor[4]": "Gyro"
     },
     "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
       "/Shuffleboard/Pose/Field": {
         "window": {
           "visible": true
@@ -53,11 +68,31 @@
     "Retained Values": {
       "open": false
     },
+    "Shuffleboard": {
+      "Drive": {
+        "open": true
+      },
+      "Robot": {
+        "open": true
+      },
+      "Vision": {
+        "open": true
+      },
+      "open": true
+    },
+    "SmartDashboard": {
+      "Drive Visual": {
+        "open": true
+      },
+      "open": true
+    },
+    "combined": true,
     "persistent": {
       "Preferences": {
         "open": true
       }
     },
+    "properties": true,
     "transitory": {
       "FMSInfo": {
         "open": true
@@ -69,16 +104,22 @@
         "open": true
       },
       "Shuffleboard": {
+        "Drive": {
+          "open": true
+        },
         "Pose": {
+          "open": true
+        },
+        "Robot": {
+          "open": true
+        },
+        "Vision": {
           "open": true
         },
         "open": true
       },
       "SmartDashboard": {
-        "open": true,
-        "swerve": {
-          "open": true
-        }
+        "open": true
       },
       "photonvision": {
         "HP_Wide_Vision_HD": {

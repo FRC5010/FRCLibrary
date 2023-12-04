@@ -6,7 +6,9 @@ package frc.robot.FRC5010.sensors.gyro;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 
 /** Add your docs here. */
 public class NavXGyro implements GenericGyro {
@@ -16,10 +18,39 @@ public class NavXGyro implements GenericGyro {
         gyro = new AHRS(kmxp);
     }
 
+    public NavXGyro(SerialPort.Port kmxp) {
+        gyro = new AHRS(kmxp);
+    }
+
+    public NavXGyro(I2C.Port kmxp) {
+        gyro = new AHRS(kmxp);
+    }
+
+    private static class NavXRunnable implements Runnable {
+        NavXGyro myGyro;
+
+        public NavXRunnable(NavXGyro me) {
+            myGyro = me;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            myGyro.reset();
+        }
+    }
+
     @Override
     public void reset() {
-        gyro.reset();
-        gyro.setAngleAdjustment(0);
+        if (gyro.isCalibrating()) {
+            Runnable reset = new NavXRunnable(this);
+        } else {
+            gyro.reset();
+            gyro.setAngleAdjustment(0);
+        }
     }
 
     @Override

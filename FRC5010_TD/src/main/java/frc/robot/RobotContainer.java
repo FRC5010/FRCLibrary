@@ -166,7 +166,8 @@ public class RobotContainer extends GenericMechanism {
         break;
       }
       case Robots.CURTS_LAPTOP_SIM: {
-        robot = new CompBot(mechVisual, shuffleTab);
+        // robot = new CompBot(mechVisual, shuffleTab);
+        robot = new BabySwerve(mechVisual, shuffleTab);
         // robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
         break;
       }
