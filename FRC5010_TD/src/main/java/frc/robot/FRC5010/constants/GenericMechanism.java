@@ -2,16 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.FRC5010.mechanisms;
+package frc.robot.FRC5010.constants;
 
 import java.util.List;
 import java.util.Map;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.sensors.Controller;
 
@@ -23,9 +26,11 @@ import frc.robot.FRC5010.sensors.Controller;
  * @function setupDefaultCommands()
  * @function function initRealOrSim()
  */
-public abstract class GenericMechanism {
+public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
     protected Mechanism2d mechVisual;
     protected ShuffleboardTab shuffleTab;
+    protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
+    protected String logPrefix = getClass().getSimpleName();
 
     public GenericMechanism(String tabName) {
         this.mechVisual = new Mechanism2d(100, 100);
@@ -37,8 +42,16 @@ public abstract class GenericMechanism {
         this.shuffleTab = shuffleTab;
     }
 
-    public ShuffleboardTab getShuffleTab() {
+    public ShuffleboardTab getDisplayTab() {
         return shuffleTab;
+    }
+
+    public void addToTab(String key) {
+        values.addToTab(shuffleTab, key);
+    }
+
+    public void addToTabList(String list, String key) {
+        values.addToTabList(shuffleTab, list, key);
     }
 
     /**
@@ -76,4 +89,9 @@ public abstract class GenericMechanism {
 
     }
 
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        log(logPrefix + ": Initializing sendables.");
+        values.initSendables(builder, this.getClass().getSimpleName());
+    }
 }

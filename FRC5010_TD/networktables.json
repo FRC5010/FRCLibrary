@@ -114,7 +114,15 @@
   {
     "name": "/Preferences/WhoAmI",
     "type": "string",
-    "value": "BabySwerve",
+    "value": "T1G3R",
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/LaptopCamera",
+    "type": "string",
+    "value": "",
     "properties": {
       "persistent": true
     }

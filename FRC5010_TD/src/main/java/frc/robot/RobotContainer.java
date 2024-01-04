@@ -7,14 +7,12 @@ package frc.robot;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -24,17 +22,17 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
-import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.robots.BabySwerve;
 import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
 import frc.robot.FRC5010.robots.DefaultRobot;
 import frc.robot.FRC5010.robots.PracticeBot;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
-import frc.robot.chargedup.CompBot;
+import frc.robot.chargedup.CompBot_2023_T1G3R;
 import frc.robot.chargedup.CubeCruzer;
 
 /**
@@ -54,6 +52,7 @@ public class RobotContainer extends GenericMechanism {
   private static Alliance alliance;
   public static Constants constants;
   private GenericMechanism robot;
+  private static String MAC_Address = "MAC ADDRESS";
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -62,6 +61,7 @@ public class RobotContainer extends GenericMechanism {
     super("Robot");
     // Create a Mechanism2d display for simulating robot functions
     constants = new Constants();
+    values.declare(MAC_Address, "");
 
     // Setup controllers
     driver = new Controller(Controller.JoystickPorts.ZERO.ordinal());
@@ -83,10 +83,11 @@ public class RobotContainer extends GenericMechanism {
     // Configure the button bindings
     configureButtonBindings(driver, operator);
     initAutoCommands();
+    SmartDashboard.putData(logPrefix, this);
   }
 
   public static String WHO_AM_I = "WhoAmI";
-  private Persisted<String> whoAmI;
+  private static Persisted<String> whoAmI = new Persisted<>(WHO_AM_I, "Simulator");
 
   // Robot types
   public static class Robots {
@@ -95,7 +96,6 @@ public class RobotContainer extends GenericMechanism {
     public static final String BABY_SWERVE = "BabySwerve";
     public static final String PRACTICE_BOT = "PracticeBot";
     public static final String CURTS_LAPTOP_SIM = "D2:57:7B:3E:C0:47";
-
   }
 
   /**
@@ -105,19 +105,20 @@ public class RobotContainer extends GenericMechanism {
     if (RobotBase.isReal()) {
       WpiDataLogging.start(false);
     } else {
-      NetworkTableInstance instance = NetworkTableInstance.getDefault();
-      instance.stopServer();
+      WpiDataLogging.start(false);
+      // NetworkTableInstance instance = NetworkTableInstance.getDefault();
+      // instance.stopServer();
       // set the NT server if simulating this code.
       // "localhost" for photon on desktop, or "photonvision.local" / "[ip-address]"
       // for coprocessor
-      instance.setServer("localhost");
-      instance.startClient4("myRobot");
+      // instance.setServer("localhost");
+      // instance.startClient4("myRobot");
     }
 
     robotFactory();
   }
 
-  private String whoAmI() {
+  private String whereAmI() {
     try {
       NetworkInterface myNI = NetworkInterface.networkInterfaces().filter(it -> {
         try {
@@ -137,7 +138,7 @@ public class RobotContainer extends GenericMechanism {
       }
       String whichRobot = macList.stream().map(it -> String.format("%02X", it))
           .collect(Collectors.joining(":"));
-      SmartDashboard.putString("MAC ADDRESS", whichRobot.toString());
+      values.set(MAC_Address, whichRobot.toString());
       return whichRobot.toString();
     } catch (SocketException e) {
       e.printStackTrace();
@@ -146,15 +147,14 @@ public class RobotContainer extends GenericMechanism {
   }
 
   private void robotFactory() {
-    String whichRobot = whoAmI();
-
+    String whichRobot = whereAmI();
     switch (whichRobot) {
       case Robots.CC_BOT_2023: {
         robot = new CubeCruzer(mechVisual, shuffleTab);
         break;
       }
       case Robots.COMP_BOT_2023: {
-        robot = new CompBot(mechVisual, shuffleTab);
+        robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
         break;
       }
       case Robots.BABY_SWERVE: {
@@ -166,9 +166,20 @@ public class RobotContainer extends GenericMechanism {
         break;
       }
       case Robots.CURTS_LAPTOP_SIM: {
-        // robot = new CompBot(mechVisual, shuffleTab);
-        robot = new BabySwerve(mechVisual, shuffleTab);
-        // robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
+        switch (whoAmI.get()) {
+          case "BabySwerve": {
+            robot = new BabySwerve(mechVisual, shuffleTab);
+            break;
+          }
+          case "T1G3R": {
+            robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+            break;
+          }
+          case "Simulator": {
+            robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
+            break;
+          }
+        }
         break;
       }
       default: {
@@ -176,6 +187,7 @@ public class RobotContainer extends GenericMechanism {
         break;
       }
     }
+    log(">>>>>>>>>> Running " + robot.getClass().getSimpleName() + " <<<<<<<<<<");
   }
 
   /**

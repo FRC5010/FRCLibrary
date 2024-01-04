@@ -2,15 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.chargedup.commands;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.telemetery.WpiDataLogging;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.chargedup.IntakeSubsystem;
 
-public class IntakeSpin extends CommandBase {
+public class IntakeSpin extends GenericCommand {
 
   private Supplier<Double> spinVelocity;
   private IntakeSubsystem intakeSubsystem;
@@ -25,8 +24,7 @@ public class IntakeSpin extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    WpiDataLogging.log(getName());
+  public void init() {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,10 +37,8 @@ public class IntakeSpin extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void stop(boolean interrupted) {
     this.intakeSubsystem.stopIntake();
-
-    WpiDataLogging.log(getName() + " ended. ");
   }
 
   // Returns true when the command should end.

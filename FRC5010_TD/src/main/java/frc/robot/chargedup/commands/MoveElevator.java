@@ -2,33 +2,36 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.chargedup.commands;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;
 
-public class MoveElevator extends CommandBase {
+public class MoveElevator extends GenericCommand {
   ElevatorSubsystem elevator;
   Supplier<ElevatorLevel> elevatorLevel;
 
   /** Creates a new MoveElevator. */
   public MoveElevator(ElevatorSubsystem elevator, Supplier<ElevatorLevel> elevatorLevel) {
+    logPrefix = getName() + "_" + elevatorLevel.get();
     this.elevator = elevator;
     this.elevatorLevel = elevatorLevel;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
+    SmartDashboard.putData(logPrefix, this);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void init() {
     ElevatorSubsystem.setElevatorTargetLevel(elevatorLevel.get());
-    WpiDataLogging.log(getName() + " " + elevatorLevel.get().name());
+    WpiDataLogging.log(getName());
     elevator.initializeRunToTarget(elevatorLevel.get().getExtensionPosition());
   }
 
@@ -40,7 +43,7 @@ public class MoveElevator extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void stop(boolean interrupted) {
     WpiDataLogging.log(getName() + " ended " + interrupted);
 
     elevator.stopAndHoldExtend();

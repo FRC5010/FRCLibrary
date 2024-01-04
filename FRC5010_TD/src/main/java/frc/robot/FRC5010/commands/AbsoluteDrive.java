@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.chargedup.Constants;
 import swervelib.SwerveController;
@@ -19,7 +20,7 @@ import swervelib.math.SwerveMath;
 /**
  * An example command that uses an example subsystem.
  */
-public class AbsoluteDrive extends CommandBase {
+public class AbsoluteDrive extends GenericCommand {
 
   private final YAGSLSwerveDrivetrain swerve;
   private final DoubleSupplier vX, vY;
@@ -73,7 +74,7 @@ public class AbsoluteDrive extends CommandBase {
   }
 
   @Override
-  public void initialize() {
+  public void init() {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -101,7 +102,7 @@ public class AbsoluteDrive extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void stop(boolean interrupted) {
   }
 
   // Returns true when the command should end.
