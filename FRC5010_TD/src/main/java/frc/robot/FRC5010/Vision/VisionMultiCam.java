@@ -51,47 +51,45 @@ public class VisionMultiCam extends VisionSystem {
 
     @Override
     public void update() {
-        rawValues = new VisionValues();
+        rawValues.clearValues();
         cameras.keySet().stream().forEach(it -> updateFromCamera(cameras.get(it), it));
     }
 
     public void updateFromCamera(VisionSystem camera, String path) {
         camera.update();
         var camResult = camera.getRawValues();
-        updateBatchValues(rawValues, camera.getCameraName(),
+        updateBatchValues(
                 camResult.getAngleX(),
                 camResult.getAngleY(),
                 camResult.getDistance(),
                 camResult.getArea(),
                 camResult.getValid(),
-                camResult.getLatency(),
+                camResult.getLatencies(),
                 camResult.getFiducialIds(),
                 camResult.getTargetVectors(),
                 camResult.getRobotPoses());
     }
 
-    protected void updateBatchValues(VisionValues rValues, String camera,
+    protected void updateBatchValues(
             Double angleXSup, Double angleYSup, Double distanceSup,
-            Double areaSup, Boolean validSup, Double latencySup, Map<String, Integer> fiducialID,
+            Double areaSup, Boolean validSup, Map<String, Double> latencySup, Map<String, Integer> fiducialID,
             Map<String, Pose3d> cameraPoseSupplier,
             Map<String, Pose2d> robotPoseSupplier) {
         boolean valid = validSup;
         if (valid) {
-            // calculating distance
-            this.rawValues = rValues;
             rawValues
                     .setValid(rawValues.valid || valid)
                     .setYaw(angleXSup)
                     .setPitch(angleYSup)
                     .setDistance(distanceSup)
-                    .addLatency(camera, latencySup)
+                    .addLatencies(latencySup)
                     .addFiducialIds(fiducialID)
                     .addTargetVectors(cameraPoseSupplier)
                     .addRobotPoses(robotPoseSupplier);
-            if (smoothValues) {
+            if (isSmoothingValues) {
                 smoothedValues.averageValues(rawValues, 5);
             } else {
-                smoothedValues = this.rawValues;
+                smoothedValues.storeValues(rawValues, 5);
             }
         } else {
             rawValues = new VisionValues();
@@ -112,7 +110,7 @@ public class VisionMultiCam extends VisionSystem {
     // aka use name whenever you use getTable()
 
     public int getTargetFiducial() {
-        return ((VisionValuesPhotonCamera) rawValues).getFiducialId();
+        return rawValues.getFiducialId();
     }
 
     public void setLight(boolean on) {

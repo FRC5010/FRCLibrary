@@ -22,21 +22,21 @@ import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
-import frc.robot.FRC5010.commands.LogCommand;
 import frc.robot.FRC5010.constants.AutoMaps;
+import frc.robot.FRC5010.constants.GenericCommand;
+import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.swerve.MK4SwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.AutoBalance;
+import frc.robot.chargedup.commands.AutoBalance;
 
 /** Add your docs here. */
 public class PracticeBot extends GenericMechanism {
@@ -104,25 +104,25 @@ public class PracticeBot extends GenericMechanism {
 
     // Drivetrain Controls
     autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
-    autoMaps.addMarker("ExtendToPivotPosition", new LogCommand("ExtendToPivotPosition"));
-    autoMaps.addMarker("HomeElevator", new LogCommand("HomeElevator"));
-    autoMaps.addMarker("PivotToGround", new LogCommand("PivotToGround"));
-    autoMaps.addMarker("PivotToLow", new LogCommand("PivotToLow"));
-    autoMaps.addMarker("PivotToMid", new LogCommand("PivotToMid"));
+    autoMaps.addMarker("ExtendToPivotPosition", new GenericCommand("ExtendToPivotPosition"));
+    autoMaps.addMarker("HomeElevator", new GenericCommand("HomeElevator"));
+    autoMaps.addMarker("PivotToGround", new GenericCommand("PivotToGround"));
+    autoMaps.addMarker("PivotToLow", new GenericCommand("PivotToLow"));
+    autoMaps.addMarker("PivotToMid", new GenericCommand("PivotToMid"));
     autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
-    autoMaps.addMarker("Yeet Cube", new LogCommand("Cube has been yeeted"));
+    autoMaps.addMarker("Yeet Cube", new GenericCommand("Cube has been yeeted"));
     // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
     // ElevatorLevel.high));
-    autoMaps.addMarker("HomePivot", new LogCommand("HomePivot"));
+    autoMaps.addMarker("HomePivot", new GenericCommand("HomePivot"));
 
     // Intake Controls
-    autoMaps.addMarker("ConeMode", new LogCommand("ConeMode"));
-    autoMaps.addMarker("CubeMode", new LogCommand("CubeMode"));
-    autoMaps.addMarker("Outtake", new LogCommand("Outtake"));
-    autoMaps.addMarker("Intake", new LogCommand("Intake"));
+    autoMaps.addMarker("ConeMode", new GenericCommand("ConeMode"));
+    autoMaps.addMarker("CubeMode", new GenericCommand("CubeMode"));
+    autoMaps.addMarker("Outtake", new GenericCommand("Outtake"));
+    autoMaps.addMarker("Intake", new GenericCommand("Intake"));
 
     // Drivetrain Controls
-    autoMaps.addMarker("AutoExtendDrop", new LogCommand("AutoExtendDrop"));
+    autoMaps.addMarker("AutoExtendDrop", new GenericCommand("AutoExtendDrop"));
     // Create
     // autoMaps.addPath("8-1 Cube", new PathConstraints(4, 3));
     // autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));

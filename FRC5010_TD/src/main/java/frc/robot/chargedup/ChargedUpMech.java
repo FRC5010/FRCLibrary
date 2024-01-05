@@ -12,6 +12,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,19 +20,19 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.HomeElevator;
-import frc.robot.commands.HomePivot;
-import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.LedDefaultCommand;
-import frc.robot.commands.MoveElevator;
-import frc.robot.commands.PivotElevator;
+import frc.robot.chargedup.commands.HomeElevator;
+import frc.robot.chargedup.commands.HomePivot;
+import frc.robot.chargedup.commands.IntakeSpin;
+import frc.robot.chargedup.commands.LedDefaultCommand;
+import frc.robot.chargedup.commands.MoveElevator;
+import frc.robot.chargedup.commands.PivotElevator;
 
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {
@@ -56,14 +57,14 @@ public class ChargedUpMech extends GenericMechanism {
 		// use this to PID the Elevator
 		// https://www.chiefdelphi.com/t/is-tuning-spark-max-smart-motion-impossible/404104/2
 		this.elevatorSubsystem = new ElevatorSubsystem(
-				MotorFactory.NEO(11), new GenericPID(8, 0, 0),
+				MotorFactory.NEO(11), new GenericPID(RobotBase.isReal() ? 8 : 30, 0, 0),
 				new MotorModelConstants(1, 1, 1),
 				mechVisual, 0, 3, () -> pivotSubsystem.getPivotPosition());
 
 		this.pivotSubsystem = new PivotSubsystem(
 				MotorFactory.NEO(9),
-				new GenericPID(12, 0.0, 0.03),
-				new MotorModelConstants(1, 1, 1),
+				new GenericPID(RobotBase.isReal() ? 12 : 0.047, 0.0, 0.03),
+				new MotorModelConstants(1, 8.6825, 1),
 				1, 8,
 				() -> elevatorSubsystem.getExtendPosition(), mechVisual);
 
@@ -73,7 +74,7 @@ public class ChargedUpMech extends GenericMechanism {
 				new MotorModelConstants(0, 0, 0),
 				new GenericPID(0.003, 0, 0),
 				new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
-				robotMechVisual);
+				mechVisual);
 		// TODO: Set up IntakeSubsystem add correct values please
 		this.buttonOperator = buttonOperator;
 		this.ledSubsystem = ledSubsystem;
@@ -255,20 +256,27 @@ public class ChargedUpMech extends GenericMechanism {
 				() -> {
 				},
 				() -> {
-					pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit
-							+ operator.getRightYAxis(), true);
-					// elevatorSubsystem.extendPow((elevatorSubsystem.atMinHardStop(buttonOperator.getXAxis())
-					// ? 0 : buttonOperator.getXAxis()) * speedLimit - operator.getLeftYAxis());
 					elevatorSubsystem.extendPow(buttonOperator.getXAxis() * speedLimit
 							- operator.getLeftYAxis());
 
 				},
 				(Boolean interrupted) -> {
-					pivotSubsystem.pivotPow(0, true);
 					elevatorSubsystem.extendPow(0);
 				},
 				() -> false,
 				elevatorSubsystem));
+		pivotSubsystem.setDefaultCommand(new FunctionalCommand(
+				() -> {
+				},
+				() -> {
+					pivotSubsystem.pivotPow(buttonOperator.getYAxis() * speedLimit
+							+ operator.getRightYAxis(), true);
+				},
+				(Boolean interrupted) -> {
+					pivotSubsystem.pivotPow(0, true);
+				},
+				() -> false,
+				pivotSubsystem));
 
 		ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem, elevatorSubsystem));
 	}

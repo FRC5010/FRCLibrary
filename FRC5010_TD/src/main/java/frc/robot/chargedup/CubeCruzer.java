@@ -19,17 +19,17 @@ import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.AutoMaps;
+import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.AutoBalance;
+import frc.robot.chargedup.commands.AutoBalance;
 
 /** Add your docs here. */
 public class CubeCruzer extends GenericMechanism {

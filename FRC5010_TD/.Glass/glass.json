@@ -102,12 +102,5 @@
         }
       }
     }
-  },
-  "NetworkTables Info": {
-    "visible": true
-  },
-  "NetworkTables Settings": {
-    "mode": "Client (NT4)",
-    "serverTeam": "5010"
   }
 }

@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "name": "/Preferences/driveVisualH",
+    "type": "double",
+    "value": 60.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/driveVisualV",
+    "type": "double",
+    "value": 60.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kvVoltSecondsPerMeter",
+    "type": "double",
+    "value": 0.012986278875375108,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kaVoltSecondsSquaredPerMeter",
+    "type": "double",
+    "value": 0.003370963559423231,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/motorRotationsPerWheelRotation",
+    "type": "double",
+    "value": 10.71,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kVAngular",
+    "type": "double",
+    "value": 0.002777777777777778,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kAAngular",
+    "type": "double",
+    "value": 0.03,
+    "properties": {
+      "persistent": true
+    }
+  }
+]

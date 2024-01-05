@@ -6,39 +6,35 @@ package frc.robot;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.drive.pose.DifferentialPose;
-import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
-import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.AutonomousDistance;
-import frc.robot.commands.AutonomousTime;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.FRC5010.constants.DrivePorts;
+import frc.robot.FRC5010.constants.GenericDrivetrainConstants;
+import frc.robot.FRC5010.constants.GenericMotorConstants;
+import frc.robot.FRC5010.drive.GenericDrivetrain;
+import frc.robot.FRC5010.mechanisms.Drive;
+import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.sensors.gyro.ROMIGyro;
 import frc.robot.subsystems.OnBoardIO;
 import frc.robot.subsystems.OnBoardIO.ChannelMode;
 
@@ -50,11 +46,13 @@ import frc.robot.subsystems.OnBoardIO.ChannelMode;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Drivetrain m_drivetrain;
+  private final Drive drive;
+  private final GenericDrivetrain m_drivetrain;
   private final OnBoardIO m_onboardIO = new OnBoardIO(ChannelMode.INPUT, ChannelMode.INPUT);
+  private final ROMIGyro m_gyro = new ROMIGyro();
 
   // Assumes a gamepad plugged into channnel 0
-  private final Joystick m_controller = new Joystick(0);
+  private final Controller driver;
 
   // Create SmartDashboard chooser for autonomous routines
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -74,14 +72,28 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    driver = new Controller(Controller.JoystickPorts.ZERO.ordinal());
     alliance = DriverStation.getAlliance();
     vision = new VisionMultiCam("Romi", 0, AprilTags.aprilTagRoomLayout);
-    m_drivetrain = new Drivetrain(vision);
+    List<DrivePorts> drivePorts = new ArrayList<>();
+    GenericMotorConstants motorConstants = new GenericMotorConstants(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter, DriveConstants.kaVoltSecondsSquaredPerMeter);
+    motorConstants.setEncoderConversion(DriveConstants.kCountsPerRevolution / DriveConstants.kWheelDiameterMeter);
+    drivePorts.add(new DrivePorts(0, motorConstants));
+    drivePorts.add(new DrivePorts(1, motorConstants));
+    GenericDrivetrainConstants driveConstants = new GenericDrivetrainConstants();
+    driveConstants.setkPhysicalMaxAngularSpeedRadiansPerSecond(Math.PI * 4);
+    driveConstants.setkPhysicalMaxSpeedMetersPerSecond(AutoConstants.kMaxSpeedMetersPerSecond);
+    driveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+    driveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(Math.PI);
+    driveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+    driveConstants.setkTeleDriveMaxSpeedMetersPerSecond(AutoConstants.kMaxSpeedMetersPerSecond);
+    drive = new Drive(vision, m_gyro, Drive.Type.DIFF_DRIVE_2, drivePorts, driveConstants, null);
+    m_drivetrain = drive.getDrivetrain();
     vision.setDrivetrainPoseEstimator(m_drivetrain.getPoseEstimator());
 
     vision.addPhotonCamera("PiCamera", 2, 
       new Transform3d(new Translation3d(0.087, 0, 0.07), new Rotation3d(0, 0, 180)), 
-      PoseStrategy.LOWEST_AMBIGUITY, m_drivetrain.getPoseEstimator());
+      PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
     //vision.setUpdateValues(true);
     // Configure the button bindings
     configureButtonBindings();
@@ -90,45 +102,6 @@ public class RobotContainer {
   public static Alliance getAlliance() {
     return alliance;
   }
-  /**
-   * Generate a trajectory following Ramsete command
-   * 
-   * This is very similar to the WPILib RamseteCommand example. It uses
-   * constants defined in the Constants.java file. These constants were 
-   * found empirically by using the frc-characterization tool.
-   * 
-   * @return A SequentialCommand that sets up and executes a trajectory following Ramsete command
-   */
-  private Command generateRamseteCommand(Trajectory trajectory) {
-    return generateRamseteCommand(trajectory, true, true);
-  }
-
-  private Command generateRamseteCommand(Trajectory trajectory, boolean reset, boolean stop) {
-    RamseteCommand ramseteCommand = new RamseteCommand(
-        trajectory,
-        m_drivetrain::getPose,
-        new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter, DriveConstants.kaVoltSecondsSquaredPerMeter),
-        DriveConstants.kDriveKinematics,
-        m_drivetrain::getWheelSpeeds,
-        new PIDController(DriveConstants.kPDriveVel, 0, 0),
-        new PIDController(DriveConstants.kPDriveVel, 0, 0),
-        m_drivetrain::tankDriveVolts,
-        m_drivetrain);
-
-    m_drivetrain.resetOdometry(trajectory.getInitialPose());
-
-    // Set up a sequence of commands
-    // First, we want to reset the drivetrain odometry
-    return new InstantCommand(
-        () -> { if (reset) m_drivetrain.resetOdometry(trajectory.getInitialPose()); }, m_drivetrain)
-        
-        // next, we run the actual ramsete command
-        .andThen(ramseteCommand)
-
-        // Finally, we make sure that the robot stops
-        .andThen(new InstantCommand(() -> { if (stop) m_drivetrain.tankDriveVolts(0, 0); } , m_drivetrain));
-  } 
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -139,8 +112,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Default command is arcade drive. This will run unless another command
     // is scheduled over it.
-    m_drivetrain.setDefaultCommand(getArcadeDriveCommand());
-
+    drive.configureButtonBindings(driver, driver);
+    drive.setupDefaultCommands(driver, driver);
     // Example of how to use the onboard IO
     // Button onboardButtonA = new Button(m_onboardIO::getButtonAPressed);
     // onboardButtonA
@@ -148,10 +121,10 @@ public class RobotContainer {
     //     .whenInactive(new PrintCommand("Button A Released"));
 
     // Setup SmartDashboard options
-    m_chooser.setDefaultOption("Barrel Race", generateRamseteCommand(getTrajectoryFile(Constants.Trajectories.barrelRacePath)));
-    m_chooser.addOption("Ramsete Trajectory", generateRamseteCommand(Constants.Trajectories.simpleTrajectory));
-    m_chooser.addOption("Auto Routine Distance", new AutonomousDistance(m_drivetrain));
-    m_chooser.addOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
+    // m_chooser.setDefaultOption("Barrel Race", generateRamseteCommand(getTrajectoryFile(Constants.Trajectories.barrelRacePath)));
+    // m_chooser.addOption("Ramsete Trajectory", generateRamseteCommand(Constants.Trajectories.simpleTrajectory));
+    // m_chooser.addOption("Auto Routine Distance", new AutonomousDistance(m_drivetrain));
+    // m_chooser.addOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
     
     SmartDashboard.putData(m_chooser);
   }
@@ -176,14 +149,5 @@ public class RobotContainer {
       DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
     }
     return trajectory;
-  }
-  /**
-   * Use this to pass the teleop command to the main {@link Robot} class.
-   *
-   * @return the command to run in teleop
-   */
-  public Command getArcadeDriveCommand() {
-    return new ArcadeDrive(
-        m_drivetrain, () -> m_controller.getRawAxis(4), () -> -m_controller.getRawAxis(1));
   }
 }

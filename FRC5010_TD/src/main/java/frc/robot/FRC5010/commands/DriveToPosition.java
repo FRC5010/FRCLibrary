@@ -19,12 +19,13 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.TargetConstants;
 
-public class DriveToPosition extends CommandBase {
+public class DriveToPosition extends GenericCommand {
   private SwerveDrivetrain swerveSubsystem;
   private final GenericPID pidTranslation = new GenericPID(1, 0, 0);
   private final GenericPID thetaTranslation = new GenericPID(.25, 0, 0);
@@ -115,7 +116,7 @@ public class DriveToPosition extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void init() {
     var robotPose = poseProvider.get();
     targetPose = targetPoseProvider.get().transformBy(targetTransform);
 
@@ -189,7 +190,7 @@ public class DriveToPosition extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void stop(boolean interrupted) {
     swerveSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, swerveSubsystem.getHeading()));
   }
 

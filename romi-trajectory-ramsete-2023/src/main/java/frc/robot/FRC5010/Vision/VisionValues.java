@@ -60,7 +60,7 @@ public class VisionValues {
         count = Math.min(count, maxCount);
         valid = count >= maxCount;
         angleX = rawValues.getAngleX();
-        angleY = rawValues.angleY;
+        angleY = rawValues.getAngleY();
         distance = rawValues.getDistance();
         latencies = rawValues.getLatencies();
         fiducialIds = rawValues.getFiducialIds();
@@ -73,14 +73,20 @@ public class VisionValues {
         count = Math.max(0, count);
         valid = count > 0;
         if (!valid) {
-            angleX = 0.0;
-            angleY = 0.0;
-            distance = 0.0;
-            latencies = new HashMap<>();
-            fiducialIds = new HashMap<>();
-            robotPoses = new HashMap<>();
-            robotToTarget = new HashMap<>();
+            clearValues();
         }
+    }
+
+    public void clearValues() {
+        valid = false;
+        angleX = 0.0;
+        angleY = 0.0;
+        distance = 0.0;
+        area = 0.0;
+        latencies.clear();
+        fiducialIds.clear();
+        robotPoses.clear();
+        robotToTarget.clear();
     }
 
     public Boolean getValid() {
