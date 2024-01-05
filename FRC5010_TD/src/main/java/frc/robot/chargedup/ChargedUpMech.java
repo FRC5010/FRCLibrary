@@ -20,19 +20,19 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.HomeElevator;
-import frc.robot.commands.HomePivot;
-import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.LedDefaultCommand;
-import frc.robot.commands.MoveElevator;
-import frc.robot.commands.PivotElevator;
+import frc.robot.chargedup.commands.HomeElevator;
+import frc.robot.chargedup.commands.HomePivot;
+import frc.robot.chargedup.commands.IntakeSpin;
+import frc.robot.chargedup.commands.LedDefaultCommand;
+import frc.robot.chargedup.commands.MoveElevator;
+import frc.robot.chargedup.commands.PivotElevator;
 
 /** Add your docs here. */
 public class ChargedUpMech extends GenericMechanism {

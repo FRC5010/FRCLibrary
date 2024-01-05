@@ -24,6 +24,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -437,10 +438,11 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
           + RobotController.getCANStatus().receiveErrorCount > 0;
 
       Translation2d currTranslation = getPoseEstimator().getCurrentPose().getTranslation();
-      boolean positionOk = (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit) &&
-          (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit) &&
-          (!Double.isNaN(currTranslation.getX()) &&
-              !Double.isNaN(currTranslation.getY()));
+      boolean positionOk = !DriverStation.isAutonomous()
+          || (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit) &&
+              (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit) &&
+              (!Double.isNaN(currTranslation.getX()) &&
+                  !Double.isNaN(currTranslation.getY()));
 
       if (doesCanHaveIssues) {
         badConnections++;

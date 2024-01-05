@@ -2,15 +2,15 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.chargedup.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;
 import frc.robot.chargedup.PivotSubsystem;
 
-public class PivotElevator extends CommandBase {
+public class PivotElevator extends GenericCommand {
   PivotSubsystem pivotSubsystem;
   ElevatorLevel elevatorLevel;
 
@@ -18,13 +18,13 @@ public class PivotElevator extends CommandBase {
   public PivotElevator(PivotSubsystem pivot, ElevatorLevel elevatorLevel) {
     this.pivotSubsystem = pivot;
     this.elevatorLevel = elevatorLevel;
+    values.declare("kP", 0.1);
     addRequirements(pivot);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    WpiDataLogging.log(getName() + " " + elevatorLevel.name());
+  public void init() {
     ElevatorSubsystem.setElevatorTargetLevel(elevatorLevel);
     pivotSubsystem.initializeRunToTarget(elevatorLevel.getPivotPosition());
   }
@@ -38,8 +38,7 @@ public class PivotElevator extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    WpiDataLogging.log(getName() + " ended " + interrupted);
+  public void stop(boolean interrupted) {
     pivotSubsystem.stopAndHoldPivot();
   }
 

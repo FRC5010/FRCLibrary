@@ -110,5 +110,21 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/WhoAmI",
+    "type": "string",
+    "value": "CompBot",
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/LaptopCamera",
+    "type": "string",
+    "value": "",
+    "properties": {
+      "persistent": true
+    }
   }
 ]

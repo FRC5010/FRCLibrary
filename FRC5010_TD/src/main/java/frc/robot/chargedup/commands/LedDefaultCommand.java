@@ -2,15 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.chargedup.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.ElevatorSubsystem;
 import frc.robot.chargedup.IntakeSubsystem;
 
-public class LedDefaultCommand extends CommandBase {
+public class LedDefaultCommand extends GenericCommand {
   /** Creates a new LedDefaultCommand. */
   LedSubsystem ledSubsystem;
   IntakeSubsystem intakeSubsystem;
@@ -32,7 +31,7 @@ public class LedDefaultCommand extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void init() {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,7 +48,6 @@ public class LedDefaultCommand extends CommandBase {
         ledSubsystem.setBlink(100, 0, 255, 200);
         // ledSubsystem.setSolidColor(100, 0, 255);
         // ledSubsystem.speed(2);
-
       }
       lastState = ledSubsystem.getLedConeMode();
     }
@@ -57,7 +55,7 @@ public class LedDefaultCommand extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void stop(boolean interrupted) {
     ledSubsystem.setRainbow();
   }
 

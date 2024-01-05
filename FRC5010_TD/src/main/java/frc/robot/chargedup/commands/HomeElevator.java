@@ -2,15 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.chargedup.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.telemetery.WpiDataLogging;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;
 import frc.robot.chargedup.PivotSubsystem;
 
-public class HomeElevator extends CommandBase {
+public class HomeElevator extends GenericCommand {
   ElevatorSubsystem elevatorSubsystem;
   PivotSubsystem pivot;
 
@@ -24,8 +23,7 @@ public class HomeElevator extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    WpiDataLogging.log(getName());
+  public void init() {
     ElevatorSubsystem.setElevatorTargetLevel(ElevatorLevel.ground);
     elevatorSubsystem.initializeRunToTarget(ElevatorLevel.ground.getExtensionPosition());
   }
@@ -38,8 +36,7 @@ public class HomeElevator extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    WpiDataLogging.log(getName() + " ended " + interrupted);
+  public void stop(boolean interrupted) {
     this.elevatorSubsystem.stopAndHoldExtend();
   }
 

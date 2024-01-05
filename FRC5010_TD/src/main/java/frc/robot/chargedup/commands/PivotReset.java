@@ -2,17 +2,16 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.chargedup.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.FRC5010.telemetery.WpiDataLogging;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.chargedup.PivotSubsystem;
 
-public class HomePivot extends CommandBase {
-  /** Creates a new HomePivot. */
-  PivotSubsystem pivotSubsystem;
+public class PivotReset extends GenericCommand {
+  private PivotSubsystem pivotSubsystem;
 
-  public HomePivot(PivotSubsystem pivotSubsystem) {
+  /** Creates a new PivotReset. */
+  public PivotReset(PivotSubsystem pivotSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.pivotSubsystem = pivotSubsystem;
     addRequirements(pivotSubsystem);
@@ -20,23 +19,21 @@ public class HomePivot extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    WpiDataLogging.log(getName());
+  public void init() {
+    pivotSubsystem.pivotPow(-0.5, false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    pivotSubsystem.runPivotToTarget(-45);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    WpiDataLogging.log(getName() + " ended " + interrupted);
-
-    pivotSubsystem.stopAndHoldPivot();
+  public void stop(boolean interrupted) {
+    pivotSubsystem.pivotPow(0, false);
+    pivotSubsystem.setPivotEncoderPosition(0);
   }
 
   // Returns true when the command should end.

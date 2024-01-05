@@ -27,16 +27,15 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.DriveToPosition;
 import frc.robot.FRC5010.commands.DriveToPosition.LCR;
 import frc.robot.FRC5010.constants.AutoMaps;
+import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.mechanisms.GenericMechanism;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
@@ -44,15 +43,15 @@ import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.commands.AutoBalance;
-import frc.robot.commands.HomeElevator;
-import frc.robot.commands.HomePivot;
-import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.MoveElevator;
-import frc.robot.commands.PivotElevator;
+import frc.robot.chargedup.commands.AutoBalance;
+import frc.robot.chargedup.commands.HomeElevator;
+import frc.robot.chargedup.commands.HomePivot;
+import frc.robot.chargedup.commands.IntakeSpin;
+import frc.robot.chargedup.commands.MoveElevator;
+import frc.robot.chargedup.commands.PivotElevator;
 
 /** Add your docs here. */
-public class CompBot extends GenericMechanism {
+public class CompBot_2023_T1G3R extends GenericMechanism {
         private SwerveConstants swerveConstants;
         private Drive drive;
         private DriverDisplaySubsystem driverDiplay;
@@ -63,7 +62,7 @@ public class CompBot extends GenericMechanism {
         private GenericGyro gyro;
         private VisionMultiCam visionSystem;
 
-        public CompBot(Mechanism2d visual, ShuffleboardTab displayTab) {
+        public CompBot_2023_T1G3R(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
                 // Needs to be set
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));

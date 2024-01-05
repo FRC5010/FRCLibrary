@@ -29,6 +29,8 @@
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Drivetrain Visual": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/MoveElevator": "Command",
+      "/SmartDashboard/MoveElevator_ground": "Command",
       "/SmartDashboard/Pigeon 2 [11]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/Pigeon 2 [15]": "Gyro",
@@ -81,7 +83,16 @@
       "open": true
     },
     "SmartDashboard": {
-      "Drive Visual": {
+      "ChargedUpMech": {
+        "open": true
+      },
+      "CompBot_2023_T1G3R": {
+        "open": true
+      },
+      "ElevatorSubsystem": {
+        "open": true
+      },
+      "RobotContainer": {
         "open": true
       },
       "open": true
@@ -137,6 +148,12 @@
       "open": true
     },
     "Server": {
+      "Publishers": {
+        "open": true
+      },
+      "Subscribers": {
+        "open": true
+      },
       "open": true
     }
   }

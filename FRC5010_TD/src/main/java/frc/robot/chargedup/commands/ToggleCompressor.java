@@ -2,23 +2,21 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.chargedup.commands;
 
-import javax.swing.text.Position;
-
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.chargedup.CheeseStick;
 
-public class CheeseStickCommand extends CommandBase {
-  /** Creates a new CheeseStick. */
-  private double position;
-  private CheeseStick cheeseStick;
+public class ToggleCompressor extends CommandBase {
+  /** Creates a new ToggleCompressor. */
+  private boolean isCompressorOn;
+  private Compressor compressor;
 
-  public CheeseStickCommand(double position, CheeseStick cheeseStick) {
-    this.position = position;
-    this.cheeseStick = cheeseStick;
+  public ToggleCompressor() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(cheeseStick);
+    compressor = new Compressor(1, PneumaticsModuleType.REVPH);
   }
 
   // Called when the command is initially scheduled.
@@ -34,12 +32,11 @@ public class CheeseStickCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    cheeseStick.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return cheeseStick.rotateToSetPoint(position);
+    return false;
   }
 }
