@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -116,12 +116,12 @@ public class CurtsLaptopSimulator extends GenericMechanism {
     }
 
     @Override
-    public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
-        return new HashMap<>();
+    public void initAutoCommands() {
+        drive.initAutoCommands();
     }
 
     @Override
-    public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
-        return drive.generateAutoCommand(paths);
+    public Command generateAutoCommand(Command autoCommand) {
+      return drive.generateAutoCommand(autoCommand);
     }
 }

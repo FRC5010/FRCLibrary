@@ -9,9 +9,11 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -46,10 +48,10 @@ import frc.robot.chargedup.CubeCruzer;
  */
 public class RobotContainer extends GenericMechanism {
   // The robot's subsystems and commands are defined here...
-  private SendableChooser<List<PathPlannerTrajectory>> command = new SendableChooser<>();
+  private SendableChooser<Command> command;
   private Controller driver;
   private Controller operator;
-  private static Alliance alliance;
+  private static Optional<Alliance> alliance;
   public static Constants constants;
   private GenericMechanism robot;
   private static String MAC_Address = "MAC ADDRESS";
@@ -78,6 +80,7 @@ public class RobotContainer extends GenericMechanism {
 
     DriverStation.silenceJoystickConnectionWarning(true);
     alliance = determineAllianceColor();
+    
     initRealOrSim();
 
     // Configure the button bindings
@@ -96,6 +99,7 @@ public class RobotContainer extends GenericMechanism {
     public static final String BABY_SWERVE = "BabySwerve";
     public static final String PRACTICE_BOT = "PracticeBot";
     public static final String CURTS_LAPTOP_SIM = "D2:57:7B:3E:C0:47";
+    public static final String MAIN_5010_LAPTOP = "04:EC:D8:22:DA:59";
   }
 
   /**
@@ -117,6 +121,8 @@ public class RobotContainer extends GenericMechanism {
 
     robotFactory();
   }
+
+
 
   private String whereAmI() {
     try {
@@ -165,6 +171,7 @@ public class RobotContainer extends GenericMechanism {
         robot = new PracticeBot(mechVisual, shuffleTab);
         break;
       }
+      case Robots.MAIN_5010_LAPTOP: 
       case Robots.CURTS_LAPTOP_SIM: {
         switch (whoAmI.get()) {
           case "BabySwerve": {
@@ -235,25 +242,23 @@ public class RobotContainer extends GenericMechanism {
   }
 
   @Override
-  public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
-    Map<String, List<PathPlannerTrajectory>> autoCommands = robot.initAutoCommands();
-    command.setDefaultOption("Do nothing auto", new ArrayList<>());
-    if (null != autoCommands) {
-      for (String name : autoCommands.keySet()) {
-        command.addOption(name, autoCommands.get(name));
-      }
-      shuffleTab.add("Auto Modes", command).withSize(2, 1);
+  public void initAutoCommands() {
+    robot.initAutoCommands();
+    command = AutoBuilder.buildAutoChooser();
+    if (null != command) {
+     shuffleTab.add("Auto Modes", command).withSize(2, 1);
     }
-    return autoCommands;
+ 
   }
 
-  public Alliance determineAllianceColor() {
-    Alliance color = DriverStation.getAlliance();
-    if (Alliance.Red.equals(color)) {
+  public Optional<Alliance> determineAllianceColor() {
+    Optional<Alliance> color = DriverStation.getAlliance();
+    if (color.isPresent()) {
+    if (Alliance.Red.equals(color.get())) {
       /**
        * TODO: What to setup if alliance is Red
        */
-    } else if (Alliance.Blue.equals(color)) {
+    } else if (Alliance.Blue.equals(color.get())) {
       /**
        * TODO: What to setup if alliance is Blue
        */
@@ -263,11 +268,15 @@ public class RobotContainer extends GenericMechanism {
        */
     }
     // Return alliance color so that setup functions can also store/pass
+     }
     return color;
+
   }
 
+
   public static Alliance getAlliance() {
-    return alliance;
+    
+    return alliance.get();
   }
 
   public void disabledBehavior() {
@@ -275,7 +284,7 @@ public class RobotContainer extends GenericMechanism {
   }
 
   @Override
-  public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
-    return robot.generateAutoCommand(command.getSelected());
+  public Command generateAutoCommand(Command autoCommand) {
+    return robot.generateAutoCommand(autoCommand);
   }
 }

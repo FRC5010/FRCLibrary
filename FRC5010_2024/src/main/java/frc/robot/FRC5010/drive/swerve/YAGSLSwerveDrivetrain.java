@@ -10,9 +10,10 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import com.pathplanner.lib.auto.BaseAutoBuilder;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -396,22 +397,33 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   }
 
-  public BaseAutoBuilder setAutoBuilder(Map<String, Command> eventMap) {
-    return new SwerveAutoBuilder(
-        () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
-        (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the
-                                                               // beginning of auto
-        new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y
-                                         // PID controllers)
-        new PIDConstants(2.75, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation
-                                          // controller)
-        swerveDrive::setChassisSpeeds, // Module states consumer used to output to the drive subsystem
-        eventMap,
-        true, // Should the path be automatically mirrored depending on alliance color.
-              // Optional, defaults to true
-        this // The drive subsystem. Used to properly set the requirements of path following
-             // commands
-    );
+  public void setAutoBuilder() {
+    
+    AutoBuilder.configureHolonomic(
+                () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
+               (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the
+                this::getRobotVelocity, //  ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                swerveDrive::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        4.5, // Max module speed, in m/s
+                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
   }
 
   private int issueCheckCycles = 0;

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -291,13 +291,13 @@ public class ChargedUpMech extends GenericMechanism {
 	}
 
 	@Override
-	public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
-		return new HashMap<>();
+	public void initAutoCommands() {
+		
 	}
 
 	@Override
-	public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
+	public Command generateAutoCommand(Command autoCommand) {
 		// TODO Auto-generated method stub
-		return null;
+		return autoCommand;
 	}
 }

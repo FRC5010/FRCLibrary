@@ -4,21 +4,20 @@
 
 package frc.robot.FRC5010.drive;
 
-import java.util.Map;
-
-import com.pathplanner.lib.auto.BaseAutoBuilder;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
@@ -32,6 +31,7 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
     private MechanismLigament2d wheel;
     private Persisted<Integer> driveVisualH;
     private Persisted<Integer> driveVisualV;
+    private ChassisSpeeds chassisSpeeds;
 
     public SimulatedDrivetrain(GenericGyro gyro, VisionSystem vision, Mechanism2d mechVisual) {
         super(mechVisual);
@@ -49,6 +49,7 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
+        this.chassisSpeeds = chassisSpeeds;
         Pose2d pose = poseEstimator.getCurrentPose();
         Transform2d direction = new Transform2d(
                 new Translation2d(chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
@@ -61,13 +62,34 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
         wheel.setLength(direction.getTranslation().getNorm() * 1500);
     }
 
+    public ChassisSpeeds getChassisSpeeds() {
+        return chassisSpeeds;
+      }
+
     public Rotation2d getHeading() {
         return poseEstimator.getGyroRotation2d();
     }
 
     @Override
-    public BaseAutoBuilder setAutoBuilder(Map<String, Command> eventMap) {
-        // TODO Auto-generated method stub
-        return null;
+    public void setAutoBuilder() {
+         AutoBuilder.configureRamsete(
+                 () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
+               (Pose2d pose) -> getPoseEstimator().resetToPose(pose),
+                this::getChassisSpeeds, // Current ChassisSpeeds supplier
+                this::drive, // Method that will drive the robot given ChassisSpeeds
+                new ReplanningConfig(), // Default path replanning config. See the API for the options here
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
     }
 }

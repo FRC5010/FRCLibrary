@@ -8,13 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.auto.BaseAutoBuilder;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -41,6 +44,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
   private MotorController5010 left, right;
   private GenericEncoder leftEncoder, rightEncoder;
   private GenericGyro gyro;
+  private ChassisSpeeds chassisSpeeds;
 
   /**
    * Creates a new SkidSteerDrivetrain.
@@ -54,7 +58,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     assert (ports.size() == 4);
     this.motorPorts = ports;
     this.gyro = gyro;
-
+  
     motorList = new ArrayList<>();
     this.left = left;
     motorList.add(left);
@@ -92,6 +96,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
 
   @Override
   public void drive(ChassisSpeeds direction) {
+    chassisSpeeds = direction;
     // WARNING: TODO: this may not be the 'best' way to convert chassis speeds to
     // throttles
     // For example - convert chassis speeds into left and right voltages based on
@@ -145,6 +150,10 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     rightEncoder = new SimulatedEncoder(12, 13);
   }
 
+  public ChassisSpeeds getChassisSpeeds() {
+    return chassisSpeeds;
+  }
+
   /** Update our simulation. This should be run every robot loop in simulation. */
   @Override
   public void simulationPeriodic() {
@@ -165,8 +174,26 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
   }
 
   @Override
-  public BaseAutoBuilder setAutoBuilder(Map<String, Command> eventMap) {
-    // TODO Auto-generated method stub
-    return null;
+  public void setAutoBuilder() {
+   AutoBuilder.configureRamsete(
+                 () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
+               (Pose2d pose) -> getPoseEstimator().resetToPose(pose),
+                this::getChassisSpeeds, // Current ChassisSpeeds supplier
+                this::drive, // Method that will drive the robot given ChassisSpeeds
+                new ReplanningConfig(), // Default path replanning config. See the API for the options here
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
+
   }
 }

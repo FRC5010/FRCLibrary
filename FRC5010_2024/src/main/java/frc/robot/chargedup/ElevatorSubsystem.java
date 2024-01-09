@@ -112,7 +112,7 @@ public class ElevatorSubsystem extends GenericSubsystem {
             "Elevator", Units.metersToInches(kMinElevatorHeight), -30.0, 6, new Color8Bit(Color.kOrange)));
 
     extendSim = new ElevatorSim(DCMotor.getNEO(1), 25,
-        kCarriageMass, kElevatorDrumRadius, kMinElevatorHeight, kMaxElevatorHeight, false);
+        kCarriageMass, kElevatorDrumRadius, kMinElevatorHeight, kMaxElevatorHeight, false, 0);
 
     extendFeedforward = new ElevatorFeedforward(extendConstants.getkS(), extendConstants.getkF(), 0);
 

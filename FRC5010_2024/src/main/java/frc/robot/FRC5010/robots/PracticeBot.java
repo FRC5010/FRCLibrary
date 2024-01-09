@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -125,18 +125,13 @@ public class PracticeBot extends GenericMechanism {
     autoMaps.addMarker("AutoExtendDrop", new GenericCommand("AutoExtendDrop"));
     // Create
     // autoMaps.addPath("8-1 Cube", new PathConstraints(4, 3));
-    // autoMaps.addPath("7-2 North Cone", new PathConstraints(1, 0.5));
-    autoMaps.addPath("6-3 Three Cubes", new PathConstraints(2, 1));
-    autoMaps.addPath("Bal Direct 7-2 Cube", new PathConstraints(1.5, .75));
-    autoMaps.addPath("Bal Over 7-2 Cube", new PathConstraints(1.5, .75));
-    autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1));
-    autoMaps.addPath("8-1 Three Cubes", new PathConstraints(4, 1.75));
+
 
   }
 
   @Override
-  public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
-    return drive.setAutoCommands(autoMaps.getPaths(), autoMaps.getEventMap());
+  public void initAutoCommands() {
+    drive.initAutoCommands();
   }
 
   @Override
@@ -180,7 +175,7 @@ public class PracticeBot extends GenericMechanism {
   }
 
   @Override
-  public Command generateAutoCommand(List<PathPlannerTrajectory> paths) {
-    return drive.generateAutoCommand(paths);
+  public Command generateAutoCommand(Command autoCommand) {
+    return drive.generateAutoCommand(autoCommand);
   }
 }

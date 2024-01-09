@@ -66,7 +66,7 @@ public class CompPivotSubsystem extends SubsystemBase {
 
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,
         40, 2, Units.degreesToRadians(-20),
-        Units.degreesToRadians(60), false);
+        Units.degreesToRadians(60), false, 0);
 
     pivotFeedforward = new ArmFeedforward(liftConstants.getkS(), liftConstants.getkF(), liftConstants.getkV());
 

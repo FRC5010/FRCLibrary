@@ -6,8 +6,6 @@ package frc.robot.FRC5010.drive;
 
 import java.util.Map;
 
-import com.pathplanner.lib.auto.BaseAutoBuilder;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -56,7 +54,7 @@ public abstract class GenericDrivetrain extends SubsystemBase {
         // lockWheels();
     }
 
-    public abstract BaseAutoBuilder setAutoBuilder(Map<String, Command> eventMap);
+    public abstract void setAutoBuilder();
 
     public void disabledBehavior() {
     }

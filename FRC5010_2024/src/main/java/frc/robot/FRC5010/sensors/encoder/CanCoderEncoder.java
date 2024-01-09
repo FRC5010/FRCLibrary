@@ -4,43 +4,43 @@
 
 package frc.robot.FRC5010.sensors.encoder;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.SensorTimeBase;
+
+
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
 public class CanCoderEncoder implements GenericEncoder{
 
-    private CANCoder canCoder;
+    private CANcoder canCoder;
     
     public CanCoderEncoder(int CanID){
-        this.canCoder = new CANCoder(CanID);
-        CANCoderConfiguration config = new CANCoderConfiguration();
-        config.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180;
-        config.sensorCoefficient = 360.0 / 4096.0;
-        config.unitString = "degrees";
-        config.sensorTimeBase = SensorTimeBase.PerSecond;
-        canCoder.configAllSettings(config);
+        this.canCoder = new CANcoder(CanID);
+        CANcoderConfiguration config = new CANcoderConfiguration();
+        // config.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180;
+        // config.sensorCoefficient = 360.0 / 4096.0;
+        // config.unitString = "degrees";
+        // config.sensorTimeBase = SensorTimeBase.PerSecond;
+        // canCoder.configAllSettings(config);
     }
 
     @Override
     public double getPosition() {
         // TODO Auto-generated method stub
-        return Units.degreesToRadians(canCoder.getAbsolutePosition());
+        return Units.degreesToRadians(canCoder.getAbsolutePosition().getValue());
     }
 
     @Override
     public double getVelocity() {
         // TODO Auto-generated method stub
-        return canCoder.getVelocity();
+        return canCoder.getVelocity().getValue();
     }
 
     @Override
     public void reset() {
-        canCoder.setPositionToAbsolute();
+        //canCoder.setPositionToAbsolute();
         // TODO Auto-generated method stub
         
     }

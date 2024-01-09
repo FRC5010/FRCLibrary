@@ -7,7 +7,7 @@ package frc.robot.FRC5010.constants;
 import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -81,9 +81,9 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
 
     }
 
-    public abstract Map<String, List<PathPlannerTrajectory>> initAutoCommands();
+    public abstract void initAutoCommands();
 
-    public abstract Command generateAutoCommand(List<PathPlannerTrajectory> paths);
+    public abstract Command generateAutoCommand(Command autoCommand);
 
     public void disabledBehavior() {
 

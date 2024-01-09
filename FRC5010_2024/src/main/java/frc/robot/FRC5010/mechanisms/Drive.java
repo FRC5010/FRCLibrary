@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.BaseAutoBuilder;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -51,7 +51,7 @@ public class Drive extends GenericMechanism {
     private List<? extends DrivePorts> motorPorts;
     private Persisted<Double> maxChassisVelocity;
     private Persisted<Double> maxChassisRotation;
-    private BaseAutoBuilder autoBuilder;
+    private AutoBuilder autoBuilder;
 
     public static class Type {
         public static final String DIFF_DRIVE = "DifferentialDrive";
@@ -288,26 +288,14 @@ public class Drive extends GenericMechanism {
                 (SwerveConstants) driveConstants);
     }
 
-    public Map<String, List<PathPlannerTrajectory>> initAutoCommands() {
-        return new HashMap<>();
+    public void initAutoCommands() {
+        drivetrain.setAutoBuilder();
     }
 
-    public Map<String, List<PathPlannerTrajectory>> setAutoCommands(Map<String, List<PathPlannerTrajectory>> paths,
-            Map<String, Command> eventMap) {
 
-        Map<String, List<PathPlannerTrajectory>> commands = new HashMap<>();
-        autoBuilder = drivetrain.setAutoBuilder(eventMap);
 
-        for (String name : paths.keySet()) {
-            List<PathPlannerTrajectory> path = paths.get(name);
-            commands.put(name, path);
-        }
-
-        return commands;
-    }
-
-    public Command generateAutoCommand(List<PathPlannerTrajectory> path) {
-        return autoBuilder.fullAuto(path).beforeStarting(() -> {
+    public Command generateAutoCommand(Command autoCommand) {
+        return autoCommand.beforeStarting(() -> {
             drivetrain.resetEncoders();
         });// .until(() -> drivetrain.hasIssues());
     }

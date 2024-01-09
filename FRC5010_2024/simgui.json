@@ -1,0 +1,35 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Pose/Field": "Field2d",
+      "/Shuffleboard/Robot/Auto Modes": "String Chooser",
+      "/SmartDashboard/Drive Visual": "Mechanism2d",
+      "/SmartDashboard/Robot Visual": "Mechanism2d"
+    }
+  },
+  "NetworkTables": {
+    "persistent": {
+      "Preferences": {
+        "open": true
+      }
+    },
+    "transitory": {
+      "Shuffleboard": {
+        "Pose": {
+          "open": true
+        },
+        "Robot": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

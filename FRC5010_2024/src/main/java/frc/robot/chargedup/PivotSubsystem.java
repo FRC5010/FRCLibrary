@@ -70,7 +70,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot kG", pivotConstants.getkF());
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 125,
         SingleJointedArmSim.estimateMOI(2, 24), 2, Units.degreesToRadians(pivotMinLimit),
-        Units.degreesToRadians(pivotMaxLimit), true);
+        Units.degreesToRadians(pivotMaxLimit), true, 0);
     SmartDashboard.putNumber("MOI", SingleJointedArmSim.estimateMOI(2, 19));
     // From CC Code
     // pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 75,

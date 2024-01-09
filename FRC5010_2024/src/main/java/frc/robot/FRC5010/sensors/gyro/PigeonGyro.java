@@ -4,14 +4,14 @@
 
 package frc.robot.FRC5010.sensors.gyro;
 
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 /** Add your docs here. */
 public class PigeonGyro implements GenericGyro {
-    private final WPI_Pigeon2 pigeon2;
+    private final Pigeon2 pigeon2;
 
     public PigeonGyro(int valueCAN) {
-        pigeon2 = new WPI_Pigeon2(valueCAN);
+        pigeon2 = new Pigeon2(valueCAN);
     }
 
     @Override
@@ -21,29 +21,28 @@ public class PigeonGyro implements GenericGyro {
 
     @Override
     public double getAngle() {
-        return pigeon2.getYaw();
+        return pigeon2.getAngle();
     }
 
     @Override
     public double getAngleX() {
-        return pigeon2.getRoll();
+        return pigeon2.getRoll().getValue();
     }
 
     @Override
     public double getAngleY() {
-        return pigeon2.getPitch();
+        return pigeon2.getPitch().getValue();
     }
 
     @Override
     public double getAngleZ() {
-        return pigeon2.getYaw();
+        return pigeon2.getYaw().getValue();
     }
 
     @Override
     public double getRate() {
-        double[] vel = new double[3];
-        pigeon2.getRawGyro(vel);
-        return vel[2];
+
+        return pigeon2.getRate();
     }
 
     @Override

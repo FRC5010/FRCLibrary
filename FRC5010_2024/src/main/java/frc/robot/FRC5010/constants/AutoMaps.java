@@ -8,10 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.server.PathPlannerServer;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -39,6 +37,6 @@ public class AutoMaps {
     }
 
     public void addPath(String name, PathConstraints pathconstraints) {
-        paths.put(name, PathPlanner.loadPathGroup(name, pathconstraints));
+        //paths.put(name, PathPlanner.loadPathGroup(name, pathconstraints));
     }
 }
