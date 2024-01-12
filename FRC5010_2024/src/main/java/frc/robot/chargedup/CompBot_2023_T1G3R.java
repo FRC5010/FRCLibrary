@@ -117,7 +117,7 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                 autoMaps = new AutoMaps();
                 SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
                 ElevatorSubsystem elevatorSubsystem = ((ChargedUpMech) elevator).getElevatorSubsystem();
-                IntakeSubsystem intakeSubsystem = ((ChargedUpMech) elevator).getIntakeSubsystem();
+                //IntakeSubsystem intakeSubsystem = ((ChargedUpMech) elevator).getIntakeSubsystem();
                 PivotSubsystem pivotSubsystem = ((ChargedUpMech) elevator).getPivotSubsystem();
 
                 // Elevator Controls
@@ -152,39 +152,11 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                 autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
 
                 // Intake Controls
-                autoMaps.addMarker("ConeMode",
-                                new InstantCommand(() -> intakeSubsystem.setIntakeCone(), intakeSubsystem)
-                                                .andThen(new WaitCommand(0.25)));
-                autoMaps.addMarker("CubeMode",
-                                new InstantCommand(() -> intakeSubsystem.setIntakeCube(), intakeSubsystem));
-
-                autoMaps.addMarker("CubeModeTimed",
-                                new SequentialCommandGroup(
-                                                new InstantCommand(() -> intakeSubsystem.setIntakeCube(),
-                                                                intakeSubsystem),
-                                                new WaitCommand(.25)));
-
-                autoMaps.addMarker("Yeet Cube", new IntakeSpin(intakeSubsystem, () -> -0.85).withTimeout(0.25));
-                autoMaps.addMarker("OuttakeFast", (new IntakeSpin(intakeSubsystem, () -> -0.6).withTimeout(.25)));
-                autoMaps.addMarker("Outtake", (new IntakeSpin(intakeSubsystem, () -> -0.5).withTimeout(.25)));
-                autoMaps.addMarker("OuttakeSlow", (new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(.25)));
-                autoMaps.addMarker("OuttakeSlower", new IntakeSpin(intakeSubsystem, () -> -0.2).withTimeout(0.25));
-                autoMaps.addMarker("Intake", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(0.5)));
-                autoMaps.addMarker("IntakeLong", (new IntakeSpin(intakeSubsystem, () -> 1.0).withTimeout(5.0)));
                 // Drivetrain Controls
                 autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
                 autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
                 // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
                 // Wheels"))));
-
-                autoMaps.addMarker("AutoExtendDrop", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium)
-                                .andThen(new IntakeSpin(intakeSubsystem, () -> -0.3).withTimeout(0.5)));
-
-                autoMaps.addMarker("AutoGroundPickUp",
-                                new PivotElevator(pivotSubsystem, ElevatorLevel.ground)
-                                                .andThen(new MoveElevator(elevatorSubsystem,
-                                                                () -> ElevatorLevel.ground))
-                                                .deadlineWith(new IntakeSpin(intakeSubsystem, () -> 1.0)));
 
                 autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
                                 .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem)));

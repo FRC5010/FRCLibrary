@@ -63,7 +63,7 @@ public class VisionPhoton extends VisionSystem {
         }
         var camResult = camera.getLatestResult();
         Pose3d robotPoseEstInit = new Pose3d();
-        var targetInit = new PhotonTrackedTarget();
+        PhotonTrackedTarget targetInit = null;
         double deltaTimeInit = Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
         if (camResult.hasTargets()) {
             targetInit = camResult.getBestTarget();

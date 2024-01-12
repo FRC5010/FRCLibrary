@@ -68,13 +68,13 @@ public class ChargedUpMech extends GenericMechanism {
 				1, 8,
 				() -> elevatorSubsystem.getExtendPosition(), mechVisual);
 
-		this.intakeSubsystem = new IntakeSubsystem(
-				MotorFactory.NEO(19),
-				MotorFactory.NEO(18),
-				new MotorModelConstants(0, 0, 0),
-				new GenericPID(0.003, 0, 0),
-				new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
-				mechVisual);
+		// this.intakeSubsystem = new IntakeSubsystem(
+		// 		MotorFactory.NEO(19),
+		// 		MotorFactory.NEO(18),
+		// 		new MotorModelConstants(0, 0, 0),
+		// 		new GenericPID(0.003, 0, 0),
+		// 		new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
+		// 		mechVisual);
 		// TODO: Set up IntakeSubsystem add correct values please
 		this.buttonOperator = buttonOperator;
 		this.ledSubsystem = ledSubsystem;
@@ -169,24 +169,24 @@ public class ChargedUpMech extends GenericMechanism {
 					speedLimit = kElevatorMaxSpeedLimit;
 				}));
 
-		buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {
-			intakeSubsystem.setIntakeCone();
-		}, intakeSubsystem));
+		// buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {
+		// 	intakeSubsystem.setIntakeCone();
+		// }, intakeSubsystem));
 
-		operator.createLeftBumper().onTrue(new InstantCommand(() -> {
-			intakeSubsystem.setIntakeCone();
-		}, intakeSubsystem));
+		// operator.createLeftBumper().onTrue(new InstantCommand(() -> {
+		// 	intakeSubsystem.setIntakeCone();
+		// }, intakeSubsystem));
 
-		buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {
-			intakeSubsystem.setIntakeCube();
-		}, intakeSubsystem));
+		// buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {
+		// 	intakeSubsystem.setIntakeCube();
+		// }, intakeSubsystem));
 
-		operator.createRightBumper().onTrue(new InstantCommand(() -> {
-			intakeSubsystem.setIntakeCube();
-		}, intakeSubsystem));
+		// operator.createRightBumper().onTrue(new InstantCommand(() -> {
+		// 	intakeSubsystem.setIntakeCube();
+		// }, intakeSubsystem));
 
-		buttonOperator.getButton(10)
-				.whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-intakeSpeedLimit, -1)));
+		// buttonOperator.getButton(10)
+		// 		.whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-intakeSpeedLimit, -1)));
 
 		buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
 		buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); // The deadzone isnt technically
@@ -213,16 +213,16 @@ public class ChargedUpMech extends GenericMechanism {
 		// speedLimit))
 		// );
 
-		new Trigger(() -> (Math
-				.abs(driver.getRightTrigger() - driver.getLeftTrigger()) > 0.01))
-				.whileTrue(new IntakeSpin(intakeSubsystem,
-						() -> (driver.getRightTrigger()
-								- driver.getLeftTrigger()) * 1));
+		// new Trigger(() -> (Math
+		// 		.abs(driver.getRightTrigger() - driver.getLeftTrigger()) > 0.01))
+		// 		.whileTrue(new IntakeSpin(intakeSubsystem,
+		// 				() -> (driver.getRightTrigger()
+		// 						- driver.getLeftTrigger()) * 1));
 
-		new Trigger(() -> (Math
-				.abs(operator.getRightTrigger()) > 0.01))
-				.whileTrue(new IntakeSpin(intakeSubsystem,
-						() -> (operator.getRightTrigger() * -1)));
+		// new Trigger(() -> (Math
+		// 		.abs(operator.getRightTrigger()) > 0.01))
+		// 		.whileTrue(new IntakeSpin(intakeSubsystem,
+		// 				() -> (operator.getRightTrigger() * -1)));
 
 		driver.createDownPovButton()
 				.onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
@@ -278,7 +278,7 @@ public class ChargedUpMech extends GenericMechanism {
 				() -> false,
 				pivotSubsystem));
 
-		ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem, elevatorSubsystem));
+		//ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem, elevatorSubsystem));
 	}
 
 	@Override
