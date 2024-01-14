@@ -4,12 +4,6 @@
 
 package frc.robot.chargedup;
 
-import java.util.List;
-import java.util.Map;
-
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -18,10 +12,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
@@ -36,7 +28,6 @@ public class CubeCruzer extends GenericMechanism {
         private SwerveConstants swerveConstants;
         private Drive drive;
         private DriverDisplaySubsystem driverDiplay;
-        private AutoMaps autoMaps;
         private ButtonBoard buttonOperator;
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
@@ -86,38 +77,7 @@ public class CubeCruzer extends GenericMechanism {
 
                 buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
                 buttonOperator.createButtons(11);
-
-                autoMaps = new AutoMaps();
-                SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
-
-                // Elevator Controls
-                // Drivetrain Controls
-                autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
-                autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
-
-                // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
-                // Wheels"))));
-
-                // Create Paths
-                // autoMaps.addPath("6-3 Cube", new PathConstraints(2, 1.2));
-                autoMaps.addPath("6-3 Cube Multi", new PathConstraints(2, 1, 0, 0));
-                autoMaps.addPath("6-3 Cube Out", new PathConstraints(2, 1, 0, 0));
-                autoMaps.addPath("6-3 Score", new PathConstraints(1.75, 1, 0, 0));
-                // autoMaps.addPath("6-3 Three Piece", new PathConstraints(4, 2));
-
-                // autoMaps.addPath("Bal Over 7-2 Slow Cube", new PathConstraints(1.75, 1.2));
-                autoMaps.addPath("Bal Over 7-2", new PathConstraints(1.75, 1, 0, 0));
-                autoMaps.addPath("Bal Over 7-2 Slow", new PathConstraints(1.75, 1, 0, 0));
-                autoMaps.addPath("Bal Direct 7-2", new PathConstraints(1.75, 1, 0, 0));
-
-                autoMaps.addPath("8-1 Cube Out", new PathConstraints(1.75, 1, 0, 0));
-                autoMaps.addPath("8-1 Cube Multi", new PathConstraints(1.75, 1, 0, 0));
-                autoMaps.addPath("8-1 Score", new PathConstraints(1.75, 1, 0, 0));
-                // autoMaps.addPath("8-1 Three Piece", new PathConstraints(4, 2));
-                autoMaps.addPath("Command Test", new PathConstraints(1.75, 1, 0, 0));
-
         }
-        // autoMaps.addPath("Command Test", new PathConstraints(4, 1.75));
 
    
 

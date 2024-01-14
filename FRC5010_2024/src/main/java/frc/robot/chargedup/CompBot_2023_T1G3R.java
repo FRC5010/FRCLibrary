@@ -6,11 +6,8 @@ package frc.robot.chargedup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
-import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -22,13 +19,10 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.commands.DriveToPosition;
 import frc.robot.FRC5010.commands.DriveToPosition.LCR;
-import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
@@ -43,11 +37,6 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.commands.AutoBalance;
-import frc.robot.chargedup.commands.HomeElevator;
-import frc.robot.chargedup.commands.HomePivot;
-import frc.robot.chargedup.commands.IntakeSpin;
-import frc.robot.chargedup.commands.MoveElevator;
-import frc.robot.chargedup.commands.PivotElevator;
 
 /** Add your docs here. */
 public class CompBot_2023_T1G3R extends GenericMechanism {
@@ -55,7 +44,6 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
         private Drive drive;
         private DriverDisplaySubsystem driverDiplay;
         private GenericMechanism elevator;
-        private AutoMaps autoMaps;
         private ButtonBoard buttonOperator;
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
@@ -106,65 +94,13 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                 gyro = new PigeonGyro(13);
 
                 drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, swervePorts, swerveConstants,
-                                "swervemk4i");
+                                "t1g3r_mk4i");
 
                 driverDiplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 
                 buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
                 buttonOperator.createButtons(11);
                 elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator, ledSubsystem);
-
-                autoMaps = new AutoMaps();
-                SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
-                ElevatorSubsystem elevatorSubsystem = ((ChargedUpMech) elevator).getElevatorSubsystem();
-                //IntakeSubsystem intakeSubsystem = ((ChargedUpMech) elevator).getIntakeSubsystem();
-                PivotSubsystem pivotSubsystem = ((ChargedUpMech) elevator).getPivotSubsystem();
-
-                // Elevator Controls
-                autoMaps.addMarker("ExtendToPivotPosition",
-                                new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.low));
-                autoMaps.addMarker("HomeElevator", new HomeElevator(elevatorSubsystem, pivotSubsystem));
-
-                autoMaps.addMarker("ExtendToGround",
-                                new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.ground));
-
-                autoMaps.addMarker("ExtendToLoading",
-                                new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.loading)
-                                                .andThen(new WaitCommand(0.1)));
-
-                autoMaps.addMarker("ExtendToMid", new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.medium));
-
-                autoMaps.addMarker("ExtendToHigh",
-                                new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.high));
-
-                autoMaps.addMarker("ExtendToConePickUp",
-                                new MoveElevator(elevatorSubsystem, () -> ElevatorLevel.conePickUp));
-
-                autoMaps.addMarker("PivotToGround", new PivotElevator(pivotSubsystem,
-                                ElevatorLevel.ground));
-                autoMaps.addMarker("PivotToLow", new PivotElevator(pivotSubsystem,
-                                ElevatorLevel.low));
-                autoMaps.addMarker("PivotToMid", new PivotElevator(pivotSubsystem,
-                                ElevatorLevel.medium));
-
-                autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
-                                ElevatorLevel.high));
-                autoMaps.addMarker("HomePivot", new HomePivot(pivotSubsystem));
-
-                // Intake Controls
-                // Drivetrain Controls
-                autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
-                autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
-                // .beforeStarting(new InstantCommand(() -> WpiDataLogging.log("Lock
-                // Wheels"))));
-
-                autoMaps.addMarker("Cube Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.medium)
-                                .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem)));
-
-                autoMaps.addMarker("Cone Retract", new PivotElevator(pivotSubsystem, ElevatorLevel.high)
-                                .alongWith(new HomeElevator(elevatorSubsystem, pivotSubsystem)));
-
-
                 initRealOrSim();
         }
         // autoMaps.addPath("Command Test", new PathConstraints(4, 1.75));

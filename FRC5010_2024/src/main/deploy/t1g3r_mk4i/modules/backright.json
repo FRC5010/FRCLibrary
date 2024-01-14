@@ -10,7 +10,7 @@
     "canbus": null
   },
   "encoder": {
-    "type": "canandcoder",
+    "type": "canandcoder_ext",
     "id": 9,
     "canbus": null
   },

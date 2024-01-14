@@ -85,7 +85,7 @@ public class AprilTags {
     static {
         try {
             aprilTagFieldLayout = AprilTagFieldLayout
-                    .loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+                    .loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
                
             List<AprilTag> aprilTagPoses = new ArrayList<>();       
             for (AprilTag5010 aprilTag : AprilTag5010.values()) {

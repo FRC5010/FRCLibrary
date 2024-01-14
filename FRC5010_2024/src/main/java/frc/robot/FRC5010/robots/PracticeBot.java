@@ -22,7 +22,6 @@ import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionLimeLightSim;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
-import frc.robot.FRC5010.constants.AutoMaps;
 import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -43,7 +42,6 @@ public class PracticeBot extends GenericMechanism {
   private GenericGyro gyro;
   private SwerveConstants swerveConstants;
   private DriverDisplaySubsystem driverDisplay;
-  private AutoMaps autoMaps;
   private Drive drive;
   private LedSubsystem ledSubsystem;
   private SwerveDrivetrain swerveDrivetrain;
@@ -99,34 +97,7 @@ public class PracticeBot extends GenericMechanism {
 
     driverDisplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 
-    autoMaps = new AutoMaps();
     swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
-
-    // Drivetrain Controls
-    autoMaps.addMarker("AutoBalance", new AutoBalance(swerveDrivetrain, () -> false, gyro));
-    autoMaps.addMarker("ExtendToPivotPosition", new GenericCommand("ExtendToPivotPosition"));
-    autoMaps.addMarker("HomeElevator", new GenericCommand("HomeElevator"));
-    autoMaps.addMarker("PivotToGround", new GenericCommand("PivotToGround"));
-    autoMaps.addMarker("PivotToLow", new GenericCommand("PivotToLow"));
-    autoMaps.addMarker("PivotToMid", new GenericCommand("PivotToMid"));
-    autoMaps.addMarker("LockWheels", new InstantCommand(() -> swerveDrivetrain.lockWheels()));
-    autoMaps.addMarker("Yeet Cube", new GenericCommand("Cube has been yeeted"));
-    // autoMaps.addMarker("PivotToHigh", new PivotElevator(pivotSubsystem,
-    // ElevatorLevel.high));
-    autoMaps.addMarker("HomePivot", new GenericCommand("HomePivot"));
-
-    // Intake Controls
-    autoMaps.addMarker("ConeMode", new GenericCommand("ConeMode"));
-    autoMaps.addMarker("CubeMode", new GenericCommand("CubeMode"));
-    autoMaps.addMarker("Outtake", new GenericCommand("Outtake"));
-    autoMaps.addMarker("Intake", new GenericCommand("Intake"));
-
-    // Drivetrain Controls
-    autoMaps.addMarker("AutoExtendDrop", new GenericCommand("AutoExtendDrop"));
-    // Create
-    // autoMaps.addPath("8-1 Cube", new PathConstraints(4, 3));
-
-
   }
 
   @Override

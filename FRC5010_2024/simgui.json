@@ -5,31 +5,50 @@
       "/Shuffleboard/Pose/Field": "Field2d",
       "/Shuffleboard/Robot/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/MoveElevator_ground": "Command",
+      "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d"
+    },
+    "windows": {
+      "/Shuffleboard/Pose/Field": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
-    "persistent": {
-      "Preferences": {
-        "open": true
-      }
-    },
     "transitory": {
       "Shuffleboard": {
-        "Pose": {
-          "open": true
-        },
         "Robot": {
           "open": true
-        },
-        "open": true
+        }
       },
       "SmartDashboard": {
-        "open": true
+        "open": true,
+        "swerve": {
+          "double[]##v_/SmartDashboard/swerve/desiredStates": {
+            "open": true
+          },
+          "double[]##v_/SmartDashboard/swerve/measuredStates": {
+            "open": true
+          },
+          "open": true
+        }
       }
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
     "visible": true
   }
 }

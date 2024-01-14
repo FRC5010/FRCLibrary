@@ -67,6 +67,7 @@ public class DeviceJson
         return new SparkMaxEncoderSwerve(motor, 1);
       case "sparkmax_analog":
         return new SparkMaxAnalogEncoderSwerve(motor);
+      case "canandcoder_ext":
       case "canandcoder":
         return new SparkMaxEncoderSwerve(motor, 360);
       case "canandcoder_can":

@@ -73,7 +73,8 @@ public class ModuleJson
     SwerveAbsoluteEncoder absEncoder = encoder.createEncoder(angleMotor);
 
     // If the absolute encoder is attached.
-    if (absEncoder != null && angleMotor.getMotor() instanceof CANSparkMax)
+    if (!"canandcoder_ext".equalsIgnoreCase(encoder.type) 
+      && absEncoder != null && angleMotor.getMotor() instanceof CANSparkMax)
     {
       if (absEncoder.getAbsoluteEncoder() instanceof MotorFeedbackSensor)
       {
