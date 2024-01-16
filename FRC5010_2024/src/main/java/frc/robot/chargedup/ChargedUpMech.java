@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -292,7 +293,8 @@ public class ChargedUpMech extends GenericMechanism {
 
 	@Override
 	public void initAutoCommands() {
-		
+		NamedCommands.registerCommand("Pivot to Ground", new PivotElevator(pivotSubsystem, ElevatorLevel.ground));
+		NamedCommands.registerCommand("Pivot to High", new PivotElevator(pivotSubsystem, ElevatorLevel.high));
 	}
 
 	@Override

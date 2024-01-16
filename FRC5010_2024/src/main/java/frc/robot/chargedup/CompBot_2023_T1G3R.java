@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -37,6 +39,7 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.commands.AutoBalance;
+import frc.robot.chargedup.commands.PivotElevator;
 
 /** Add your docs here. */
 public class CompBot_2023_T1G3R extends GenericMechanism {
@@ -171,6 +174,7 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
 
         @Override
         public void initAutoCommands() {
+                elevator.initAutoCommands();
                 drive.initAutoCommands();
         }
 
