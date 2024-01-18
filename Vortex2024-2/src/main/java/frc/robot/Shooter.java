@@ -55,8 +55,10 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Top Motor", 0.0);
     SmartDashboard.putNumber("Down Motor", 0.0);
     top_motor = new CANSparkFlex(kMotorPort, MotorType.kBrushless);
+    top_motor.restoreFactoryDefaults(false);
     top_encoder = top_motor.getEncoder();
     bottom_motor = new CANSparkFlex(kMotorPort2, MotorType.kBrushless);
+    bottom_motor.restoreFactoryDefaults(false);
     bottom_encoder = bottom_motor.getEncoder();
 
 
@@ -86,6 +88,8 @@ public class Shooter extends SubsystemBase {
 
     top_encoder.setPositionConversionFactor((Math.PI * Units.inchesToMeters(3)));
     bottom_encoder.setPositionConversionFactor((Math.PI * Units.inchesToMeters(3)));
+    top_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
+    bottom_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
   }
 
   private void topVoltageDrive(Measure<Voltage> voltage) {
