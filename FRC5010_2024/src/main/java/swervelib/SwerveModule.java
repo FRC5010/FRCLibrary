@@ -196,6 +196,8 @@ public class SwerveModule
         cosineScalar = 0.0;
       }
 
+      cosineScalar = 1.0;
+
       double velocity = desiredState.speedMetersPerSecond * (cosineScalar);
       driveMotor.setReference(velocity, feedforward.calculate(velocity));
     }

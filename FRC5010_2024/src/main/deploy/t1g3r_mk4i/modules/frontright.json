@@ -10,7 +10,7 @@
     "canbus": null
   },
   "encoder": {
-    "type": "canandcoder_ext",
+    "type": "canandcoder",
     "id": 11,
     "canbus": null
   },
@@ -18,7 +18,6 @@
     "drive": true,
     "angle": true
   },
-  "absoluteEncoderOffset": 0,
   "absoluteEncoderInverted": true,
   "location": {
     "front": 13.5,
