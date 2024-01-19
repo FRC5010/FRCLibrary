@@ -7,10 +7,9 @@ package frc.robot;
 import static edu.wpi.first.units.MutableMeasure.mutable;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -23,30 +22,29 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 
 public class Shooter extends SubsystemBase {
-  private static final int kMotorPort = 1;
-  private static final int kMotorPort2 = 2;
-  private static final int kEncoderPortA = 0;
-  private static final int kEncoderPortB = 1;
+  private static final int kMotorPort = 2;
+  private static final int kMotorPort2 = 1;
 
   private CANSparkFlex top_motor;
   private CANSparkFlex bottom_motor;
   private RelativeEncoder top_encoder;
   private RelativeEncoder bottom_encoder;
-  private SparkPIDController pid;
+  private SparkPIDController top_pid;
+  private SparkPIDController bot_pid;
 
   private SysIdRoutine topRoutine;
-  private SysIdRoutine bottomRoutine;
+  //private SysIdRoutine bottomRoutine;
+
+  private double topKs = 0;
 
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
   private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
@@ -57,21 +55,24 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Top Motor", 0.0);
     SmartDashboard.putNumber("Down Motor", 0.0);
     top_motor = new CANSparkFlex(kMotorPort, MotorType.kBrushless);
-    top_motor.restoreFactoryDefaults(false);
+    top_motor.restoreFactoryDefaults();
     top_encoder = top_motor.getEncoder();
     bottom_motor = new CANSparkFlex(kMotorPort2, MotorType.kBrushless);
-    bottom_motor.restoreFactoryDefaults(false);
+    bottom_motor.restoreFactoryDefaults();
     bottom_encoder = bottom_motor.getEncoder();
-
-
-    // bottomRoutine = new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(this::bottomVoltageDrive, log -> {
-    //   log.motor("bottom motor")
-    //       .voltage(
-    //           m_appliedVoltage.mut_replace(
-    //               bottom_motor.get() * RobotController.getBatteryVoltage(), Volts))
-    //       .linearPosition(m_distance.mut_replace(bottom_encoder.getPosition(), Meters))
-    //       .linearVelocity(
-    //           m_velocity.mut_replace(bottom_encoder.getVelocity(), MetersPerSecond));
+    // top_motor.setInverted(true);
+    // bottom_motor.setInverted(true);
+    top_encoder.setPosition(0);
+    bottom_encoder.setPosition(0);
+    // bottomRoutine = new SysIdRoutine(new Config(), new
+    // SysIdRoutine.Mechanism(this::bottomVoltageDrive, log -> {
+    // log.motor("bottom motor")
+    // .voltage(
+    // m_appliedVoltage.mut_replace(
+    // bottom_motor.get() * RobotController.getBatteryVoltage(), Volts))
+    // .linearPosition(m_distance.mut_replace(bottom_encoder.getPosition(), Meters))
+    // .linearVelocity(
+    // m_velocity.mut_replace(bottom_encoder.getVelocity(), MetersPerSecond));
     // }, this));
     topRoutine = new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(this::topVoltageDrive, log -> {
       log.motor("top motor")
@@ -88,18 +89,31 @@ public class Shooter extends SubsystemBase {
     top_motor.setIdleMode(IdleMode.kCoast);
     bottom_motor.setIdleMode(IdleMode.kCoast);
 
-    
+    top_encoder.setPositionConversionFactor((Math.PI * Units.inchesToMeters(3)));
+    bottom_encoder.setPositionConversionFactor((Math.PI * Units.inchesToMeters(3)));
     top_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
     bottom_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
+    
+    top_pid = top_motor.getPIDController();
+    bot_pid = bottom_motor.getPIDController();
+    top_pid.setP(0);
+    top_pid.setD(0);
+    top_pid.setFF(0);
+    top_pid.setI(0);
+
+    bot_pid.setP(0);
+    bot_pid.setD(0);
+    bot_pid.setFF(0);
+    bot_pid.setI(0);
   }
 
   private void topVoltageDrive(Measure<Voltage> voltage) {
     top_motor.setVoltage(voltage.in(Volts));
   }
 
-  // private void bottomVoltageDrive(Measure<Voltage> voltage) {
-  //   bottom_motor.setVoltage(voltage.in(Volts));
-  // }
+  private void bottomVoltageDrive(Measure<Voltage> voltage) {
+    bottom_motor.setVoltage(voltage.in(Volts));
+  }
 
   public double deadzone(double value, double deadzone) {
     if (Math.abs(value) < deadzone)
@@ -111,8 +125,11 @@ public class Shooter extends SubsystemBase {
   public void runMotors(CommandXboxController joystick) {
     double Jpower = deadzone(joystick.getRawAxis(1), 0.05);
     if (joystick.rightBumper().getAsBoolean()) {
-      top_motor.set(-SmartDashboard.getNumber("Top Motor", 0.0));
-      bottom_motor.set(-SmartDashboard.getNumber("Down Motor", 0.0));
+      top_motor.set(SmartDashboard.getNumber("Top Motor", 0.0));
+      bottom_motor.set(SmartDashboard.getNumber("Down Motor", 0.0));
+    } else if (joystick.leftBumper().getAsBoolean()) {
+      top_pid.setReference(SmartDashboard.getNumber("Top Motor", 0.0), ControlType.kVelocity, 0, topKs);
+      // TODO add bottom
     } else {
       top_motor.set(Jpower);
       bottom_motor.set(Jpower);
@@ -138,8 +155,10 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Encoder", top_encoder.getPosition());
-    SmartDashboard.putNumber("Encoder Velocity", top_encoder.getVelocity());
+    SmartDashboard.putNumber("Top Encoder", top_encoder.getPosition());
+    SmartDashboard.putNumber("Top Velocity", top_encoder.getVelocity());
     SmartDashboard.putNumber("Encoder Counts Per Revolution", top_encoder.getCountsPerRevolution());
+    SmartDashboard.putNumber("Bot Encoder", bottom_encoder.getPosition());
+    SmartDashboard.putNumber("Bot Velocity", bottom_encoder.getVelocity());
   }
 }

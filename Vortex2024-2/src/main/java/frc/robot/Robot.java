@@ -48,6 +48,12 @@ public class Robot extends TimedRobot {
     // joystick.b().whileTrue(shooter.bottomSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     // joystick.x().whileTrue(shooter.bottomSysIdDynamic(SysIdRoutine.Direction.kForward));
     // joystick.y().whileTrue(shooter.bottomSysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    
+
+    // Use SetDistancePerPulse to set the multiplier for GetDistance
+    // This is set up assuming a 6 inch wheel with a 360 CPR encoder.
+
   }
 
   /*
