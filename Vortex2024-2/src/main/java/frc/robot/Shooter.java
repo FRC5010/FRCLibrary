@@ -7,7 +7,9 @@ package frc.robot;
 import static edu.wpi.first.units.MutableMeasure.mutable;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -62,15 +64,15 @@ public class Shooter extends SubsystemBase {
     bottom_encoder = bottom_motor.getEncoder();
 
 
-    bottomRoutine = new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(this::bottomVoltageDrive, log -> {
-      log.motor("bottom motor")
-          .voltage(
-              m_appliedVoltage.mut_replace(
-                  bottom_motor.get() * RobotController.getBatteryVoltage(), Volts))
-          .linearPosition(m_distance.mut_replace(bottom_encoder.getPosition(), Meters))
-          .linearVelocity(
-              m_velocity.mut_replace(bottom_encoder.getVelocity(), MetersPerSecond));
-    }, this));
+    // bottomRoutine = new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(this::bottomVoltageDrive, log -> {
+    //   log.motor("bottom motor")
+    //       .voltage(
+    //           m_appliedVoltage.mut_replace(
+    //               bottom_motor.get() * RobotController.getBatteryVoltage(), Volts))
+    //       .linearPosition(m_distance.mut_replace(bottom_encoder.getPosition(), Meters))
+    //       .linearVelocity(
+    //           m_velocity.mut_replace(bottom_encoder.getVelocity(), MetersPerSecond));
+    // }, this));
     topRoutine = new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(this::topVoltageDrive, log -> {
       log.motor("top motor")
           .voltage(
@@ -86,8 +88,7 @@ public class Shooter extends SubsystemBase {
     top_motor.setIdleMode(IdleMode.kCoast);
     bottom_motor.setIdleMode(IdleMode.kCoast);
 
-    top_encoder.setPositionConversionFactor((Math.PI * Units.inchesToMeters(3)));
-    bottom_encoder.setPositionConversionFactor((Math.PI * Units.inchesToMeters(3)));
+    
     top_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
     bottom_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
   }
@@ -96,9 +97,9 @@ public class Shooter extends SubsystemBase {
     top_motor.setVoltage(voltage.in(Volts));
   }
 
-  private void bottomVoltageDrive(Measure<Voltage> voltage) {
-    bottom_motor.setVoltage(voltage.in(Volts));
-  }
+  // private void bottomVoltageDrive(Measure<Voltage> voltage) {
+  //   bottom_motor.setVoltage(voltage.in(Volts));
+  // }
 
   public double deadzone(double value, double deadzone) {
     if (Math.abs(value) < deadzone)
@@ -118,17 +119,17 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  public Command bottomSysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return bottomRoutine.quasistatic(direction);
-  }
+  // public Command bottomSysIdQuasistatic(SysIdRoutine.Direction direction) {
+  //   return bottomRoutine.quasistatic(direction);
+  // }
 
   public Command topSysIdQuasistatic(SysIdRoutine.Direction direction) {
     return topRoutine.quasistatic(direction);
   }
 
-  public Command bottomSysIdDynamic(SysIdRoutine.Direction direction) {
-    return bottomRoutine.dynamic(direction);
-  }
+  // public Command bottomSysIdDynamic(SysIdRoutine.Direction direction) {
+  //   return bottomRoutine.dynamic(direction);
+  // }
 
   public Command topSysIdDynamic(SysIdRoutine.Direction direction) {
     return topRoutine.dynamic(direction);
