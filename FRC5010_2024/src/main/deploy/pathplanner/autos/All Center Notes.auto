@@ -1,0 +1,109 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.9292510892714109,
+      "y": 5.550603828480384
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2-1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Note Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot From Left Medium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Note Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot From Center Medium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2-3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Note Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot From Center Medium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2-4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Note Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot From Right Medium"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2-5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Note Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot From Right Medium"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
