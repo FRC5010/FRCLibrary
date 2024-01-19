@@ -1,0 +1,10 @@
+{
+  "download": {
+    "deleteAfter": false,
+    "localDir": "C:\\Users\\Tiger Dynasty\\Downloads\\SysId",
+    "serverTeam": "5010"
+  },
+  "output": {
+    "outputFolder": "C:\\Users\\Tiger Dynasty\\Downloads\\SysId"
+  }
+}
