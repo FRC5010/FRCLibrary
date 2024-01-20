@@ -6,7 +6,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -36,20 +39,29 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 
     joystick = new CommandXboxController(kJoystickPort);
-    shooter.setDefaultCommand(new RunCommand(() -> shooter.runMotors(joystick), shooter));
+    shooter.setDefaultCommand(new FunctionalCommand(
+        () -> shooter.invertMotors(true), // init
+        () -> shooter.runMotors(joystick), // execute
+        (Boolean interupted) -> { // end
+          shooter.stopMotors();
+        },
+        () -> { // isFinished
+          return false;
+        }, shooter));
     // Top Motor Analysis Code
-    joystick.a().whileTrue(shooter.topSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    joystick.a().whileTrue(
+        new InstantCommand(() -> shooter.invertMotors(false))
+        .andThen(shooter.topSysIdQuasistatic(SysIdRoutine.Direction.kForward))
+        .andThen(new WaitCommand(7))
+        .andThen(shooter.topSysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+        .andThen(new WaitCommand(7))
+        .andThen(shooter.topSysIdDynamic(SysIdRoutine.Direction.kForward))
+        .andThen(new WaitCommand(7))
+        .andThen(shooter.topSysIdDynamic(SysIdRoutine.Direction.kReverse)));
+
     joystick.b().whileTrue(shooter.topSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     joystick.x().whileTrue(shooter.topSysIdDynamic(SysIdRoutine.Direction.kForward));
     joystick.y().whileTrue(shooter.topSysIdDynamic(SysIdRoutine.Direction.kReverse));
-    
-    // Bottom Motor Analysis Code
-    // joystick.a().whileTrue(shooter.bottomSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // joystick.b().whileTrue(shooter.bottomSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // joystick.x().whileTrue(shooter.bottomSysIdDynamic(SysIdRoutine.Direction.kForward));
-    // joystick.y().whileTrue(shooter.bottomSysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    
 
     // Use SetDistancePerPulse to set the multiplier for GetDistance
     // This is set up assuming a 6 inch wheel with a 360 CPR encoder.
