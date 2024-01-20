@@ -1,7 +1,6 @@
 package swervelib.parser.json;
 
 import com.revrobotics.SparkRelativeEncoder.Type;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
@@ -14,16 +13,19 @@ import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.imu.ADIS16448Swerve;
+import swervelib.imu.ADIS16470Swerve;
 import swervelib.imu.ADXRS450Swerve;
 import swervelib.imu.AnalogGyroSwerve;
 import swervelib.imu.NavXSwerve;
 import swervelib.imu.Pigeon2Swerve;
+import swervelib.imu.PigeonSwerve;
 import swervelib.imu.SwerveIMU;
 import swervelib.motors.SparkFlexSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
 import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
 import swervelib.motors.TalonFXSwerve;
+import swervelib.motors.TalonSRXSwerve;
 
 /**
  * Device JSON parsed class. Used to access the JSON data.
@@ -67,7 +69,6 @@ public class DeviceJson
         return new SparkMaxEncoderSwerve(motor, 1);
       case "sparkmax_analog":
         return new SparkMaxAnalogEncoderSwerve(motor);
-      case "canandcoder_ext":
       case "canandcoder":
         return new SparkMaxEncoderSwerve(motor, 360);
       case "canandcoder_can":
@@ -105,6 +106,8 @@ public class DeviceJson
     {
       case "adis16448":
         return new ADIS16448Swerve();
+      case "adis16470":
+        return new ADIS16470Swerve();
       case "adxrs450":
         return new ADXRS450Swerve();
       case "analog":
@@ -123,6 +126,8 @@ public class DeviceJson
         return new NavXSwerve(Port.kUSB);
       case "navx_mxp":
         return new NavXSwerve(Port.kMXP);
+      case "pigeon":
+        return new PigeonSwerve(id);
       case "pigeon2":
         return new Pigeon2Swerve(id, canbus != null ? canbus : "");
       default:
@@ -176,6 +181,8 @@ public class DeviceJson
       case "falcon":
       case "talonfx":
         return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor);
+      case "talonsrx":
+        return new TalonSRXSwerve(id, isDriveMotor);
       default:
         throw new RuntimeException(type + " is not a recognized motor type.");
     }
