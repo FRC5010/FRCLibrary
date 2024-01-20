@@ -116,12 +116,14 @@ public class Shooter extends SubsystemBase {
     top_pid.setP(TopKp);
     top_pid.setD(0);
     top_pid.setFF(TopKv);
-    top_pid.setI(0);
+    top_pid.setI(1E-6);
+    top_pid.setIZone(50);
 
     bot_pid.setP(BottomKp);
     bot_pid.setD(0);
     bot_pid.setFF(BottomKv);
-    bot_pid.setI(0);
+    bot_pid.setI(1E-6);
+    bot_pid.setIZone(50);
 
     feed_pid.setP(0);
     feed_pid.setD(0);
