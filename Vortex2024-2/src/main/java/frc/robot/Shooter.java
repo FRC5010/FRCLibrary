@@ -33,13 +33,17 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 public class Shooter extends SubsystemBase {
   private static final int kMotorPort = 2;
   private static final int kMotorPort2 = 1;
+  private static final int kMotorPort3 = 15;
 
   private CANSparkFlex top_motor;
   private CANSparkFlex bottom_motor;
+  private CANSparkFlex feeder_motor;
   private RelativeEncoder top_encoder;
   private RelativeEncoder bottom_encoder;
+  private RelativeEncoder feeder_encoder;
   private SparkPIDController top_pid;
   private SparkPIDController bot_pid;
+  private SparkPIDController feed_pid;
 
   private SysIdRoutine topRoutine;
   //private SysIdRoutine bottomRoutine;
@@ -54,16 +58,21 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
     SmartDashboard.putNumber("Top Motor", 0.0);
     SmartDashboard.putNumber("Down Motor", 0.0);
+    SmartDashboard.putNumber("Feeder Motor", 0.0);
     top_motor = new CANSparkFlex(kMotorPort, MotorType.kBrushless);
     top_motor.restoreFactoryDefaults();
     top_encoder = top_motor.getEncoder();
     bottom_motor = new CANSparkFlex(kMotorPort2, MotorType.kBrushless);
     bottom_motor.restoreFactoryDefaults();
     bottom_encoder = bottom_motor.getEncoder();
+    feeder_motor = new CANSparkFlex(kMotorPort3, MotorType.kBrushless);
+    feeder_encoder = feeder_motor.getEncoder();
+
     // top_motor.setInverted(true);
     // bottom_motor.setInverted(true);
     top_encoder.setPosition(0);
     bottom_encoder.setPosition(0);
+    feeder_encoder.setPosition(0);
     // bottomRoutine = new SysIdRoutine(new Config(), new
     // SysIdRoutine.Mechanism(this::bottomVoltageDrive, log -> {
     // log.motor("bottom motor")
@@ -88,14 +97,18 @@ public class Shooter extends SubsystemBase {
 
     top_motor.setIdleMode(IdleMode.kCoast);
     bottom_motor.setIdleMode(IdleMode.kCoast);
+    feeder_motor.setIdleMode(IdleMode.kCoast);
 
     top_encoder.setPositionConversionFactor((Math.PI * Units.inchesToMeters(3)));
     bottom_encoder.setPositionConversionFactor((Math.PI * Units.inchesToMeters(3)));
+    feeder_encoder.setPosition(Math.PI * Units.inchesToMeters(2));
     top_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
     bottom_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
-    
+    feeder_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(2) / 60));
+
     top_pid = top_motor.getPIDController();
     bot_pid = bottom_motor.getPIDController();
+    feed_pid = feeder_motor.getPIDController();
     top_pid.setP(0);
     top_pid.setD(0);
     top_pid.setFF(0);
@@ -105,6 +118,11 @@ public class Shooter extends SubsystemBase {
     bot_pid.setD(0);
     bot_pid.setFF(0);
     bot_pid.setI(0);
+
+    feed_pid.setP(0);
+    feed_pid.setD(0);
+    feed_pid.setFF(0);
+    feed_pid.setI(0);
   }
 
   private void topVoltageDrive(Measure<Voltage> voltage) {
@@ -125,14 +143,17 @@ public class Shooter extends SubsystemBase {
   public void runMotors(CommandXboxController joystick) {
     double Jpower = deadzone(joystick.getRawAxis(1), 0.05);
     if (joystick.rightBumper().getAsBoolean()) {
-      top_motor.set(SmartDashboard.getNumber("Top Motor", 0.0));
-      bottom_motor.set(SmartDashboard.getNumber("Down Motor", 0.0));
+      top_motor.set(-SmartDashboard.getNumber("Top Motor", 0.0));
+      bottom_motor.set(-SmartDashboard.getNumber("Down Motor", 0.0));
+      feeder_motor.set(-SmartDashboard.getNumber("Feeder Motor", 0.0));
     } else if (joystick.leftBumper().getAsBoolean()) {
       top_pid.setReference(SmartDashboard.getNumber("Top Motor", 0.0), ControlType.kVelocity, 0, topKs);
       // TODO add bottom
+      // TODO add feeder
     } else {
       top_motor.set(Jpower);
       bottom_motor.set(Jpower);
+      feeder_motor.set(Jpower);
     }
   }
 
@@ -160,5 +181,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Encoder Counts Per Revolution", top_encoder.getCountsPerRevolution());
     SmartDashboard.putNumber("Bot Encoder", bottom_encoder.getPosition());
     SmartDashboard.putNumber("Bot Velocity", bottom_encoder.getVelocity());
+    SmartDashboard.putNumber("Feed Encoder", feeder_encoder.getPosition());
+    SmartDashboard.putNumber("Feed Velocity", feeder_encoder.getVelocity());
   }
 }
