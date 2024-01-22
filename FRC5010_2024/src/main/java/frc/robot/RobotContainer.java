@@ -37,6 +37,7 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.CompBot_2023_T1G3R;
 import frc.robot.chargedup.CubeCruzer;
+import frc.robot.crescendo.CompBot_2024;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -172,7 +173,11 @@ public class RobotContainer extends GenericMechanism {
         robot = new PracticeBot(mechVisual, shuffleTab);
         break;
       }
-      case Robots.MAIN_5010_LAPTOP: 
+      case Robots.MAIN_5010_LAPTOP:  {
+        //robot = new CompBot_2024(mechVisual, shuffleTab);
+        robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+        break;
+      }
       case Robots.CURTS_LAPTOP_SIM: {
         switch (whoAmI.get()) {
           case "BabySwerve": {
@@ -245,7 +250,7 @@ public class RobotContainer extends GenericMechanism {
   @Override
   public void initAutoCommands() {
     robot.initAutoCommands();
-    command = AutoBuilder.buildAutoChooser();
+    //command = AutoBuilder.buildAutoChooser();
     if (null != command) {
      shuffleTab.add("Auto Modes", command).withSize(2, 1);
     }

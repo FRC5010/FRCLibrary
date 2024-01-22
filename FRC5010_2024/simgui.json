@@ -15,10 +15,20 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/Robot Visual": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
   "NetworkTables": {
+    "persistent": {
+      "Preferences": {
+        "open": true
+      }
+    },
     "transitory": {
       "Shuffleboard": {
         "Robot": {
