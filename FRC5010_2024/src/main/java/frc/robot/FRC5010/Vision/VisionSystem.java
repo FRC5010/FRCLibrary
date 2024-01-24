@@ -71,7 +71,7 @@ public abstract class VisionSystem extends SubsystemBase {
 
   // more specific values to define the camera
   public VisionSystem(String name, double camHeight, double camAngle, double targetHeight, int colIndex,
-      String driverTabeName) {
+      AprilTagFieldLayout fieldLayout, String driverTabeName) {
     this.name = name;
     rawValues = new VisionValues();
     smoothedValues = new VisionValues();
@@ -79,6 +79,7 @@ public abstract class VisionSystem extends SubsystemBase {
     this.camAngle = camAngle;
     this.targetHeight = targetHeight;
     constants = new VisionConstants();
+    this.fieldLayout = fieldLayout;
     CAMERA_CAL_ANGLE = Math.toDegrees(Math.tanh((targetHeight - camHeight) / VisionConstants.CAMERA_CAL_DISTANCE));
     ShuffleboardTab visionTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
     visionLayout = visionTab.getLayout(name + " Vision", BuiltInLayouts.kGrid)
@@ -145,14 +146,14 @@ public abstract class VisionSystem extends SubsystemBase {
         Translation2d robotTrans = new Translation2d(robotPose.getX(), robotPose.getY());
         distance = robotTrans.getDistance(targetTrans.toTranslation2d());
       } else if (angleX != 0 || angleY != 0) {
-        distance = (targetHeight - camHeight)
+        distance = Math.abs(targetHeight - camHeight)
             / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
-        if (0 != areaDistanceWeight && 0 != areaSup.getAsDouble()) {
-          // This exact calculation would need to be determined on a camera by camera
-          // basis, right now the weighting factor ignores the area
-          double areaDistance = areaSup.getAsDouble() * 0; // conversion factor
-          distance = (distance * angleDistanceWeight + areaDistance * areaDistanceWeight); // weighting factors
-        }
+        // if (0 != areaDistanceWeight && 0 != areaSup.getAsDouble()) {
+        //   // This exact calculation would need to be determined on a camera by camera
+        //   // basis, right now the weighting factor ignores the area
+        //   double areaDistance = areaSup.getAsDouble() * 0; // conversion factor
+        //   distance = (distance * angleDistanceWeight + areaDistance * areaDistanceWeight); // weighting factors
+        // }
       }
       this.rawValues = rawValues;
       rawValues

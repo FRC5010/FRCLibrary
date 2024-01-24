@@ -49,6 +49,12 @@ public class VisionMultiCam extends VisionSystem {
         updateValues = true;
     }
 
+    public void addLimeLightCameraAngle(String name, double cameraHeight, double cameraAngle, double targetHeight, int colIndex) {
+        cameras.put(name, new VisionLimeLightLib(name, cameraHeight, cameraAngle, targetHeight, colIndex, fieldLayout, "Vision"));
+        names.add(name);
+        updateValues = true;
+    }
+
     @Override
     public void update() {
         rawValues.clearValues();

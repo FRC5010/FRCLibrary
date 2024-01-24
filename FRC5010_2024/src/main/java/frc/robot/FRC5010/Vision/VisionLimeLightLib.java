@@ -20,8 +20,8 @@ public class VisionLimeLightLib extends VisionSystem {
     }
 
     public VisionLimeLightLib(String name, double camHeight, double camAngle, double targetHeight, int colIndex,
-            String driverTabeName) {
-        super(name, camHeight, camAngle, targetHeight, colIndex, driverTabeName);
+           AprilTagFieldLayout fieldLayout, String driverTabeName) {
+        super("limelight-" + name, camHeight, camAngle, targetHeight, colIndex, fieldLayout, driverTabeName);
     }
 
     protected void init() {
