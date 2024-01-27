@@ -174,8 +174,8 @@ public class RobotContainer extends GenericMechanism {
         break;
       }
       case Robots.MAIN_5010_LAPTOP:  {
-        //robot = new CompBot_2024(mechVisual, shuffleTab);
-        robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+        robot = new CompBot_2024(mechVisual, shuffleTab);
+        // robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
         break;
       }
       case Robots.CURTS_LAPTOP_SIM: {

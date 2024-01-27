@@ -46,8 +46,10 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_MASS = Units.lbsToKilograms(22);
   private final double PIVOT_START_ANGLE = 225;
   private final double PIVOT_kS = 0.2;
-
+  private final double PIVOT_CONVERSION_FACTOR = 24.242;
+  private final double PIVOT_SIM_CONVERSION_FACTOR = 0.1;
   private final String PIVOT_kG = "PivotKg";
+  private final String PIVOT_ANGLE = "Pivot Angle";
 
 
   
@@ -56,6 +58,7 @@ public class PivotSubsystem extends GenericSubsystem {
     pivotMotor = pivot;
     encoder = ((RevEncoder)pivotMotor.getMotorEncoder());
     pivotPID = ((CANSparkMax)pivotMotor).getPIDController();
+    encoder.setPositionConversion(PIVOT_CONVERSION_FACTOR);
 
 
     robotSim = mechSim;
@@ -63,15 +66,14 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kG, 0.0);
 
     // Simulation Setup
-
+    simEncoder.setPositionConversion(PIVOT_SIM_CONVERSION_FACTOR);
     simPivotRoot = robotSim.getRoot("Pivot Root", 50, 40);
-
     simPivotArm = simPivotRoot.append(new MechanismLigament2d("Arm", 25, PIVOT_START_ANGLE, 6, new Color8Bit(Color.kOrange)) );
+    simPivotArm.append(new MechanismLigament2d("Shooter", 10, 90));
+    // TODO: Attach Shooter to the Arm 
     simTargetArm = simPivotRoot.append(new MechanismLigament2d("Target Arm", 25, PIVOT_START_ANGLE, 6, new Color8Bit(Color.kBlue)));
-
-    
-    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(2), 9, SingleJointedArmSim.estimateMOI(PIVOT_LENGTH, PIVOT_MASS), PIVOT_LENGTH, -30, 255, true, PIVOT_START_ANGLE);
-
+    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(2), 9, SingleJointedArmSim.estimateMOI(PIVOT_LENGTH, PIVOT_MASS), PIVOT_LENGTH, Units.degreesToRadians(100), Units.degreesToRadians(255), true, PIVOT_START_ANGLE);
+    values.declare(PIVOT_ANGLE, 0);
 
 
     SmartDashboard.putData(this);
@@ -106,6 +108,7 @@ public class PivotSubsystem extends GenericSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    values.set(PIVOT_ANGLE, getPivotPosition());
   }
 
   @Override

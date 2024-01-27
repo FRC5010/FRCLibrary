@@ -36,6 +36,9 @@
         }
       },
       "SmartDashboard": {
+        "PivotSubsystem": {
+          "open": true
+        },
         "open": true,
         "swerve": {
           "double[]##v_/SmartDashboard/swerve/desiredStates": {
