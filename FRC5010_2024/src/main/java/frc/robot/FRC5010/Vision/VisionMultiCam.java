@@ -23,6 +23,7 @@ public class VisionMultiCam extends VisionSystem {
     protected Map<String, VisionSystem> cameras = new HashMap<>();
     protected AprilTagFieldLayout fieldLayout;
     protected DrivetrainPoseEstimator drivetrainPoseEstimator = null;
+    
 
     /**
      * Creates a new LimeLightVision.
@@ -44,15 +45,19 @@ public class VisionMultiCam extends VisionSystem {
     }
 
     public void addLimeLightCamera(String name, int colIndex) {
-        cameras.put(name, new VisionLimeLightLib(name, colIndex, fieldLayout));
+        cameras.put(name, new VisionLimeLightLib(name, colIndex, fieldLayout, cameraToRobot));
         names.add(name);
         updateValues = true;
     }
 
-    public void addLimeLightCameraAngle(String name, double cameraHeight, double cameraAngle, double targetHeight, int colIndex) {
-        cameras.put(name, new VisionLimeLightLib(name, cameraHeight, cameraAngle, targetHeight, colIndex, fieldLayout, "Vision"));
+    public void addLimeLightCameraAngle(String name, double cameraHeight, double cameraAngle, double targetHeight, int colIndex, Transform3d cameraTransform3d) {
+        cameras.put(name, new VisionLimeLightLib(name, cameraHeight, cameraAngle, targetHeight, colIndex, fieldLayout, "Vision", cameraTransform3d));
         names.add(name);
         updateValues = true;
+    }
+
+    public Transform3d getCameraPose(String cameraName) {
+        return cameras.get(cameraName).getCameraToRobot();
     }
 
     @Override

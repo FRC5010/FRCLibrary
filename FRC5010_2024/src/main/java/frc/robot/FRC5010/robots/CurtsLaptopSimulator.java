@@ -5,11 +5,7 @@
 package frc.robot.FRC5010.robots;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -17,12 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.commands.DriveToPosition;
-import frc.robot.FRC5010.commands.DriveToPosition.LCR;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.drive.swerve.ThriftySwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.motors.hardware.NEO;
@@ -89,20 +82,7 @@ public class CurtsLaptopSimulator extends GenericMechanism {
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
         drive.configureButtonBindings(driver, operator);
-        driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                null, LCR.center));
 
-        driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                null, LCR.left));
-
-        driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                null, LCR.right));
 
     }
 

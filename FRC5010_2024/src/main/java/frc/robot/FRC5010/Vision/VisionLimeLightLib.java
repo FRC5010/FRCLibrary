@@ -6,6 +6,7 @@ package frc.robot.FRC5010.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotContainer;
@@ -14,14 +15,16 @@ import frc.robot.FRC5010.Vision.LimelightHelpers.LimelightResults;
 /** Add your docs here. */
 public class VisionLimeLightLib extends VisionSystem {
 
-    public VisionLimeLightLib(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
+    public VisionLimeLightLib(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot) {
         super("limelight-" + name, colIndex, fieldLayout);
+        this.cameraToRobot = cameraToRobot;
         init();
     }
 
     public VisionLimeLightLib(String name, double camHeight, double camAngle, double targetHeight, int colIndex,
-           AprilTagFieldLayout fieldLayout, String driverTabeName) {
+           AprilTagFieldLayout fieldLayout, String driverTabeName, Transform3d cameraToRobot) {
         super("limelight-" + name, camHeight, camAngle, targetHeight, colIndex, fieldLayout, driverTabeName);
+        this.cameraToRobot = cameraToRobot;
     }
 
     protected void init() {

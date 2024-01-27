@@ -11,6 +11,7 @@ import java.util.Map;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -62,7 +63,7 @@ public class PracticeBot extends GenericMechanism {
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
 
-    VisionSystem multiVision = new VisionLimeLightSim("", 0, AprilTags.aprilTagFieldLayout);
+    VisionSystem multiVision = new VisionLimeLightSim("", 0, AprilTags.aprilTagFieldLayout, new Transform3d());
 
     visionTab.addCamera("DriverCam", "DriverCam", "10.50.10.11").withSize(3, 3);
 

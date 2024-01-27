@@ -15,6 +15,8 @@ import java.util.function.Supplier;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -39,6 +41,7 @@ public abstract class VisionSystem extends SubsystemBase {
   protected int smoothingCount = 5;
   protected double angleDistanceWeight = 1.0;
   protected double areaDistanceWeight = 0.0;
+  protected Transform3d cameraToRobot = new Transform3d();
 
   // variables needed to process new variables, plus the new variables
   // angles
@@ -46,6 +49,7 @@ public abstract class VisionSystem extends SubsystemBase {
   // giant list of values from camera "table" and is saved into vision values
   public VisionSystem(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
     this.name = name;
+   
     rawValues = new VisionValues();
     smoothedValues = new VisionValues();
     constants = new VisionConstants();
@@ -95,6 +99,8 @@ public abstract class VisionSystem extends SubsystemBase {
         .withPosition(colIndex + 1, 0).withSize(1, 1);
     driverLayout.addBoolean("Limelight On", this::isLightOn);
   }
+
+  
 
   public String getCameraName() {
     return name;
@@ -146,7 +152,7 @@ public abstract class VisionSystem extends SubsystemBase {
         Translation2d robotTrans = new Translation2d(robotPose.getX(), robotPose.getY());
         distance = robotTrans.getDistance(targetTrans.toTranslation2d());
       } else if (angleX != 0 || angleY != 0) {
-        distance = Math.abs(targetHeight - camHeight)
+        distance = (targetHeight - camHeight)
             / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
         // if (0 != areaDistanceWeight && 0 != areaSup.getAsDouble()) {
         //   // This exact calculation would need to be determined on a camera by camera
@@ -231,4 +237,7 @@ public abstract class VisionSystem extends SubsystemBase {
   public void calibarateCamAngle(double angleY) {
     camAngle = CAMERA_CAL_ANGLE - angleY;
   }
+  public Transform3d getCameraToRobot() {
+    return cameraToRobot;
+}
 }

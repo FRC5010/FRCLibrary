@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -51,7 +52,7 @@ public class BabySwerve extends GenericMechanism {
 
     // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1,
     // AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
-    vision = new VisionLimeLightLib("orange", 2, AprilTags.aprilTagFieldLayout);
+    vision = new VisionLimeLightLib("orange", 2, AprilTags.aprilTagFieldLayout, new Transform3d());
     /*
      * multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera",
      * new Transform3d( // This describes the vector between the camera lens to the

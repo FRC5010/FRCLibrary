@@ -10,7 +10,12 @@ import java.util.Map;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,6 +29,7 @@ public class DrivetrainPoseEstimator {
   private final Field2d field2d = new Field2d();
   private final GenericPose poseTracker;
   private int closestTagToRobot;
+  private Pose3d closestTargetToRobot;
   private List<Pose2d> tagPoses = new ArrayList<>();
 
   public DrivetrainPoseEstimator(GenericPose poseTracker, VisionSystem vision) {
@@ -70,6 +76,37 @@ public class DrivetrainPoseEstimator {
     return targetPose;
   }
 
+  public Pose3d getPoseFromClosestVisionTarget() {
+    double angleYaw = vision.getAngleX();
+    double anglePitch = vision.getAngleY();
+    double distance = vision.getDistance();
+    Transform3d cameraTransform = vision.getCameraToRobot();
+
+    Pose2d currentPose2d = poseTracker.getCurrentPose();
+    Pose3d currentPose3d  = new Pose3d(
+      currentPose2d.getX(), currentPose2d.getY(), 0.0, new Rotation3d(
+        0.0, 0.0, currentPose2d.getRotation().getDegrees()
+      )
+    );
+    
+    Pose3d cameraPose = currentPose3d.transformBy(cameraTransform.inverse());
+    Pose3d targetPose = cameraPose.transformBy(
+     new Transform3d(
+        Math.cos(Units.degreesToRadians(-angleYaw))*distance,
+        Math.sin(Units.degreesToRadians(-angleYaw))*distance,
+        Math.sin(Units.degreesToRadians(-anglePitch))*distance,
+        new Rotation3d(0, 0, 0)
+      )
+    );
+
+    field2d.getObject("Closest Target").setPose(
+      targetPose.toPose2d() 
+    );
+    
+    return targetPose;
+    
+  }
+
   public void setTargetPoseOnField(Pose2d targetPose, String targetName) {
     field2d.getObject(targetName).setPose(targetPose);
   }
@@ -96,6 +133,7 @@ public class DrivetrainPoseEstimator {
     field2d.setRobotPose(getCurrentPose());
 
     closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
+    closestTargetToRobot = getPoseFromClosestVisionTarget();
   }
 
   /**

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -35,7 +36,7 @@ public class DefaultRobot extends GenericMechanism {
     public DefaultRobot(Mechanism2d visual, ShuffleboardTab displayTab) {
         super(visual, displayTab);
         driveConstants = new GenericDrivetrainConstants();
-        vision = new VisionLimeLightSim("Vision", 1, AprilTags.aprilTagRoomLayout);
+        vision = new VisionLimeLightSim("Vision", 1, AprilTags.aprilTagRoomLayout, new Transform3d());
         GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
         List<DrivePorts> motorPorts = new ArrayList<>();

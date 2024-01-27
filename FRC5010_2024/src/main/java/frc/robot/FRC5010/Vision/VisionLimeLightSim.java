@@ -5,6 +5,7 @@
 package frc.robot.FRC5010.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 
 /** Add your docs here. */
@@ -12,8 +13,10 @@ public class VisionLimeLightSim extends VisionSystem {
 
     protected DrivetrainPoseEstimator drivetrainPoseEstimator = null;
 
-    public VisionLimeLightSim(String name, int colIndex, AprilTagFieldLayout fieldLayout) {
+    public VisionLimeLightSim(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot) {
         super(name, colIndex, fieldLayout);
+        this.cameraToRobot = cameraToRobot;
+
     }
 
     public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator drivetrainPoseEstimator) {

@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -24,10 +22,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.commands.DriveToPosition;
-import frc.robot.FRC5010.commands.DriveToPosition.LCR;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
+import frc.robot.FRC5010.constants.TranslationConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
@@ -39,7 +37,6 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.commands.AutoBalance;
-import frc.robot.chargedup.commands.PivotElevator;
 
 /** Add your docs here. */
 public class CompBot_2023_T1G3R extends GenericMechanism {
@@ -119,17 +116,17 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                 driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                                ledSubsystem, LCR.center));
+                                ledSubsystem, TranslationConstants.tagToLeftConeTransfrom));
 
                 driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                                ledSubsystem, LCR.left));
+                                ledSubsystem, TranslationConstants.tagToCubeTransfrom));
 
                 driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                                ledSubsystem, LCR.right));
+                                ledSubsystem, TranslationConstants.tagToRightConeTransfrom));
 
                 // driver.createBButton()
                 // .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(),

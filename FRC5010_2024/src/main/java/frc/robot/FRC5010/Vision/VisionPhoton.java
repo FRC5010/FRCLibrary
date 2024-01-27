@@ -39,6 +39,7 @@ public class VisionPhoton extends VisionSystem {
             AprilTagFieldLayout fieldLayout, PoseStrategy strategy,
             DrivetrainPoseEstimator drivetrainPoseEstimator, Transform3d cameraToRobot) {
         super(name, colIndex, fieldLayout);
+        this.cameraToRobot = cameraToRobot;
         this.fieldLayout = fieldLayout;
         this.strategy = strategy;
         camera = new PhotonCamera(name);
@@ -130,4 +131,6 @@ public class VisionPhoton extends VisionSystem {
     public void setSnapshotMode(int snapVal) {
         camera.takeInputSnapshot();
     }
+
+
 }

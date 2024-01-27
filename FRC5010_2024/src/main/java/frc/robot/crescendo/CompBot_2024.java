@@ -7,10 +7,15 @@ package frc.robot.crescendo;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.Vision.AprilTags;
+import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
@@ -26,6 +31,7 @@ public class CompBot_2024 extends GenericMechanism {
         ShooterSubsystem shooterSubsystem;
         MotorController5010 topShooterMotor;
         MotorController5010 bottomShooterMotor;
+        VisionMultiCam visionSystem;
         
 
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
@@ -40,6 +46,9 @@ public class CompBot_2024 extends GenericMechanism {
                 bottomShooterMotor = MotorFactory.NEO(12);
                 shooterSubsystem = new ShooterSubsystem(visual, topShooterMotor, bottomShooterMotor);
 
+                visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
+
+                visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
         }
 
        
@@ -48,12 +57,14 @@ public class CompBot_2024 extends GenericMechanism {
         public void configureButtonBindings(Controller driver, Controller operator) {
             driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07).negate());
             driver.setRightYAxis(driver.createRightYAxis().deadzone(0.07).negate());
+
         }
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
             pivotSubsystem.setDefaultCommand(new RunPivot(() -> driver.getLeftYAxis(), pivotSubsystem));
             shooterSubsystem.setDefaultCommand(new RunShooter(() -> driver.getRightYAxis(), shooterSubsystem));
+ 
             
         }
 

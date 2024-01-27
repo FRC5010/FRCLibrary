@@ -4,6 +4,8 @@
 
 package frc.robot.chargedup;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -12,8 +14,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.commands.DriveToPosition;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.constants.TranslationConstants;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
@@ -49,7 +54,9 @@ public class CubeCruzer extends GenericMechanism {
 
                 // Will need to be changed for 2023 field
                 VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
-                multiVision.addLimeLightCameraAngle("orange", 0.3556, 10, 0, 1);
+                multiVision.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1,
+                                new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(7.25),
+                                                Units.inchesToMeters(12.5), new Rotation3d(0, 0, 180)));
                 multiVision.setUpdateValues(true);
                 visionSystem = multiVision;
 
@@ -79,15 +86,24 @@ public class CubeCruzer extends GenericMechanism {
                 buttonOperator.createButtons(11);
         }
 
-   
-
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
                 driver.createYButton()
                                 .whileTrue(new AutoBalance(drive.getDrivetrain(),
                                                 () -> !driver.createAButton().getAsBoolean(), gyro));
+                driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+                                ledSubsystem, TranslationConstants.tagToLeftConeTransfrom));
 
-                // driver.createBButtdon().whileTrue(new DriveToPosition((SwerveDrivetrain)
+                driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestVisionTarget()
+                                                .toPose2d(),
+                                ledSubsystem,
+                                TranslationConstants.noteTransform));
+
+                // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
                 // drive.getDrivetrain(),
                 // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
                 // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),

@@ -38,24 +38,6 @@ public class DriveToPosition extends GenericCommand {
   private final ProfiledPIDController yController;
   private final ProfiledPIDController thetaController;
 
-  public static enum LCR {
-    left, center, right
-  }
-
-  Transform2d tagToLeftConeTransfrom = new Transform2d(
-      new Translation2d(TargetConstants.tagToRobotXOffset, TargetConstants.tagToConeYOffset),
-      Rotation2d.fromDegrees(180));
-
-  Transform2d tagToCubeTransfrom = new Transform2d(new Translation2d(TargetConstants.tagToRobotXOffset, 0),
-      Rotation2d.fromDegrees(180));
-
-  Transform2d tagToRightConeTransfrom = new Transform2d(
-      new Translation2d(TargetConstants.tagToRobotXOffset, -TargetConstants.tagToConeYOffset),
-      Rotation2d.fromDegrees(180));
-
-  private final Pose3d tagToGoal = new Pose3d(
-      new Translation3d(1.5, 0.0, 0.0),
-      new Rotation3d(0.0, 0.0, 0));
 
   private Pose2d targetPose;
   private Transform2d targetTransform;
@@ -68,7 +50,7 @@ public class DriveToPosition extends GenericCommand {
   private double thetaSpeed;
 
   public DriveToPosition(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider,
-      Supplier<Pose2d> targetPoseProvider, LedSubsystem ledSubsystem, LCR relativePosition) {
+      Supplier<Pose2d> targetPoseProvider, LedSubsystem ledSubsystem, Transform2d offset) {
     xConstraints = new TrapezoidProfile.Constraints(
         swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(),
         swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
@@ -96,20 +78,7 @@ public class DriveToPosition extends GenericCommand {
     thetaController.setTolerance(Units.degreesToRadians(3));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    switch (relativePosition) {
-      case left:
-        targetTransform = tagToLeftConeTransfrom;
-        break;
-      case center:
-        targetTransform = tagToCubeTransfrom;
-        break;
-      case right:
-        targetTransform = tagToRightConeTransfrom;
-        break;
-      default:
-        targetTransform = tagToCubeTransfrom;
-        break;
-    }
+    targetTransform = offset;
 
     addRequirements(swerveSubsystem);
   }
