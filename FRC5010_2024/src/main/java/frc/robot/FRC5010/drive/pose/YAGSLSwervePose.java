@@ -29,8 +29,6 @@ public class YAGSLSwervePose extends GenericPose {
 
     @Override
     public void updateLocalMeasurements() {
-        drivetrain.updateOdometry();
-
     }
 
     @Override

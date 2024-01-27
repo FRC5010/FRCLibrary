@@ -237,7 +237,11 @@ public abstract class VisionSystem extends SubsystemBase {
   public void calibarateCamAngle(double angleY) {
     camAngle = CAMERA_CAL_ANGLE - angleY;
   }
-  public Transform3d getCameraToRobot() {
+  public Transform3d getCameraToRobot(String camera) {
     return cameraToRobot;
-}
+  }
+
+   public Transform3d getCameraToRobot() {
+    return cameraToRobot;
+  }
 }

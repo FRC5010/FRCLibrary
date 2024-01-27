@@ -9,21 +9,15 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.chargedup.TargetConstants;
 
 public class DriveToPosition extends GenericCommand {
   private SwerveDrivetrain swerveSubsystem;
@@ -38,19 +32,18 @@ public class DriveToPosition extends GenericCommand {
   private final ProfiledPIDController yController;
   private final ProfiledPIDController thetaController;
 
-
   private Pose2d targetPose;
   private Transform2d targetTransform;
 
   private Supplier<Pose2d> poseProvider;
-  private Supplier<Pose2d> targetPoseProvider;
+  private Supplier<Pose3d> targetPoseProvider;
 
   private double xSpeed;
   private double ySpeed;
   private double thetaSpeed;
 
   public DriveToPosition(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider,
-      Supplier<Pose2d> targetPoseProvider, LedSubsystem ledSubsystem, Transform2d offset) {
+      Supplier<Pose3d> targetPoseProvider, LedSubsystem ledSubsystem, Transform2d offset) {
     xConstraints = new TrapezoidProfile.Constraints(
         swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(),
         swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
@@ -73,8 +66,8 @@ public class DriveToPosition extends GenericCommand {
     this.poseProvider = poseProvider;
     this.targetPoseProvider = targetPoseProvider;
 
-    xController.setTolerance(0.2);
-    yController.setTolerance(0.2);
+    xController.setTolerance(0.05);
+    yController.setTolerance(0.05);
     thetaController.setTolerance(Units.degreesToRadians(3));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -83,27 +76,43 @@ public class DriveToPosition extends GenericCommand {
     addRequirements(swerveSubsystem);
   }
 
+  private void updateTargetPose(Pose2d pose) {
+    targetPose = pose;
+
+    xController.setGoal(targetPose.getX());
+    yController.setGoal(targetPose.getY());
+    thetaController.setGoal(targetPose.getRotation().getRadians());
+    swerveSubsystem.getPoseEstimator().setTargetPoseOnField(targetPose, "Target Pose");
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void init() {
-    var robotPose = poseProvider.get();
-    targetPose = targetPoseProvider.get().transformBy(targetTransform);
+    Pose2d robotPose = poseProvider.get();
 
     thetaController.reset(robotPose.getRotation().getRadians());
     xController.reset(robotPose.getX());
     yController.reset(robotPose.getY());
 
-    xController.setGoal(targetPose.getX());
-    yController.setGoal(targetPose.getY());
-    thetaController.setGoal(targetPose.getRotation().getRadians());
+    if (null != targetPoseProvider.get()) {
+      updateTargetPose(targetPoseProvider.get().toPose2d().transformBy(targetTransform));
+    } 
+    
 
-    swerveSubsystem.getPoseEstimator().setTargetPoseOnField(targetPose, "Target Pose");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     var robotPose2d = poseProvider.get();
+
+    Pose3d providedTargetPose = targetPoseProvider.get();
+    if (null != providedTargetPose) {
+      Pose2d target = providedTargetPose.toPose2d().transformBy(targetTransform);
+      if (target.getTranslation().getDistance(targetPose.getTranslation()) < 1.0) {
+        updateTargetPose(target);
+      }
+    }
 
     // System.out.println(robotPose2d);
 

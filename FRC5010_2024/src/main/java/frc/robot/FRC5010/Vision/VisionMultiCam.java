@@ -163,4 +163,14 @@ public class VisionMultiCam extends VisionSystem {
     public void setSnapshotMode(String name, int snapVal) {
         cameras.get(name).setSnapshotMode(snapVal);
     }
+
+    @Override
+    public Transform3d getCameraToRobot(String name) {
+        return cameras.get(name).getCameraToRobot();
+    }
+
+    @Override
+    public Transform3d getCameraToRobot() {
+        return cameras.values().stream().findFirst().get().getCameraToRobot();
+    }
 }

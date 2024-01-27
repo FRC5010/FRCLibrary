@@ -4,6 +4,11 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,20 +16,27 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -38,6 +50,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -47,6 +61,7 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
 import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -113,6 +128,157 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   /**
+   * Setup AutoBuilder for PathPlanner.
+   */
+  public void setupPathPlanner() {
+    AutoBuilder.configureHolonomic(
+        this::getPose, // Robot pose supplier
+        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+            new PIDConstants(5.0, 0.0, 0.0),
+            // Translation PID constants
+            new PIDConstants(swerveDrive.swerveController.config.headingPIDF.p,
+                swerveDrive.swerveController.config.headingPIDF.i,
+                swerveDrive.swerveController.config.headingPIDF.d),
+            // Rotation PID constants
+            4.5,
+            // Max module speed, in m/s
+            swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
+            // Drive base radius in meters. Distance from robot center to furthest module.
+            new ReplanningConfig()
+        // Default path replanning config. See the API for the options here
+        ),
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+          var alliance = DriverStation.getAlliance();
+          return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
+        },
+        this // Reference to this subsystem to set requirements
+    );
+  }
+
+  /**
+   * Get the path follower with events.
+   *
+   * @param pathName       PathPlanner path name.
+   * @param setOdomToStart Set the odometry position to the start of the path.
+   * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
+   */
+  public Command getAutonomousCommand(String pathName, boolean setOdomToStart) {
+    // Load the path you want to follow using its name in the GUI
+    PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+
+    if (setOdomToStart) {
+      resetOdometry(new Pose2d(path.getPoint(0).position, getHeading()));
+    }
+
+    // Create a path following command using AutoBuilder. This will also trigger
+    // event markers.
+    return AutoBuilder.followPath(path);
+  }
+
+  /**
+   * Use PathPlanner Path finding to go to a point on the field.
+   *
+   * @param pose Target {@link Pose2d} to go to.
+   * @return PathFinding command
+   */
+  public Command driveToPose(Pose2d pose) {
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumVelocity(), 4.0,
+        swerveDrive.getMaximumAngularVelocity(), Units.degreesToRadians(720));
+
+    // Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        pose,
+        constraints,
+        0.0, // Goal end velocity in meters/sec
+        0.0 // Rotation delay distance in meters. This is how far the robot should travel
+            // before attempting to rotate.
+    );
+  }
+
+  /**
+   * Command to drive the robot using translative values and heading as a
+   * setpoint.
+   *
+   * @param translationX Translation in the X direction. Cubed for smoother
+   *                     controls.
+   * @param translationY Translation in the Y direction. Cubed for smoother
+   *                     controls.
+   * @param headingX     Heading X to calculate angle of the joystick.
+   * @param headingY     Heading Y to calculate angle of the joystick.
+   * @return Drive command.
+   */
+  public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier headingX,
+      DoubleSupplier headingY) {
+    // swerveDrive.setHeadingCorrection(true); // Normally you would want heading
+    // correction for this kind of control.
+    return run(() -> {
+      double xInput = Math.pow(translationX.getAsDouble(), 3); // Smooth controll out
+      double yInput = Math.pow(translationY.getAsDouble(), 3); // Smooth controll out
+      // Make the robot move
+      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(xInput, yInput,
+          headingX.getAsDouble(),
+          headingY.getAsDouble(),
+          swerveDrive.getOdometryHeading().getRadians(),
+          swerveDrive.getMaximumVelocity()));
+    });
+  }
+
+  /**
+   * Command to drive the robot using translative values and heading as a
+   * setpoint.
+   *
+   * @param translationX Translation in the X direction.
+   * @param translationY Translation in the Y direction.
+   * @param rotation     Rotation as a value between [-1, 1] converted to radians.
+   * @return Drive command.
+   */
+  public Command simDriveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier rotation) {
+    // swerveDrive.setHeadingCorrection(true); // Normally you would want heading
+    // correction for this kind of control.
+    return run(() -> {
+      // Make the robot move
+      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(translationX.getAsDouble(),
+          translationY.getAsDouble(),
+          rotation.getAsDouble() * Math.PI,
+          swerveDrive.getOdometryHeading().getRadians(),
+          swerveDrive.getMaximumVelocity()));
+    });
+  }
+
+  /**
+   * Command to drive the robot using translative values and heading as angular
+   * velocity.
+   *
+   * @param translationX     Translation in the X direction. Cubed for smoother
+   *                         controls.
+   * @param translationY     Translation in the Y direction. Cubed for smoother
+   *                         controls.
+   * @param angularRotationX Angular velocity of the robot to set. Cubed for
+   *                         smoother controls.
+   * @return Drive command.
+   */
+  public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY,
+      DoubleSupplier angularRotationX) {
+    return run(() -> {
+      // Make the robot move
+      swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
+          Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
+          Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
+          true,
+          false);
+    });
+  }
+
+  /**
    * The primary method for controlling the drivebase. Takes a
    * {@link Translation2d} and a rotation rate, and
    * calculates and commands module states accordingly. Can use either open-loop
@@ -153,7 +319,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   @Override
   public void periodic() {
-    swerveDrive.updateOdometry();
+    // swerveDrive.updateOdometry();
     poseEstimator.update();
     hasIssues();
     if (RobotBase.isSimulation() || useGlass) {
@@ -185,7 +351,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    */
   public void resetOdometry(Pose2d initialHolonomicPose) {
     /** 5010 Code */
-    swerveDrive.setGyro(new Rotation3d(0, 0, initialHolonomicPose.getRotation().getRadians()));
+    // swerveDrive.setGyro(new Rotation3d(0, 0,
+    // initialHolonomicPose.getRotation().getRadians()));
     /** END 5010 Code */
     swerveDrive.resetOdometry(initialHolonomicPose);
   }
@@ -246,7 +413,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    * @return The yaw angle
    */
   public Rotation2d getHeading() {
-    return swerveDrive.getYaw();
+    return getPose().getRotation();
   }
 
   /**
@@ -363,17 +530,17 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public void drive(ChassisSpeeds direction) {
     // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
     // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-    double dtConstant = 0.009;
-    Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * dtConstant,
-        direction.vyMetersPerSecond * dtConstant,
-        Rotation2d.fromRadians(direction.omegaRadiansPerSecond * dtConstant));
-    Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
+    // double dtConstant = 0.009;
+    // Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * dtConstant,
+    // direction.vyMetersPerSecond * dtConstant,
+    // Rotation2d.fromRadians(direction.omegaRadiansPerSecond * dtConstant));
+    // Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
 
-    ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx /
-        dtConstant, twistVel.dy / dtConstant,
-        twistVel.dtheta / dtConstant);
+    // ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx /
+    // dtConstant, twistVel.dy / dtConstant,
+    // twistVel.dtheta / dtConstant);
 
-    setChassisSpeeds(updatedChassisSpeed);
+    setChassisSpeeds(direction);
 
     // System.out.println((System.currentTimeMillis() - pastTime) / 1000);
     // pastTime = System.currentTimeMillis();
@@ -398,32 +565,38 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   public void setAutoBuilder() {
-    
-    AutoBuilder.configureHolonomic(
-                () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
-               (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the
-                this::getRobotVelocity, //  ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                swerveDrive::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        4.5, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    setupPathPlanner();
+    // AutoBuilder.configureHolonomic(
+    // () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
+    // (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer,
+    // used to reset odometry at the
+    // this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+    // swerveDrive::setChassisSpeeds, // Method that will drive the robot given
+    // ROBOT RELATIVE ChassisSpeeds
+    // new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should
+    // likely live in your Constants class
+    // new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+    // new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+    // 4.5, // Max module speed, in m/s
+    // 0.4, // Drive base radius in meters. Distance from robot center to furthest
+    // module.
+    // new ReplanningConfig() // Default path replanning config. See the API for the
+    // options here
+    // ),
+    // () -> {
+    // // Boolean supplier that controls when the path will be mirrored for the red
+    // alliance
+    // // This will flip the path being followed to the red side of the field.
+    // // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
-                this // Reference to this subsystem to set requirements
-        );
+    // var alliance = DriverStation.getAlliance();
+    // if (alliance.isPresent()) {
+    // return alliance.get() == DriverStation.Alliance.Red;
+    // }
+    // return false;
+    // },
+    // this // Reference to this subsystem to set requirements
+    // );
   }
 
   private int issueCheckCycles = 0;
@@ -523,4 +696,26 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
       expectDials.get(moduleKey).setAngle(modules[moduleKey].getState().angle.getDegrees() + 90);
     }
   }
+
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  private final MutableMeasure<Angle> m_distance = mutable(Rotations.of(0));
+  private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
+
+  // public SysIdRoutine setSysIdRoutine() {
+  //   return new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(
+  //       (Measure<Voltage> voltage) -> {
+  //         SwerveDriveTest.centerModules(swerveDrive);
+  //         SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, voltage.in(Volts));
+  //         return;
+  //       }),
+  //       log -> {
+  //         log.motor("motor")
+  //             .voltage(
+  //                 m_appliedVoltage.mut_replace(
+  //                     12.0, Volts))
+  //             .angularPosition(m_distance.mut_replace(swerveDrive.getModules[0].getDriveMotor()., Rotations))
+  //             .angularVelocity(m_velocity.mut_replace(encoder.getVelocity(), RotationsPerSecond));
+  //       }, this));
+  // }
+
 }

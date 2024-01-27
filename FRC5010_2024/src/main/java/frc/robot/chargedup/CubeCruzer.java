@@ -43,11 +43,12 @@ public class CubeCruzer extends GenericMechanism {
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
                 // Baby Swerve values need to be changed
-                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(5);
+                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(10);
                 swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
-                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.1);
+                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(2);
                 swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+                swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
 
                 ledSubsystem = new LedSubsystem(1, 187);
                 ledSubsystem.off();
@@ -56,7 +57,7 @@ public class CubeCruzer extends GenericMechanism {
                 VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
                 multiVision.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1,
                                 new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(7.25),
-                                                Units.inchesToMeters(12.5), new Rotation3d(0, 0, 180)));
+                                                Units.inchesToMeters(12.5), new Rotation3d(0, 0, Units.degreesToRadians(180))));
                 multiVision.setUpdateValues(true);
                 visionSystem = multiVision;
 
@@ -99,7 +100,7 @@ public class CubeCruzer extends GenericMechanism {
                 driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestVisionTarget()
-                                                .toPose2d(),
+                                                ,
                                 ledSubsystem,
                                 TranslationConstants.noteTransform));
 

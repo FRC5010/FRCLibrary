@@ -26,6 +26,8 @@ import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
 import swervelib.motors.TalonFXSwerve;
 import swervelib.motors.TalonSRXSwerve;
+import swervelib.telemetry.Alert;
+import swervelib.telemetry.Alert.AlertType;
 
 /**
  * Device JSON parsed class. Used to access the JSON data.
@@ -34,17 +36,35 @@ public class DeviceJson
 {
 
   /**
+   * An {@link Alert} for if the CAN ID is greater than 40.
+   */
+  private final Alert  canIdWarning            = new Alert("JSON",
+                                                           "CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
+                                                           Alert.AlertType.WARNING);
+  /**
+   * An {@link Alert} for if there is an I2C lockup issue on the roboRIO.
+   */
+  private final Alert  i2cLockupWarning        = new Alert("IMU",
+                                                           "I2C lockup issue detected on roboRIO. Check console for more information.",
+                                                           Alert.AlertType.WARNING);
+  /**
+   * NavX serial comm issue.
+   */
+  private final Alert  serialCommsIssueWarning = new Alert("IMU",
+                                                           "Serial comms is interrupted with USB and other serial traffic and causes intermittent connected/disconnection issues. Please consider another protocol or be mindful of this.",
+                                                           AlertType.WARNING);
+  /**
    * The device type, e.g. pigeon/pigeon2/sparkmax/talonfx/navx
    */
-  public String type;
+  public        String type;
   /**
    * The CAN ID or pin ID of the device.
    */
-  public int    id;
+  public        int    id;
   /**
    * The CAN bus name which the device resides on if using CAN.
    */
-  public String canbus = "";
+  public        String canbus                  = "";
 
   /**
    * Create a {@link SwerveAbsoluteEncoder} from the current configuration.
@@ -57,8 +77,7 @@ public class DeviceJson
   {
     if (id > 40)
     {
-      DriverStation.reportWarning("CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
-                                  false);
+      canIdWarning.set(true);
     }
     switch (type)
     {
@@ -73,7 +92,6 @@ public class DeviceJson
         return new SparkMaxEncoderSwerve(motor, 360);
       case "canandcoder_can":
         return new CanAndCoderSwerve(id);
-      case "ma3":
       case "ctre_mag":
       case "rev_hex":
       case "throughbore":
@@ -81,6 +99,7 @@ public class DeviceJson
       case "dutycycle":
         return new PWMDutyCycleEncoderSwerve(id);
       case "thrifty":
+      case "ma3":
       case "analog":
         return new AnalogAbsoluteEncoderSwerve(id);
       case "cancoder":
@@ -99,8 +118,7 @@ public class DeviceJson
   {
     if (id > 40)
     {
-      DriverStation.reportWarning("CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
-                                  false);
+      canIdWarning.set(true);
     }
     switch (type)
     {
@@ -121,10 +139,15 @@ public class DeviceJson
             "\nhttps://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues" +
             ".html#onboard-i2c-causing-system-lockups",
             false);
+        i2cLockupWarning.set(true);
         return new NavXSwerve(I2C.Port.kMXP);
       case "navx_usb":
+        DriverStation.reportWarning("WARNING: There is issues when using USB camera's and the NavX like this!\n" +
+                                    "https://pdocs.kauailabs.com/navx-mxp/guidance/selecting-an-interface/", false);
+        serialCommsIssueWarning.set(true);
         return new NavXSwerve(Port.kUSB);
-      case "navx_mxp":
+      case "navx_mxp_serial":
+        serialCommsIssueWarning.set(true);
         return new NavXSwerve(Port.kMXP);
       case "pigeon":
         return new PigeonSwerve(id);
@@ -145,8 +168,7 @@ public class DeviceJson
   {
     if (id > 40)
     {
-      DriverStation.reportWarning("CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
-                                  false);
+      canIdWarning.set(true);
     }
     switch (type)
     {

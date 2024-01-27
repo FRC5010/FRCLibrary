@@ -250,6 +250,7 @@ public class RobotContainer extends GenericMechanism {
   @Override
   public void initAutoCommands() {
     robot.initAutoCommands();
+    // This crashes 2024 right now
     //command = AutoBuilder.buildAutoChooser();
     if (null != command) {
      shuffleTab.add("Auto Modes", command).withSize(2, 1);

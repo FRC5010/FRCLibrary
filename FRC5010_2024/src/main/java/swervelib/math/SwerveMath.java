@@ -13,8 +13,6 @@ import swervelib.SwerveController;
 import swervelib.SwerveModule;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveModuleConfiguration;
-import swervelib.telemetry.SwerveDriveTelemetry;
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 /**
  * Mathematical functions which pertain to swerve drive.
@@ -35,6 +33,20 @@ public class SwerveMath
       double wheelDiameter, double driveGearRatio, double pulsePerRotation)
   {
     return (Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation);
+  }
+
+  /**
+   * Calculate the meters per rotation for the integrated encoder. Calculation: (PI * WHEEL DIAMETER IN METERS) / (GEAR
+   * RATIO)
+   *
+   * @param wheelDiameter  Wheel diameter in meters.
+   * @param driveGearRatio The gear ratio of the drive motor.
+   * @return Meters per rotation for the drive motor.
+   */
+  public static double calculateMetersPerRotation(
+      double wheelDiameter, double driveGearRatio)
+  {
+    return calculateMetersPerRotation(wheelDiameter, driveGearRatio, 1);
   }
 
   /**
@@ -98,6 +110,19 @@ public class SwerveMath
       double angleGearRatio, double pulsePerRotation)
   {
     return 360 / (angleGearRatio * pulsePerRotation);
+  }
+
+  /**
+   * Calculate the degrees per steering rotation for the integrated encoder. Encoder conversion values. Drive converts
+   * motor rotations to linear wheel distance and steering converts motor rotations to module azimuth.
+   *
+   * @param angleGearRatio The gear ratio of the steering motor.
+   * @return Degrees per steering rotation for the angle motor.
+   */
+  public static double calculateDegreesPerSteeringRotation(
+      double angleGearRatio)
+  {
+    return calculateDegreesPerSteeringRotation(angleGearRatio, 1);
   }
 
   /**
