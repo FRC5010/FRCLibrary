@@ -5,6 +5,8 @@
 package frc.robot.FRC5010.drive.swerve;
 
 import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -21,8 +23,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,6 +33,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
@@ -50,6 +51,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.FRC5010.Vision.VisionSystem;
@@ -75,6 +78,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    * Swerve drive object.
    */
   private final SwerveDrive swerveDrive;
+  private SysIdRoutine sysIdRoutine;
 
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
@@ -698,24 +702,111 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
-  private final MutableMeasure<Angle> m_distance = mutable(Rotations.of(0));
-  private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
+  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+  private final MutableMeasure<Angle> m_rotations = mutable(Rotations.of(0));
+  private final MutableMeasure<Velocity<Angle>> m_angVelocity = mutable(RotationsPerSecond.of(0));
 
-  // public SysIdRoutine setSysIdRoutine() {
-  //   return new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(
-  //       (Measure<Voltage> voltage) -> {
-  //         SwerveDriveTest.centerModules(swerveDrive);
-  //         SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, voltage.in(Volts));
-  //         return;
-  //       }),
-  //       log -> {
-  //         log.motor("motor")
-  //             .voltage(
-  //                 m_appliedVoltage.mut_replace(
-  //                     12.0, Volts))
-  //             .angularPosition(m_distance.mut_replace(swerveDrive.getModules[0].getDriveMotor()., Rotations))
-  //             .angularVelocity(m_velocity.mut_replace(encoder.getVelocity(), RotationsPerSecond));
-  //       }, this));
-  // }
+  public SysIdRoutine setDriveSysIdRoutine() {
+    return new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(
+        (Measure<Voltage> voltage) -> {
+          SwerveDriveTest.centerModules(swerveDrive);
+          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, voltage.in(Volts));
+        },
+        log -> {
+          log.motor("drive-" + swerveDrive.getModules()[0].moduleNumber)
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                      swerveDrive.getModules()[0].getDriveMotor().getVoltage(), Volts))
+              .linearPosition(m_distance.mut_replace(swerveDrive.getModules()[0].getPosition().distanceMeters, Meters))
+              .linearVelocity(
+                  m_velocity.mut_replace(swerveDrive.getModules()[0].getDriveMotor().getVelocity(), MetersPerSecond));
+          log.motor("drive-" + swerveDrive.getModules()[0].moduleNumber)
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                      swerveDrive.getModules()[1].getDriveMotor().getVoltage(), Volts))
+              .linearPosition(m_distance.mut_replace(swerveDrive.getModules()[1].getPosition().distanceMeters, Meters))
+              .linearVelocity(
+                  m_velocity.mut_replace(swerveDrive.getModules()[1].getDriveMotor().getVelocity(), MetersPerSecond));
+          log.motor("drive-" + swerveDrive.getModules()[1].moduleNumber)
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                      swerveDrive.getModules()[2].getDriveMotor().getVoltage(), Volts))
+              .linearPosition(m_distance.mut_replace(swerveDrive.getModules()[2].getPosition().distanceMeters, Meters))
+              .linearVelocity(
+                  m_velocity.mut_replace(swerveDrive.getModules()[2].getDriveMotor().getVelocity(), MetersPerSecond));
+          log.motor("drive-" + swerveDrive.getModules()[2].moduleNumber)
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                      swerveDrive.getModules()[3].getDriveMotor().getVoltage(), Volts))
+              .linearPosition(m_distance.mut_replace(swerveDrive.getModules()[3].getPosition().distanceMeters, Meters))
+              .linearVelocity(
+                  m_velocity.mut_replace(swerveDrive.getModules()[3].getDriveMotor().getVelocity(), MetersPerSecond));
+        }, this));
+  }
+
+  public SysIdRoutine setAngleSysIdRoutine() {
+    return new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(
+        (Measure<Voltage> voltage) -> {
+          SwerveDriveTest.powerAngleMotors(swerveDrive, voltage.in(Volts));
+          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, 0);
+        },
+        log -> {
+          log.motor("angle-" + swerveDrive.getModules()[0].moduleNumber)
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                      swerveDrive.getModules()[0].getDriveMotor().getVoltage(), Volts))
+              .angularPosition(
+                  m_rotations.mut_replace(swerveDrive.getModules()[0].getAngleMotor().getPosition(), Rotations))
+              .angularVelocity(m_angVelocity.mut_replace(swerveDrive.getModules()[0].getAngleMotor().getVelocity(),
+                  RotationsPerSecond));
+          log.motor("angle-" + swerveDrive.getModules()[0].moduleNumber)
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                      swerveDrive.getModules()[1].getDriveMotor().getVoltage(), Volts))
+              .angularPosition(
+                  m_rotations.mut_replace(swerveDrive.getModules()[1].getAngleMotor().getPosition(), Rotations))
+              .angularVelocity(m_angVelocity.mut_replace(swerveDrive.getModules()[1].getAngleMotor().getVelocity(),
+                  RotationsPerSecond));
+          log.motor("angle-" + swerveDrive.getModules()[1].moduleNumber)
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                      swerveDrive.getModules()[2].getDriveMotor().getVoltage(), Volts))
+              .angularPosition(
+                  m_rotations.mut_replace(swerveDrive.getModules()[2].getAngleMotor().getPosition(), Rotations))
+              .angularVelocity(m_angVelocity.mut_replace(swerveDrive.getModules()[2].getAngleMotor().getVelocity(),
+                  RotationsPerSecond));
+          log.motor("angle-" + swerveDrive.getModules()[3].moduleNumber)
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                      swerveDrive.getModules()[3].getDriveMotor().getVoltage(), Volts))
+              .angularPosition(
+                  m_rotations.mut_replace(swerveDrive.getModules()[3].getAngleMotor().getPosition(), Rotations))
+              .angularVelocity(m_angVelocity.mut_replace(swerveDrive.getModules()[3].getAngleMotor().getVelocity(),
+                  RotationsPerSecond));
+        }, this));
+  }
+
+  public Command sysIdAngleMotors() {
+    sysIdRoutine = setAngleSysIdRoutine();
+    return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)
+        .andThen(new WaitCommand(7))
+        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse))
+        .andThen(new WaitCommand(7))
+        .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward))
+        .andThen(new WaitCommand(7))
+        .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
+  }
+
+  public Command sysIdDriveMotors() {
+    sysIdRoutine = setDriveSysIdRoutine();
+    return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)
+        .andThen(new WaitCommand(7))
+        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse))
+        .andThen(new WaitCommand(7))
+        .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward))
+        .andThen(new WaitCommand(7))
+        .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
+  }
 
 }

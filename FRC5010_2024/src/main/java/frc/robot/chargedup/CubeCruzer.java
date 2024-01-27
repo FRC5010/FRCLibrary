@@ -19,6 +19,7 @@ import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.TranslationConstants;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
+import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
@@ -57,7 +58,8 @@ public class CubeCruzer extends GenericMechanism {
                 VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
                 multiVision.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1,
                                 new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(7.25),
-                                                Units.inchesToMeters(12.5), new Rotation3d(0, 0, Units.degreesToRadians(180))));
+                                                Units.inchesToMeters(12.5),
+                                                new Rotation3d(0, 0, Units.degreesToRadians(180))));
                 multiVision.setUpdateValues(true);
                 visionSystem = multiVision;
 
@@ -92,15 +94,12 @@ public class CubeCruzer extends GenericMechanism {
                 driver.createYButton()
                                 .whileTrue(new AutoBalance(drive.getDrivetrain(),
                                                 () -> !driver.createAButton().getAsBoolean(), gyro));
-                driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                                ledSubsystem, TranslationConstants.tagToLeftConeTransfrom));
+                ((YAGSLSwerveDrivetrain) drive.getDrivetrain()).setAngleSysIdRoutine();
+                driver.createAButton().whileTrue(((YAGSLSwerveDrivetrain) drive.getDrivetrain()).sysIdAngleMotors());
 
                 driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestVisionTarget()
-                                                ,
+                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestVisionTarget(),
                                 ledSubsystem,
                                 TranslationConstants.noteTransform));
 
