@@ -28,6 +28,7 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.commands.AutoBalance;
+import swervelib.SwerveDriveTest;
 
 /** Add your docs here. */
 public class CubeCruzer extends GenericMechanism {
@@ -94,8 +95,6 @@ public class CubeCruzer extends GenericMechanism {
                 driver.createYButton()
                                 .whileTrue(new AutoBalance(drive.getDrivetrain(),
                                                 () -> !driver.createAButton().getAsBoolean(), gyro));
-                ((YAGSLSwerveDrivetrain) drive.getDrivetrain()).setAngleSysIdRoutine();
-                driver.createAButton().whileTrue(((YAGSLSwerveDrivetrain) drive.getDrivetrain()).sysIdAngleMotors());
 
                 driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
