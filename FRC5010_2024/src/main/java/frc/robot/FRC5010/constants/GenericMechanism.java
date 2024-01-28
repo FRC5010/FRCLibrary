@@ -4,17 +4,11 @@
 
 package frc.robot.FRC5010.constants;
 
-import java.util.List;
-import java.util.Map;
-
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.sensors.Controller;
 

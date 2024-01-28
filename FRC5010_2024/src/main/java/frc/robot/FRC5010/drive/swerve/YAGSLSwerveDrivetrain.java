@@ -4,19 +4,11 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
-import static edu.wpi.first.units.MutableMeasure.mutable;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
@@ -33,12 +25,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Angle;
-import edu.wpi.first.units.Distance;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -49,13 +35,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
@@ -80,7 +62,6 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    * Swerve drive object.
    */
   private final SwerveDrive swerveDrive;
-  private static SysIdRoutine sysIdRoutine;
 
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
@@ -517,19 +498,17 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
-    driverXbox.createAButton().whileTrue(
-        SwerveDriveTest.generateSysIdCommand(
-            SwerveDriveTest.setAngleSysIdRoutine(
-                SwerveDriveTest.createConfigCustomTimeout(5),
-                this, swerveDrive),
-            3.0));
-
     // driverXbox.createAButton().whileTrue(
     //     SwerveDriveTest.generateSysIdCommand(
-    //         SwerveDriveTest.setDriveSysIdRoutine(
-    //             SwerveDriveTest.createConfigCustomTimeout(5),
-    //             this, swerveDrive),
-    //         3.0));
+    //         SwerveDriveTest.setAngleSysIdRoutine(new Config(), this, swerveDrive),
+    //         3.0, 5.0, 3.0));
+
+    driverXbox.createAButton().whileTrue(
+        SwerveDriveTest.generateSysIdCommand(
+            SwerveDriveTest.setDriveSysIdRoutine(
+                new Config(),
+                this, swerveDrive),
+            3.0, 5.0, 3.0));
     return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
     // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented);
   }

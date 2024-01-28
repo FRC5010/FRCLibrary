@@ -54,6 +54,7 @@ public class VisionMultiCam extends VisionSystem {
         cameras.put(name, new VisionLimeLightLib(name, cameraHeight, cameraAngle, targetHeight, colIndex, fieldLayout, "Vision", cameraTransform3d));
         names.add(name);
         updateValues = true;
+        this.cameraToRobot = cameraTransform3d;
     }
 
     public Transform3d getCameraPose(String cameraName) {
@@ -164,13 +165,7 @@ public class VisionMultiCam extends VisionSystem {
         cameras.get(name).setSnapshotMode(snapVal);
     }
 
-    @Override
     public Transform3d getCameraToRobot(String name) {
         return cameras.get(name).getCameraToRobot();
-    }
-
-    @Override
-    public Transform3d getCameraToRobot() {
-        return cameras.values().stream().findFirst().get().getCameraToRobot();
     }
 }

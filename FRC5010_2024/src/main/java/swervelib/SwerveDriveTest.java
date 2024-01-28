@@ -256,7 +256,7 @@ public class SwerveDriveTest
             m_appliedVoltage.mut_replace(
                 module.getDriveMotor().getVoltage(), Volts))
         .angularPosition(
-            m_rotations.mut_replace(module.getAngleMotor().getPosition(), Rotations))
+            m_rotations.mut_replace(module.getAbsoluteEncoder().getAbsolutePosition(), Rotations))
         .angularVelocity(m_angVelocity.mut_replace(module.getAngleMotor().getVelocity(),
             RotationsPerSecond));
   }
@@ -267,6 +267,7 @@ public class SwerveDriveTest
         (Measure<Voltage> voltage) -> {
           SwerveDriveTest.powerAngleMotors(swerveDrive, voltage.in(Volts));
           SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, 0);
+  
         },
         log -> {
           for (SwerveModule module : swerveDrive.getModules()) {
@@ -275,13 +276,13 @@ public class SwerveDriveTest
         }, swerveSubsystem));
   }
 
-  public static Command generateSysIdCommand(SysIdRoutine sysIdRoutine, double delay) {
-    return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)
+  public static Command generateSysIdCommand(SysIdRoutine sysIdRoutine, double delay, double quasiTimeout, double dynamicTimeout) {
+    return Commands.waitSeconds(quasiTimeout).deadlineWith(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward))
         .andThen(Commands.waitSeconds(delay))
-        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse))
+        .andThen(Commands.waitSeconds(quasiTimeout).deadlineWith(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)))
         .andThen(Commands.waitSeconds(delay))
-        .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward))
+        .andThen(Commands.waitSeconds(dynamicTimeout).deadlineWith(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)))
         .andThen(Commands.waitSeconds(delay))
-        .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
+        .andThen(Commands.waitSeconds(dynamicTimeout).deadlineWith(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)));
   }
 }

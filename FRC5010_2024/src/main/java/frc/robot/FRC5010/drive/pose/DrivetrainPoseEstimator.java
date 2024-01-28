@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotState;
@@ -81,6 +80,10 @@ public class DrivetrainPoseEstimator {
   }
 
   public Pose3d getPoseFromClosestVisionTarget() {
+    return closestTargetToRobot;
+  }
+
+  public Pose3d updatePoseFromClosestVisionTarget() {
     double angleYaw = vision.getAngleX();
     double anglePitch = vision.getAngleY();
     double distance = vision.getDistance();
@@ -104,7 +107,7 @@ public class DrivetrainPoseEstimator {
           targetPose.toPose2d());
     }
 
-    field2d.getObject("Camera").setPose(
+    field2d.getObject("Target Camera").setPose(
         cameraPose.toPose2d());
 
     return targetPose;
@@ -136,7 +139,7 @@ public class DrivetrainPoseEstimator {
     field2d.setRobotPose(getCurrentPose());
 
     closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
-    closestTargetToRobot = getPoseFromClosestVisionTarget();
+    closestTargetToRobot = updatePoseFromClosestVisionTarget();
   }
 
   /**

@@ -113,10 +113,10 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                                 .whileTrue(new AutoBalance(drive.getDrivetrain(),
                                                 () -> !driver.createAButton().getAsBoolean(), gyro));
 
-                driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                                ledSubsystem, TranslationConstants.tagToLeftConeTransfrom));
+                // driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                //                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                //                 () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
+                //                 ledSubsystem, TranslationConstants.tagToLeftConeTransfrom));
 
                 driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),

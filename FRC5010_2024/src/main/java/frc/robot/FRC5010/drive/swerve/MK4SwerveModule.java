@@ -11,7 +11,6 @@ import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwerveModuleConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.motors.MotorFactory;
-import frc.robot.FRC5010.sensors.AnalogInput5010;
 import frc.robot.FRC5010.sensors.encoder.CanCoderEncoder;
 
 /** Add your docs here. */

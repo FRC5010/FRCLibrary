@@ -6,7 +6,6 @@ package frc.robot.FRC5010.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,7 +13,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
-import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 
 public class JoystickToSwerve extends Command {
   /** Creates a new JoystickToSwerve. */
