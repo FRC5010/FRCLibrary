@@ -153,8 +153,8 @@ public class RobotContainer extends GenericMechanism {
     String whichRobot = whereAmI();
     switch (whichRobot) {
       case Robots.CC_BOT_2023: {
-        // robot = new CubeCruzer(mechVisual, shuffleTab);
-        robot = new CompBot_2024(mechVisual, shuffleTab);
+        robot = new CubeCruzer(mechVisual, shuffleTab);
+        // robot = new CompBot_2024(mechVisual, shuffleTab);
         break;
       }
       case Robots.COMP_BOT_2023: {

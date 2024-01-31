@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRC5010.motors.MotorController5010;
+import frc.robot.FRC5010.sensors.ValueSwitch;
 import frc.robot.FRC5010.sensors.encoder.RevEncoder;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
@@ -20,23 +21,29 @@ public class ClimbSubsystem extends SubsystemBase {
   RevEncoder rightEncoder;
   GenericGyro gyro;
 
+  ValueSwitch leftCurrentSwitch;
+  ValueSwitch rightCurrentSwitch;
+
   public ClimbSubsystem(MotorController5010 leftMotor, MotorController5010 rightMotor, GenericGyro gyro) {
     this.leftMotor = leftMotor;
     this.rightMotor = rightMotor;
     leftEncoder = (RevEncoder) leftMotor.getMotorEncoder();
     rightEncoder = (RevEncoder) rightMotor.getMotorEncoder();
     this.gyro = gyro;
+
+    leftCurrentSwitch = new ValueSwitch(() -> 0.0, ((CANSparkMax)leftMotor)::getOutputCurrent, 0.1); // TODO: Get "desired" current and use it as threshold
+    rightCurrentSwitch = new ValueSwitch(() -> 0.0, ((CANSparkMax)rightMotor)::getOutputCurrent, 1.0); // TODO: Get "desired" current and use it as threshold
   }
 
-  public boolean isAtMin() {
-    if (leftMotor.get() < 0 && rightMotor.get() < 0) { // TODO: Add current check
+  public boolean leftIsAtMin() {
+    if (leftMotor.get() < 0 && rightMotor.get() < 0) { // TODO: Add current check and switch...maybe reset encoder at this point
       return true;
     }
     return false;
   }
 
-  public boolean isAtMax() {
-    if (leftMotor.get() > 0 && rightMotor.get() > 0) { // TODO: Add current check
+  public boolean leftIsAtMax() {
+    if (leftMotor.get() > 0 && leftCurrentSwitch.get()) { // TODO: Add current switch
       return true;
     }
     return false;

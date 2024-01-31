@@ -18,6 +18,7 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -86,8 +87,7 @@ public class SwerveDriveTest
   {
     for (SwerveModule swerveModule : swerveDrive.getModules())
     {
-      swerveModule.getDriveMotor().setVoltage(
-          volts * (swerveModule.getConfiguration().driveMotorInverted ? -1.0 : 1.0));
+      swerveModule.getDriveMotor().setVoltage(volts);
     }
   }
 
@@ -265,7 +265,7 @@ public class SwerveDriveTest
     log.motor("drive-" + module.configuration.name)
        .voltage(
            m_appliedVoltage.mut_replace(
-               module.getDriveMotor().getVoltage(), Volts))
+               module.getDriveMotor().getVoltage() / RobotController.getBatteryVoltage(), Volts))
        .linearPosition(m_distance.mut_replace(module.getPosition().distanceMeters, Meters))
        .linearVelocity(
            m_velocity.mut_replace(module.getDriveMotor().getVelocity(), MetersPerSecond));
@@ -286,7 +286,7 @@ public class SwerveDriveTest
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
         (Measure<Voltage> voltage) -> {
           SwerveDriveTest.centerModules(swerveDrive);
-          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, voltage.in(Volts));
+          SwerveDriveTest.powerDriveMotorsDutyCycle(swerveDrive, voltage.in(Volts) / RobotController.getBatteryVoltage());
         },
         log -> {
           for (SwerveModule module : swerveDrive.getModules())
@@ -313,7 +313,7 @@ public class SwerveDriveTest
     log.motor("angle-" + module.configuration.name)
        .voltage(
            m_appliedVoltage.mut_replace(
-               module.getAngleMotor().getVoltage(), Volts))
+               module.getAngleMotor().getVoltage() / RobotController.getBatteryVoltage(), Volts))
        .angularPosition(
            m_rotations.mut_replace(module.getAbsolutePosition(), Degrees))
        .angularVelocity(m_angVelocity.mut_replace(module.getAngleMotor().getVelocity(),
@@ -333,8 +333,8 @@ public class SwerveDriveTest
   {
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
         (Measure<Voltage> voltage) -> {
-          SwerveDriveTest.powerAngleMotorsVoltage(swerveDrive, voltage.in(Volts));
-          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, 0);
+          SwerveDriveTest.powerAngleMotors(swerveDrive, voltage.in(Volts) / RobotController.getBatteryVoltage());
+          SwerveDriveTest.powerDriveMotorsDutyCycle(swerveDrive, 0);
         },
         log -> {
           for (SwerveModule module : swerveDrive.getModules())
