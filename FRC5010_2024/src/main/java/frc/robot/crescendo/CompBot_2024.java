@@ -4,7 +4,6 @@
 
 package frc.robot.crescendo;
 
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -20,69 +19,72 @@ import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
 
 /** Add your docs here. */
 public class CompBot_2024 extends GenericMechanism {
 
-        MotorController5010 pivotMotor;
-        PivotSubsystem pivotSubsystem;
-        ShooterSubsystem shooterSubsystem;
-        MotorController5010 topShooterMotor;
-        MotorController5010 bottomShooterMotor;
-        VisionMultiCam visionSystem;
-        
+        private MotorController5010 pivotMotor;
+        private PivotSubsystem pivotSubsystem;
+        private ShooterSubsystem shooterSubsystem;
+        private MotorController5010 topShooterMotor;
+        private MotorController5010 bottomShooterMotor;
+        private VisionMultiCam visionSystem;
+        private GenericGyro gyro;
+        private ClimbSubsystem climbSubsystem;
+        private MotorController5010 leftClimbMotor;
+        private MotorController5010 rightClimbMotor;
 
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
 
                 // Motor Setup
                 pivotMotor = MotorFactory.NEO(10);
-
-                pivotSubsystem = new PivotSubsystem(pivotMotor, visual);
-
                 topShooterMotor = MotorFactory.NEO(11);
                 bottomShooterMotor = MotorFactory.NEO(12);
-                shooterSubsystem = new ShooterSubsystem(visual, topShooterMotor, bottomShooterMotor);
+                leftClimbMotor = MotorFactory.NEO(0); // TODO: Add correct port
+                rightClimbMotor = MotorFactory.NEO(1); // TODO: Add correct port
+                gyro = new PigeonGyro(15);
 
                 visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
-
                 visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
+                pivotSubsystem = new PivotSubsystem(pivotMotor, visual);
+                shooterSubsystem = new ShooterSubsystem(visual, topShooterMotor, bottomShooterMotor);
+                climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro);
         }
 
-       
 
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
-            driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07).negate());
-            driver.setRightYAxis(driver.createRightYAxis().deadzone(0.07).negate());
+                driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07).negate());
+                driver.setRightYAxis(driver.createRightYAxis().deadzone(0.07).negate());
 
         }
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
-            pivotSubsystem.setDefaultCommand(new RunPivot(() -> driver.getLeftYAxis(), pivotSubsystem));
-            shooterSubsystem.setDefaultCommand(new RunShooter(() -> driver.getRightYAxis(), shooterSubsystem));
- 
-            
+                pivotSubsystem.setDefaultCommand(new RunPivot(() -> driver.getLeftYAxis(), pivotSubsystem));
+                shooterSubsystem.setDefaultCommand(new RunShooter(() -> driver.getRightYAxis(), shooterSubsystem));
+
         }
 
         @Override
         protected void initRealOrSim() {
                 if (RobotBase.isReal()) {
-                        
 
                 }
         }
 
         @Override
         public void initAutoCommands() {
-            //AutoBuilder.configureCustom(null, null, null);
+                // AutoBuilder.configureCustom(null, null, null);
         }
 
         public void disabledBehavior() {
-                
+
         }
 
         @Override

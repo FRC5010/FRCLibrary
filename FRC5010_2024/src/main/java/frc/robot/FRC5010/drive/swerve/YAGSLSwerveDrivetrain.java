@@ -489,6 +489,30 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
   }
 
+    /**
+   * Command to characterize the robot drive motors using SysId
+   * @return SysId Drive Command
+   */
+  public Command sysIdDriveMotorCommand() {
+    return SwerveDriveTest.generateSysIdCommand(
+          SwerveDriveTest.setDriveSysIdRoutine(
+              new Config(),
+              this, swerveDrive),
+          3.0, 5.0, 3.0);
+}
+
+/**
+ * Command to characterize the robot angle motors using SysId
+ * @return SysId Angle Command
+ */
+public Command sysIdAngleMotorCommand() {
+    return SwerveDriveTest.generateSysIdCommand(
+          SwerveDriveTest.setAngleSysIdRoutine(
+              new Config(),
+              this, swerveDrive),
+          3.0, 5.0, 3.0);
+}
+
   /** 5010 Code */
 
   public Command createDefaultCommand(Controller driverXbox) {
@@ -498,17 +522,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
-    // driverXbox.createAButton().whileTrue(
-    //     SwerveDriveTest.generateSysIdCommand(
-    //         SwerveDriveTest.setAngleSysIdRoutine(new Config(), this, swerveDrive),
-    //         3.0, 5.0, 3.0));
-
-    driverXbox.createAButton().whileTrue(
-        SwerveDriveTest.generateSysIdCommand(
-            SwerveDriveTest.setDriveSysIdRoutine(
-                new Config(),
-                this, swerveDrive),
-            3.0, 5.0, 3.0));
+    // driverXbox.createAButton().whileTrue(sysIdAngleMotorCommand());
+    driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
+    driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());
     return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
     // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented);
   }

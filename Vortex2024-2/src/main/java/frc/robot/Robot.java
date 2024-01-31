@@ -45,11 +45,11 @@ public class Robot extends TimedRobot {
         (Boolean interupted) -> { // end
           shooter.stopMotors();
         },
-        () -> { // isFinished
+        () -> { // isFinished\
           return false;
         }, shooter));
     // Top Motor Analysis Code
-    joystick.a().whileTrue(
+    joystick.a().onTrue(
         new InstantCommand(() -> shooter.invertMotors(false))
         .andThen(shooter.topSysIdQuasistatic(SysIdRoutine.Direction.kForward))
         .andThen(new WaitCommand(7))

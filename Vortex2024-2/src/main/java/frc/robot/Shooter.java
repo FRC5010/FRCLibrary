@@ -30,30 +30,36 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 
 public class Shooter extends SubsystemBase {
-  private static final int kMotorPort = 1; // Change back to 2
-  private static final int kMotorPort2 = 2; // Change back to 1
-  private static final int kMotorPort3 = 3; // Change back to 15
+  private static final int kMotorPort = 1; 
+  private static final int kMotorPort2 = 2; 
+  private static final int kMotorPort3 = 3; 
 
-  // private static final double BottomKs = 0.098517;
-  // private static final double BottomKv = 0.45615 / 60.0 / (12.0 - BottomKs);
-  // private static final double BottomKa = 0.059296 / 60.0 / (12.0 - BottomKs);
-  // private static final double BottomKp = 0.038178;
+  private static final double BottomKs = 0; // 0.48742;
+  private static final double BottomKv = 0.0026969 / 12.0;
+  private static final double BottomKa = 0.0010528 / 12.0;
+  private static final double BottomKp = 0; // 0.0033808;
+  private static final double BottomKd = 0; // 2.0156E-05;
+  private static final double BottomKi = 0;
+  private static final double BottomKz = 50;
 
-  // private static final double TopKs = 0.028379;
-  // private static final double TopKa = 0.087259 / 60.0 / (12.0 - TopKs);
-  // private static final double TopKv = 0.43275 / 60.0 / (12.0 - TopKs);
-  // private static final double TopKp = 1.5572E-07;
+  private static final double TopKs = 0.1444;
+  private static final double TopKa = 0.001787 / 12.0;
+  private static final double TopKv = 0.0029773 / 12.0;
+  private static final double TopKp = 1.2415E-09 / 12.0;  // 0.00029385
+  private static final double TopKd = 0; // 2.6892E-05;
+  private static final double TopKi = 0.0000001;
+  private static final double TopKz = 50;
 
   // Comp Bot Intake motors
-  private static final double TopKs = 0.21531;
-  private static final double TopKv = 0.002122 / 12.0;
-  private static final double TopKa = 0.00017499 / 12.0;
-  private static final double TopKp = 10.1707E-5;
+  // private static final double TopKs = 0.21531;
+  // private static final double TopKv = 0.002122 / 12.0;
+  // private static final double TopKa = 0.00017499 / 12.0;
+  // private static final double TopKp = 10.1707E-5;
 
-  private static final double BottomKs = 0.2326;
-  private static final double BottomKv = 0.0021369 / 12.0;
-  private static final double BottomKa = 0.00019341 / 12.0;
-  private static final double BottomKp = 10.3633E-5;
+  // private static final double BottomKs = 0.2326;
+  // private static final double BottomKv = 0.0021369 / 12.0;
+  // private static final double BottomKa = 0.00019341 / 12.0;
+  // private static final double BottomKp = 10.3633E-5;
 
   private CANSparkMax top_motor; // Change to CANSparkMax
   private CANSparkMax bottom_motor; // Change to CANSparkMax
@@ -77,6 +83,14 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Top Motor", 0.3);
     SmartDashboard.putNumber("Down Motor", 0.3);
     SmartDashboard.putNumber("Feeder Motor", 0.0);
+
+    SmartDashboard.putNumber("Top Kp", TopKp);
+    SmartDashboard.putNumber("Top Ka", TopKa);
+    SmartDashboard.putNumber("Top Kv", TopKv);
+    SmartDashboard.putNumber("Top Ks", TopKs);
+    SmartDashboard.putNumber("Top Ki", TopKi);
+    SmartDashboard.putNumber("Top Kd", TopKd);
+
     top_motor = new CANSparkMax(kMotorPort, MotorType.kBrushless);
     top_motor.restoreFactoryDefaults();
     top_encoder = top_motor.getEncoder();
@@ -107,23 +121,24 @@ public class Shooter extends SubsystemBase {
     // bottom_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(3) / 60.0));
     // feeder_encoder.setVelocityConversionFactor((Math.PI * Units.inchesToMeters(2) / 60));
 
-   // setSysIdRoutine(top_motor, "top-motor");
-    setSysIdRoutine(bottom_motor, "motor");
+   setSysIdRoutine(top_motor, "top-motor");
+    // setSysIdRoutine(bottom_motor, "motor");
 
     top_pid = top_motor.getPIDController();
     bot_pid = bottom_motor.getPIDController();
     feed_pid = feeder_motor.getPIDController();
     top_pid.setP(TopKp);
-    top_pid.setD(0);
+    top_pid.setD(TopKd);
     top_pid.setFF(TopKv);
-    top_pid.setI(1E-6);
-    top_pid.setIZone(50);
+    top_pid.setI(TopKi);
+    //top_pid.setIZone(TopKz);
+    
 
     bot_pid.setP(BottomKp);
-    bot_pid.setD(0);
+    bot_pid.setD(BottomKd);
     bot_pid.setFF(BottomKv);
-    bot_pid.setI(1E-6);
-    bot_pid.setIZone(50);
+    bot_pid.setI(BottomKi);
+    //bot_pid.setIZone(BottomKz);
 
     feed_pid.setP(0);
     feed_pid.setD(0);
@@ -161,7 +176,14 @@ public class Shooter extends SubsystemBase {
       bottom_motor.set(SmartDashboard.getNumber("Down Motor", 0.0));
       feeder_motor.set(SmartDashboard.getNumber("Feeder Motor", 0.0));
     } else if (joystick.leftBumper().getAsBoolean()) {
-      top_pid.setReference(SmartDashboard.getNumber("Top Motor", 0.0), ControlType.kVelocity, 0, TopKs);
+      
+      // Sets the values of the PID for Testing
+      top_pid.setP(SmartDashboard.getNumber("Top Kp", TopKp));
+      top_pid.setD(SmartDashboard.getNumber("Top Kd", TopKd));
+      top_pid.setFF(SmartDashboard.getNumber("Top Kv", TopKs));
+      top_pid.setI(SmartDashboard.getNumber("Top Ki", TopKi));
+
+      top_pid.setReference(SmartDashboard.getNumber("Top Motor", 0.0), ControlType.kVelocity, 0, SmartDashboard.getNumber("Top Ks", Jpower));
       bot_pid.setReference(SmartDashboard.getNumber("Down Motor", 0.0), ControlType.kVelocity, 0, BottomKs);
       feeder_motor.set(SmartDashboard.getNumber("Feeder Motor", 0.0));
     } else {
@@ -197,12 +219,12 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Top Encoder", top_encoder.getPosition());
-    SmartDashboard.putNumber("Top Velocity", -top_encoder.getVelocity()*1.51428);
+    SmartDashboard.putNumber("Top Velocity", top_encoder.getVelocity());
     SmartDashboard.putNumber("Top Voltage", top_motor.get() * RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Batt Voltage", RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Encoder Counts Per Revolution", top_encoder.getCountsPerRevolution());
     SmartDashboard.putNumber("Bot Encoder", bottom_encoder.getPosition());
-    SmartDashboard.putNumber("Bot Velocity", -bottom_encoder.getVelocity()*1.5806);
+    SmartDashboard.putNumber("Bot Velocity", bottom_encoder.getVelocity());
     SmartDashboard.putNumber("Bot Voltage", bottom_motor.get() * RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Feed Encoder", feeder_encoder.getPosition());
     SmartDashboard.putNumber("Feed Velocity", feeder_encoder.getVelocity());
