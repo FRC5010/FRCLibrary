@@ -6,7 +6,7 @@ package frc.robot.FRC5010.drive.swerve;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import frc.robot.FRC5010.constants.GenericMotorConstants;
+import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwerveModuleConstants;
@@ -42,7 +42,7 @@ public class ThriftySwerveModule extends GenericSwerveModule{
     public static final int neo550CurrentLimit = 30;
     
     public static final GenericPID pid = new GenericPID(kPTurning, kITurning, kDTurning); 
-    public static final GenericMotorConstants motorsConstants = new GenericMotorConstants(kSC, kVC, kAC);  
+    public static final MotorFeedFwdConstants motorsConstants = new MotorFeedFwdConstants(kSC, kVC, kAC, true);  
     public static final SwerveModuleConstants moduleConstants = new SwerveModuleConstants(
         kWheelDiameterMeters, kDriveMotorGearRatio, 
         false, kTurningMotorGearRatio, false, false);

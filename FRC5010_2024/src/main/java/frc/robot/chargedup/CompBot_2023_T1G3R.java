@@ -23,6 +23,7 @@ import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.commands.DriveToPosition;
 import frc.robot.FRC5010.constants.GenericMechanism;
+import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwervePorts;
 import frc.robot.FRC5010.constants.TranslationConstants;
@@ -54,23 +55,15 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                 // Needs to be set
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
-                // Baby Swerve values need to be changed
-                swerveConstants.setkFrontLeftAbsoluteOffsetRad(Units.degreesToRadians(-93.076)); //
-                swerveConstants.setkFrontRightAbsoluteOffsetRad(Units.degreesToRadians(140.010)); //
-                swerveConstants.setkBackLeftAbsoluteOffsetRad(Units.degreesToRadians(-1.582)); //
-                swerveConstants.setkBackRightAbsoluteOffsetRad(Units.degreesToRadians(1.670)); //
-                // swerveConstants.setkFrontLeftAbsoluteOffsetRad(0); //
-                // swerveConstants.setkFrontRightAbsoluteOffsetRad(0); //
-                // swerveConstants.setkBackLeftAbsoluteOffsetRad(0); //
-                // swerveConstants.setkBackRightAbsoluteOffsetRad(0);
-
                 swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(10);
                 swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
                 swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
                 swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+                swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
 
                 swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
+                swerveConstants.getSwerveModuleConstants().setDriveMotorFF(new MotorFeedFwdConstants(0, 0, 0));
                 swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
                 ledSubsystem = new LedSubsystem(1, 187);

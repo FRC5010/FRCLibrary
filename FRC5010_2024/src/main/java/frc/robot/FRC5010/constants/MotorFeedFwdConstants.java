@@ -5,7 +5,7 @@
 package frc.robot.FRC5010.constants;
 
 /** Add your docs here. */
-public class GenericMotorConstants {
+public class MotorFeedFwdConstants {
 
     private double kSC;
     private double kVC;
@@ -15,15 +15,21 @@ public class GenericMotorConstants {
     private double kV;  
     private double kA;  
     
-    public GenericMotorConstants(double kSC, double kVC, double kAC) {
+    public MotorFeedFwdConstants(double kSC, double kVC, double kAC, boolean convert) {
         this.kSC = kSC;
         this.kVC = kVC;
         this.kAC = kAC;
+        if (convert) {
+            kS = kSC / 12;
+            kV = kVC / 60 / 1 / (12 - kS);
+            kA = kAC / 60 / 1 / (12 - kS);     
+        }   
+    }
 
-        kS = kSC / 12;
-        kV = kVC / 60 / 1 / (12 - kS);
-        kA = kAC / 60 / 1 / (12 - kS);
-        
+    public MotorFeedFwdConstants(double kS, double kV, double kA) {
+        this.kS = kS;
+        this.kV = kV;
+        this.kA = kA;
     }
 
     public double getkSC() {

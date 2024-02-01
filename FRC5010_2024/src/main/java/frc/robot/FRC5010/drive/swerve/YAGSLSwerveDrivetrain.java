@@ -17,6 +17,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -79,13 +80,16 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     // In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     // The encoder resolution per motor revolution is 1 per motor revolution.
-    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(21.42, 1);
+    double angleGearRatio = swerveConstants.getSwerveModuleConstants().getkTurningMotorGearRatio();
+    double wheelDiameter = swerveConstants.getSwerveModuleConstants().getkWheelDiameterMeters();
+    double driveGearRatio = swerveConstants.getSwerveModuleConstants().getkDriveMotorGearRatio();
+    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(angleGearRatio, 1);
     // Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER
     // RESOLUTION).
     // In this case the wheel diameter is 4 inches.
     // The gear ratio is 6.75 motor revolutions per wheel rotation.
     // The encoder resolution per motor revolution is 1 per motor revolution.
-    double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.12, 1);
+    double driveConversionFactor = SwerveMath.calculateMetersPerRotation(wheelDiameter, driveGearRatio, 1);
     System.out.println("\"conversionFactor\": {");
     System.out.println("\t\"angle\": " + angleConversionFactor + ",");
     System.out.println("\t\"drive\": " + driveConversionFactor);
@@ -102,9 +106,14 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
       throw new RuntimeException(e);
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via
-                                             // angle.
-
+                                             // angle.    
     /** 5010 Code */
+    if (null != swerveConstants.getSwerveModuleConstants().getDriveFeedForward()) {
+      double kS = swerveConstants.getSwerveModuleConstants().getDriveFeedForward().getkS();
+      double kV = swerveConstants.getSwerveModuleConstants().getDriveFeedForward().getkV();
+      double kA = swerveConstants.getSwerveModuleConstants().getDriveFeedForward().getkA();
+      swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
+    }
     poseEstimator = new DrivetrainPoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
 

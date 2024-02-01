@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.FRC5010.constants.GenericMotorConstants;
+import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.SwerveConstants;
@@ -39,7 +39,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
     protected Persisted<Double> swerveTurnP;
     protected Persisted<Double> swerveTurnI;
     protected Persisted<Double> swerveTurnD;
-    protected GenericMotorConstants motorConstants = new GenericMotorConstants(0, 0, 0);
+    protected MotorFeedFwdConstants motorConstants = new MotorFeedFwdConstants(0, 0, 0);
     protected SwerveModuleConstants moduleConstants = new SwerveModuleConstants(Units.inchesToMeters(0), 0, false, 0,
             false, false);
     private double radOffset;

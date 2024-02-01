@@ -17,7 +17,8 @@ public class SwerveModuleConstants {
     private boolean drivingInv;
     private boolean turningInv;
     private boolean encoderInv;
-    
+    private MotorFeedFwdConstants driveMotorFF;
+
     public SwerveModuleConstants(double kWheelDiameterMeters, double kDriveMotorGearRatio,boolean drivingInv, double kTurningMotorGearRatio, boolean turningInv, boolean encoderInv) {
         
         this.kWheelDiameterMeters = kWheelDiameterMeters;
@@ -92,6 +93,11 @@ public class SwerveModuleConstants {
     public void setkTurningEncoderRPM2RadPerSec(double kTurningEncoderRPM2RadPerSec) {
         this.kTurningEncoderRPM2RadPerSec = kTurningEncoderRPM2RadPerSec;
     }
-
+    public void setDriveMotorFF(MotorFeedFwdConstants constants) {
+        driveMotorFF = constants;
+    }
+    public MotorFeedFwdConstants getDriveFeedForward() {
+        return driveMotorFF;
+    }
 
 }

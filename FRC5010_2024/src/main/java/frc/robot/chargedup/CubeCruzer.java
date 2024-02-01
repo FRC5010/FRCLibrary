@@ -16,10 +16,11 @@ import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.DriveToPosition;
 import frc.robot.FRC5010.constants.GenericMechanism;
+import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.TranslationConstants;
+import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
-import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
@@ -28,7 +29,6 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.commands.AutoBalance;
-import swervelib.SwerveDriveTest;
 
 /** Add your docs here. */
 public class CubeCruzer extends GenericMechanism {
@@ -50,7 +50,11 @@ public class CubeCruzer extends GenericMechanism {
 
                 swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(2);
                 swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+                
                 swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
+
+                swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
+                swerveConstants.getSwerveModuleConstants().setDriveMotorFF(new MotorFeedFwdConstants(0, 0, 0));
 
                 ledSubsystem = new LedSubsystem(1, 187);
                 ledSubsystem.off();
