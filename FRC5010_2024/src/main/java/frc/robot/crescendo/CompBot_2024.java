@@ -53,7 +53,7 @@ public class CompBot_2024 extends GenericMechanism {
                 visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
                 pivotSubsystem = new PivotSubsystem(pivotMotor, visual);
                 shooterSubsystem = new ShooterSubsystem(visual, topShooterMotor, bottomShooterMotor);
-                climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro);
+                climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro, mechVisual);
         }
 
 
