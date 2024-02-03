@@ -35,11 +35,6 @@
     }
   },
   "NetworkTables": {
-    "persistent": {
-      "Preferences": {
-        "open": true
-      }
-    },
     "transitory": {
       "Shuffleboard": {
         "Robot": {
@@ -66,6 +61,7 @@
   "NetworkTables Info": {
     "Clients": {
       "open": true
-    }
+    },
+    "visible": true
   }
 }

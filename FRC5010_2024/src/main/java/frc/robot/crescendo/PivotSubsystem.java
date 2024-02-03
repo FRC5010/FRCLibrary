@@ -4,8 +4,10 @@
 
 package frc.robot.crescendo;
 
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -45,13 +47,25 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_LENGTH = Units.inchesToMeters(19);
   private final double PIVOT_MASS = Units.lbsToKilograms(22);
   private final double PIVOT_START_ANGLE = 225;
+  private final double PIVOT_END_ANGLE = 60;
   private final double PIVOT_kS = 0.2;
-  private final double PIVOT_CONVERSION_FACTOR = 24.242;
+  private final double PIVOT_CONVERSION_FACTOR = 360;//24.242;
   private final double PIVOT_SIM_CONVERSION_FACTOR = 0.1;
   private final String PIVOT_kG = "PivotKg";
   private final String PIVOT_ANGLE = "Pivot Angle";
+  private final String PIVOT_kV = "PivotkV";
+  private final String PIVOT_kP = "PivotkP";
+  private final String PIVOT_kD = "PivotkD";
 
 
+  public final double HOME_LEVEL = PIVOT_START_ANGLE;
+  public final double AMP_LEVEL = 135;
+  public final double TRAP_LEVEL = 75;
+
+  private double referencePosition = HOME_LEVEL;
+
+  private double previousError = 0;
+  private double previousTime = 0;
   
   /** Creates a new Pivot. */
   public PivotSubsystem(MotorController5010 pivot, Mechanism2d mechSim) {
@@ -60,10 +74,16 @@ public class PivotSubsystem extends GenericSubsystem {
     pivotPID = ((CANSparkMax)pivotMotor).getPIDController();
     encoder.setPositionConversion(PIVOT_CONVERSION_FACTOR);
 
-
+    pivotPID.setP(0.01);
+    pivotPID.setI(0);
+    pivotPID.setD(0);
+    
     robotSim = mechSim;
 
-    values.declare(PIVOT_kG, 0.0);
+    values.declare(PIVOT_kG, 6.050000); // 6.251000
+    values.declare(PIVOT_kV, 0.010000);
+    values.declare(PIVOT_kP, 0.010000);
+    values.declare(PIVOT_kD, 0.003000);
 
     // Simulation Setup
     simEncoder.setPositionConversion(PIVOT_SIM_CONVERSION_FACTOR);
@@ -72,14 +92,51 @@ public class PivotSubsystem extends GenericSubsystem {
     simPivotArm.append(new MechanismLigament2d("Shooter", 10, 90));
     // TODO: Attach Shooter to the Arm 
     simTargetArm = simPivotRoot.append(new MechanismLigament2d("Target Arm", 25, PIVOT_START_ANGLE, 6, new Color8Bit(Color.kBlue)));
-    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(2), 9, SingleJointedArmSim.estimateMOI(PIVOT_LENGTH, PIVOT_MASS), PIVOT_LENGTH, Units.degreesToRadians(100), Units.degreesToRadians(255), true, PIVOT_START_ANGLE);
-    values.declare(PIVOT_ANGLE, 0);
+    pivotSim = new SingleJointedArmSim(DCMotor.getNEO(2), 9, 
+      SingleJointedArmSim.estimateMOI(PIVOT_LENGTH, PIVOT_MASS), PIVOT_LENGTH, 
+      Units.degreesToRadians(PIVOT_END_ANGLE), Units.degreesToRadians(PIVOT_START_ANGLE), true, Units.degreesToRadians(PIVOT_START_ANGLE));
+    values.declare(PIVOT_ANGLE, 0.0);
 
 
     SmartDashboard.putData(this);
 
 
   }
+
+  public double getReference() {
+    return referencePosition;
+  }
+
+  public void setReference(double value) {
+    referencePosition = value;
+  }
+
+  public boolean isAtTarget() {
+    return Math.abs(getPivotPosition() - referencePosition) < 10.0;
+  }
+
+  public void runToReference() {
+    pivotPID.setP(values.getDouble(PIVOT_kP));
+    double currentError = getReference() - getPivotPosition();
+    double currentTime = RobotController.getFPGATime() / 1E6;
+    double errorRate = (currentError - previousError) / (currentTime - previousTime);
+    double voltage = currentError * values.getDouble(PIVOT_kP) + (errorRate * values.getDouble(PIVOT_kD));
+    double feedForward = getFeedFowardVoltage(isAtTarget() ? 0 : voltage);
+    SmartDashboard.putNumber("Pivot FF Voltage", feedForward);
+    
+    if (!Robot.isReal()) {
+      pivotMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
+    } else {
+      pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
+    }
+    SmartDashboard.putBoolean("Pivot Run Ref", true);
+    SmartDashboard.putBoolean("Pivot Set Speed", false);
+
+    previousError = currentError;
+    previousTime = currentTime;
+  }
+
+
 
   public double getPivotPosition() {
     if (Robot.isReal()) {
@@ -89,19 +146,36 @@ public class PivotSubsystem extends GenericSubsystem {
     }
   }
 
-  public double getFeedFowardVoltage() {
+  public void setPivotPosition(double pos) {
+    if (Robot.isReal()) {
+      encoder.setPosition(pos);
+    } else {
+      simEncoder.setPosition(pos);
+      pivotSim.setState(Units.degreesToRadians(pos), 0);
+    }
+    values.set(PIVOT_ANGLE, pos);
+  }
+
+
+
+  
+  public double getFeedFowardVoltage(double velocity) {
     Double pivotKG = values.getDouble(PIVOT_kG);
+    Double pivotKV = values.getDouble(PIVOT_kV);
 
-    pivotFeedforward = new ArmFeedforward(PIVOT_kS, pivotKG, 0);
-
-    double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), 0);
+    pivotFeedforward = new ArmFeedforward(PIVOT_kS, pivotKG, pivotKV);
+    double vel = Math.signum(velocity) * 0.5;
+    double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), Units.degreesToRadians(vel));
 
     return ff;
   }
 
   public void setSpeed(double speed) {
-    double ff = getFeedFowardVoltage() / 12.0;
+
+    double ff = getFeedFowardVoltage(speed) / RobotController.getBatteryVoltage();
     pivotMotor.set(speed + ff);
+    SmartDashboard.putBoolean("Pivot Set Speed", true);
+    SmartDashboard.putBoolean("Pivot Run Ref", false);
     SmartDashboard.putNumber("Pivot Speed", speed);
   }
 
@@ -109,6 +183,9 @@ public class PivotSubsystem extends GenericSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     values.set(PIVOT_ANGLE, getPivotPosition());
+    SmartDashboard.putNumber("Pivot Reference", getReference());
+    SmartDashboard.putNumber("Pivot Reference Rotation", Units.degreesToRotations(getReference()));
+    SmartDashboard.putNumber("Pivot Motor", pivotMotor.get() * RobotController.getBatteryVoltage());
   }
 
   @Override
@@ -123,6 +200,7 @@ public class PivotSubsystem extends GenericSubsystem {
     // Finally, we set our simulated encoder's readings and simulated battery
     // voltage
     simEncoder.setPosition(Units.radiansToDegrees(pivotSim.getAngleRads()));
+    encoder.setPosition(Units.radiansToDegrees(pivotSim.getAngleRads()));
     //simPivotArm.setAngle(Units.degreesToRadians(pivotSim.getAngleRads()));
     simPivotArm.setAngle(simEncoder.getPosition());
 
