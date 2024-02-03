@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.util.PIDConstants;
+
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
 
@@ -49,5 +51,11 @@ public final class Constants {
 
         kVAngular = new Persisted<>(DriveConstantsDef.KV_DRIVE_ANGULAR, 0.5 / 180);
         kAAngular = new Persisted<>(DriveConstantsDef.KA_DRIVE_ANGULAR, 0.03);
+    }
+
+    public static final class AutonConstants {
+
+        public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
+        public static final PIDConstants ANGLE_PID = new PIDConstants(0.4, 0, 0.01);
     }
 }
