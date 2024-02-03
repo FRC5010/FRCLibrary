@@ -63,7 +63,10 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                 swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
 
                 swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
-                swerveConstants.getSwerveModuleConstants().setDriveMotorFF(new MotorFeedFwdConstants(0, 0, 0));
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // FL
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // FR
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backleft", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BL
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BR
                 swerveConstants.configureSwerve(NEO.MAXRPM, NEO.MAXRPM);
 
                 ledSubsystem = new LedSubsystem(1, 187);

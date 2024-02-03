@@ -4,6 +4,9 @@
 
 package frc.robot.FRC5010.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** Add your docs here. */
 public class SwerveModuleConstants {
 
@@ -17,7 +20,7 @@ public class SwerveModuleConstants {
     private boolean drivingInv;
     private boolean turningInv;
     private boolean encoderInv;
-    private MotorFeedFwdConstants driveMotorFF;
+    private Map<String, MotorFeedFwdConstants> driveMotorFF = new HashMap<>();
 
     public SwerveModuleConstants(double kWheelDiameterMeters, double kDriveMotorGearRatio,boolean drivingInv, double kTurningMotorGearRatio, boolean turningInv, boolean encoderInv) {
         
@@ -93,10 +96,10 @@ public class SwerveModuleConstants {
     public void setkTurningEncoderRPM2RadPerSec(double kTurningEncoderRPM2RadPerSec) {
         this.kTurningEncoderRPM2RadPerSec = kTurningEncoderRPM2RadPerSec;
     }
-    public void setDriveMotorFF(MotorFeedFwdConstants constants) {
-        driveMotorFF = constants;
+    public void addDriveMotorFF(String module, MotorFeedFwdConstants constants) {
+        driveMotorFF.put(module, constants);
     }
-    public MotorFeedFwdConstants getDriveFeedForward() {
+    public Map<String, MotorFeedFwdConstants> getDriveFeedForward() {
         return driveMotorFF;
     }
 

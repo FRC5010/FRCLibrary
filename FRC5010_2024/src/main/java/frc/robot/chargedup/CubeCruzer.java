@@ -54,7 +54,10 @@ public class CubeCruzer extends GenericMechanism {
                 swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
 
                 swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
-                swerveConstants.getSwerveModuleConstants().setDriveMotorFF(new MotorFeedFwdConstants(0.24241, 2.38, 0.43145));
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // FL
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // FR
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backleft", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BL
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BR
 
                 ledSubsystem = new LedSubsystem(1, 187);
                 ledSubsystem.off();
