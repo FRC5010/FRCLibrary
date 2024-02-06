@@ -42,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
+import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
@@ -106,11 +107,16 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via
                                              // angle.    
     /** 5010 Code */
-    if (null != swerveConstants.getSwerveModuleConstants().getDriveFeedForward()) {
-      double kS = swerveConstants.getSwerveModuleConstants().getDriveFeedForward().getkS();
-      double kV = swerveConstants.getSwerveModuleConstants().getDriveFeedForward().getkV();
-      double kA = swerveConstants.getSwerveModuleConstants().getDriveFeedForward().getkA();
-      swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
+    if (swerveConstants.getSwerveModuleConstants().getDriveFeedForward().size() > 0) {
+      Map<String, MotorFeedFwdConstants> motorFFMap = swerveConstants.getSwerveModuleConstants().getDriveFeedForward();
+      Map<String, SwerveModule> swerveModuleMap = swerveDrive.getModuleMap();
+      motorFFMap.keySet().stream().forEach(module -> {
+        MotorFeedFwdConstants ff = motorFFMap.get(module);
+        double kS = ff.getkS();
+        double kV = ff.getkV();
+        double kA = ff.getkA();
+        swerveModuleMap.get(module).feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+      });
     }
     poseEstimator = new DrivetrainPoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
