@@ -62,6 +62,8 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
      */
     public abstract void setupDefaultCommands(Controller driver, Controller operator);
 
+    public void setupTestDefaultCommmands(Controller driver, Controller operator) {}
+
     /**
      * initRealOrSim should check the real or simulation state of the robot and
      * initialize its code accordingly

@@ -10,6 +10,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -22,9 +23,11 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.FRC5010.constants.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
+import frc.robot.FRC5010.motors.SystemIdentification;
 import frc.robot.FRC5010.sensors.encoder.RevEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 
@@ -33,6 +36,7 @@ public class PivotSubsystem extends GenericSubsystem {
   RevEncoder encoder;
   ArmFeedforward pivotFeedforward;
   SparkPIDController pivotPID;
+  SimpleMotorFeedforward feedforward;
 
 
   Mechanism2d robotSim;
@@ -48,7 +52,8 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_MASS = Units.lbsToKilograms(22);
   private final double PIVOT_START_ANGLE = 225;
   private final double PIVOT_END_ANGLE = 60;
-  private final double PIVOT_kS = 0.2;
+  private final String PIVOT_kS = "PivotkS";
+  private final String PIVOT_kA = "PivotkA";
   private final double PIVOT_CONVERSION_FACTOR = 360;//24.242;
   private final double PIVOT_SIM_CONVERSION_FACTOR = 0.1;
   private final String PIVOT_kG = "PivotKg";
@@ -56,7 +61,10 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String PIVOT_kV = "PivotkV";
   private final String PIVOT_kP = "PivotkP";
   private final String PIVOT_kD = "PivotkD";
-
+  private static enum PivotState {
+    JOYSTICK, POSITION
+  }
+  private PivotState pivotState = PivotState.POSITION;
 
   public final double HOME_LEVEL = PIVOT_START_ANGLE;
   public final double AMP_LEVEL = 135;
@@ -69,6 +77,14 @@ public class PivotSubsystem extends GenericSubsystem {
   
   /** Creates a new Pivot. */
   public PivotSubsystem(MotorController5010 pivot, Mechanism2d mechSim) {
+
+    values.declare(PIVOT_kG, 6.050000); // 6.251000
+    values.declare(PIVOT_kV, 0.010000);
+    values.declare(PIVOT_kP, 0.010000);
+    values.declare(PIVOT_kD, 0.003000);
+    values.declare(PIVOT_kS, 0.0);
+    values.declare(PIVOT_kA, 0.0);
+
     pivotMotor = pivot;
     encoder = ((RevEncoder)pivotMotor.getMotorEncoder());
     pivotPID = ((CANSparkMax)pivotMotor).getPIDController();
@@ -80,10 +96,7 @@ public class PivotSubsystem extends GenericSubsystem {
     
     robotSim = mechSim;
 
-    values.declare(PIVOT_kG, 6.050000); // 6.251000
-    values.declare(PIVOT_kV, 0.010000);
-    values.declare(PIVOT_kP, 0.010000);
-    values.declare(PIVOT_kD, 0.003000);
+  
 
     // Simulation Setup
     simEncoder.setPositionConversion(PIVOT_SIM_CONVERSION_FACTOR);
@@ -109,6 +122,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
   public void setReference(double value) {
     referencePosition = value;
+    pivotState = PivotState.POSITION;
   }
 
   public boolean isAtTarget() {
@@ -156,14 +170,20 @@ public class PivotSubsystem extends GenericSubsystem {
     values.set(PIVOT_ANGLE, pos);
   }
 
+  public Command getSysIdCommand() {
+    return SystemIdentification.getSysIdFullCommand(SystemIdentification.angleSysIdRoutine(pivotMotor, encoder, "Pivot Motor", this), 5, 3, 3);
+  }
+
 
 
   
   public double getFeedFowardVoltage(double velocity) {
     Double pivotKG = values.getDouble(PIVOT_kG);
     Double pivotKV = values.getDouble(PIVOT_kV);
+    Double pivotKS = values.getDouble(PIVOT_kS);
+    Double pivotKA = values.getDouble(PIVOT_kA);
 
-    pivotFeedforward = new ArmFeedforward(PIVOT_kS, pivotKG, pivotKV);
+    pivotFeedforward = new ArmFeedforward(pivotKS, pivotKG, pivotKV, pivotKA);
     double vel = Math.signum(velocity) * 0.5;
     double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), Units.degreesToRadians(vel));
 
@@ -177,6 +197,29 @@ public class PivotSubsystem extends GenericSubsystem {
     SmartDashboard.putBoolean("Pivot Set Speed", true);
     SmartDashboard.putBoolean("Pivot Run Ref", false);
     SmartDashboard.putNumber("Pivot Speed", speed);
+  }
+
+  public void stateMachine(double joystickInput) {
+    switch(pivotState) {
+      case POSITION: {
+        if(joystickInput != 0) {
+          pivotState = PivotState.JOYSTICK;
+          setSpeed(joystickInput);
+        } else {
+          runToReference();
+        }
+      }
+      break;
+      case JOYSTICK: {
+        if (joystickInput == 0) {
+          setReference(getPivotPosition());
+          runToReference();
+        } else {
+          setSpeed(joystickInput);
+        }
+      }
+      break;
+    }
   }
 
   @Override
