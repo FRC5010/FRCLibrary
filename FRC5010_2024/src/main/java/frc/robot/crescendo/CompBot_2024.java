@@ -26,7 +26,8 @@ import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
-import frc.robot.crescendo.commands.JoystickClimb;
+import frc.robot.crescendo.commands.RunClimb;
+import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
 
@@ -84,10 +85,16 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
-                driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07).rate(0.25).negate());
-                driver.setRightYAxis(driver.createRightYAxis().deadzone(0.07).rate(0.25).negate());
-                operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07).rate(0.25).negate());
-                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.07).rate(0.25).negate());
+                driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07).negate());
+                driver.setRightYAxis(driver.createRightYAxis().deadzone(0.07).negate());
+                driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07));
+                driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07));
+
+                operator.setLeftTrigger(operator.createLeftTrigger());
+                operator.setRightTrigger(operator.createRightTrigger());
+                operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07).negate());
+                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.07).negate());
+
                 driver.createXButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setPivotPosition(180), pivotSubsystem));
                 driver.createBButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem));
                 driver.createAButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL), pivotSubsystem));
@@ -98,11 +105,10 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
-                pivotSubsystem.setDefaultCommand(new RunPivot(() -> driver.getLeftYAxis(), pivotSubsystem));
-                shooterSubsystem.setDefaultCommand(new RunShooter(() -> driver.getRightYAxis(), shooterSubsystem));
-                climbSubsystem.setDefaultCommand(new JoystickClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
-
-
+                pivotSubsystem.setDefaultCommand(new RunPivot(() -> driver.createUpPovButton().getAsBoolean() ? 0.2 : (driver.createDownPovButton().getAsBoolean() ? -0.2 : 0), pivotSubsystem)); // TODO: Rewrite Messy Ternary Operator
+                shooterSubsystem.setDefaultCommand(new RunShooter(() -> operator.getRightTrigger(), () -> operator.getLeftTrigger(), shooterSubsystem));
+                climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
+                intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getRightTrigger() != 0 ? driver.getRightTrigger() : -driver.getLeftTrigger(), intakeSubsystem));
         }
 
         @Override

@@ -57,6 +57,7 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   // NetworkTable names
   private final String MAX_EXTENSION = "Max Extension";
+  
   private final double MAX_EXTENSION_DEFAULT = 15.0;
   private final String CURRENT_THRESHOLD = "Climb Current Threshold";
   private final double CURRENT_THRESHOLD_DEFAULT = 40.0;
@@ -161,6 +162,8 @@ public class ClimbSubsystem extends GenericSubsystem {
   public double getHorizontalTilt() {
     return gyro.getAngleY(); // TODO: Fix if necessary
   }
+
+
 
   // Zeroes the encoder if current switch triggers and current encoder position is close enough
   private void update_encoder_extremas() {

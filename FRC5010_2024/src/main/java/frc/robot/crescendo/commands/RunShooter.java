@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.crescendo.ShooterSubsystem;
 
 public class RunShooter extends Command {
-  private DoubleSupplier speed;
+  private DoubleSupplier shooterSpeed;
+  private DoubleSupplier feederSpeed;
   private ShooterSubsystem shooter;
   /** Creates a new Intake. */
-  public RunShooter(DoubleSupplier speed, ShooterSubsystem shooter) {
-    this.speed = speed;
+  public RunShooter(DoubleSupplier shooterSpeed, DoubleSupplier feederSpeed, ShooterSubsystem shooter) {
+    this.shooterSpeed = shooterSpeed;
+    this.feederSpeed = feederSpeed;
     this.shooter = shooter;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooter);
@@ -28,7 +30,7 @@ public class RunShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setMotorSpeed(speed.getAsDouble());
+    shooter.stateMachine(shooterSpeed.getAsDouble(), feederSpeed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

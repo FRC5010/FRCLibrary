@@ -10,6 +10,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -66,7 +67,7 @@ public class IntakeSubsystem extends GenericSubsystem {
     Joystick, Velocity
   }
 
-  private IntakeState intakeState;
+  private IntakeState intakeState = IntakeState.Joystick;
 
   // NetworkTable names
 
@@ -101,7 +102,8 @@ public class IntakeSubsystem extends GenericSubsystem {
     bottomPID.setD(0.0);
 
 
-    simTop = new FlywheelSim(null, bottomPreviousError, bottomConversionFactor);
+    simTop = new FlywheelSim(DCMotor.getNEO(1), 1, 1);
+    simBottom = new FlywheelSim(DCMotor.getNEO(1), 1, 1);
     robotSim = mechSim;
 
     topIntakeSim = robotSim.getRoot("Top Intake", 10, 30).append(new MechanismLigament2d("Top Intake Dial", 5.0, 0, 5.0, new Color8Bit(Color.kAquamarine)));
@@ -194,15 +196,14 @@ public class IntakeSubsystem extends GenericSubsystem {
     double errorRate = (currentError - topPreviousError) / (currentTime - topPreviousTime);
     double voltage = currentError * topPID.getP() + (errorRate * topPID.getD());
     double feedForward = getTopFeedFwdVoltage(getTopReference());
-    SmartDashboard.putNumber("Pivot FF Voltage", feedForward);
+  
     
     if (!Robot.isReal()) {
       topIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
     } else {
       topPID.setReference(getTopReference(), CANSparkBase.ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
     }
-    SmartDashboard.putBoolean("Pivot Run Ref", true);
-    SmartDashboard.putBoolean("Pivot Set Speed", false);
+  
 
     topPreviousError = currentError;
     topPreviousTime = currentTime;
@@ -215,15 +216,14 @@ public class IntakeSubsystem extends GenericSubsystem {
     double errorRate = (currentError - bottomPreviousError) / (currentTime - bottomPreviousTime);
     double voltage = currentError * bottomPID.getP() + (errorRate * bottomPID.getD());
     double feedForward = getBottomFeedFwdVoltage(getBottomReference());
-    SmartDashboard.putNumber("Pivot FF Voltage", feedForward);
+   
     
     if (!Robot.isReal()) {
       bottomIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
     } else {
       bottomPID.setReference(getBottomReference(), CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
     }
-    SmartDashboard.putBoolean("Pivot Run Ref", true);
-    SmartDashboard.putBoolean("Pivot Set Speed", false);
+
 
     bottomPreviousError = currentError;
     bottomPreviousTime = currentTime;
@@ -232,8 +232,8 @@ public class IntakeSubsystem extends GenericSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    topIntakeSim.setAngle(getTopIntakeVelocity() * 360 / NEO.MAXRPM);
-    bottomIntakeSim.setAngle(getBottomIntakeVelocity() * 360 / NEO.MAXRPM);
+    topIntakeSim.setAngle(topIntakeMotor.get() * 180);
+    bottomIntakeSim.setAngle(bottomIntakeMotor.get()* 180);
 
   }
 
@@ -252,8 +252,6 @@ public class IntakeSubsystem extends GenericSubsystem {
     // Finally, we set our simulated encoder's readings and simulated battery
     // voltage
     
-    simBottomEncoder.setPosition(simBottomEncoder.getPosition() + simBottom.getAngularVelocityRPM() * 0.020);
-    simTopEncoder.setPosition(simTopEncoder.getPosition() + simBottom.getAngularVelocityRPM() * 0.020);
 
     //simPivotArm.setAngle(Units.degreesToRadians(pivotSim.getAngleRads()));
 
