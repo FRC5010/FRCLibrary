@@ -11,6 +11,7 @@ import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.FRC5010.constants.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
@@ -43,6 +45,8 @@ public class PivotSubsystem extends GenericSubsystem {
   MechanismRoot2d simPivotRoot;
   MechanismLigament2d simPivotArm;
   MechanismLigament2d simTargetArm;
+
+  private InterpolatingDoubleTreeMap interpolationTree;
   
 
   SingleJointedArmSim pivotSim;
@@ -61,6 +65,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String PIVOT_kV = "PivotkV";
   private final String PIVOT_kP = "PivotkP";
   private final String PIVOT_kD = "PivotkD";
+  private final String MICRO_ADJUST = "Pivot Micro Adjustment";
   private static enum PivotState {
     JOYSTICK, POSITION
   }
@@ -84,6 +89,9 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kD, 0.003000);
     values.declare(PIVOT_kS, 0.0);
     values.declare(PIVOT_kA, 0.0);
+    values.declare(MICRO_ADJUST, 10.0);
+
+    interpolationTree = new InterpolatingDoubleTreeMap();
 
     pivotMotor = pivot;
     encoder = ((RevEncoder)pivotMotor.getMotorEncoder());
@@ -127,6 +135,11 @@ public class PivotSubsystem extends GenericSubsystem {
 
   public boolean isAtTarget() {
     return Math.abs(getPivotPosition() - referencePosition) < 10.0;
+  }
+
+  public void setInterpolatedShotAngle(double distance) {
+    double angle = interpolationTree.get(distance);
+    setReference(angle);
   }
 
   public void runToReference() {
@@ -188,6 +201,13 @@ public class PivotSubsystem extends GenericSubsystem {
     double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), Units.degreesToRadians(vel));
 
     return ff;
+  }
+
+  public Command adjustReferenceUp() {
+    return Commands.runOnce(() -> setReference(getReference()+values.getDouble(MICRO_ADJUST)), this);
+  }
+  public Command adjustReferenceDown() {
+    return Commands.runOnce(() -> setReference(getReference()-values.getDouble(MICRO_ADJUST)), this);
   }
 
   public void setSpeed(double speed) {

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.FRC5010.constants.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
@@ -228,6 +229,10 @@ public class IntakeSubsystem extends GenericSubsystem {
     bottomPreviousError = currentError;
     bottomPreviousTime = currentTime;
   }
+
+
+  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

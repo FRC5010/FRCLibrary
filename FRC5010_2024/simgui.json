@@ -45,6 +45,9 @@
         "PivotSubsystem": {
           "open": true
         },
+        "ShooterSubsystem": {
+          "open": true
+        },
         "open": true,
         "swerve": {
           "double[]##v_/SmartDashboard/swerve/desiredStates": {

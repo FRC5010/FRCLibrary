@@ -4,18 +4,12 @@
 
 package frc.robot.crescendo;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.constants.GenericMechanism;
@@ -65,6 +59,8 @@ public class CompBot_2024 extends GenericMechanism {
                 topIntakeMotor = MotorFactory.NEO(14);
                 bottomIntakeMotor = MotorFactory.NEO(15);
 
+                InterpolatingDoubleTreeMap treeMap = new InterpolatingDoubleTreeMap();
+
                 gyro = new PigeonGyro(15);
 
                 visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
@@ -100,12 +96,21 @@ public class CompBot_2024 extends GenericMechanism {
                 driver.createAButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL), pivotSubsystem));
                 driver.createYButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL), pivotSubsystem));
 
+                operator.createUpPovButton().onTrue(shooterSubsystem.adjustShooterReferenceUp());
+                operator.createDownPovButton().onTrue(shooterSubsystem.adjustShooterReferenceDown());
+
+                operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
+                operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
+
+
+
+
 
         }
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
-                pivotSubsystem.setDefaultCommand(new RunPivot(() -> driver.createUpPovButton().getAsBoolean() ? 0.2 : (driver.createDownPovButton().getAsBoolean() ? -0.2 : 0), pivotSubsystem)); // TODO: Rewrite Messy Ternary Operator
+                pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem)); // TODO: Add way to control
                 shooterSubsystem.setDefaultCommand(new RunShooter(() -> operator.getRightTrigger(), () -> operator.getLeftTrigger(), shooterSubsystem));
                 climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
                 intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getRightTrigger() != 0 ? driver.getRightTrigger() : -driver.getLeftTrigger(), intakeSubsystem));

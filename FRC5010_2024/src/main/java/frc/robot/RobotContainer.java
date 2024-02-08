@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -52,6 +53,7 @@ public class RobotContainer extends GenericMechanism {
   public static Constants constants;
   private GenericMechanism robot;
   private static String MAC_Address = "MAC ADDRESS";
+  private DigitalInput startupBypass;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -61,6 +63,8 @@ public class RobotContainer extends GenericMechanism {
     // Create a Mechanism2d display for simulating robot functions
     constants = new Constants();
     values.declare(MAC_Address, "");
+
+    startupBypass = new DigitalInput(9); // TODO: Add correct port
 
     // Setup controllers
     driver = new Controller(Controller.JoystickPorts.ZERO.ordinal());
@@ -151,49 +155,55 @@ public class RobotContainer extends GenericMechanism {
 
   private void robotFactory() {
     String whichRobot = whereAmI();
-    switch (whichRobot) {
-      case Robots.CC_BOT_2023: {
-        robot = new CubeCruzer(mechVisual, shuffleTab);
-        // robot = new CompBot_2024(mechVisual, shuffleTab);
-        break;
-      }
-      case Robots.COMP_BOT_2023: {
-        robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
-        break;
-      }
-      case Robots.BABY_SWERVE: {
-        robot = new BabySwerve(mechVisual, shuffleTab);
-        break;
-      }
-      case Robots.PRACTICE_BOT: {
-        robot = new PracticeBot(mechVisual, shuffleTab);
-        break;
-      }
-      case Robots.MAIN_5010_LAPTOP:  {
-        robot = new CompBot_2024(mechVisual, shuffleTab);
-        // robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
-        break;
-      }
-      case Robots.CURTS_LAPTOP_SIM: {
-        switch (whoAmI.get()) {
-          case "BabySwerve": {
-            robot = new BabySwerve(mechVisual, shuffleTab);
-            break;
-          }
-          case "T1G3R": {
-            robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
-            break;
-          }
-          case "Simulator": {
-            robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
-            break;
-          }
+    if (startupBypass.get()) {
+      robot = new CompBot_2024(mechVisual, shuffleTab);
+      log("Bypassed MAC Address Switch");
+    } else {
+      switch (whichRobot) {
+        case Robots.CC_BOT_2023: {
+          robot = new CubeCruzer(mechVisual, shuffleTab);
+          // robot = new CompBot_2024(mechVisual, shuffleTab);
+          break;
         }
-        break;
-      }
-      default: {
-        robot = new DefaultRobot(mechVisual, shuffleTab);
-        break;
+        case Robots.COMP_BOT_2023: {
+          robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+          break;
+        }
+        case Robots.BABY_SWERVE: {
+          robot = new BabySwerve(mechVisual, shuffleTab);
+          break;
+        }
+        case Robots.PRACTICE_BOT: {
+          robot = new PracticeBot(mechVisual, shuffleTab);
+          break;
+        }
+        case Robots.MAIN_5010_LAPTOP:  {
+          robot = new CompBot_2024(mechVisual, shuffleTab);
+          // robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+          break;
+        }
+        case Robots.CURTS_LAPTOP_SIM: {
+          switch (whoAmI.get()) {
+            case "BabySwerve": {
+              robot = new BabySwerve(mechVisual, shuffleTab);
+              break;
+            }
+            case "T1G3R": {
+              robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+              break;
+            }
+            case "Simulator": {
+              robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
+              break;
+            }
+          }
+          break;
+        }
+        default: {
+          robot = new DefaultRobot(mechVisual, shuffleTab);
+          break;
+        }
+
       }
     }
     log(">>>>>>>>>> Running " + robot.getClass().getSimpleName() + " <<<<<<<<<<");
