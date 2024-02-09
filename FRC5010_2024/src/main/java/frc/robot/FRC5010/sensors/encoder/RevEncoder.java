@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 
 public class RevEncoder implements GenericEncoder {
   RelativeEncoder encoder;
+  
 
   public RevEncoder(RelativeEncoder encoder) {
     this.encoder = encoder;
@@ -35,6 +36,7 @@ public class RevEncoder implements GenericEncoder {
 
   @Override
   public void setRate(double rate) {
+    throw new UnsupportedOperationException("Not supported for RevEncoder");
   }
 
   @Override

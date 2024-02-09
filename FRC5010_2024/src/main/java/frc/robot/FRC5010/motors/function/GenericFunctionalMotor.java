@@ -4,11 +4,11 @@
 
 package frc.robot.FRC5010.motors.function;
 
-import com.revrobotics.SparkMaxRelativeEncoder.Type;
-
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.robot.FRC5010.motors.MotorController5010;
+import frc.robot.FRC5010.motors.PIDController5010;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder.EncoderMeasurementType;
 
 /** Add your docs here. */
 public class GenericFunctionalMotor implements MotorController5010 {
@@ -93,8 +93,13 @@ public class GenericFunctionalMotor implements MotorController5010 {
     }
 
     @Override
-    public GenericEncoder getMotorEncoder(Type sensorType, int countsPerRev){
-        return _motor.getMotorEncoder(sensorType, countsPerRev);
+    public GenericEncoder getMotorEncoder(EncoderMeasurementType sensorType, int countsPerRev){
+        return _motor.getMotorEncoder();
+    }
+
+    @Override
+    public PIDController5010 getPIDController5010() {
+        throw new UnsupportedOperationException("Not supported for this motor");
     }
 
     @Override

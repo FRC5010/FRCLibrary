@@ -6,6 +6,9 @@ package frc.robot.FRC5010.sensors.encoder;
 
 /** Add your docs here. */
 public interface GenericEncoder {
+    public static enum EncoderMeasurementType {
+        QUADRATURE, ANALOG, RELATIVE, ABSOLUTE
+    }
     double getPosition();
     double getVelocity();
     void reset();

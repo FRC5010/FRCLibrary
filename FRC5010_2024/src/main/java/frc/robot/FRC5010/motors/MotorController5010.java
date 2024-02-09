@@ -8,6 +8,7 @@ import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder.EncoderMeasurementType;
 
 /** Add your docs here. */
 public interface MotorController5010 extends MotorController {
@@ -19,7 +20,8 @@ public interface MotorController5010 extends MotorController {
     MotorController5010 invert(boolean inverted);
     MotorController5010 setCurrentLimit(int limit);
     GenericEncoder getMotorEncoder();
-    GenericEncoder getMotorEncoder(Type sensorType, int countsPerRev);
+    GenericEncoder getMotorEncoder(EncoderMeasurementType sensorType, int countsPerRev);
+    PIDController5010 getPIDController5010();
     MotorController getMotor();
     void factoryDefault();
 }

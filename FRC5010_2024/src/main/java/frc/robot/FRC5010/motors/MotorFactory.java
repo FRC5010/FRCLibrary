@@ -6,6 +6,7 @@ package frc.robot.FRC5010.motors;
 
 import frc.robot.FRC5010.motors.function.DriveTrainMotor;
 import frc.robot.FRC5010.motors.function.FollowerMotor;
+import frc.robot.FRC5010.motors.hardware.KrakenX60;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.motors.hardware.NEO550;
 
@@ -22,6 +23,9 @@ public class MotorFactory {
     }
     public static MotorController5010 NEO550(int port, int currentLimit){
         return new NEO550(port, currentLimit);
+    }
+    public static MotorController5010 KrakenX60(int port){
+        return new KrakenX60(port);
     }
     public static MotorController5010 DriveTrainMotor(MotorController5010 motor){
         return new DriveTrainMotor(motor);

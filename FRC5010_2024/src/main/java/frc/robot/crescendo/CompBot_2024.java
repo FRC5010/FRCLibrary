@@ -5,6 +5,7 @@
 package frc.robot.crescendo;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -14,9 +15,12 @@ import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
+import frc.robot.FRC5010.motors.hardware.KrakenX60;
+import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
@@ -49,10 +53,11 @@ public class CompBot_2024 extends GenericMechanism {
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
 
+
                 // Motor Setup
                 pivotMotor = MotorFactory.NEO(10);
-                topShooterMotor = MotorFactory.NEO(11);
-                bottomShooterMotor = MotorFactory.NEO(12);
+                topShooterMotor = MotorFactory.KrakenX60(11);
+                bottomShooterMotor = MotorFactory.KrakenX60(12);
                 leftClimbMotor = MotorFactory.NEO(0); // TODO: Add correct port
                 rightClimbMotor = MotorFactory.NEO(1); // TODO: Add correct port
                 feederShooterMotor = MotorFactory.NEO(13);
@@ -70,9 +75,22 @@ public class CompBot_2024 extends GenericMechanism {
                 climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro, mechVisual);
                 intakeSubsystem = new IntakeSubsystem(topIntakeMotor, bottomIntakeMotor, mechVisual);
                 
-                //swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES), Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
+                swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES), Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
 
-                //drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants, "2024_compbot");
+                // Setup Swerve Constants
+                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(10);
+                swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+
+                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
+                swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+                swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
+
+                swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
+                swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
+
+
+                
+                drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants, "mk4i_I3_kraken_neo");
 
                 
                 

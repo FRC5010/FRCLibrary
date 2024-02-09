@@ -4,56 +4,57 @@
 
 package frc.robot.FRC5010.motors.hardware;
 
-import com.revrobotics.CANSparkMax;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.PIDController5010;
-import frc.robot.FRC5010.motors.control.RevPID;
+import frc.robot.FRC5010.motors.control.TalonFXPID;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder.EncoderMeasurementType;
-import frc.robot.FRC5010.sensors.encoder.RevEncoder;
+import frc.robot.FRC5010.sensors.encoder.TalonFXEncoder;
 
 /** Add your docs here. */
-public class GenericRevBrushlessMotor extends CANSparkMax implements MotorController5010 {
-    protected int currentLimit;
-
-    public GenericRevBrushlessMotor(int port, int currentLimit) {
-        super(port, MotorType.kBrushless);
-        super.restoreFactoryDefaults();
-        super.setSmartCurrentLimit(currentLimit);
-        this.currentLimit = currentLimit;
+public class GenericTalonFXMotor extends TalonFX implements MotorController5010 {
+    protected int motorCurrentLimit;
+    protected int controllerCurrentLimit;
+    
+    public GenericTalonFXMotor(int port) {
+        super(port);
     }
 
     @Override
-    /** Sets up the same motor hardware and current limit */
     public MotorController5010 duplicate(int port) {
-        MotorController5010 duplicate = new GenericRevBrushlessMotor(port, currentLimit);
+        MotorController5010 duplicate = new GenericTalonFXMotor(port);
         return duplicate;
     }
 
     @Override
     public MotorController5010 setCurrentLimit(int limit) {
-        this.currentLimit = limit;
-        super.setSmartCurrentLimit(limit);
+        motorCurrentLimit = limit;
+        super.getConfigurator().apply(new CurrentLimitsConfigs().withStatorCurrentLimit(limit)); // TODO: Add error handling
         return this;
     }
 
     @Override
     public MotorController5010 setSlewRate(double rate) {
-        super.setOpenLoopRampRate(rate);
+        super.getConfigurator().apply(new OpenLoopRampsConfigs().withVoltageOpenLoopRampPeriod(rate));
         return this;
     }
 
     @Override
     public MotorController5010 setFollow(MotorController5010 motor) {
-        super.follow((CANSparkMax) motor.getMotor());
+        super.setControl(new Follower(((TalonFX) motor).getDeviceID(), false));
         return this;
     }
 
     @Override
     public MotorController5010 setFollow(MotorController5010 motor, boolean inverted) {
-        super.follow((CANSparkMax) motor.getMotor(), inverted);
+        super.setControl(new Follower(((TalonFX) motor).getDeviceID(), inverted));
         return this;
     }
 
@@ -65,17 +66,17 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
 
     @Override
     public GenericEncoder getMotorEncoder() {
-        return new RevEncoder(super.getEncoder());
+        return new TalonFXEncoder(this);
     }
 
     @Override
     public GenericEncoder getMotorEncoder(EncoderMeasurementType sensorType, int countsPerRev) {
-        return new RevEncoder(super.getEncoder());
+        return new TalonFXEncoder(this);
     }
 
-    @Override   
+    @Override
     public PIDController5010 getPIDController5010() {
-        return new RevPID(this);
+        return new TalonFXPID(this);
     }
 
     @Override
@@ -85,6 +86,13 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
 
     @Override
     public void factoryDefault() {
-        super.restoreFactoryDefaults();
+        super.getConfigurator().apply(new TalonFXConfiguration());
     }
+    
+
+
+
+
+    
+
 }
