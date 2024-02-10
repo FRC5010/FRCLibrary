@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -155,7 +157,7 @@ public class RobotContainer extends GenericMechanism {
 
   private void robotFactory() {
     String whichRobot = whereAmI();
-    if (startupBypass.get()) {
+    if (!startupBypass.get()) {
       robot = new CompBot_2024(mechVisual, shuffleTab);
       log("Bypassed MAC Address Switch");
     } else {
@@ -179,7 +181,7 @@ public class RobotContainer extends GenericMechanism {
         }
         case Robots.MAIN_5010_LAPTOP:  {
           robot = new CompBot_2024(mechVisual, shuffleTab);
-          // robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+          //robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
           break;
         }
         case Robots.CURTS_LAPTOP_SIM: {
@@ -255,7 +257,7 @@ public class RobotContainer extends GenericMechanism {
   public void initAutoCommands() {
     robot.initAutoCommands();
     // This crashes 2024 right now
-    //command = AutoBuilder.buildAutoChooser();
+    command = AutoBuilder.buildAutoChooser();
     if (null != command) {
      shuffleTab.add("Auto Modes", command).withSize(2, 1);
     }

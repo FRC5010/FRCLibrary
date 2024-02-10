@@ -159,6 +159,20 @@ public class Drive extends GenericMechanism {
 
     }
 
+    public void setupTestDefaultCommands(Controller driver, Controller operator) {
+        if (Robot.isReal()) {
+            if (defaultDriveCommand == null) {
+                this.defaultDriveCommand = drivetrain.createDefaultCommand(driver);
+                drivetrain.setDefaultCommand(defaultDriveCommand);
+            }
+        } else {
+            if (defaultDriveCommand == null) {
+                this.defaultDriveCommand = drivetrain.createDefaultCommand(driver);
+                drivetrain.setDefaultCommand(defaultDriveCommand);
+            }
+        }
+    }
+
     @Override
     public void configureButtonBindings(Controller driver, Controller operator) {
         // If there needs to be some commands that are real or simulation only use this

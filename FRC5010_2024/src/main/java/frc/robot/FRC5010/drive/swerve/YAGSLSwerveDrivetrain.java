@@ -335,10 +335,7 @@ public Command sysIdAngleMotorCommand() {
     swerveDrive.drive(velocity);
   }
 
-  @Override
-  public void periodic()
-  {
-  }
+
 
   @Override
   public void simulationPeriodic()
@@ -535,6 +532,16 @@ public Command sysIdAngleMotorCommand() {
   }
 
   /** 5010 Code */
+
+  @Override
+  public void periodic()
+  {
+    poseEstimator.update();
+    hasIssues();
+    if (RobotBase.isSimulation() || useGlass) {
+      updateGlassWidget();
+    }
+  }
 
   public Command createDefaultCommand(Controller driverXbox) {
     // System.out.println("brrrrr");

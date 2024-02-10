@@ -4,14 +4,18 @@
 
 package frc.robot.crescendo.commands;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.chargedup.PivotSubsystem;
+import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.ShooterSubsystem;
 
@@ -23,22 +27,33 @@ public class AutoAim extends Command {
   Drive drive;
   Transform3d targetPose;
 
+  ProfiledPIDController thetaController;
+  GenericPID thetaPID = new GenericPID(0.25, 0, 0);
+
+
   /** Creates a new AutoAim. */
-  public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Drive drive) {
 
-    targetPose = Constants.Field.SHOT_POSE;
 
+  public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Drive drive,
+      Transform3d targetPose) {
+    this.targetPose = targetPose;
     this.robotPose = drive.getDrivetrain().getPoseEstimator();
     this.pivotSubsystem = pivotSubsystem;
     this.shooterSubsystem = shooterSubsystem;
     this.drive = drive;
 
+    thetaController = new ProfiledPIDController(thetaPID.getkP(), thetaPID.getkI(), thetaPID.getkD(), null);
+    thetaController.setTolerance(Units.degreesToRadians(2));
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
     addRequirements(pivotSubsystem, shooterSubsystem);
   }
 
-  public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Drive drive,
-      Transform3d targetPose) {
-    this.targetPose = targetPose;
+  public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Drive drive) {
+
+    targetPose = Constants.Field.SHOT_POSE;
+
+
 
     this.robotPose = drive.getDrivetrain().getPoseEstimator();
     this.pivotSubsystem = pivotSubsystem;
@@ -51,7 +66,7 @@ public class AutoAim extends Command {
   private double computeYawBetweenTransforms(Transform3d from, Transform3d to) {
     Translation3d difference = from.getTranslation().minus(to.getTranslation());
     double yawAngle = Math.atan2(difference.getY(), difference.getX());
-    yawAngle += Math.PI / 2;
+    // yawAngle += Math.PI / 2;
     yawAngle = Math.toDegrees(yawAngle);
     return yawAngle;
   }
@@ -81,6 +96,10 @@ public class AutoAim extends Command {
     double pitch = computePitchBetweenTransforms(pivotOrigin, targetPose);
 
     pivotSubsystem.setReference(pitch);
+    
+    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(null, null);
+
+    drive.getDrivetrain().drive(chassisSpeeds);
 
     // TODO: Rotate Drive to Target and Allow for Joystick Translation
 

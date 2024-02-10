@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3337957445145674,
-      "y": 6.926593853187707
+      "x": 1.2153924307848631,
+      "y": 7.0
     },
-    "rotation": 0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -22,12 +22,6 @@
                 }
               },
               {
-                "type": "named",
-                "data": {
-                  "name": "Auto Note Pickup"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "Shoot From Left"
@@ -40,12 +34,6 @@
                 }
               },
               {
-                "type": "named",
-                "data": {
-                  "name": "Auto Note Pickup"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "Shoot From Center"
@@ -55,12 +43,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "Note 1-3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Auto Note Pickup"
                 }
               },
               {

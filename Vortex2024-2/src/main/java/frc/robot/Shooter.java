@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 
 public class Shooter extends SubsystemBase {
   private static final int kMotorPort = 1; 
-  private static final int kMotorPort2 = 2; 
+  private static final int kMotorPort2 = 5; 
   private static final int kMotorPort3 = 3; 
 
   private static final double BottomKs = 0; // 0.48742;

@@ -152,15 +152,15 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
         protected void initRealOrSim() {
                 if (RobotBase.isReal()) {
                         // Uncomment when using PhotonVision
-                        visionSystem.addPhotonCamera("ForwardCam", 4,
-                                        new Transform3d( // This describes the vector between the camera lens to the
-                                                         // robot center on the
-                                                         // ground
-                                                        new Translation3d(-Units.inchesToMeters(9.469),
-                                                                        -Units.inchesToMeters(5.525),
-                                                                        Units.inchesToMeters(14.146)),
-                                                        new Rotation3d(0, 0, 0)),
-                                        PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
+                        // visionSystem.addPhotonCamera("ForwardCam", 4,
+                        //                 new Transform3d( // This describes the vector between the camera lens to the
+                        //                                  // robot center on the
+                        //                                  // ground
+                        //                                 new Translation3d(-Units.inchesToMeters(9.469),
+                        //                                                 -Units.inchesToMeters(5.525),
+                        //                                                 Units.inchesToMeters(14.146)),
+                        //                                 new Rotation3d(0, 0, 0)),
+                        //                 PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
 
                 }
         }

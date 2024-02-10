@@ -4,6 +4,8 @@
 
 package frc.robot.crescendo;
 
+import javax.swing.text.DefaultEditorKit.BeepAction;
+
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
@@ -91,6 +93,8 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   private final String MICRO_ADJUST = "Micro Adjust";
 
+  private final String BEAM_BREAK_STATE = "Beam Break State";
+
   /** Creates a new Shooter. */
   public ShooterSubsystem(Mechanism2d robotSim, MotorController5010 top, MotorController5010 feeder, MotorController5010 bottom) {
     
@@ -104,6 +108,7 @@ public class ShooterSubsystem extends GenericSubsystem {
     values.declare(SHOOTER_REFERENCE_TOP, 0.0);
     values.declare(SHOOTER_REFERENCE_BOTTOM, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
+    values.declare(BEAM_BREAK_STATE, false);
     
     topFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
     bottomFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
@@ -365,6 +370,8 @@ public class ShooterSubsystem extends GenericSubsystem {
     topMotorSim.setAngle(topMotor.get() * 180 - 90);
     bottomMotorSim.setAngle(botMotor.get() * 180 - 90);
     feederMotorSim.setAngle(feederMotor.get() * 180 - 90);
+    values.set(BEAM_BREAK_STATE, getBeambreak());
+    SmartDashboard.putBoolean("Beam Break State", getBeambreak());
   }
 
   @Override

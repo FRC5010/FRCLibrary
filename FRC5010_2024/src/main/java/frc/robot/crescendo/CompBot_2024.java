@@ -43,8 +43,8 @@ public class CompBot_2024 extends GenericMechanism {
         private MotorController5010 bottomShooterMotor;
         private MotorController5010 feederShooterMotor;
         private IntakeSubsystem intakeSubsystem;
-        private MotorController5010 bottomIntakeMotor;
-        private MotorController5010 topIntakeMotor;
+        private MotorController5010 innerIntakeMotor;
+        private MotorController5010 outerIntakeMotor;
 
 
         private VisionMultiCam visionSystem;
@@ -64,25 +64,30 @@ public class CompBot_2024 extends GenericMechanism {
                 testMotor = MotorFactory.KrakenX60(0);
 
                 // Motor Setup
-                pivotMotor = MotorFactory.NEO(10);
-                topShooterMotor = MotorFactory.KrakenX60(11);
-                bottomShooterMotor = MotorFactory.KrakenX60(12);
-                leftClimbMotor = MotorFactory.NEO(16); // TODO: Add correct port
-                rightClimbMotor = MotorFactory.NEO(17); // TODO: Add correct port
-                feederShooterMotor = MotorFactory.NEO(13);
-                topIntakeMotor = MotorFactory.NEO(14);
-                bottomIntakeMotor = MotorFactory.NEO(15);
+                innerIntakeMotor = MotorFactory.NEO(1);
+                outerIntakeMotor = MotorFactory.NEO(5);
+                leftClimbMotor = MotorFactory.NEO(7); // TODO: Add correct port
+                rightClimbMotor = MotorFactory.NEO(8); // TODO: Add correct port   
+                pivotMotor = MotorFactory.NEO(9);
+                MotorFactory.FollowMotor(MotorFactory.NEO(10), pivotMotor);
+                feederShooterMotor = MotorFactory.NEO(13).invert(true); //MotorFactory.NEO(11);
+
+                topShooterMotor = MotorFactory.KrakenX60(12);
+                bottomShooterMotor = MotorFactory.KrakenX60(14);
+                
+                
+                
 
                 InterpolatingDoubleTreeMap treeMap = new InterpolatingDoubleTreeMap();
 
-                gyro = new PigeonGyro(15);
+                //gyro = new PigeonGyro(13);
 
                 visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
                 // visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
                 pivotSubsystem = new PivotSubsystem(pivotMotor, mechVisual);
-                shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, bottomShooterMotor, feederShooterMotor);
+                shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, feederShooterMotor, bottomShooterMotor);
                 climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro, mechVisual);
-                intakeSubsystem = new IntakeSubsystem(topIntakeMotor, bottomIntakeMotor, mechVisual);
+                intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);
                 
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES), Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
                 
@@ -99,7 +104,7 @@ public class CompBot_2024 extends GenericMechanism {
 
 
                 
-                drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants, "mk4i_I3_kraken_neo");
+               // drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants, "mk4i_L3_kraken_neo");
                 
                 
                 
@@ -108,15 +113,16 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
-                driver.setLeftYAxis(driver.createLeftYAxis().deadzone(0.07).negate());
-                driver.setRightYAxis(driver.createRightYAxis().deadzone(0.07).negate());
-                driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07));
-                driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07));
+                //drive.configureButtonBindings(driver, operator);
+                driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07).negate());
+                driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07).negate());
 
                 operator.setLeftTrigger(operator.createLeftTrigger());
                 operator.setRightTrigger(operator.createRightTrigger());
                 operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07).negate());
                 operator.setRightYAxis(operator.createRightYAxis().deadzone(0.07).negate());
+                operator.setRightXAxis(operator.createRightXAxis().deadzone(0.07).negate());
+                operator.setLeftXAxis(operator.createLeftXAxis().deadzone(0.07).negate());
 
                 driver.createXButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setPivotPosition(180), pivotSubsystem));
                 driver.createBButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem));
@@ -137,10 +143,11 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
-                pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem)); // TODO: Add way to control
-                shooterSubsystem.setDefaultCommand(new RunShooter(() -> operator.getRightTrigger(), () -> operator.getLeftTrigger(), shooterSubsystem));
-                climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
-                intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getRightTrigger() != 0 ? driver.getRightTrigger() : -driver.getLeftTrigger(), intakeSubsystem));
+                // pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem)); // TODO: Add way to control
+                // shooterSubsystem.setDefaultCommand(new RunShooter(() -> operator.getRightTrigger(), () -> operator.getLeftTrigger(), shooterSubsystem));
+                // climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
+                intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getLeftTrigger() - driver.getRightTrigger(), intakeSubsystem));
+                //drive.setupDefaultCommands(driver, operator);
         }
 
         @Override
@@ -151,16 +158,18 @@ public class CompBot_2024 extends GenericMechanism {
                 driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
                 driver.createLeftBumper().whileTrue(intakeSubsystem.getBottomSysIdRoutineCommand());
                 driver.createRightBumper().whileTrue(intakeSubsystem.getTopSysIdRoutineCommand());
-                pivotSubsystem.setDefaultCommand(Commands.run(() -> pivotSubsystem.setSpeed(driver.getLeftYAxis())));
+                // pivotSubsystem.setDefaultCommand(Commands.run(() -> pivotSubsystem.setSpeed(operator.getLeftYAxis()), pivotSubsystem));
                 shooterSubsystem.setDefaultCommand(Commands.run(() -> {
-                        shooterSubsystem.setFeederSpeed(driver.getRightTrigger());
-                        shooterSubsystem.setShooterSpeed(driver.getRightXAxis(), driver.getRightXAxis());
-                }));
-                intakeSubsystem.setDefaultCommand(Commands.run(() -> intakeSubsystem.setIntakeSpeed(driver.getLeftTrigger(), driver.getLeftTrigger())));
-                climbSubsystem.setDefaultCommand(Commands.run(() -> {
-                        climbSubsystem.setLeftMotorSpeed(operator.getLeftYAxis());
-                        climbSubsystem.setRightMotorSpeed(operator.getRightYAxis());
-                }));
+                         shooterSubsystem.setFeederSpeed(operator.getLeftTrigger() - operator.getRightTrigger());
+                         //shooterSubsystem.setShooterSpeed(operator.getRightXAxis(), operator.getRightXAxis());
+                }, shooterSubsystem));
+                intakeSubsystem.setDefaultCommand(Commands.run(() -> intakeSubsystem.setIntakeSpeed(driver.getLeftTrigger() - driver.getRightTrigger(), driver.getLeftTrigger() - driver.getRightTrigger()), intakeSubsystem));
+                // climbSubsystem.setDefaultCommand(Commands.run(() -> {
+                //         climbSubsystem.setLeftMotorSpeed(operator.getLeftTrigger());
+                //         climbSubsystem.setRightMotorSpeed(operator.getLeftTrigger());
+                // }, climbSubsystem));
+
+                //drive.setupTestDefaultCommands(driver, operator);
         }
 
         @Override

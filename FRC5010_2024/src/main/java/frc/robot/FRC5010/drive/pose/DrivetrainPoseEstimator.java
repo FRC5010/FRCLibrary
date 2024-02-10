@@ -14,11 +14,15 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.struct.Pose3dStruct;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionSystem;
 
@@ -27,6 +31,7 @@ public class DrivetrainPoseEstimator {
   private VisionSystem vision;
   private final Field2d field2d = new Field2d();
   private final GenericPose poseTracker;
+
   private int closestTagToRobot;
   private Pose3d closestTargetToRobot;
   private List<Pose2d> tagPoses = new ArrayList<>();
@@ -37,6 +42,8 @@ public class DrivetrainPoseEstimator {
 
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
     tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(0, 4);
+    tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray());
+    
     tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees())).withPosition(1, 4);
     tab.add(field2d);
 
@@ -61,6 +68,12 @@ public class DrivetrainPoseEstimator {
 
   public Pose3d getCurrentPose3d() {
     return new Pose3d(poseTracker.getCurrentPose());
+  }
+
+  public double[] getCurrentPose3dArray() {
+    Pose3d pose = getCurrentPose3d();
+    Rotation3d rotation = pose.getRotation();
+    return new double[] {pose.getX(), pose.getY(), pose.getZ(), 0.0, rotation.getX(), rotation.getY(), rotation.getZ()};
   }
 
   public Rotation2d getGyroRotation2d() {
@@ -137,6 +150,8 @@ public class DrivetrainPoseEstimator {
       }
     }
     field2d.setRobotPose(getCurrentPose());
+
+    
 
     closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
     closestTargetToRobot = updatePoseFromClosestVisionTarget();
