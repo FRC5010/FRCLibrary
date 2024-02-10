@@ -30,13 +30,13 @@ public class TalonFXPID implements PIDController5010 {
         motor.getConfigurator().apply(PIDConfigs);
     }
 
-    private void sendControlRequest(double reference) {
+    private void sendControlRequest(double reference, double feedforward) {
         switch (controlType) {
             case POSITION:
-                motor.setControl(new PositionVoltage(reference));
+                motor.setControl(new PositionVoltage(reference).withFeedForward(feedforward));
                 break;
             case VELOCITY:
-                motor.setControl(new VelocityVoltage(reference));
+                motor.setControl(new VelocityVoltage(reference).withFeedForward(feedforward));
                 break;
             case DUTY_CYCLE:
                 motor.setControl(new DutyCycleOut(reference));
@@ -48,6 +48,7 @@ public class TalonFXPID implements PIDController5010 {
                 throw new IllegalArgumentException("Unsupported TalonFX control type");
         }
     }
+
 
     @Override
     public void setValues(GenericPID pid) {
@@ -71,14 +72,21 @@ public class TalonFXPID implements PIDController5010 {
     public void setReference(double reference) {
         this.reference = reference;
         refreshTalonConfigs();
-        sendControlRequest(reference);
+        sendControlRequest(reference, 0.0);
+    }
+
+    @Override
+    public void setReference(double reference, PIDControlType controlType, double feedforward) {
+        this.controlType = controlType;
+        refreshTalonConfigs();
+        sendControlRequest(reference, feedforward);
     }
 
     @Override
     public void setControlType(PIDControlType controlType) {
         this.controlType = controlType;
         refreshTalonConfigs();
-        sendControlRequest(reference);
+        sendControlRequest(reference, 0.0);
     }
 
     @Override

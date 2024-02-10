@@ -4,11 +4,19 @@
 
 package frc.robot.FRC5010.motors.hardware;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.PIDController5010;
+import frc.robot.FRC5010.motors.SystemIdentification;
 import frc.robot.FRC5010.motors.control.RevPID;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder.EncoderMeasurementType;
@@ -81,6 +89,11 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
     @Override
     public MotorController getMotor() {
         return this;
+    }
+
+    @Override
+    public SysIdRoutine getDefaultSysId(SubsystemBase subsystemBase) {
+        return SystemIdentification.rpmSysIdRoutine(this, getMotorEncoder(), "Motor "+super.getDeviceId(), subsystemBase);
     }
 
     @Override

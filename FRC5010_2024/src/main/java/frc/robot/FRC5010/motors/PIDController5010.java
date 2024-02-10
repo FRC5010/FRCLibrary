@@ -20,6 +20,7 @@ public interface PIDController5010 {
     public void setIZone(double iZone);
     public void setOutputRange(double min, double max);
     public void setReference(double reference);
+    public void setReference(double reference, PIDControlType controlType, double feedforward);
     public void setControlType(PIDControlType controlType);
     public GenericPID getValues();
     public double getP();

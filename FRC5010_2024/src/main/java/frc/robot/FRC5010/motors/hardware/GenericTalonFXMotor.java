@@ -3,14 +3,21 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.FRC5010.motors.hardware;
+import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.PIDController5010;
 import frc.robot.FRC5010.motors.control.TalonFXPID;
@@ -82,6 +89,22 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
     @Override
     public MotorController getMotor() {
         return this;
+    }
+
+    @Override
+    public SysIdRoutine getDefaultSysId(SubsystemBase subsystemBase) {
+        VoltageOut sysidControl = new VoltageOut(0);
+        return new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,         // Default ramp rate is acceptable
+                Volts.of(4), // Reduce dynamic voltage to 4 to prevent motor brownout
+                null,          // Default timeout is acceptable
+                                       // Log state with Phoenix SignalLogger class
+                (state)->SignalLogger.writeString("state", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (Measure<Voltage> volts)-> super.setControl(sysidControl.withOutput(volts.in(Volts))),
+                null,
+                subsystemBase));
     }
 
     @Override

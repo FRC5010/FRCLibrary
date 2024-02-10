@@ -7,6 +7,8 @@ package frc.robot.FRC5010.motors;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder.EncoderMeasurementType;
 
@@ -24,4 +26,5 @@ public interface MotorController5010 extends MotorController {
     PIDController5010 getPIDController5010();
     MotorController getMotor();
     void factoryDefault();
+    SysIdRoutine getDefaultSysId(SubsystemBase subsystemBase);
 }

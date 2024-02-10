@@ -24,7 +24,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.FRC5010.constants.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
+import frc.robot.FRC5010.motors.PIDController5010;
 import frc.robot.FRC5010.motors.SystemIdentification;
+import frc.robot.FRC5010.motors.PIDController5010.PIDControlType;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
@@ -60,9 +62,9 @@ public class ShooterSubsystem extends GenericSubsystem {
   private double feederPrevError = 0.0;
  
 
-  private SparkPIDController topPID;
-  private SparkPIDController bottomPID;
-  private SparkPIDController feederPID;
+  private PIDController5010 topPID;
+  private PIDController5010 bottomPID;
+  private PIDController5010 feederPID;
 
   private MotorController5010 topMotor;
   private MotorController5010 botMotor;
@@ -92,9 +94,9 @@ public class ShooterSubsystem extends GenericSubsystem {
   /** Creates a new Shooter. */
   public ShooterSubsystem(Mechanism2d robotSim, MotorController5010 top, MotorController5010 feeder, MotorController5010 bottom) {
     
-    topPID = ((CANSparkMax) top.getMotor()).getPIDController();
-    bottomPID = ((CANSparkMax) bottom.getMotor()).getPIDController();
-    feederPID = ((CANSparkMax) feeder.getMotor()).getPIDController();
+    topPID = top.getPIDController5010();
+    bottomPID = bottom.getPIDController5010();
+    feederPID = feeder.getPIDController5010();
 
     interpolationTree = new InterpolatingDoubleTreeMap();
 
@@ -273,8 +275,8 @@ public class ShooterSubsystem extends GenericSubsystem {
       topMotor.set(topFeedForward/ RobotController.getBatteryVoltage() + topVoltage);
       botMotor.set(bottomFeedForward/ RobotController.getBatteryVoltage() + bottomVoltage);
     } else {
-      topPID.setReference(getTopReference(), CANSparkBase.ControlType.kVelocity, 0, topFeedForward, ArbFFUnits.kVoltage);
-      bottomPID.setReference(getTopReference(), CANSparkBase.ControlType.kVelocity, 0, bottomFeedForward, ArbFFUnits.kVoltage);
+      topPID.setReference(getTopReference(), PIDControlType.VELOCITY, topFeedForward);
+      bottomPID.setReference(getTopReference(), PIDControlType.VELOCITY, bottomFeedForward);
     }
 
 
@@ -300,7 +302,7 @@ public class ShooterSubsystem extends GenericSubsystem {
 
       feederMotor.set(feedforward/ RobotController.getBatteryVoltage() + feedforward);
     } else {
-      feederPID.setReference(getFeederReference(), CANSparkBase.ControlType.kVelocity, 0, feedforward, ArbFFUnits.kVoltage);
+      feederPID.setReference(getFeederReference(), PIDControlType.VELOCITY, feedforward);
     }
 
 

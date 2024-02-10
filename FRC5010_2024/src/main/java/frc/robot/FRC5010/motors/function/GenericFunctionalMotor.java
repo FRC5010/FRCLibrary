@@ -5,6 +5,8 @@
 package frc.robot.FRC5010.motors.function;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.PIDController5010;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
@@ -100,6 +102,11 @@ public class GenericFunctionalMotor implements MotorController5010 {
     @Override
     public PIDController5010 getPIDController5010() {
         throw new UnsupportedOperationException("Not supported for this motor");
+    }
+
+    @Override
+    public SysIdRoutine getDefaultSysId(SubsystemBase subsystemBase) {
+        return _motor.getDefaultSysId(subsystemBase);
     }
 
     @Override

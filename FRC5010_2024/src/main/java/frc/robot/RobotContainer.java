@@ -232,9 +232,7 @@ public class RobotContainer extends GenericMechanism {
     if (!DriverStation.isTest()) {
       robot.setupDefaultCommands(driver, operator);
     } else {
-      /**
-       * TODO: Test mode default commands
-       */
+      robot.setupTestDefaultCommmands(driver, operator);
     }
   }
 

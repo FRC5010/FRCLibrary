@@ -60,6 +60,13 @@ public class RevPID implements PIDController5010 {
     }
 
     @Override
+    public void setReference(double reference, PIDControlType controlType, double feedforward) {
+        setControlType(controlType);
+        this.reference = reference;
+        controller.setReference(feedforward, sparkControlType, 0, feedforward);
+    }
+
+    @Override
     public void setControlType(PIDControlType controlType) {
         switch (controlType) {
             case POSITION:
