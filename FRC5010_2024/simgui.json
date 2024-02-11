@@ -23,6 +23,11 @@
           "visible": true
         }
       },
+      "/Shuffleboard/Robot/Auto Modes": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Drive Visual": {
         "window": {
           "visible": true

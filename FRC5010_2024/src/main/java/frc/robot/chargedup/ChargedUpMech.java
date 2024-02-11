@@ -4,12 +4,7 @@
 
 package frc.robot.chargedup;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -31,7 +26,6 @@ import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.commands.HomeElevator;
 import frc.robot.chargedup.commands.HomePivot;
 import frc.robot.chargedup.commands.IntakeSpin;
-import frc.robot.chargedup.commands.LedDefaultCommand;
 import frc.robot.chargedup.commands.MoveElevator;
 import frc.robot.chargedup.commands.PivotElevator;
 
@@ -69,20 +63,18 @@ public class ChargedUpMech extends GenericMechanism {
 				1, 8,
 				() -> elevatorSubsystem.getExtendPosition(), mechVisual);
 
-		// this.intakeSubsystem = new IntakeSubsystem(
-		// 		MotorFactory.NEO(19),
-		// 		MotorFactory.NEO(18),
-		// 		new MotorModelConstants(0, 0, 0),
-		// 		new GenericPID(0.003, 0, 0),
-		// 		new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
-		// 		mechVisual);
-		// TODO: Set up IntakeSubsystem add correct values please
 		this.buttonOperator = buttonOperator;
 		this.ledSubsystem = ledSubsystem;
+		initRealOrSim();
 	}
 
 	@Override
 	public void configureButtonBindings(Controller driver, Controller operator) {
+
+		driver.setRightTrigger(driver.createRightTrigger());
+		driver.setLeftTrigger(driver.createLeftTrigger());
+		operator.setRightTrigger(operator.createRightTrigger());
+		operator.setLeftTrigger(operator.createLeftTrigger());
 
 		// Move to current extend level
 		buttonOperator.getButton(1)
@@ -170,35 +162,43 @@ public class ChargedUpMech extends GenericMechanism {
 					speedLimit = kElevatorMaxSpeedLimit;
 				}));
 
-		// buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {
-		// 	intakeSubsystem.setIntakeCone();
-		// }, intakeSubsystem));
+		if (RobotBase.isSimulation()) {
+			buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {
+				intakeSubsystem.setIntakeCone();
+			}, intakeSubsystem));
 
-		// operator.createLeftBumper().onTrue(new InstantCommand(() -> {
-		// 	intakeSubsystem.setIntakeCone();
-		// }, intakeSubsystem));
+			operator.createLeftBumper().onTrue(new InstantCommand(() -> {
+				intakeSubsystem.setIntakeCone();
+			}, intakeSubsystem));
 
-		// buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {
-		// 	intakeSubsystem.setIntakeCube();
-		// }, intakeSubsystem));
+			buttonOperator.getButton(9).onTrue(new InstantCommand(() -> {
+				intakeSubsystem.setIntakeCube();
+			}, intakeSubsystem));
 
-		// operator.createRightBumper().onTrue(new InstantCommand(() -> {
-		// 	intakeSubsystem.setIntakeCube();
-		// }, intakeSubsystem));
+			operator.createRightBumper().onTrue(new InstantCommand(() -> {
+				intakeSubsystem.setIntakeCube();
+			}, intakeSubsystem));
 
-		// buttonOperator.getButton(10)
-		// 		.whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-intakeSpeedLimit, -1)));
+			buttonOperator.getButton(10)
+					.whileTrue(new IntakeSpin(intakeSubsystem, () -> Math.max(-intakeSpeedLimit,
+							-1)));
 
+			new Trigger(() -> (Math
+					.abs(driver.getRightTrigger() - driver.getLeftTrigger()) > 0.01))
+					.whileTrue(new IntakeSpin(intakeSubsystem,
+							() -> (driver.getRightTrigger()
+									- driver.getLeftTrigger()) * 1));
+
+			new Trigger(() -> (Math
+					.abs(operator.getRightTrigger()) > 0.01))
+					.whileTrue(new IntakeSpin(intakeSubsystem,
+							() -> (operator.getRightTrigger() * -1)));
+
+		}
 		buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
 		buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); // The deadzone isnt technically
 
-		driver.setRightTrigger(driver.createRightTrigger());
-		driver.setLeftTrigger(driver.createLeftTrigger());
-
 		driver.createUpPovButton().whileTrue(new HomePivot(pivotSubsystem));
-
-		operator.setRightTrigger(operator.createRightTrigger());
-		operator.setLeftTrigger(operator.createLeftTrigger());
 		// necessary
 		// but I have seen self movement
 		// without
@@ -213,17 +213,6 @@ public class ChargedUpMech extends GenericMechanism {
 		// .onTrue(new PivotPower(pivotSubsystem, () -> (buttonOperator.getYAxis() *
 		// speedLimit))
 		// );
-
-		// new Trigger(() -> (Math
-		// 		.abs(driver.getRightTrigger() - driver.getLeftTrigger()) > 0.01))
-		// 		.whileTrue(new IntakeSpin(intakeSubsystem,
-		// 				() -> (driver.getRightTrigger()
-		// 						- driver.getLeftTrigger()) * 1));
-
-		// new Trigger(() -> (Math
-		// 		.abs(operator.getRightTrigger()) > 0.01))
-		// 		.whileTrue(new IntakeSpin(intakeSubsystem,
-		// 				() -> (operator.getRightTrigger() * -1)));
 
 		driver.createDownPovButton()
 				.onTrue(new InstantCommand(() -> pivotSubsystem.toggleOverride(), pivotSubsystem));
@@ -279,7 +268,8 @@ public class ChargedUpMech extends GenericMechanism {
 				() -> false,
 				pivotSubsystem));
 
-		//ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, intakeSubsystem, elevatorSubsystem));
+		// ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem,
+		// intakeSubsystem, elevatorSubsystem));
 	}
 
 	@Override
@@ -289,14 +279,25 @@ public class ChargedUpMech extends GenericMechanism {
 
 	@Override
 	protected void initRealOrSim() {
+		if (RobotBase.isSimulation()) {
+			this.intakeSubsystem = new IntakeSubsystem(
+					MotorFactory.NEO(19),
+					MotorFactory.NEO(18),
+					new MotorModelConstants(0, 0, 0),
+					new GenericPID(0.003, 0, 0),
+					new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
+					mechVisual);
+		}
 	}
 
 	@Override
 	public void initAutoCommands() {
 		NamedCommands.registerCommand("Pivot to Ground", new PivotElevator(pivotSubsystem, ElevatorLevel.ground));
 		NamedCommands.registerCommand("Pivot to High", new PivotElevator(pivotSubsystem, ElevatorLevel.high));
-		NamedCommands.registerCommand("Auto Note Pickup", new InstantCommand(() -> {}));
-		NamedCommands.registerCommand("Auto Note Shoot", new InstantCommand(() -> {}));
+		NamedCommands.registerCommand("Auto Note Pickup", new InstantCommand(() -> {
+		}));
+		NamedCommands.registerCommand("Auto Note Shoot", new InstantCommand(() -> {
+		}));
 	}
 
 	@Override

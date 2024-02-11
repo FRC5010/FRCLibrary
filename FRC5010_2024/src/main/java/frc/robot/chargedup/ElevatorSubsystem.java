@@ -103,13 +103,13 @@ public class ElevatorSubsystem extends GenericSubsystem {
     setExtendEncoderPosition(ElevatorLevel.auto.getExtensionPosition());
 
     this.m_mech2d = mech2d;
-    m_mech2dRoot = m_mech2d.getRoot("Elevator Root", 5, 20);
+    m_mech2dRoot = m_mech2d.getRoot("Elevator Root", 0.05, 0.50);
     targetPos2d = m_mech2dRoot.append(
-        new MechanismLigament2d("Target", Units.metersToInches(kMinElevatorHeight), -30, 6,
+        new MechanismLigament2d("Target", kMinElevatorHeight, -30, 6,
             new Color8Bit(Color.kBlue)));
     m_elevatorMech2d = m_mech2dRoot.append(
         new MechanismLigament2d(
-            "Elevator", Units.metersToInches(kMinElevatorHeight), -30.0, 6, new Color8Bit(Color.kOrange)));
+            "Elevator", kMinElevatorHeight, -30, 6, new Color8Bit(Color.kOrange)));
 
     extendSim = new ElevatorSim(DCMotor.getNEO(1), 25,
         kCarriageMass, kElevatorDrumRadius, kMinElevatorHeight, kMaxElevatorHeight, false, 0);
@@ -241,7 +241,7 @@ public class ElevatorSubsystem extends GenericSubsystem {
 
   public static void setElevatorTargetLevel(ElevatorLevel level) {
     targetLevel = level;
-    targetPos2d.setLength(Units.metersToInches(targetLevel.getExtensionPosition()));
+    targetPos2d.setLength(targetLevel.getExtensionPosition());
     targetPos2d.setAngle(targetLevel.getPivotPosition());
   }
 
@@ -315,7 +315,7 @@ public class ElevatorSubsystem extends GenericSubsystem {
   @Override
   public void periodic() {
     m_elevatorMech2d.setAngle(pivotAngle.get());
-    m_elevatorMech2d.setLength(Units.metersToInches(getExtendPosition()));
+    m_elevatorMech2d.setLength(getExtendPosition());
     if (Robot.isReal()) {
       if (isElevatorIn()) {
         setExtendEncoderPosition(kMinElevatorHeight);

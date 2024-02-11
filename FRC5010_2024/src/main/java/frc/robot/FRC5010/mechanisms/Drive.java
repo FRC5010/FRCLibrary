@@ -5,18 +5,12 @@
 package frc.robot.FRC5010.mechanisms;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.constants.DrivePorts;
@@ -49,9 +43,6 @@ public class Drive extends GenericMechanism {
     private String type;
     private GenericDrivetrainConstants driveConstants;
     private List<? extends DrivePorts> motorPorts;
-    private Persisted<Double> maxChassisVelocity;
-    private Persisted<Double> maxChassisRotation;
-    private AutoBuilder autoBuilder;
 
     public static class Type {
         public static final String DIFF_DRIVE = "DifferentialDrive";
@@ -82,10 +73,6 @@ public class Drive extends GenericMechanism {
         this.driveTrainFolder = driveTrainFolder;
         driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, 60);
         driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, 60);
-        maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY,
-                driveConstants.getkTeleDriveMaxSpeedMetersPerSecond());
-        maxChassisRotation = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION,
-                driveConstants.getkTeleDriveMaxAngularSpeedRadiansPerSecond());
         mechVisual = new Mechanism2d(driveVisualH.getInteger(), driveVisualV.getInteger());
         SmartDashboard.putData("Drive Visual", mechVisual);
         // SmartDashboard.putBoolean("Field Oriented", isFieldOrientedDrive);
@@ -185,20 +172,11 @@ public class Drive extends GenericMechanism {
         driver.setLeftXAxis(driver.createLeftXAxis().negate().deadzone(0.08).cubed());
         driver.setLeftYAxis(driver.createLeftYAxis().negate().deadzone(0.08).cubed());
         driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.08));
-        // driver.createXButton().whileTrue(new ChaseTag((SwerveDrivetrain) drivetrain,
-        // () -> drivetrain.getPoseEstimator().getCurrentPose()));
 
-        // Example of setting up axis for driving omnidirectional
-        // driver.setLeftXAxis(driver.createLeftXAxis()
-        // .negate().deadzone(0.07).limit(1).rate(2).cubed());
-        // driver.setLeftYAxis(driver.createLeftYAxis()
-        // .negate().deadzone(0.07).limit(1).rate(2).cubed());
-        // driver.setRightXAxis(driver.createRightXAxis()
-        // .negate().deadzone(0.07).limit(1).rate(4).cubed());
         // Put commands that can be both real and simulation afterwards
-        driver.createBButton().onTrue(new InstantCommand(() -> drivetrain.toggleFieldOrientedDrive()));
-        driver.createStartButton().onTrue(new InstantCommand(() -> drivetrain.resetOrientation()));
-        driver.createLeftBumper().whileTrue(new RunCommand(() -> {
+        driver.createBButton().onTrue(Commands.runOnce(() -> drivetrain.toggleFieldOrientedDrive()));
+        driver.createStartButton().onTrue(Commands.runOnce(() -> drivetrain.resetOrientation()));
+        driver.createLeftBumper().whileTrue(Commands.run(() -> {
             drivetrain.lockWheels();
         }, drivetrain));
     }

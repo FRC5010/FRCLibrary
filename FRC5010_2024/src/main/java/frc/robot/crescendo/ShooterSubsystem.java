@@ -124,18 +124,15 @@ public class ShooterSubsystem extends GenericSubsystem {
 
     beambreak = new DigitalInput(0);
 
-    this.topMotorSim = robotSim.getRoot("Shooter Top", 50, 50)
-    .append(new MechanismLigament2d("Top Motor", 5, 180, 5, new Color8Bit(Color.kGreen)));
-    this.bottomMotorSim = robotSim.getRoot("Shooter Bottom", 50, 30)
-    .append(new MechanismLigament2d("Bottom Motor", 5, 180, 5, new Color8Bit(Color.kGreen)));
-    this.feederMotorSim = robotSim.getRoot("Feeder Motor", 40, 30)
-      .append(new MechanismLigament2d("Feeder Motor", 5, 180, 5, new Color8Bit(Color.kAntiqueWhite)));
+    this.topMotorSim = robotSim.getRoot("Shooter Top", 0.80, 0.50)
+    .append(new MechanismLigament2d("Top Motor", 0.1, 180, 5, new Color8Bit(Color.kLimeGreen)));
+    this.bottomMotorSim = robotSim.getRoot("Shooter Bottom", 0.80, 0.30)
+    .append(new MechanismLigament2d("Bottom Motor", 0.1, 180, 5, new Color8Bit(Color.kSpringGreen)));
+    this.feederMotorSim = robotSim.getRoot("Feeder Motor", 0.40, 0.30)
+      .append(new MechanismLigament2d("Feeder Motor", 0.1, 180, 5, new Color8Bit(Color.kMagenta)));
     this.topMotor = top;
     this.botMotor = bottom;
     this.feederMotor = feeder;
-
-
-
 
     SmartDashboard.putData(this);
   }

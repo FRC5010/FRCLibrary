@@ -102,10 +102,10 @@ public class IntakeSubsystem extends GenericSubsystem {
     simBottom = new FlywheelSim(DCMotor.getNEO(1), 1, 1);
     robotSim = mechSim;
 
-    topIntakeSim = robotSim.getRoot("Top Intake", 10, 30).append(new MechanismLigament2d("Top Intake Dial", 5.0, 0, 5.0, new Color8Bit(Color.kAquamarine)));
+    topIntakeSim = robotSim.getRoot("Top Intake", 0.10, 0.35).append(new MechanismLigament2d("Top Intake Dial", 0.1, 0, 5.0, new Color8Bit(Color.kFirstBlue)));
 
 
-    bottomIntakeSim = robotSim.getRoot("Bottom Intake", 10, 10).append(new MechanismLigament2d("Bottom Intake Dial", 5.0, 0, 5.0, new Color8Bit(Color.kAquamarine)));
+    bottomIntakeSim = robotSim.getRoot("Bottom Intake", 0.10, 0.2).append(new MechanismLigament2d("Bottom Intake Dial", 0.1, 0, 5.0, new Color8Bit(Color.kFirstRed)));
 
 
 

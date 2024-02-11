@@ -7,11 +7,6 @@ package frc.robot.chargedup;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -99,9 +94,7 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                 elevator = new ChargedUpMech(mechVisual, shuffleTab, buttonOperator, ledSubsystem);
                 initRealOrSim();
         }
-        // autoMaps.addPath("Command Test", new PathConstraints(4, 1.75));
 
-       
 
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
@@ -162,6 +155,7 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                         //                                 new Rotation3d(0, 0, 0)),
                         //                 PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
 
+                } else {
                 }
         }
 

@@ -11,6 +11,7 @@ import java.util.Map;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -39,7 +40,7 @@ public class DrivetrainPoseEstimator {
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
     tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(0, 4);
     tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray());
-    
+
     tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees())).withPosition(1, 4);
     tab.add(field2d);
 
@@ -68,8 +69,9 @@ public class DrivetrainPoseEstimator {
 
   public double[] getCurrentPose3dArray() {
     Pose3d pose = getCurrentPose3d();
-    Rotation3d rotation = pose.getRotation();
-    return new double[] {pose.getX(), pose.getY(), pose.getZ(), 0.0, rotation.getX(), rotation.getY(), rotation.getZ()};
+    Quaternion rotation = pose.getRotation().getQuaternion();
+    return new double[] { pose.getX(), pose.getY(), pose.getZ(), rotation.getW(), rotation.getX(), rotation.getY(),
+        rotation.getZ() };
   }
 
   public Rotation2d getGyroRotation2d() {
@@ -98,27 +100,28 @@ public class DrivetrainPoseEstimator {
     double distance = vision.getDistance();
     Transform3d cameraTransform = vision.getCameraToRobot();
 
-    Pose2d currentPose2d = poseTracker.getCurrentPose();
-    Pose3d currentPose3d = new Pose3d(
-        currentPose2d.getX(), currentPose2d.getY(), 0.0, new Rotation3d(
-            0.0, 0.0, currentPose2d.getRotation().getRadians()));
-
-    Pose3d cameraPose = currentPose3d.transformBy(cameraTransform);
     Pose3d targetPose = null;
-    if (vision.isValidTarget()) {
-      targetPose = cameraPose.transformBy(
-          new Transform3d(
-              Math.cos(Units.degreesToRadians(-angleYaw)) * distance,
-              Math.sin(Units.degreesToRadians(-angleYaw)) * distance,
-              Math.sin(Units.degreesToRadians(-anglePitch)) * distance,
-              new Rotation3d(0, 0, 0)));
-      field2d.getObject("Closest Target").setPose(
-          targetPose.toPose2d());
+    if (null != cameraTransform) {
+      Pose2d currentPose2d = poseTracker.getCurrentPose();
+      Pose3d currentPose3d = new Pose3d(
+          currentPose2d.getX(), currentPose2d.getY(), 0.0, new Rotation3d(
+              0.0, 0.0, currentPose2d.getRotation().getRadians()));
+
+      Pose3d cameraPose = currentPose3d.transformBy(cameraTransform);
+      if (vision.isValidTarget()) {
+        targetPose = cameraPose.transformBy(
+            new Transform3d(
+                Math.cos(Units.degreesToRadians(-angleYaw)) * distance,
+                Math.sin(Units.degreesToRadians(-angleYaw)) * distance,
+                Math.sin(Units.degreesToRadians(-anglePitch)) * distance,
+                new Rotation3d(0, 0, 0)));
+        field2d.getObject("Closest Target").setPose(
+            targetPose.toPose2d());
+      }
+
+      field2d.getObject("Target Camera").setPose(
+          cameraPose.toPose2d());
     }
-
-    field2d.getObject("Target Camera").setPose(
-        cameraPose.toPose2d());
-
     return targetPose;
   }
 
@@ -146,8 +149,6 @@ public class DrivetrainPoseEstimator {
       }
     }
     field2d.setRobotPose(getCurrentPose());
-
-    
 
     closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
     closestTargetToRobot = updatePoseFromClosestVisionTarget();

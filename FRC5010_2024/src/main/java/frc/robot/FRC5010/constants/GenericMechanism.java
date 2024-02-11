@@ -27,7 +27,7 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
     protected String logPrefix = getClass().getSimpleName();
 
     public GenericMechanism(String tabName) {
-        this.mechVisual = new Mechanism2d(100, 100);
+        this.mechVisual = new Mechanism2d(1, 2);
         shuffleTab = Shuffleboard.getTab(tabName);
     }
 

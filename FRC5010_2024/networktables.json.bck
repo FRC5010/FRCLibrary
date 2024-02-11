@@ -2,7 +2,7 @@
   {
     "name": "/Preferences/WhoAmI",
     "type": "string",
-    "value": "T1G3R",
+    "value": "",
     "properties": {
       "persistent": true
     }
@@ -90,7 +90,7 @@
   {
     "name": "/Preferences/ROBOT_VISUAL_H",
     "type": "double",
-    "value": 60.0,
+    "value": 1.0,
     "properties": {
       "persistent": true
     }
@@ -98,7 +98,7 @@
   {
     "name": "/Preferences/robotVisualV",
     "type": "double",
-    "value": 60.0,
+    "value": 2.0,
     "properties": {
       "persistent": true
     }

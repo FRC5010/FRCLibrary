@@ -108,11 +108,12 @@ public class PivotSubsystem extends GenericSubsystem {
 
     // Simulation Setup
     simEncoder.setPositionConversion(PIVOT_SIM_CONVERSION_FACTOR);
-    simPivotRoot = robotSim.getRoot("Pivot Root", 50, 40);
-    simPivotArm = simPivotRoot.append(new MechanismLigament2d("Arm", 25, PIVOT_START_ANGLE, 6, new Color8Bit(Color.kOrange)) );
-    simPivotArm.append(new MechanismLigament2d("Shooter", 10, 90));
+    simPivotRoot = robotSim.getRoot("Pivot Root", 0.70, 0.50);
+    simPivotArm = simPivotRoot.append(new MechanismLigament2d("Arm", 0.4, PIVOT_START_ANGLE, 6, new Color8Bit(Color.kOrange)) );
+  //  simPivotArm.append(new MechanismLigament2d("Shooter", 0.40, 90, 6, new Color8Bit(Color.kOrange)));
     // TODO: Attach Shooter to the Arm 
-    simTargetArm = simPivotRoot.append(new MechanismLigament2d("Target Arm", 25, PIVOT_START_ANGLE, 6, new Color8Bit(Color.kBlue)));
+    simTargetArm = simPivotRoot.append(new MechanismLigament2d("Target Arm", 0.4, PIVOT_START_ANGLE, 6, new Color8Bit(Color.kBlue)));
+//    simTargetArm.append(new MechanismLigament2d("Target Shooter", 0.40, 90, 6, new Color8Bit(Color.kBlue)));
     pivotSim = new SingleJointedArmSim(DCMotor.getNEO(2), 9, 
       SingleJointedArmSim.estimateMOI(PIVOT_LENGTH, PIVOT_MASS), PIVOT_LENGTH, 
       Units.degreesToRadians(PIVOT_END_ANGLE), Units.degreesToRadians(PIVOT_START_ANGLE), true, Units.degreesToRadians(PIVOT_START_ANGLE));
@@ -131,6 +132,7 @@ public class PivotSubsystem extends GenericSubsystem {
   public void setReference(double value) {
     referencePosition = value;
     pivotState = PivotState.POSITION;
+    simTargetArm.setAngle(value);
   }
 
   public boolean isAtTarget() {
@@ -264,7 +266,6 @@ public class PivotSubsystem extends GenericSubsystem {
     // voltage
     simEncoder.setPosition(Units.radiansToDegrees(pivotSim.getAngleRads()));
     encoder.setPosition(Units.radiansToDegrees(pivotSim.getAngleRads()));
-    //simPivotArm.setAngle(Units.degreesToRadians(pivotSim.getAngleRads()));
     simPivotArm.setAngle(simEncoder.getPosition());
 
     

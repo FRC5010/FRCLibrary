@@ -55,18 +55,18 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeSolenoid.set(DoubleSolenoid.Value.kOff);
 
     // TODO: Find values for mech 2D once intake is made "0"
-    intakeLeftMotor = m_mech2d.getRoot("Intake Left", 15, 50).append(
+    intakeLeftMotor = m_mech2d.getRoot("Intake Left", 0.80, 0.90).append(
         new MechanismLigament2d(
-            "Intake LM", 5, 180, 5, cubeColor));
-    intakeLeftSolenoid = m_mech2d.getRoot("Intake Left Sol", 15, 50).append(
+            "Intake LM", 0.1, 180, 5, cubeColor));
+    intakeLeftSolenoid = m_mech2d.getRoot("Intake Left Sol", 0.80, 0.90).append(
         new MechanismLigament2d(
-            "Intake LS", 5, 45, 5, cubeColor));
-    intakeRightMotor = m_mech2d.getRoot("Intake Right", 50, 50).append(
+            "Intake LS", 0.1, 45, 5, cubeColor));
+    intakeRightMotor = m_mech2d.getRoot("Intake Right", 0.80, 0.50).append(
         new MechanismLigament2d(
-            "Intake RM", 5, 0, 5, cubeColor));
-    intakeRightSolenoid = m_mech2d.getRoot("Intake Right Sol", 50, 50).append(
+            "Intake RM", 0.1, 0, 5, cubeColor));
+    intakeRightSolenoid = m_mech2d.getRoot("Intake Right Sol", 0.80, 0.50).append(
         new MechanismLigament2d(
-            "Intake RS", 5, 135, 5, cubeColor));
+            "Intake RS", 0.1, 135, 5, cubeColor));
 
     intakeController.setP(intakePID.getkP());
     intakeController.setI(intakePID.getkI());
