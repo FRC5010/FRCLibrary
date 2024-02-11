@@ -4,13 +4,6 @@
 
 package frc.robot.crescendo;
 
-import javax.swing.text.DefaultEditorKit.BeepAction;
-
-import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -27,8 +20,8 @@ import frc.robot.Robot;
 import frc.robot.FRC5010.constants.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.PIDController5010;
-import frc.robot.FRC5010.motors.SystemIdentification;
 import frc.robot.FRC5010.motors.PIDController5010.PIDControlType;
+import frc.robot.FRC5010.motors.SystemIdentification;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;

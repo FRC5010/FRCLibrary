@@ -101,7 +101,7 @@ public class RobotContainer extends GenericMechanism {
     public static final String COMP_BOT_2023 = "00:80:2F:33:04:33";
     public static final String BABY_SWERVE = "BabySwerve";
     public static final String PRACTICE_BOT = "PracticeBot";
-    public static final String CURTS_LAPTOP_SIM = "D2:57:7B:3E:C0:47";
+    public static final String CURTS_LAPTOP_SIM = "4E:82:A9:77:48:61";//"D2:57:7B:3E:C0:47";
     public static final String MAIN_5010_LAPTOP = "04:EC:D8:22:DA:59";
   }
 
@@ -197,6 +197,9 @@ public class RobotContainer extends GenericMechanism {
             case "Simulator": {
               robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
               break;
+            }
+            default:  {
+              robot = new CompBot_2024(mechVisual, shuffleTab);
             }
           }
           break;

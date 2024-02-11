@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Distance;
@@ -305,10 +303,8 @@ public class SwerveDriveTest
    * @param swerveDrive     - the SwerveDrive from which to access motor info
    * @param maxVolts        - The maximum voltage that should be applied to the drive motors.
    * @return A SysIdRoutine runner
-   * @apiNote Although SysIdRoutine expects to be logging Voltage, this function logs in Duty-Cycle (percent output) 
-   * because it results in correctly adjusted values in the analysis for use in this library. 
    */
-  public static SysIdRoutine setupDriveSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
+  public static SysIdRoutine setDriveSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
                                                   SwerveDrive swerveDrive, double maxVolts)
   {
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
@@ -344,8 +340,6 @@ public class SwerveDriveTest
    *
    * @param module - the swerve module being logged
    * @param log    - the logger
-   * @apiNote Although SysIdRoutine expects to be logging Voltage, this function logs in Duty-Cycle (percent output) 
-   * because it results in correctly adjusted values in the analysis for use in this library. 
    */
   public static void logAngularMotorVoltage(SwerveModule module, SysIdRoutineLog log)
   {
@@ -381,7 +375,7 @@ public class SwerveDriveTest
    * @param swerveDrive     - the SwerveDrive from which to access motor info
    * @return A SysIdRoutineRunner
    */
-  public static SysIdRoutine setupAngleSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
+  public static SysIdRoutine setAngleSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
                                                   SwerveDrive swerveDrive)
   {
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(

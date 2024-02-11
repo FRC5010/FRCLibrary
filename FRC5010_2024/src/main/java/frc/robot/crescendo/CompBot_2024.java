@@ -4,8 +4,6 @@
 
 package frc.robot.crescendo;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -14,7 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.constants.GenericMechanism;
@@ -27,11 +24,7 @@ import frc.robot.FRC5010.motors.hardware.KrakenX60;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
-import frc.robot.crescendo.commands.RunClimb;
 import frc.robot.crescendo.commands.RunIntake;
-import frc.robot.crescendo.commands.RunPivot;
-import frc.robot.crescendo.commands.RunShooter;
 
 /** Add your docs here. */
 public class CompBot_2024 extends GenericMechanism {

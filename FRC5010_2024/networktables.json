@@ -2,7 +2,7 @@
   {
     "name": "/Preferences/WhoAmI",
     "type": "string",
-    "value": "T1G3R",
+    "value": "",
     "properties": {
       "persistent": true
     }
