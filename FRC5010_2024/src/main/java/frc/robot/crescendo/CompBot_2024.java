@@ -15,6 +15,7 @@ import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
@@ -23,6 +24,7 @@ import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
+import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.RunClimb;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
@@ -49,6 +51,8 @@ public class CompBot_2024 extends GenericMechanism {
         private MotorController5010 rightClimbMotor;
         private Drive drive;
 
+        private Targeting2024 targetingSystem;
+
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
                 // Motor Setup
@@ -67,7 +71,7 @@ public class CompBot_2024 extends GenericMechanism {
                 if (RobotBase.isSimulation()) { 
                         gyro = new PigeonGyro(13);
 
-                        visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
+                        // visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
                         pivotSubsystem = new PivotSubsystem(pivotMotor, mechVisual);
                         climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro, mechVisual);
                         swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES), Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
@@ -84,9 +88,10 @@ public class CompBot_2024 extends GenericMechanism {
                         swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
 
                         drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants, "mk4i_L3_kraken_neo");
+                        targetingSystem = new Targeting2024((SwerveDrivetrain) drive.getDrivetrain(), () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(), () -> Constants.Field.SHOT_POSE);
                 }
                 shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, feederShooterMotor, bottomShooterMotor);
-                intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);                
+                intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);  
         }
 
 
@@ -124,6 +129,7 @@ public class CompBot_2024 extends GenericMechanism {
                 climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
                 intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getLeftTrigger() - driver.getRightTrigger(), intakeSubsystem));
                 drive.setupDefaultCommands(driver, operator);
+                driver.createAButton().whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, drive, targetingSystem));
         }
 
         @Override

@@ -6,11 +6,13 @@ package frc.robot.crescendo.commands;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
@@ -18,6 +20,7 @@ import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.ShooterSubsystem;
+import frc.robot.crescendo.Targeting2024;
 
 public class AutoAim extends Command {
 
@@ -26,57 +29,24 @@ public class AutoAim extends Command {
   PivotSubsystem pivotSubsystem;
   Drive drive;
   Transform3d targetPose;
+  Targeting2024 targetingSystem;
 
-  ProfiledPIDController thetaController;
-  GenericPID thetaPID = new GenericPID(0.25, 0, 0);
 
 
   /** Creates a new AutoAim. */
 
 
-  public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Drive drive,
-      Transform3d targetPose) {
-    this.targetPose = targetPose;
-    this.robotPose = drive.getDrivetrain().getPoseEstimator();
-    this.pivotSubsystem = pivotSubsystem;
-    this.shooterSubsystem = shooterSubsystem;
-    this.drive = drive;
-
-    thetaController = new ProfiledPIDController(thetaPID.getkP(), thetaPID.getkI(), thetaPID.getkD(), null);
-    thetaController.setTolerance(Units.degreesToRadians(2));
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    addRequirements(pivotSubsystem, shooterSubsystem);
-  }
-
-  public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Drive drive) {
-
-    targetPose = Constants.Field.SHOT_POSE;
-
-
+  public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Drive drive, Targeting2024 targetSystem) {
 
     this.robotPose = drive.getDrivetrain().getPoseEstimator();
     this.pivotSubsystem = pivotSubsystem;
     this.shooterSubsystem = shooterSubsystem;
     this.drive = drive;
+    this.targetingSystem = targetSystem;
 
     addRequirements(pivotSubsystem, shooterSubsystem);
   }
 
-  private double computeYawBetweenTransforms(Transform3d from, Transform3d to) {
-    Translation3d difference = from.getTranslation().minus(to.getTranslation());
-    double yawAngle = Math.atan2(difference.getY(), difference.getX());
-    // yawAngle += Math.PI / 2;
-    yawAngle = Math.toDegrees(yawAngle);
-    return yawAngle;
-  }
-
-  private double computePitchBetweenTransforms(Transform3d from, Transform3d to) {
-    Translation3d difference = from.getTranslation().minus(to.getTranslation());
-    double hypotenousA = Math.sqrt(Math.pow(difference.getX(), 2) + Math.pow(difference.getY(), 2));
-    double pivotAngle = Math.atan2(difference.getZ(), hypotenousA);
-    return Math.toDegrees(pivotAngle);
-  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -91,16 +61,10 @@ public class AutoAim extends Command {
     // TODO: Have to account for robot rotation just like with camera
     Transform3d pivotOrigin = new Transform3d(
         robotTranslation.plus(Constants.Physical.PIVOT_ORIGIN_OFFSET.getTranslation()), new Rotation3d());
-
-    double yaw = computeYawBetweenTransforms(pivotOrigin, targetPose);
-    double pitch = computePitchBetweenTransforms(pivotOrigin, targetPose);
-
-    pivotSubsystem.setReference(pitch);
-    
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(null, null);
-
+    double angleSpeed = targetingSystem.getAnglePowerToTarget();
+    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, angleSpeed, drive.getDrivetrain().getHeading());
     drive.getDrivetrain().drive(chassisSpeeds);
-
+    SmartDashboard.putNumber("Angle Speed", angleSpeed);
     // TODO: Rotate Drive to Target and Allow for Joystick Translation
 
   }

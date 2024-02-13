@@ -23,11 +23,6 @@
           "visible": true
         }
       },
-      "/Shuffleboard/Robot/Auto Modes": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Drive Visual": {
         "window": {
           "visible": true
@@ -77,8 +72,7 @@
           },
           "double[]##v_/SmartDashboard/swerve/measuredStates": {
             "open": true
-          },
-          "open": true
+          }
         }
       }
     }

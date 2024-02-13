@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -65,6 +66,11 @@ public class DrivetrainPoseEstimator {
 
   public Pose3d getCurrentPose3d() {
     return new Pose3d(poseTracker.getCurrentPose());
+  }
+
+  public Pose3d getProjectedPose3d(double time, ChassisSpeeds robotFieldSpeed) {
+    Transform3d movement = new Transform3d(robotFieldSpeed.vxMetersPerSecond * time, robotFieldSpeed.vyMetersPerSecond * time, 0, new Rotation3d());
+    return getCurrentPose3d().plus(movement);
   }
 
   public double[] getCurrentPose3dArray() {
