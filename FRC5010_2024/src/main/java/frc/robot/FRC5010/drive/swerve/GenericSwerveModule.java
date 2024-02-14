@@ -77,6 +77,7 @@ public abstract class GenericSwerveModule extends SubsystemBase {
         turnEncoder.setPositionConversion(moduleConstants.getkTurningEncoderRot2Rad());
         turnEncoder.setVelocityConversion(moduleConstants.getkTurningEncoderRPM2RadPerSec());
 
+
         swerveTurnP = new Persisted<>(DriveConstantsDef.SWERVE_TURN_P, pid.getkP());
         swerveTurnI = new Persisted<>(DriveConstantsDef.SWERVE_TURN_I, pid.getkI());
         swerveTurnD = new Persisted<>(DriveConstantsDef.SWERVE_TURN_D, pid.getkD());

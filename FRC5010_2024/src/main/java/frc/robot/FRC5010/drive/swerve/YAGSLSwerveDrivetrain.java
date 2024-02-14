@@ -103,7 +103,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
-      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
+      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed); // Removed passing in conversion factor cause it set values to over 7600+
     } catch (Exception e) {
       System.out.println(e.getMessage());
       throw new RuntimeException(e);

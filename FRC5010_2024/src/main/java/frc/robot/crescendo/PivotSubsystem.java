@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -46,6 +47,9 @@ public class PivotSubsystem extends GenericSubsystem {
   MechanismLigament2d simPivotArm;
   MechanismLigament2d simTargetArm;
 
+  DigitalInput leftLimitSwitch;
+  DigitalInput rightLimitSwitch;
+
   private InterpolatingDoubleTreeMap interpolationTree;
   
 
@@ -74,6 +78,7 @@ public class PivotSubsystem extends GenericSubsystem {
   public final double HOME_LEVEL = PIVOT_START_ANGLE;
   public final double AMP_LEVEL = 135;
   public final double TRAP_LEVEL = 75;
+  public final double INTAKE_LEVEL = HOME_LEVEL; // TODO: Make accurate
 
   private double referencePosition = HOME_LEVEL;
 
@@ -103,6 +108,9 @@ public class PivotSubsystem extends GenericSubsystem {
     pivotPID.setD(0);
     
     robotSim = mechSim;
+
+    leftLimitSwitch = new DigitalInput(0);
+    // TODO: ADD RIGHT LIMIT ONCE ACTUALLY WIRED
 
   
 

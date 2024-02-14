@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.constants.GenericMechanism;
+import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
@@ -68,28 +69,32 @@ public class CompBot_2024 extends GenericMechanism {
                 bottomShooterMotor = MotorFactory.KrakenX60(14);         
 
                 visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
-                if (RobotBase.isSimulation()) { 
-                        gyro = new PigeonGyro(13);
+                 
+                gyro = new PigeonGyro(13);
 
-                        // visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
-                        pivotSubsystem = new PivotSubsystem(pivotMotor, mechVisual);
-                        climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro, mechVisual);
-                        swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES), Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
-                        
-                        // Setup Swerve Constants
-                        swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(10);
-                        swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+                // visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
+                pivotSubsystem = new PivotSubsystem(pivotMotor, mechVisual);
+                climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro, mechVisual);
+                swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES), Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
+                
+                // Setup Swerve Constants
+                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(10);
+                swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
-                        swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
-                        swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
-                        swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
+                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
+                swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+                swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
 
-                        swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
-                        swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
+                swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // FL
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // FR
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backleft", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BL
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright", new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BR
+                swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
 
-                        drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants, "mk4i_L3_kraken_neo");
-                        targetingSystem = new Targeting2024((SwerveDrivetrain) drive.getDrivetrain(), () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(), () -> Constants.Field.SHOT_POSE);
-                }
+                drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants, "mk4i_L3_kraken_neo");
+                targetingSystem = new Targeting2024((SwerveDrivetrain) drive.getDrivetrain(), () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(), () -> Constants.Field.SHOT_POSE);
+                
                 shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, feederShooterMotor, bottomShooterMotor);
                 intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);  
         }
@@ -97,19 +102,19 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
-                if (RobotBase.isSimulation()) {
-                        drive.configureButtonBindings(driver, operator);
-                        driver.createXButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setPivotPosition(180), pivotSubsystem));
-                        driver.createBButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem));
-                        driver.createAButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL), pivotSubsystem));
-                        driver.createYButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL), pivotSubsystem));
+            
+                drive.configureButtonBindings(driver, operator);
+                driver.createXButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setPivotPosition(180), pivotSubsystem));
+                driver.createBButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem));
+                driver.createAButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL), pivotSubsystem));
+                driver.createYButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL), pivotSubsystem));
 
-                        operator.createUpPovButton().onTrue(shooterSubsystem.adjustShooterReferenceUp());
-                        operator.createDownPovButton().onTrue(shooterSubsystem.adjustShooterReferenceDown());
+                operator.createUpPovButton().onTrue(shooterSubsystem.adjustShooterReferenceUp());
+                operator.createDownPovButton().onTrue(shooterSubsystem.adjustShooterReferenceDown());
 
-                        operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
-                        operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
-                }
+                operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
+                operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
+                
 
                 driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07).negate());
                 driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07).negate());
@@ -124,12 +129,12 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
-                pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem)); // TODO: Add way to control
-                shooterSubsystem.setDefaultCommand(new RunShooter(() -> operator.getRightTrigger(), () -> operator.getLeftTrigger(), shooterSubsystem));
-                climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
-                intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getLeftTrigger() - driver.getRightTrigger(), intakeSubsystem));
+                // pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem)); // TODO: Add way to control
+                // shooterSubsystem.setDefaultCommand(new RunShooter(() -> operator.getRightTrigger(), () -> operator.getLeftTrigger(), shooterSubsystem));
+                // climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
+                // intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getLeftTrigger() - driver.getRightTrigger(), intakeSubsystem));
                 drive.setupDefaultCommands(driver, operator);
-                driver.createAButton().whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, drive, targetingSystem));
+                // driver.createAButton().whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, drive, targetingSystem));
         }
 
         @Override

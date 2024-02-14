@@ -7,6 +7,7 @@ package frc.robot.crescendo;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -22,6 +23,7 @@ import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.PIDController5010;
 import frc.robot.FRC5010.motors.PIDController5010.PIDControlType;
 import frc.robot.FRC5010.motors.SystemIdentification;
+import frc.robot.FRC5010.motors.hardware.KrakenX60;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
@@ -122,7 +124,8 @@ public class ShooterSubsystem extends GenericSubsystem {
     feederPID.setI(0);    
     feederPID.setD(0);
 
-    beambreak = new DigitalInput(0);
+    beambreak = new DigitalInput(1);
+    
 
     this.topMotorSim = robotSim.getRoot("Shooter Top", 0.80, 0.50)
     .append(new MechanismLigament2d("Top Motor", 0.1, 180, 5, new Color8Bit(Color.kLimeGreen)));
@@ -152,6 +155,7 @@ public class ShooterSubsystem extends GenericSubsystem {
     double speed = interpolationTree.get(distance);
     setShooterReference(speed, speed);
   }
+
 
 
 
