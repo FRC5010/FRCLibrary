@@ -62,7 +62,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_END_ANGLE = 60;
   private final String PIVOT_kS = "PivotkS";
   private final String PIVOT_kA = "PivotkA";
-  private final double PIVOT_CONVERSION_FACTOR = 360 / (85.0 / 3.0);//24.242; 85 : 3
+  private final double PIVOT_CONVERSION_FACTOR = 360.0 / (85.0 / 3.0);//24.242; 85 : 3
   private final double PIVOT_SIM_CONVERSION_FACTOR = 0.1;
   private final String PIVOT_kG = "PivotKg";
   private final String PIVOT_ANGLE = "Pivot Angle";
@@ -81,7 +81,6 @@ public class PivotSubsystem extends GenericSubsystem {
   public final double INTAKE_LEVEL = HOME_LEVEL; // TODO: Make accurate
 
   private double referencePosition = HOME_LEVEL;
-
 
   private final double MIN_PIVOT_POSITION = 1.929; // Degrees
 
@@ -132,8 +131,6 @@ public class PivotSubsystem extends GenericSubsystem {
 
     // 85 : 3
     SmartDashboard.putData(this);
-
-
   }
 
   public double getReference() {
@@ -155,7 +152,7 @@ public class PivotSubsystem extends GenericSubsystem {
   }
 
   public boolean isAtTarget() {
-    return Math.abs(getPivotPosition() - referencePosition) < 10.0;
+    return Math.abs(getReference() - getPivotPosition()) < 10.0;
   }
 
   public void setInterpolatedShotAngle(double distance) {
@@ -164,24 +161,23 @@ public class PivotSubsystem extends GenericSubsystem {
   }
 
   public void runToReference() {
-    pivotPID.setP(values.getDouble(PIVOT_kP));
-    double currentError = getReference() - getPivotPosition();
-    double currentTime = RobotController.getFPGATime() / 1E6;
-    double errorRate = (currentError - previousError) / (currentTime - previousTime);
-    double voltage = currentError * values.getDouble(PIVOT_kP) + (errorRate * values.getDouble(PIVOT_kD));
-    double feedForward = getFeedFowardVoltage(isAtTarget() ? 0 : voltage);
+    double feedForward = getFeedFowardVoltage(isAtTarget() ? 0 : getReference() - getPivotPosition());
     SmartDashboard.putNumber("Pivot FF Voltage", feedForward);
     
     if (!Robot.isReal()) {
+      double currentError = getReference() - getPivotPosition();
+      double currentTime = RobotController.getFPGATime() / 1E6;
+      double errorRate = (currentError - previousError) / (currentTime - previousTime);
+      double voltage = currentError * values.getDouble(PIVOT_kP) + (errorRate * values.getDouble(PIVOT_kD));
       pivotMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
+      previousError = currentError;
+      previousTime = currentTime;
     } else {
+      pivotPID.setP(values.getDouble(PIVOT_kP));
       pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
     }
     SmartDashboard.putBoolean("Pivot Run Ref", true);
     SmartDashboard.putBoolean("Pivot Set Speed", false);
-
-    previousError = currentError;
-    previousTime = currentTime;
   }
 
   public void update_encoder_extremas() {
@@ -195,8 +191,6 @@ public class PivotSubsystem extends GenericSubsystem {
     }
 
   }
-
-
 
   public double getPivotPosition() {
     if (Robot.isReal()) {
@@ -220,9 +214,6 @@ public class PivotSubsystem extends GenericSubsystem {
     return SystemIdentification.getSysIdFullCommand(SystemIdentification.angleSysIdRoutine(pivotMotor, encoder, "Pivot Motor", this), 5, 3, 3);
   }
 
-
-
-  
   public double getFeedFowardVoltage(double velocity) {
     Double pivotKG = values.getDouble(PIVOT_kG);
     Double pivotKV = values.getDouble(PIVOT_kV);
