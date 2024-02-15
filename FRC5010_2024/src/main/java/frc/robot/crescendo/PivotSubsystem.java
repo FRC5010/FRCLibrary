@@ -62,7 +62,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_END_ANGLE = 60;
   private final String PIVOT_kS = "PivotkS";
   private final String PIVOT_kA = "PivotkA";
-  private final double PIVOT_CONVERSION_FACTOR = 360;//24.242;
+  private final double PIVOT_CONVERSION_FACTOR = 360 / (85.0 / 3.0);//24.242; 85 : 3
   private final double PIVOT_SIM_CONVERSION_FACTOR = 0.1;
   private final String PIVOT_kG = "PivotKg";
   private final String PIVOT_ANGLE = "Pivot Angle";
@@ -81,6 +81,9 @@ public class PivotSubsystem extends GenericSubsystem {
   public final double INTAKE_LEVEL = HOME_LEVEL; // TODO: Make accurate
 
   private double referencePosition = HOME_LEVEL;
+
+
+  private final double MIN_PIVOT_POSITION = 1.929; // Degrees
 
   private double previousError = 0;
   private double previousTime = 0;
@@ -112,7 +115,7 @@ public class PivotSubsystem extends GenericSubsystem {
     leftLimitSwitch = new DigitalInput(0);
     // TODO: ADD RIGHT LIMIT ONCE ACTUALLY WIRED
 
-  
+    
 
     // Simulation Setup
     simEncoder.setPositionConversion(PIVOT_SIM_CONVERSION_FACTOR);
@@ -127,7 +130,7 @@ public class PivotSubsystem extends GenericSubsystem {
       Units.degreesToRadians(PIVOT_END_ANGLE), Units.degreesToRadians(PIVOT_START_ANGLE), true, Units.degreesToRadians(PIVOT_START_ANGLE));
     values.declare(PIVOT_ANGLE, 0.0);
 
-
+    // 85 : 3
     SmartDashboard.putData(this);
 
 
@@ -141,6 +144,14 @@ public class PivotSubsystem extends GenericSubsystem {
     referencePosition = value;
     pivotState = PivotState.POSITION;
     simTargetArm.setAngle(value);
+  }
+
+  public boolean isAtMin() {
+    return (!leftLimitSwitch.get() || !rightLimitSwitch.get());
+  }
+
+  public boolean isAtMax() {
+    return false; // TODO: Add based on current encoder reading
   }
 
   public boolean isAtTarget() {
@@ -171,6 +182,18 @@ public class PivotSubsystem extends GenericSubsystem {
 
     previousError = currentError;
     previousTime = currentTime;
+  }
+
+  public void update_encoder_extremas() {
+    if (isAtMin()) {
+      // TODO: May or may not be bad
+      if (Math.abs(getPivotPosition()) < 20) { // Make sure encoder doesn't reset at erroneous position accidentally
+        encoder.setPosition(MIN_PIVOT_POSITION);
+      } else {
+        log("PIVOT MIN REACHED AT ERRONEOUS POSITION");
+      }
+    }
+
   }
 
 

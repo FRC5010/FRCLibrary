@@ -129,10 +129,10 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
-                // pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem)); // TODO: Add way to control
-                // shooterSubsystem.setDefaultCommand(new RunShooter(() -> operator.getRightTrigger(), () -> operator.getLeftTrigger(), shooterSubsystem));
-                // climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
-                // intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getLeftTrigger() - driver.getRightTrigger(), intakeSubsystem));
+                pivotSubsystem.setDefaultCommand(new RunPivot(() -> operator.getRightYAxis(), pivotSubsystem)); // TODO: Add way to control
+                //shooterSubsystem.setDefaultCommand(new RunShooter(() -> operator.getRightTrigger(), () -> operator.getLeftTrigger(), shooterSubsystem));
+                //climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(), () -> operator.getRightYAxis(), climbSubsystem));
+                //intakeSubsystem.setDefaultCommand(new RunIntake(() -> driver.getLeftTrigger() - driver.getRightTrigger(), intakeSubsystem));
                 drive.setupDefaultCommands(driver, operator);
                 // driver.createAButton().whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, drive, targetingSystem));
         }
