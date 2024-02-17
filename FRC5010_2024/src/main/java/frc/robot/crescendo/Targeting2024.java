@@ -52,15 +52,41 @@ public class Targeting2024 {
         return thetaController.calculate(Units.radiansToDegrees(robotPose.get().getRotation().getZ())) * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
     }
 
-
-
-
     public static double getYawAngleToTarget(Pose3d from, Pose3d target) {
         Translation3d difference = target.getTranslation().minus(from.getTranslation());
         double yawAngle = Math.atan2(difference.getY(), difference.getX());
         // yawAngle += Math.PI / 2;
         yawAngle = Math.toDegrees(yawAngle);
         return yawAngle;
+    }
+
+    // Accurate within roughly 0.1 degrees
+    public static double AccountForHorizontalVelocity(Pose3d robotPosition, Pose3d speakerPosition, double robotXVelocity, double robotYVelocity, double robotPivotAngle, double noteVelocity) {
+        double noteVel = noteVelocity;
+        double xDifference = speakerPosition.getY() - robotPosition.getY(); // In respect to speaker -(robotY - speakerY)
+        double yDifference = robotPosition.getX() - speakerPosition.getX(); // In respect to speaker (must be positive) (robotX - speakerX)
+        double robotXVel = robotYVelocity; // In respect to speaker (robotYVelocity)
+        double robotYVel = -robotXVelocity; // In respect to speaker -(robotXVelocity)
+        double pivotAngle = Math.toRadians(robotPivotAngle);
+        double targetValue = ((xDifference * robotXVel) - (yDifference * robotYVel)) / (noteVel * Math.cos(pivotAngle));
+        double currentTheta = xDifference > 0.0 ? -Math.PI / 4 : Math.PI / 4;
+        double currentDifference = (yDifference * Math.cos(currentTheta)) - (xDifference * Math.sin(currentTheta)) - targetValue;
+        double originalSign = Math.signum(currentDifference);
+        double currentSign = originalSign;
+        double currentInterval = Math.PI / 2;
+
+        while (currentInterval > 0.002) {
+            if (originalSign != currentSign) {
+                currentTheta -= currentInterval;
+            } else {
+                currentTheta += currentInterval;
+            }
+            currentInterval /= 2;
+            currentDifference = (yDifference * Math.cos(currentTheta)) - (xDifference * Math.sin(currentTheta)) - targetValue;
+            currentSign = Math.signum(currentDifference);
+        }
+
+        return Math.toDegrees(currentTheta) + 90 > 180 ? Math.toDegrees(currentTheta) - 270 : Math.toDegrees(currentTheta) + 90;
     }
 
     public static double getPivotAngleToTarget(Pose3d from, Pose3d target) { // Change to actually work with weird pivot...
