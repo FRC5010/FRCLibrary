@@ -83,9 +83,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     // In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     // The encoder resolution per motor revolution is 1 per motor revolution.
-    double angleGearRatio = swerveConstants.getSwerveModuleConstants().getkTurningMotorGearRatio();
+    double angleGearRatio = 1.0 / swerveConstants.getSwerveModuleConstants().getkTurningMotorGearRatio();
     double wheelDiameter = swerveConstants.getSwerveModuleConstants().getkWheelDiameterMeters();
-    double driveGearRatio = swerveConstants.getSwerveModuleConstants().getkDriveMotorGearRatio();
+    double driveGearRatio = 1.0 / swerveConstants.getSwerveModuleConstants().getkDriveMotorGearRatio();
     double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(angleGearRatio, 1);
 
     // Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER
@@ -103,13 +103,14 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
-      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed); // Removed passing in conversion factor cause it set values to over 7600+
+      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, 360, driveConversionFactor); // Use correct angleMotorConversionFactor later
     } catch (Exception e) {
       System.out.println(e.getMessage());
       throw new RuntimeException(e);
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-    swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+//    swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    swerveDrive.setCosineCompensator(false); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
 
     /** 5010 Code */
     if (swerveConstants.getSwerveModuleConstants().getDriveFeedForward().size() > 0) {

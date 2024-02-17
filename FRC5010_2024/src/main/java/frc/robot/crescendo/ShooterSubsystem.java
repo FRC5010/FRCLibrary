@@ -172,8 +172,8 @@ public class ShooterSubsystem extends GenericSubsystem {
     return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(feederMotor, feederMotor.getMotorEncoder(), "Top Motor", this), 5, 3, 3);
   }
 
-  public boolean getBeambreak() {
-    return beambreak.get(); 
+  public boolean isBeamBroken() {
+    return !beambreak.get(); 
   }
 
 
@@ -364,8 +364,8 @@ public class ShooterSubsystem extends GenericSubsystem {
     topMotorSim.setAngle(topMotor.get() * 180 - 90);
     bottomMotorSim.setAngle(botMotor.get() * 180 - 90);
     feederMotorSim.setAngle(feederMotor.get() * 180 - 90);
-    values.set(BEAM_BREAK_STATE, getBeambreak());
-    SmartDashboard.putBoolean("Beam Break State", getBeambreak());
+    values.set(BEAM_BREAK_STATE, isBeamBroken());
+    SmartDashboard.putBoolean("Beam Break State", isBeamBroken());
   }
 
   @Override

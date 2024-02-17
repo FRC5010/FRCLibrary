@@ -70,6 +70,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String PIVOT_kP = "PivotkP";
   private final String PIVOT_kD = "PivotkD";
   private final String MICRO_ADJUST = "Pivot Micro Adjustment";
+  private final String SLOWDOWN = "Slowdown";
   private static enum PivotState {
     JOYSTICK, POSITION
   }
@@ -98,6 +99,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kS, 0.0);
     values.declare(PIVOT_kA, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
+    values.declare(SLOWDOWN, 0.1);
 
     interpolationTree = new InterpolatingDoubleTreeMap();
 
@@ -138,6 +140,14 @@ public class PivotSubsystem extends GenericSubsystem {
 
   public double getReference() {
     return referencePosition;
+  }
+
+  public double getSlowdown() {
+    return values.getDouble(SLOWDOWN);
+  }
+
+  public void setSlowdown(double factor) {
+    values.set(SLOWDOWN, factor);
   }
 
   public void setReference(double value) {
@@ -246,7 +256,7 @@ public class PivotSubsystem extends GenericSubsystem {
   public void setSpeed(double speed) {
 
     double ff = getFeedFowardVoltage(speed) / RobotController.getBatteryVoltage();
-    pivotMotor.set(speed + ff);
+    pivotMotor.set(speed * values.getDouble(SLOWDOWN) + ff);
     SmartDashboard.putBoolean("Pivot Set Speed", true);
     SmartDashboard.putBoolean("Pivot Run Ref", false);
     SmartDashboard.putNumber("Pivot Speed", speed);
@@ -277,6 +287,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
   @Override
   public void periodic() {
+
     // This method will be called once per scheduler run
     values.set(PIVOT_ANGLE, getPivotPosition());
     SmartDashboard.putNumber("Pivot Reference", getReference());

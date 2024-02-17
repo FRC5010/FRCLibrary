@@ -7,33 +7,46 @@ package frc.robot.crescendo.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.constants.GenericCommand;
 import frc.robot.crescendo.IntakeSubsystem;
+import frc.robot.crescendo.ShooterSubsystem;
 
-public class RunIntake extends Command {
+public class RunIntake extends GenericCommand {
 
   DoubleSupplier speed;
+  DoubleSupplier feederSpeed;
   IntakeSubsystem intakeSubsystem;
+  ShooterSubsystem shooterSubsystem;
   /** Creates a new RunIntake. */
-  public RunIntake(DoubleSupplier joystick, IntakeSubsystem intakeSubsystem) {
+  public RunIntake(DoubleSupplier joystick, DoubleSupplier feeder, IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
+    this.shooterSubsystem = shooterSubsystem;
+    this.feederSpeed = feeder;
+    
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void init() {
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intakeSubsystem.stateMachine(speed.getAsDouble());
+    double velocity = speed.getAsDouble();
+    intakeSubsystem.stateMachine(!shooterSubsystem.isBeamBroken() ? velocity : 0.0);
+    if (velocity != 0) {
+      shooterSubsystem.setFeederSpeed(!shooterSubsystem.isBeamBroken() ? Math.signum(velocity) * feederSpeed.getAsDouble() : 0.0);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void stop(boolean interrupted) {
     intakeSubsystem.stateMachine(0);
   }
 

@@ -46,11 +46,13 @@ public class IntakeNote extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    intakeSubsystem.setReference(0, 0);
+    shooterSubsystem.setFeederReference(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return shooterSubsystem.getBeambreak();
+    return shooterSubsystem.isBeamBroken();
   }
 }
