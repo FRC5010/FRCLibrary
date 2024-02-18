@@ -8,6 +8,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.IntakeSubsystem;
 import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.ShooterSubsystem;
@@ -16,17 +17,20 @@ public class IntakeNote extends Command {
   private PivotSubsystem pivotSubsystem;
   private IntakeSubsystem intakeSubsystem;
   private ShooterSubsystem shooterSubsystem;
+  private FeederSubsystem feederSubsystem;
   private DoubleSupplier intakeSpeedSupplier;
   private DoubleSupplier feederSpeedSupplier;
+
   /** Creates a new IntakeNote. */
-  public IntakeNote(PivotSubsystem pivot, IntakeSubsystem intake, ShooterSubsystem shooter, DoubleSupplier intakeSpeed, DoubleSupplier feederSpeed) {
+  public IntakeNote(PivotSubsystem pivot, FeederSubsystem feeder, IntakeSubsystem intake, ShooterSubsystem shooter, DoubleSupplier intakeSpeed, DoubleSupplier feederSpeed) {
     pivotSubsystem = pivot;
     intakeSubsystem = intake;
     shooterSubsystem = shooter;
     intakeSpeedSupplier = intakeSpeed;
     feederSpeedSupplier = feederSpeed;
+    feederSubsystem = feeder;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(pivot, intake);
+    addRequirements(pivot, intake, feeder);
   }
 
   // Called when the command is initially scheduled.
@@ -40,14 +44,14 @@ public class IntakeNote extends Command {
   public void execute() {
     pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
     intakeSubsystem.setReference(intakeSpeedSupplier.getAsDouble(), intakeSpeedSupplier.getAsDouble());
-    shooterSubsystem.setFeederReference(feederSpeedSupplier.getAsDouble());
+    feederSubsystem.setFeederReference(feederSpeedSupplier.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     intakeSubsystem.setReference(0, 0);
-    shooterSubsystem.setFeederReference(0);
+    feederSubsystem.setFeederReference(0);
   }
 
   // Returns true when the command should end.

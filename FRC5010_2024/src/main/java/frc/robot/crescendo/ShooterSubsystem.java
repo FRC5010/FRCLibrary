@@ -33,18 +33,17 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   private DigitalInput beambreak;
 
-  private MechanismRoot2d shooterSimRoot;
+
   private MechanismLigament2d topMotorSim;
   private MechanismLigament2d bottomMotorSim;
-  private MechanismLigament2d feederMotorSim;
+
 
   private SimulatedEncoder topSimEncoder = new SimulatedEncoder(18, 19);
   private SimulatedEncoder bottomSimEncoder = new SimulatedEncoder(20, 21);
-  private SimulatedEncoder feederSimEncoder = new SimulatedEncoder(22, 23);
+
 
   private GenericEncoder topEncoder;
   private GenericEncoder bottomEncoder;
-  private GenericEncoder feederEncoder;
 
   private InterpolatingDoubleTreeMap interpolationTree;
 
@@ -54,22 +53,18 @@ public class ShooterSubsystem extends GenericSubsystem {
   private double topShooterPrevError = 0.0;
   private double bottomShooterPrevError = 0.0;
 
-  private double feederReference = 0.0;
-  private double feederPrevTime = 0.0;
-  private double feederPrevError = 0.0;
+
  
 
   private PIDController5010 topPID;
   private PIDController5010 bottomPID;
-  private PIDController5010 feederPID;
+
 
   private MotorController5010 topMotor;
   private MotorController5010 botMotor;
   private SimpleMotorFeedforward topFeedFwd;
   private SimpleMotorFeedforward bottomFeedFwd;
 
-  private MotorController5010 feederMotor;
-  private SimpleMotorFeedforward feederFeedFwd;
 
   private static enum ControlState {
     Joystick,
@@ -77,11 +72,10 @@ public class ShooterSubsystem extends GenericSubsystem {
   }
 
   private ControlState shooterState = ControlState.Joystick;
-  private ControlState feederState = ControlState.Joystick;
 
 
-  private final String FEEDER_CONVERSION_FACTOR = "Feeder Conversion Factor";
-  private final double FEEDER_CONVERSION_DEFAULT = 1.0;
+
+
   
   private final String SHOOTER_REFERENCE_TOP = "Top Shooter Reference";
   private final String SHOOTER_REFERENCE_BOTTOM = "Bottom Shooter Reference";
@@ -91,38 +85,39 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final String BEAM_BREAK_STATE = "Beam Break State";
 
   /** Creates a new Shooter. */
-  public ShooterSubsystem(Mechanism2d robotSim, MotorController5010 top, MotorController5010 feeder, MotorController5010 bottom) {
+  public ShooterSubsystem(Mechanism2d robotSim, MotorController5010 top, MotorController5010 bottom) {
     
     topPID = top.getPIDController5010();
     bottomPID = bottom.getPIDController5010();
-    feederPID = feeder.getPIDController5010();
+
 
     interpolationTree = new InterpolatingDoubleTreeMap();
 
-    values.declare(FEEDER_CONVERSION_FACTOR, FEEDER_CONVERSION_DEFAULT);
     values.declare(SHOOTER_REFERENCE_TOP, 0.0);
     values.declare(SHOOTER_REFERENCE_BOTTOM, 0.0);
-    values.declare(MICRO_ADJUST, 10.0);
+    values.declare(MICRO_ADJUST, 100.0);
     values.declare(BEAM_BREAK_STATE, false);
     
-    topFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
-    bottomFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
-    feederFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
+    topFeedFwd = new SimpleMotorFeedforward(0.24361, 0.0020052, 7.9531E-05);
+    bottomFeedFwd = new SimpleMotorFeedforward(0.18458, 0.0020311, 8.4766E-05);
+    
     topEncoder = top.getMotorEncoder();
     bottomEncoder = bottom.getMotorEncoder();
-    feederEncoder = feeder.getMotorEncoder();
 
-    topPID.setP(0);
-    topPID.setI(0);    
+    topEncoder.setVelocityConversion(60);
+    bottomEncoder.setVelocityConversion(60);
+
+    topPID.setP(0.0004543);
+    topPID.setI(0.0000001);    
+    topPID.setIZone(100);
     topPID.setD(0);
   
-    bottomPID.setP(0);
-    bottomPID.setI(0);    
+    bottomPID.setP(0.00049915);
+    bottomPID.setI(0.0000001);  
+    bottomPID.setIZone(100);  
     bottomPID.setD(0);
 
-    feederPID.setP(0);
-    feederPID.setI(0);    
-    feederPID.setD(0);
+
 
     beambreak = new DigitalInput(1);
     
@@ -131,11 +126,9 @@ public class ShooterSubsystem extends GenericSubsystem {
     .append(new MechanismLigament2d("Top Motor", 0.1, 180, 5, new Color8Bit(Color.kLimeGreen)));
     this.bottomMotorSim = robotSim.getRoot("Shooter Bottom", 0.80, 0.30)
     .append(new MechanismLigament2d("Bottom Motor", 0.1, 180, 5, new Color8Bit(Color.kSpringGreen)));
-    this.feederMotorSim = robotSim.getRoot("Feeder Motor", 0.40, 0.30)
-      .append(new MechanismLigament2d("Feeder Motor", 0.1, 180, 5, new Color8Bit(Color.kMagenta)));
+    
     this.topMotor = top;
     this.botMotor = bottom;
-    this.feederMotor = feeder;
 
     SmartDashboard.putData(this);
   }
@@ -146,9 +139,6 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   public double getBottomFeedFwdVoltage(double velocity) {
     return bottomFeedFwd.calculate(velocity);
-  }
-  public double getFeederFeedFwdVoltage(double velocity) {
-    return feederFeedFwd.calculate(velocity);
   }
 
   public void setInterpolatedShotSpeed(double distance) {
@@ -161,16 +151,14 @@ public class ShooterSubsystem extends GenericSubsystem {
 
 
   public Command getBottomSysIdRoutineCommand() {
-    return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(botMotor, botMotor.getMotorEncoder(), "Bottom Motor", this), 5, 3, 3);
+    return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(botMotor, bottomEncoder, "Bottom Motor", this), 5, 3, 3);
   }
 
   public Command getTopSysIdRoutineCommand() {
-    return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(topMotor, topMotor.getMotorEncoder(), "Top Motor", this), 5, 3, 3);
+    return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(topMotor, topEncoder, "Top Motor", this), 5, 3, 3);
   }
 
-  public Command getFeederSysIdRoutineCommand() {
-    return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(feederMotor, feederMotor.getMotorEncoder(), "Top Motor", this), 5, 3, 3);
-  }
+
 
   public boolean isBeamBroken() {
     return !beambreak.get(); 
@@ -206,32 +194,7 @@ public class ShooterSubsystem extends GenericSubsystem {
     }
   }
 
-  public void feederStateMachine(double feeder) {
-    switch (feederState) {
-      case Joystick:
-
-        if (feeder == 0) {
-          feederState = ControlState.Velocity;
-         
-          setFeederReference(0.0);
-          runToReferenceFeeder();
-
-        } else {
-          setFeederSpeed(feeder);
-        }
-        break;
-    
-      case Velocity:
-
-        if (feeder != 0) {
-          feederState = ControlState.Joystick;
-          setFeederSpeed(feeder);
-        } else {
-          runToReferenceFeeder();
-        }
-        break;
-    }
-  }
+  
 
   public void setShooterSpeed(double top, double bottom) {
     topMotor.set(top);
@@ -239,15 +202,11 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   }
 
-  public void setFeederSpeed(double speed) {
-    feederMotor.set(speed);
-    
-  }
+
 
   public void stopMotors() {
     topMotor.set(0);
     botMotor.set(0);
-    feederMotor.set(0);
     topMotorSim.setAngle(0);
     bottomMotorSim.setAngle(0);
   }
@@ -274,8 +233,8 @@ public class ShooterSubsystem extends GenericSubsystem {
       topMotor.set(topFeedForward/ RobotController.getBatteryVoltage() + topVoltage);
       botMotor.set(bottomFeedForward/ RobotController.getBatteryVoltage() + bottomVoltage);
     } else {
-      topPID.setReference(getTopReference(), PIDControlType.VELOCITY, topFeedForward);
-      bottomPID.setReference(getTopReference(), PIDControlType.VELOCITY, bottomFeedForward);
+      topPID.setReference(getTopReference()/60.0, PIDControlType.VELOCITY, topFeedForward);
+      bottomPID.setReference(getBottomReference()/60.0, PIDControlType.VELOCITY, bottomFeedForward);
     }
 
 
@@ -285,30 +244,7 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   }
 
-  public void runToReferenceFeeder() {
-    double currentError = getFeederReference() - getFeederVelocity();
 
-    double currentTime = RobotController.getFPGATime() / 1E6;
-    double errorRate = (currentError - topShooterPrevError) / (currentTime - feederPrevTime);
-
-
-    double voltage = currentError * feederPID.getP() + (errorRate * feederPID.getD());
-
-    double feedforward = getFeederFeedFwdVoltage(voltage);
-
-    
-    if (!Robot.isReal()) {
-
-      feederMotor.set(feedforward/ RobotController.getBatteryVoltage() + feedforward);
-    } else {
-      feederPID.setReference(getFeederReference(), PIDControlType.VELOCITY, feedforward);
-    }
-
-
-    feederPrevTime = currentTime;
-    feederPrevError = currentError;
-
-  }
 
   public void setShooterReference(double top, double bottom) {
     values.set(SHOOTER_REFERENCE_TOP, top);
@@ -317,9 +253,7 @@ public class ShooterSubsystem extends GenericSubsystem {
  
   }
 
-  public void setFeederReference(double speed) {
-    feederReference = speed;
-  }
+  
 
   public Double getTopReference() {
     return values.getDouble(SHOOTER_REFERENCE_TOP);
@@ -329,9 +263,7 @@ public class ShooterSubsystem extends GenericSubsystem {
     return values.getDouble(SHOOTER_REFERENCE_BOTTOM);
   }
 
-  public double getFeederReference() {
-    return feederReference;
-  }
+
 
   public Command adjustShooterReferenceUp() {
     return Commands.runOnce(() -> setShooterReference(getTopReference()+values.getDouble(MICRO_ADJUST), getBottomReference()+values.getDouble(MICRO_ADJUST)), this);
@@ -340,12 +272,7 @@ public class ShooterSubsystem extends GenericSubsystem {
     return Commands.runOnce(() -> setShooterReference(getTopReference()-values.getDouble(MICRO_ADJUST), getBottomReference()-values.getDouble(MICRO_ADJUST)), this);
   }
 
-  public Command adjustFeederReferenceUp() {
-    return Commands.runOnce(() -> setFeederReference(getFeederReference()+values.getDouble(MICRO_ADJUST)), this);
-  }
-  public Command adjustFeederReferenceDown() {
-    return Commands.runOnce(() -> setFeederReference(getFeederReference()-values.getDouble(MICRO_ADJUST)), this);
-  }
+
 
 
   public double getTopVelocity() {
@@ -354,18 +281,17 @@ public class ShooterSubsystem extends GenericSubsystem {
   public double getBottomVelocity() {
     return Robot.isReal() ? bottomEncoder.getVelocity() : bottomSimEncoder.getVelocity();
   }
-  public double getFeederVelocity() {
-    return Robot.isReal() ? feederEncoder.getVelocity() : feederSimEncoder.getVelocity();
-  }
+
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     topMotorSim.setAngle(topMotor.get() * 180 - 90);
     bottomMotorSim.setAngle(botMotor.get() * 180 - 90);
-    feederMotorSim.setAngle(feederMotor.get() * 180 - 90);
     values.set(BEAM_BREAK_STATE, isBeamBroken());
     SmartDashboard.putBoolean("Beam Break State", isBeamBroken());
+    SmartDashboard.putNumber("Shooter Top Velocity", topEncoder.getVelocity());
+    SmartDashboard.putNumber("Shooter Bottom Velocity", bottomEncoder.getVelocity());
   }
 
   @Override

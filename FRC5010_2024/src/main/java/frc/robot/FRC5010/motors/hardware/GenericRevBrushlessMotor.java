@@ -76,6 +76,8 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
         return new RevEncoder(super.getEncoder());
     }
 
+
+
     @Override
     public GenericEncoder getMotorEncoder(EncoderMeasurementType sensorType, int countsPerRev) {
         return new RevEncoder(super.getEncoder());

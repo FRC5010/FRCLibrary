@@ -11,16 +11,13 @@ import frc.robot.chargedup.IntakeSubsystem;
 public class LedDefaultCommand extends Command {
   /** Creates a new LedDefaultCommand. */
   LedSubsystem ledSubsystem;
-  IntakeSubsystem intakeSubsystem;
   private int currDelay = 200;
   private boolean lastState;
 
   public LedDefaultCommand(LedSubsystem ledSubsystem, IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.ledSubsystem = ledSubsystem;
-    this.intakeSubsystem = intakeSubsystem;
-
-    lastState = !intakeSubsystem.isIntakeCone();
+    lastState = false;
     addRequirements(ledSubsystem);
 
   }

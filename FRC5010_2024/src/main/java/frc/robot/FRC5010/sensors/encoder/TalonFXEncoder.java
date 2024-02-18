@@ -60,11 +60,13 @@ public class TalonFXEncoder implements GenericEncoder {
     @Override
     public void setPositionConversion(double conversion) {
         positionConversion = conversion;
+        velocityConversion = conversion*60;
     }
 
     @Override
     public void setVelocityConversion(double conversion) {
         velocityConversion = conversion;
+        positionConversion = conversion/60.0;
     }
 
     @Override

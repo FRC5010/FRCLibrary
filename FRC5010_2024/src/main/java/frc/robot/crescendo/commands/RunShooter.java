@@ -8,19 +8,22 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.ShooterSubsystem;
 
 public class RunShooter extends Command {
   private DoubleSupplier shooterSpeed;
   private DoubleSupplier feederSpeed;
   private ShooterSubsystem shooter;
+  private FeederSubsystem feeder;
   /** Creates a new Intake. */
-  public RunShooter(DoubleSupplier shooterSpeed, DoubleSupplier feederSpeed, ShooterSubsystem shooter) {
+  public RunShooter(DoubleSupplier shooterSpeed, DoubleSupplier feederSpeed, ShooterSubsystem shooter, FeederSubsystem feeder) {
     this.shooterSpeed = shooterSpeed;
     this.feederSpeed = feederSpeed;
     this.shooter = shooter;
+    this.feeder = feeder;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooter);
+    addRequirements(shooter, feeder);
   }
 
   // Called when the command is initially scheduled.
@@ -31,7 +34,7 @@ public class RunShooter extends Command {
   @Override
   public void execute() {
     shooter.shooterStateMachine(shooterSpeed.getAsDouble());
-    shooter.feederStateMachine(feederSpeed.getAsDouble());
+    feeder.feederStateMachine(feederSpeed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
