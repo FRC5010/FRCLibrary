@@ -31,8 +31,8 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
     protected int controllerCurrentLimit;
     
     public GenericTalonFXMotor(int port) {
-    
         super(port);
+        factoryDefault();
     }
 
     @Override

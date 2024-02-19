@@ -10,6 +10,7 @@ package frc.robot.FRC5010.Vision;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,19 +20,20 @@ import edu.wpi.first.math.geometry.Rotation3d;
  * Add your docs here.
  */
 public class VisionValues {
-
-    // the essential variables, stuff they already give me
-    // TODO: If you ever get rid of a networkentry variable in opensight, update
-    // vision classes
-
     protected Boolean valid = false;
     protected Map<String, Double> latencies = new HashMap<>();
     protected Double angleX = 0.0;
+    protected LinearFilter xFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+
     protected Double angleY = 0.0;
+    protected LinearFilter yFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
     // distance
-    protected Double distance = 0.0;
+    protected Map<String, Double> poseDistances = new HashMap<>();
+    protected Double distance = -1.0;
+    protected LinearFilter dFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
     protected Double area = 0.0;
+
     protected Map<String, Pose3d> robotToTarget = new HashMap<>();
     protected Map<String, Pose2d> robotPoses = new HashMap<>();
 
@@ -42,17 +44,23 @@ public class VisionValues {
     }
 
     public void averageValues(VisionValues rawValues, int maxCount) {
-        count++;
-        count = Math.min(count, maxCount);
-        valid = count >= maxCount;
-        angleX = ((count - 1) * angleX + rawValues.getAngleX()) / count;
-        angleY = ((count - 1) * angleY + rawValues.getAngleY()) / count;
-        distance = ((count - 1) * distance + rawValues.getDistance()) / count;
+        // count++;
+        // count = Math.min(count, maxCount);
+        // valid = count >= maxCount;
+        // angleX = ((count - 1) * angleX + ) / count;
+        // angleY = ((count - 1) * angleY + rawValues.getAngleY()) / count;
+        // distance = ((count - 1) * distance + rawValues.getDistance()) / count;
+        if (-1 != rawValues.getDistance()) {
+            angleX = xFilter.calculate(rawValues.getAngleX());
+            angleY = yFilter.calculate(rawValues.getAngleY());
+            distance = dFilter.calculate(rawValues.getDistance());
+        }
 
         latencies = rawValues.getLatencies();
         fiducialIds = rawValues.getFiducialIds();
         robotPoses = rawValues.getRobotPoses();
         robotToTarget = rawValues.getTargetVectors();
+        poseDistances = rawValues.getPoseDistances();
     }
 
     public void storeValues(VisionValues rawValues, int maxCount) {
@@ -66,6 +74,7 @@ public class VisionValues {
         fiducialIds = rawValues.getFiducialIds();
         robotPoses = rawValues.getRobotPoses();
         robotToTarget = rawValues.getTargetVectors();
+        poseDistances = rawValues.getPoseDistances();
     }
 
     public void deprecateValues() {
@@ -87,6 +96,7 @@ public class VisionValues {
         fiducialIds.clear();
         robotPoses.clear();
         robotToTarget.clear();
+        poseDistances.clear();
     }
 
     public Boolean getValid() {
@@ -131,12 +141,16 @@ public class VisionValues {
     }
 
     public VisionValues setPitch(Double pitch) {
-        this.angleY = pitch;
+        if (-1 != distance) {
+            this.angleY = pitch;
+        }
         return this;
     }
 
     public VisionValues setYaw(Double yaw) {
-        this.angleX = yaw;
+        if (-1 != distance) {
+            this.angleX = yaw;
+        }
         return this;
     }
 
@@ -238,4 +252,24 @@ public class VisionValues {
         return robotPoses;
     }
 
+    public VisionValues addPoseDistances(Map<String, Double> pDistances) {
+        this.poseDistances.putAll(pDistances);
+        return this;
+    }
+
+    public VisionValues addPoseDistance(String camera, Double distance) {
+        poseDistances.put(camera, distance);
+        return this;
+    }
+
+    public Map<String, Double> getPoseDistances() {
+        return poseDistances;
+    }
+
+    public Double getPoseDistance(String camera) {
+        if (poseDistances.containsKey(camera)) {
+            return poseDistances.get(camera);
+        }
+        return 0.0;
+    }
 }

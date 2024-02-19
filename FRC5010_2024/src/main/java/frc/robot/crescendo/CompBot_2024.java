@@ -123,30 +123,15 @@ public class CompBot_2024 extends GenericMechanism {
                 shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, bottomShooterMotor);
                 feederSubsystem = new FeederSubsystem(visual, feederMotor);
                 intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);
-
-                visionSystem.addPhotonCamera("Left Camera", 2,
-                                new Transform3d(
-                                                new Translation3d(Units.inchesToMeters(-10.25),
-                                                                Units.inchesToMeters(7.25), Units.inchesToMeters(9)),
-                                                new Rotation3d(0, Units.degreesToRadians(25), 0).rotateBy(
-                                                                new Rotation3d(0, 0, Units.degreesToRadians(45)))),
-                                PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
-                visionSystem.addPhotonCamera("Right Camera", 3,
-                                new Transform3d(
-                                                new Translation3d(Units.inchesToMeters(-10.25),
-                                                                Units.inchesToMeters(-7.25), Units.inchesToMeters(9)),
-                                                new Rotation3d(0, Units.degreesToRadians(25), 0).rotateBy(
-                                                                new Rotation3d(0, 0, Units.degreesToRadians(-45)))),
-                                PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
-
-                                SmartDashboard.putData(this);
+                initRealOrSim();
         }
 
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
 
                 drive.configureButtonBindings(driver, operator);
-                operator.createXButton().onTrue(Commands.runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.PODIUM_SHOT), pivotSubsystem));
+                operator.createXButton().onTrue(Commands.runOnce(
+                                () -> pivotSubsystem.setReference(pivotSubsystem.PODIUM_SHOT), pivotSubsystem));
                 operator.createBButton().onTrue(Commands
                                 .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem));
                 operator.createAButton().onTrue(Commands
@@ -244,7 +229,28 @@ public class CompBot_2024 extends GenericMechanism {
         @Override
         protected void initRealOrSim() {
                 if (RobotBase.isReal()) {
-
+                        visionSystem.addPhotonCamera("Left Camera", 2,
+                                        new Transform3d(
+                                                        new Translation3d(Units.inchesToMeters(-10.25),
+                                                                        Units.inchesToMeters(7.25),
+                                                                        Units.inchesToMeters(9)),
+                                                        new Rotation3d(0, Units.degreesToRadians(25), 0).rotateBy(
+                                                                        new Rotation3d(0, 0,
+                                                                                        Units.degreesToRadians(45)))),
+                                        PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
+                        visionSystem.addPhotonCamera("Right Camera", 3,
+                                        new Transform3d(
+                                                        new Translation3d(Units.inchesToMeters(-10.25),
+                                                                        Units.inchesToMeters(-7.25),
+                                                                        Units.inchesToMeters(9)),
+                                                        new Rotation3d(0, Units.degreesToRadians(25), 0).rotateBy(
+                                                                        new Rotation3d(0, 0,
+                                                                                        Units.degreesToRadians(-45)))),
+                                        PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
+                        // visionSystem.addLimeLightTargetCam("orange", 0.3556, -10, 0, 1,
+                        //                 new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(7.25),
+                        //                                 Units.inchesToMeters(12.5),
+                        //                                 new Rotation3d(0, 0, Units.degreesToRadians(180))));
                 }
         }
 

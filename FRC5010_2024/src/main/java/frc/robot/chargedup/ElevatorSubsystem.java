@@ -134,7 +134,6 @@ public class ElevatorSubsystem extends GenericSubsystem {
 
     // SmartDashboard.putNumber("Extend kP", extendPID.getkP());
     SmartDashboard.putNumber("Extend kG", extendConstants.getkF());
-    SmartDashboard.putData(this);
   }
 
   public void toggleOverride() {

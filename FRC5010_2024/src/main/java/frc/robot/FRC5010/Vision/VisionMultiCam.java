@@ -50,7 +50,7 @@ public class VisionMultiCam extends VisionSystem {
         updateValues = true;
     }
 
-    public void addLimeLightCameraAngle(String name, double cameraHeight, double cameraAngle, double targetHeight, int colIndex, Transform3d cameraTransform3d) {
+    public void addLimeLightTargetCam(String name, double cameraHeight, double cameraAngle, double targetHeight, int colIndex, Transform3d cameraTransform3d) {
         cameras.put(name, new VisionLimeLightLib(name, cameraHeight, cameraAngle, targetHeight, colIndex, fieldLayout, "Vision", cameraTransform3d));
         names.add(name);
         updateValues = true;
@@ -79,21 +79,23 @@ public class VisionMultiCam extends VisionSystem {
                 camResult.getLatencies(),
                 camResult.getFiducialIds(),
                 camResult.getTargetVectors(),
-                camResult.getRobotPoses());
+                camResult.getRobotPoses(),
+                camResult.getPoseDistances());
     }
 
     protected void updateBatchValues(
             Double angleXSup, Double angleYSup, Double distanceSup,
             Double areaSup, Boolean validSup, Map<String, Double> latencySup, Map<String, Integer> fiducialID,
             Map<String, Pose3d> cameraPoseSupplier,
-            Map<String, Pose2d> robotPoseSupplier) {
+            Map<String, Pose2d> robotPoseSupplier, Map<String, Double> poseDistanceSup) {
         boolean valid = validSup;
         if (valid) {
             rawValues
                     .setValid(rawValues.valid || valid)
+                    .setDistance(distanceSup)
                     .setYaw(angleXSup)
                     .setPitch(angleYSup)
-                    .setDistance(distanceSup)
+                    .addPoseDistances(poseDistanceSup)
                     .addLatencies(latencySup)
                     .addFiducialIds(fiducialID)
                     .addTargetVectors(cameraPoseSupplier)

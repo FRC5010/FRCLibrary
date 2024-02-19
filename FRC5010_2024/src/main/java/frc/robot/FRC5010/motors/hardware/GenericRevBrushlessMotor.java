@@ -4,13 +4,8 @@
 
 package frc.robot.FRC5010.motors.hardware;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import com.revrobotics.CANSparkMax;
 
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -28,9 +23,8 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
 
     public GenericRevBrushlessMotor(int port, int currentLimit) {
         super(port, MotorType.kBrushless);
-        super.restoreFactoryDefaults();
-        super.setSmartCurrentLimit(currentLimit);
-        this.currentLimit = currentLimit;
+        factoryDefault();
+        setCurrentLimit(currentLimit);
     }
 
     @Override

@@ -27,6 +27,7 @@ import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.PersistedEnums;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
+import frc.robot.FRC5010.constants.WpiNetworkTableValuesHelper;
 import frc.robot.FRC5010.robots.BabySwerve;
 import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
 import frc.robot.FRC5010.robots.DefaultRobot;
@@ -89,7 +90,7 @@ public class RobotContainer extends GenericMechanism {
     // Configure the button bindings
     configureButtonBindings(driver, operator);
     initAutoCommands();
-    SmartDashboard.putData(logPrefix, this);
+    WpiNetworkTableValuesHelper.loadRegisteredToNetworkTables();
   }
 
   public static String WHO_AM_I = "WhoAmI";

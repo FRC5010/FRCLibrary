@@ -143,13 +143,14 @@ public abstract class VisionSystem extends SubsystemBase {
       // calculating distance
       double angleX = angleXSup.getAsDouble();
       double angleY = angleYSup.getAsDouble();
-      double distance = 0;
+      double distance = -1;
+      double poseDistance = -1;
       if (null != cameraPoseSupplier.get() && null != robotPoseSupplier.get()) {
         Pose3d targetPose = cameraPoseSupplier.get();
         Pose2d robotPose = robotPoseSupplier.get();
         Translation3d targetTrans = new Translation3d(targetPose.getX(), targetPose.getY(), targetPose.getZ());
         Translation2d robotTrans = new Translation2d(robotPose.getX(), robotPose.getY());
-        distance = robotTrans.getDistance(targetTrans.toTranslation2d());
+        poseDistance = robotTrans.getDistance(targetTrans.toTranslation2d());
       } else if (angleX != 0 || angleY != 0) {
         distance = (targetHeight - camHeight)
             / (Math.tan(Math.toRadians(angleY + camAngle)) * Math.cos(Math.toRadians(angleX)));
@@ -168,6 +169,7 @@ public abstract class VisionSystem extends SubsystemBase {
           .setPitch(angleY)
           .setArea(areaSup.getAsDouble())
           .setDistance(distance)
+          .addPoseDistance(name,poseDistance)
           .addFiducialId(name, fidSup.getAsInt())
           .addTargetVector(name, cameraPoseSupplier.get())
           .addRobotPose(name, robotPoseSupplier.get());

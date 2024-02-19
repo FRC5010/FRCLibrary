@@ -12,7 +12,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.motors.PIDController5010;
-import frc.robot.FRC5010.motors.PIDController5010.PIDControlType;
 import frc.robot.FRC5010.motors.hardware.GenericTalonFXMotor;
 
 /** Add your docs here. */

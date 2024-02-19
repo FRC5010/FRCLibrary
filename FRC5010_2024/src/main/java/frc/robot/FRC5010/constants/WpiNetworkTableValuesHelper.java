@@ -4,20 +4,36 @@
 
 package frc.robot.FRC5010.constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     protected Map<String, Pair<String, Object>> sendables = new HashMap<>();
     protected Map<String, Pair<String, Object>> persisted = new HashMap<>();
+    protected static List<Sendable> registered = new ArrayList<>();
 
+    /**
+     * Register a Wpi Helper Interface class
+     * @param wpiHelper
+     */
+    public static void register(Sendable wpiHelper) {
+        registered.add(wpiHelper);
+    }
+
+    public static void loadRegisteredToNetworkTables() {
+        registered.stream().forEach(it -> SmartDashboard.putData(it));
+    }
     /**
      * Gets the value of a WPI NT value of the specified type
      * 

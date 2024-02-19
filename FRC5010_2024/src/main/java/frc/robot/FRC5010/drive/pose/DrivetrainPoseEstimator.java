@@ -143,13 +143,16 @@ public class DrivetrainPoseEstimator {
   public void update() {
     poseTracker.updateLocalMeasurements();
     Map<String, Pose2d> poses = vision.getRawValues().getRobotPoses();
+    Map<String, Double> poseDistances = vision.getRawValues().getPoseDistances();
     for (String camera : poses.keySet()) {
       Pose2d robotPose = poses.get(camera);
+      Double poseDistance = poseDistances.get(camera);
       if (null != robotPose) {
         double imageCaptureTime = vision.getRawValues().getLatency(camera);
 
         if (vision.getRawValues().getFiducialIds().get(camera) > 0 && (RobotState.isDisabled()
-            || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation()))) {
+            || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
+            || 2.0 > poseDistance)) {
           poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
         }
       }

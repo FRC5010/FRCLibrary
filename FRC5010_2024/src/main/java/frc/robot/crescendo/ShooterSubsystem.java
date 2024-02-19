@@ -129,8 +129,6 @@ public class ShooterSubsystem extends GenericSubsystem {
     
     this.topMotor = top;
     this.botMotor = bottom;
-
-    SmartDashboard.putData(this);
   }
 
   public double getTopFeedFwdVoltage(double velocity) {

@@ -64,7 +64,7 @@ public class CubeCruzer extends GenericMechanism {
 
                 // Will need to be changed for 2023 field
                 VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
-                multiVision.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1,
+                multiVision.addLimeLightTargetCam("orange", 0.3556, -10, 0, 1,
                                 new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(7.25),
                                                 Units.inchesToMeters(12.5),
                                                 new Rotation3d(0, 0, Units.degreesToRadians(180))));

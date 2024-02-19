@@ -15,6 +15,7 @@ public class GenericSubsystem extends SubsystemBase implements WpiHelperInterfac
 
   /** Creates a new LoggedSubsystem. */
   public GenericSubsystem() {
+    WpiNetworkTableValuesHelper.register(this);
   }
 
   public Mechanism2d getMechSimulation() {

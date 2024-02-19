@@ -47,11 +47,6 @@
     }
   },
   "NetworkTables": {
-    "persistent": {
-      "Preferences": {
-        "open": true
-      }
-    },
     "transitory": {
       "Shuffleboard": {
         "Robot": {

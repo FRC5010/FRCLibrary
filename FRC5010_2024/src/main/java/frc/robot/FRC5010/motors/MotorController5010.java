@@ -4,8 +4,6 @@
 
 package frc.robot.FRC5010.motors;
 
-import com.revrobotics.SparkMaxRelativeEncoder.Type;
-
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;

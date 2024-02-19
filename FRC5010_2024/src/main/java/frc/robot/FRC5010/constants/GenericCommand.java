@@ -15,6 +15,7 @@ public class GenericCommand extends Command implements WpiHelperInterface {
   public GenericCommand(String logPrefix) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.logPrefix = logPrefix;
+    WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericCommand() {
