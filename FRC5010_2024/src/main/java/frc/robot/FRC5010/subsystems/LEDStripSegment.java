@@ -8,10 +8,15 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /** Add your docs here. */
 public class LEDStripSegment {
-
+    public static enum LEDState {
+        NONE, OFF, ON, BLINK, ORBIT, LARSON, FLAME;
+      }
+    
     private int start, end;
-    private String currentLedAction = "OFF";
+    private LEDState currentLedAction = LEDState.OFF;
     private Color color;
+    private int chasePosition = 0;
+    private int chaseDirection = 1;
 
     public LEDStripSegment(int start, int end, Color color) {
         this.start = start;
@@ -19,20 +24,29 @@ public class LEDStripSegment {
         this.color = color;
     }
 
+    public int start() {
+        return start;
+    }
+
+    public int end() {
+        return end;
+    }
+
+    public void setState(LEDState state) {
+        currentLedAction = state;
+    }
+
     // solid color on
     public Color8Bit on() {
-        currentLedAction = "ON";
         return color.getColor8Bit();
     }
 
     public Color8Bit off() {
-        currentLedAction = "OFF";
         return Color.OFF.getColor8Bit();
     }
 
     // blink based on time
     public Color8Bit blink(long onTime, long offTime) {
-        currentLedAction = "BLINK";
         if (System.currentTimeMillis() % (onTime + offTime) <= onTime) {
             return color.getColor8Bit();
         }
@@ -40,7 +54,6 @@ public class LEDStripSegment {
     }
 
     public Color8Bit flame(int scalar, int currLedPos) {
-        currentLedAction = "FLAME";
         if (currLedPos < scalar) {
             return color.getColor8BitAlpha(50 + (Math.random() * 40));
         } else if (currLedPos < scalar * 1.3) {
@@ -51,15 +64,17 @@ public class LEDStripSegment {
         return color.getColor8BitAlpha(((Math.random() * 30) - 29) * 20);
     }
 
-    public void chase() {
-        currentLedAction = "CHASE";
+    public Color8Bit chase(int curLedPos) {
+        currentLedAction = LEDState.LARSON;
+        // TODO
+        return new Color8Bit();
     }
 
     public void setColor(Color color) {
         this.color = color;
     }
 
-    public String getCurrentAction() {
+    public LEDState getCurrentAction() {
         return currentLedAction;
     }
 }
