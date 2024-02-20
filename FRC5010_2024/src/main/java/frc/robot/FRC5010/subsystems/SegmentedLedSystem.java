@@ -5,12 +5,12 @@
 package frc.robot.FRC5010.subsystems;
 
 import java.util.Map;
+import java.util.function.Function;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.FRC5010.subsystems.LEDStripSegment.LEDState;
 
 public class SegmentedLedSystem extends SubsystemBase {
   /** Creates a new NewLedSubsystem. */
@@ -29,8 +29,11 @@ public class SegmentedLedSystem extends SubsystemBase {
 
     m_led.setLength(m_ledBuffer.getLength());
 
-    this.ledStripSegments.put("All", new LEDStripSegment(0, length, currColor));
-    ledStripSegments.get("All").setState(LEDState.NONE);
+    LEDStripSegment all = new LEDStripSegment(0, length, currColor);
+    this.ledStripSegments.put("All", all);
+    all.setActive(false);
+    all.setLedAction(all.on());
+    all.setColor(Color.ORANGE);
 
     for (int i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledOff.setRGB(i, 0, 0, 0);
@@ -42,34 +45,11 @@ public class SegmentedLedSystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Color8Bit color = new Color8Bit();
     for (String name : ledStripSegments.keySet()) {
       LEDStripSegment segment = ledStripSegments.get(name);
-      if (segment.getCurrentAction() != LEDState.NONE) {
+      if (segment.isActive()) {
         for (int i = segment.start(); i <= segment.end(); ++i) {
-          switch (segment.getCurrentAction()) {
-            case NONE:
-              break;
-            case OFF:
-              color = segment.off();
-              break;
-            case ON:
-              color = segment.on();
-              break;
-            case BLINK:
-              color = segment.blink(500, 500);
-              break;
-            case FLAME:
-              color = segment.flame(20, i);
-              break;
-            case LARSON:
-              color = segment.chase(i);
-              break;
-            case ORBIT:
-              color = segment.off();
-              break;
-          }
-          m_ledBuffer.setLED(i, color);
+          m_ledBuffer.setLED(i, segment.setLED.apply(i));
         }
       }
     }
@@ -80,12 +60,12 @@ public class SegmentedLedSystem extends SubsystemBase {
     ledStripSegments.put(name, new LEDStripSegment(0, 0, color));
   }
 
-  public void setLedSegment(String name, LEDState state) {
-    ledStripSegments.get(name).setState(state);
+  public void setLedSegment(String name, Function<Integer, Color8Bit> state) {
+    ledStripSegments.get(name).setLedAction(state);
   }
 
-  public void setWholeStripState(LEDState state) {
-    ledStripSegments.values().stream().forEach(it -> it.setState(LEDState.NONE));
-    ledStripSegments.get("All").setState(state);
+  public void setWholeStripState(Function<Integer, Color8Bit> state) {
+    ledStripSegments.values().stream().forEach(it -> it.setActive(false));
+    ledStripSegments.get("All").setLedAction(state);
   }
 }
