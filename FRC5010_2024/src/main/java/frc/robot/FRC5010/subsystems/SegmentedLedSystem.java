@@ -19,6 +19,7 @@ public class SegmentedLedSystem extends SubsystemBase {
   private AddressableLEDBuffer m_ledOff;
 
   private Color currColor = Color.OFF;
+  private final String ALL = "All";
 
   private Map<String, LEDStripSegment> ledStripSegments; // Might need to be implemented differently
 
@@ -30,10 +31,10 @@ public class SegmentedLedSystem extends SubsystemBase {
     m_led.setLength(m_ledBuffer.getLength());
 
     LEDStripSegment all = new LEDStripSegment(0, length, currColor);
-    this.ledStripSegments.put("All", all);
+    this.ledStripSegments.put(ALL, all);
     all.setActive(false);
     all.setLedAction(all.on());
-    all.setColor(Color.ORANGE);
+    all.setColor(currColor);
 
     for (int i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledOff.setRGB(i, 0, 0, 0);
@@ -48,8 +49,12 @@ public class SegmentedLedSystem extends SubsystemBase {
     for (String name : ledStripSegments.keySet()) {
       LEDStripSegment segment = ledStripSegments.get(name);
       if (segment.isActive()) {
-        for (int i = segment.start(); i <= segment.end(); ++i) {
-          m_ledBuffer.setLED(i, segment.setLED.apply(i));
+        if (null != segment.setLEDStrip) {
+          segment.setLEDStrip.accept(m_ledBuffer);
+        } else {
+          for (int i = segment.start(); i <= segment.end(); ++i) {
+            m_ledBuffer.setLED(i, segment.setLED.apply(i - segment.start()));
+          }
         }
       }
     }
@@ -60,12 +65,20 @@ public class SegmentedLedSystem extends SubsystemBase {
     ledStripSegments.put(name, new LEDStripSegment(0, 0, color));
   }
 
-  public void setLedSegment(String name, Function<Integer, Color8Bit> state) {
+  public void setLedSegmentAction(String name, Function<Integer, Color8Bit> state) {
     ledStripSegments.get(name).setLedAction(state);
+  }
+
+  public void setLedSegmentColor(String name, Color color) {
+    ledStripSegments.get(name).setColor(color);
+  }
+
+  public void setLedSegmentActive(String name, boolean active) {
+    ledStripSegments.get(name).setActive(active);
   }
 
   public void setWholeStripState(Function<Integer, Color8Bit> state) {
     ledStripSegments.values().stream().forEach(it -> it.setActive(false));
-    ledStripSegments.get("All").setLedAction(state);
+    ledStripSegments.get(ALL).setLedAction(state);
   }
 }
