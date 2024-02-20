@@ -5,6 +5,7 @@
 package frc.robot.crescendo;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -32,13 +33,28 @@ public class FeederSubsystem extends GenericSubsystem {
   private GenericEncoder encoder;
   private SimulatedEncoder feederSimEncoder = new SimulatedEncoder(22, 23);
   private SimpleMotorFeedforward feederFeedFwd;
+  private DigitalInput beambreak;
 
   private static enum ControlState {
     Joystick,
     Velocity
   }
 
+  /*
+   * Empty: No Note
+   * Holding: Note but not positioned for shooting
+   * Loaded: Positioned Well, Ready for Shooting
+   * Shooting: During shooting phase
+   */
+  public static enum NoteState {
+    Empty,
+    Holding,
+    Loaded,
+    Shooting,
+  } 
+
   private ControlState feederState = ControlState.Joystick;
+  private NoteState noteState = NoteState.Empty;
 
   private double feederReference = 0.0;
   private double feederPrevTime = 0.0;
@@ -47,6 +63,7 @@ public class FeederSubsystem extends GenericSubsystem {
   private double microAdjust = 10.0;
 
   private MechanismLigament2d feederMotorSim;
+  private final String BEAM_BREAK_STATE = "Beam Break State";
 
   /** Creates a new FeederSubsystem. */
   public FeederSubsystem(Mechanism2d robotSim, MotorController5010 feeder) {
@@ -54,7 +71,9 @@ public class FeederSubsystem extends GenericSubsystem {
     encoder = feeder.getMotorEncoder();
     pid = feeder.getPIDController5010();
     feederFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
+    beambreak = new DigitalInput(1);
 
+    values.declare(BEAM_BREAK_STATE, false);
 
     pid.setValues(new GenericPID(0,0, 0));
 
@@ -72,6 +91,25 @@ public class FeederSubsystem extends GenericSubsystem {
 
   public double getFeederReference() {
     return reference;
+  }
+
+  public Command loadNote() {
+    return Commands.runEnd(() -> setFeederSpeed(-0.1), () -> {
+      stop();
+      setNoteState(NoteState.Loaded);
+    }, this).until(() -> !isBeamBroken());
+  }
+
+  public Command shootNote() {
+    return Commands.runEnd(() -> {
+      if (noteState == NoteState.Holding && isBeamBroken()) {
+        noteState = NoteState.Shooting;
+      } else if (noteState == NoteState.Shooting && !isBeamBroken()) {
+        noteState = NoteState.Empty;
+      }
+    }, () -> {
+      stop();
+    }, this).beforeStarting(() -> setFeederSpeed(1.0), this).until(() ->getNoteState().equals(NoteState.Empty));
   }
 
   public double getFeederVelocity() {
@@ -105,6 +143,26 @@ public class FeederSubsystem extends GenericSubsystem {
     }
   }
 
+  public NoteState getNoteState() {
+    return noteState;
+  }
+
+  public void setNoteState(NoteState state) {
+    noteState = state;
+  }
+
+  public void emptied() {
+    setNoteState(NoteState.Empty);
+  }
+
+  public void holding() {
+    setNoteState(NoteState.Holding);
+  }
+
+  public void loaded() {
+    setNoteState(NoteState.Loaded);
+  }
+
   public void runToReferenceFeeder() {
     double currentError = getFeederReference() - getFeederVelocity();
 
@@ -128,6 +186,10 @@ public class FeederSubsystem extends GenericSubsystem {
     feederPrevTime = currentTime;
     feederPrevError = currentError;
 
+  }
+
+  public boolean isBeamBroken() {
+    return !beambreak.get();
   }
 
   public double getFeederFeedFwdVoltage(double velocity) {
@@ -154,5 +216,6 @@ public class FeederSubsystem extends GenericSubsystem {
   @Override
   public void periodic() {
     feederMotorSim.setAngle(feederMotor.get() * 180 - 90);
+    values.set(BEAM_BREAK_STATE, isBeamBroken());
   }
 }

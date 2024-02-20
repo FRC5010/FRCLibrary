@@ -36,6 +36,7 @@ import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.RunClimb;
+import frc.robot.crescendo.commands.RunFeeder;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
@@ -175,6 +176,13 @@ public class CompBot_2024 extends GenericMechanism {
                                 new RunShooter(() -> operator.getLeftTrigger() - operator.getRightTrigger(),
                                                 () -> operator.getLeftTrigger() - operator.getRightTrigger(),
                                                 shooterSubsystem, feederSubsystem));
+
+                operator.createRightBumper().whileTrue(
+                        Commands.sequence(
+                                new RunFeeder(feederSubsystem, () -> -0.1).until(() -> !feederSubsystem.isBeamBroken())
+
+                        )
+                );
                 // climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(),
                 // () -> operator.getRightYAxis(), climbSubsystem));
                 intakeSubsystem.setDefaultCommand(

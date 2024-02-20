@@ -43,10 +43,16 @@ public class RunIntake extends GenericCommand {
   @Override
   public void execute() {
     double velocity = speed.getAsDouble();
-    intakeSubsystem.stateMachine(!shooterSubsystem.isBeamBroken() ? velocity : 0.0);
+    intakeSubsystem.stateMachine(!feederSubsystem.isBeamBroken() ? velocity : 0.0);
     if (velocity != 0) {
       feederStopFlag = true;
-      feederSubsystem.setFeederSpeed(!shooterSubsystem.isBeamBroken() ? Math.signum(velocity) * feederSpeed.getAsDouble() : 0.0);
+      if (feederSubsystem.isBeamBroken()) {
+        feederSubsystem.setFeederSpeed(0.0);
+        feederSubsystem.setNoteState(FeederSubsystem.NoteState.Holding);
+      } else {
+        feederSubsystem.setFeederSpeed(Math.signum(velocity) * feederSpeed.getAsDouble());
+      }
+      
     } else if (feederStopFlag) {
       feederStopFlag = false;
       feederSubsystem.stop();

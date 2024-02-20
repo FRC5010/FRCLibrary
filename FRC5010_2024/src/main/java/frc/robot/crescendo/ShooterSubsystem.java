@@ -31,8 +31,6 @@ import swervelib.math.SwerveMath;
 
 public class ShooterSubsystem extends GenericSubsystem {
 
-  private DigitalInput beambreak;
-
 
   private MechanismLigament2d topMotorSim;
   private MechanismLigament2d bottomMotorSim;
@@ -82,7 +80,7 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   private final String MICRO_ADJUST = "Micro Adjust";
 
-  private final String BEAM_BREAK_STATE = "Beam Break State";
+  
 
   /** Creates a new Shooter. */
   public ShooterSubsystem(Mechanism2d robotSim, MotorController5010 top, MotorController5010 bottom) {
@@ -96,7 +94,7 @@ public class ShooterSubsystem extends GenericSubsystem {
     values.declare(SHOOTER_REFERENCE_TOP, 0.0);
     values.declare(SHOOTER_REFERENCE_BOTTOM, 0.0);
     values.declare(MICRO_ADJUST, 100.0);
-    values.declare(BEAM_BREAK_STATE, false);
+
     
     topFeedFwd = new SimpleMotorFeedforward(0.24361, 0.0020052, 7.9531E-05);
     bottomFeedFwd = new SimpleMotorFeedforward(0.18458, 0.0020311, 8.4766E-05);
@@ -119,7 +117,7 @@ public class ShooterSubsystem extends GenericSubsystem {
 
 
 
-    beambreak = new DigitalInput(1);
+
     
 
     this.topMotorSim = robotSim.getRoot("Shooter Top", 0.80, 0.50)
@@ -154,12 +152,6 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   public Command getTopSysIdRoutineCommand() {
     return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(topMotor, topEncoder, "Top Motor", this), 5, 3, 3);
-  }
-
-
-
-  public boolean isBeamBroken() {
-    return !beambreak.get(); 
   }
 
 
@@ -286,8 +278,7 @@ public class ShooterSubsystem extends GenericSubsystem {
     // This method will be called once per scheduler run
     topMotorSim.setAngle(topMotor.get() * 180 - 90);
     bottomMotorSim.setAngle(botMotor.get() * 180 - 90);
-    values.set(BEAM_BREAK_STATE, isBeamBroken());
-    SmartDashboard.putBoolean("Beam Break State", isBeamBroken());
+  
     SmartDashboard.putNumber("Shooter Top Velocity", topEncoder.getVelocity());
     SmartDashboard.putNumber("Shooter Bottom Velocity", bottomEncoder.getVelocity());
   }
