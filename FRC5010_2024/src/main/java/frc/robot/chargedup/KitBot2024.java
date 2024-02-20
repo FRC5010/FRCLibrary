@@ -4,8 +4,6 @@
 
 package frc.robot.chargedup;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -14,24 +12,23 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.commands.DriveToPosition;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.constants.TranslationConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
+import frc.robot.FRC5010.motors.MotorController5010;
+import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.sensors.ButtonBoard;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.chargedup.commands.AutoBalance;
+import frc.robot.chargedup.commands.RunShooter;
 
 /** Add your docs here. */
-public class CubeCruzer extends GenericMechanism {
+public class KitBot2024 extends GenericMechanism {
         private SwerveConstants swerveConstants;
         private Drive drive;
         private DriverDisplaySubsystem driverDiplay;
@@ -39,8 +36,11 @@ public class CubeCruzer extends GenericMechanism {
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
         private VisionSystem visionSystem;
+        private ShooterSubsystem shooter;
+        private MotorController5010 topShooterMotor;
+        private MotorController5010 bottomShooterMotor;
 
-        public CubeCruzer(Mechanism2d visual, ShuffleboardTab displayTab) {
+        public KitBot2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
@@ -64,11 +64,6 @@ public class CubeCruzer extends GenericMechanism {
 
                 // Will need to be changed for 2023 field
                 VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
-                multiVision.addLimeLightTargetCam("orange", 0.3556, -10, 0, 1,
-                                new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(7.25),
-                                                Units.inchesToMeters(12.5),
-                                                new Rotation3d(0, 0, Units.degreesToRadians(180))));
-                multiVision.setUpdateValues(true);
                 visionSystem = multiVision;
 
                 // ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
@@ -79,6 +74,11 @@ public class CubeCruzer extends GenericMechanism {
 
                 drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
                                 "swervemk4icc");
+
+                topShooterMotor = MotorFactory.NEO(33);
+                bottomShooterMotor = MotorFactory.NEO(9);
+                bottomShooterMotor.setFollow(topShooterMotor);
+                shooter = new ShooterSubsystem(topShooterMotor);
                 // Uncomment when using PhotonVision
                 // multiVision.addPhotonCamera("LeftCamera", 1,
                 // new Transform3d( // This describes the vector between the camera lens to the
@@ -93,61 +93,23 @@ public class CubeCruzer extends GenericMechanism {
 
                 driverDiplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 
-                buttonOperator = new ButtonBoard(Controller.JoystickPorts.TWO.ordinal());
-                buttonOperator.createButtons(11);
+        
         }
 
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
-                driver.createYButton()
-                                .whileTrue(new AutoBalance(drive.getDrivetrain(),
-                                                () -> !driver.createAButton().getAsBoolean(), gyro));
-
-                driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                                () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestVisionTarget(),
-                                ledSubsystem,
-                                TranslationConstants.noteTransform));
-
-                // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
-                // drive.getDrivetrain(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                // ledSubsystem, LCR.left));
-
-                // driver.createAButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
-                // drive.getDrivetrain(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                // ledSubsystem, LCR.center));
-
-                // driver.createXButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
-                // drive.getDrivetrain(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                // () -> drive.getDrivetrain().getPoseEstimator().getPoseFromClosestTag(),
-                // ledSubsystem, LCR.right));
-
-                // driver.createBButton()
-                // .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(),
-                // LCR.left, swerveConstants));
-
-                // driver.createAButton()
-                // .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(),
-                // LCR.center, swerveConstants));
-
-                // driver.createXButton()
-                // .whileTrue(new DriveToTrajectory((SwerveDrivetrain) drive.getDrivetrain(),
-                // LCR.right, swerveConstants));
 
                 driver.createBackButton().onTrue(new InstantCommand(() -> drive.getDrivetrain().resetEncoders()));
+                driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07));
+                driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07));
 
                 drive.configureButtonBindings(driver, operator);
-
         }
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
                 drive.setupDefaultCommands(driver, operator);
+                shooter.setDefaultCommand(new RunShooter(shooter, () -> driver.getRightTrigger() - driver.getLeftTrigger()));
         }
 
         @Override

@@ -7,6 +7,7 @@ package frc.robot.crescendo;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
@@ -109,7 +110,7 @@ public class PivotSubsystem extends GenericSubsystem {
     interpolationTree = new InterpolatingDoubleTreeMap();
 
     pivotMotor = pivot;
-    encoder = ((CANSparkMax)pivotMotor).getAbsoluteEncoder();
+    encoder = ((CANSparkMax)pivotMotor).getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle );
     
     encoder.setPositionConversionFactor(360);
     encoder.setInverted(true);

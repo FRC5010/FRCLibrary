@@ -35,7 +35,7 @@ import frc.robot.FRC5010.robots.PracticeBot;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.CompBot_2023_T1G3R;
-import frc.robot.chargedup.CubeCruzer;
+import frc.robot.chargedup.KitBot2024;
 import frc.robot.crescendo.CompBot_2024;
 
 /**
@@ -98,7 +98,7 @@ public class RobotContainer extends GenericMechanism {
 
   // Robot types
   public static class Robots {
-    public static final String CC_BOT_2023 = "00:80:2F:33:17:DD";
+    public static final String KIT_BOT_2024 = "00:80:2F:34:B2:C5";
     public static final String COMP_BOT_2023 = "00:80:2F:33:04:33";
     public static final String BABY_SWERVE = "BabySwerve";
     public static final String PRACTICE_BOT = "PracticeBot";
@@ -163,8 +163,8 @@ public class RobotContainer extends GenericMechanism {
       log("Bypassed MAC Address Switch");
     } else {
       switch (whichRobot) {
-        case Robots.CC_BOT_2023: {
-          robot = new CubeCruzer(mechVisual, shuffleTab);
+        case Robots.KIT_BOT_2024: {
+          robot = new KitBot2024(mechVisual, shuffleTab);
           // robot = new CompBot_2024(mechVisual, shuffleTab);
           break;
         }
@@ -212,7 +212,9 @@ public class RobotContainer extends GenericMechanism {
 
       }
     }
+    log(">>>>> MAC ADDRESS: "+whichRobot+"<<<<");
     log(">>>>>>>>>> Running " + robot.getClass().getSimpleName() + " <<<<<<<<<<");
+  
   }
 
   /**
