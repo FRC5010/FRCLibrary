@@ -12,11 +12,13 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public abstract class GenericPose {
+  protected Field2d field2d;
   protected Matrix<N5, N1> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5), 0.05, 0.05);
   protected Matrix<N3, N1> localMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
   protected Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
@@ -28,6 +30,13 @@ public abstract class GenericPose {
   }
   public abstract void resetEncoders();
   
+  public Field2d getField() {
+    if (null == field2d) {
+      field2d = new Field2d();
+    }
+    return field2d;
+  }
+
   public double getAccelX() {
     // TODO Auto-generated method stub
     return 0;

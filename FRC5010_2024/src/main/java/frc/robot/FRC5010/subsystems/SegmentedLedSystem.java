@@ -4,40 +4,53 @@
 
 package frc.robot.FRC5010.subsystems;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FRC5010.constants.GenericSubsystem;
 
-public class SegmentedLedSystem extends SubsystemBase {
+public class SegmentedLedSystem extends GenericSubsystem {
   /** Creates a new NewLedSubsystem. */
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
   private AddressableLEDBuffer m_ledOff;
 
   private Color currColor = Color.OFF;
-  private final String ALL = "All";
+  public final String ALL = "All";
 
-  private Map<String, LEDStripSegment> ledStripSegments; // Might need to be implemented differently
+  private Map<String, LEDStripSegment> ledStripSegments = new HashMap<>(); // Might need to be implemented differently
+  private List<MechanismLigament2d> simLEDs = new ArrayList<>();
 
-  public SegmentedLedSystem(int port, int length) {
+  public SegmentedLedSystem(int port, int length, Mechanism2d simulator) {
+    setMechSimulation(simulator);
     m_led = new AddressableLED(port);
     m_ledBuffer = new AddressableLEDBuffer(length);
     m_ledOff = new AddressableLEDBuffer(length);
 
     m_led.setLength(m_ledBuffer.getLength());
 
-    LEDStripSegment all = new LEDStripSegment(0, length, currColor);
+    LEDStripSegment all = new LEDStripSegment(0, length - 1, currColor);
     this.ledStripSegments.put(ALL, all);
     all.setActive(false);
-    all.setLedAction(all.on());
+    all.on();
     all.setColor(currColor);
 
     for (int i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledOff.setRGB(i, 0, 0, 0);
+      MechanismRoot2d ledRoot = mechanismSimulation.getRoot("LEDRoot " + i, i / 100.0, 1.0);
+      MechanismLigament2d led = new MechanismLigament2d("LED " + 1, 0.02, -90, 2, Color.OFF.getColor8Bit());
+      ledRoot.append(led);
+      simLEDs.add(led);
     }
     // taking the data created above and inserting it into the leds
     m_led.setData(m_ledBuffer);
@@ -51,14 +64,23 @@ public class SegmentedLedSystem extends SubsystemBase {
       if (segment.isActive()) {
         if (null != segment.setLEDStrip) {
           segment.setLEDStrip.accept(m_ledBuffer);
+          for (int i = segment.start(); i <= segment.end(); ++i) {
+            simLEDs.get(i).setColor(m_ledBuffer.getLED8Bit(i));
+          }
         } else {
           for (int i = segment.start(); i <= segment.end(); ++i) {
-            m_ledBuffer.setLED(i, segment.setLED.apply(i - segment.start()));
+            Color8Bit color = segment.setLED.apply(i - segment.start());
+            m_ledBuffer.setLED(i, color);
+            simLEDs.get(i).setColor(color);
           }
         }
       }
     }
     m_led.setData(m_ledBuffer);
+  }
+
+  public LEDStripSegment getStrip(String name) {
+    return ledStripSegments.get(name);
   }
 
   public void addLedSegment(String name, int start, int end, Color color) {
@@ -80,5 +102,13 @@ public class SegmentedLedSystem extends SubsystemBase {
   public void setWholeStripState(Function<Integer, Color8Bit> state) {
     ledStripSegments.values().stream().forEach(it -> it.setActive(false));
     ledStripSegments.get(ALL).setLedAction(state);
+    ledStripSegments.get(ALL).setActive(true);
   }
+
+  public void setWholeStripState(Consumer<AddressableLEDBuffer> state) {
+    ledStripSegments.values().stream().forEach(it -> it.setActive(false));
+    ledStripSegments.get(ALL).setLedAction(state);
+    ledStripSegments.get(ALL).setActive(true);
+  }
+
 }

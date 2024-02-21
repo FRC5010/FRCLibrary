@@ -27,7 +27,7 @@ import frc.robot.FRC5010.Vision.VisionSystem;
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
   private VisionSystem vision;
-  private final Field2d field2d = new Field2d();
+  private final Field2d field2d;
   private final GenericPose poseTracker;
 
   private int closestTagToRobot;
@@ -37,7 +37,8 @@ public class DrivetrainPoseEstimator {
   public DrivetrainPoseEstimator(GenericPose poseTracker, VisionSystem vision) {
     this.poseTracker = poseTracker;
     this.vision = vision;
-
+    field2d = poseTracker.getField();
+    
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
     tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(0, 4);
     tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray());

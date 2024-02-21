@@ -6,7 +6,6 @@ package frc.robot.crescendo;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -14,14 +13,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.commands.LedDefaultCommand;
 import frc.robot.FRC5010.constants.GenericMechanism;
-import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
@@ -33,9 +29,8 @@ import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
-import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.crescendo.commands.AutoAim;
-import frc.robot.crescendo.commands.RunClimb;
+import frc.robot.FRC5010.subsystems.Color;
+import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.commands.RunFeeder;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
@@ -61,15 +56,15 @@ public class CompBot_2024 extends GenericMechanism {
         private MotorController5010 leftClimbMotor;
         private MotorController5010 rightClimbMotor;
         private Drive drive;
-        private LedSubsystem ledSubsystem;
+        private SegmentedLedSystem ledSubsystem;
 
         private Targeting2024 targetingSystem;
 
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
 
-                ledSubsystem = new LedSubsystem(0, 63);
-                ledSubsystem.setSolidColor(0, 255, 0);
+                ledSubsystem = new SegmentedLedSystem(0, 63, visual);
+                ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
 
                 // Motor Setup
                 innerIntakeMotor = MotorFactory.NEO(1);
@@ -191,7 +186,8 @@ public class CompBot_2024 extends GenericMechanism {
                                                 shooterSubsystem, feederSubsystem));
                 drive.setupDefaultCommands(driver, operator);
 
-                ledSubsystem.setDefaultCommand(new LedDefaultCommand(ledSubsystem, null));
+                ledSubsystem.setDefaultCommand(Commands.run(() -> {}, ledSubsystem)
+                        .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
                 // driver.createAButton().whileTrue(new AutoAim(pivotSubsystem,
                 // shooterSubsystem, drive, targetingSystem));
 

@@ -34,10 +34,12 @@ public class LEDStripSegment {
 
     public void setLedAction(Function<Integer, Color8Bit> ledFunction) {
         setLED = ledFunction;
+        setLEDStrip = null;
     }
 
     public void setLedAction(Consumer<AddressableLEDBuffer> ledFunction) {
         setLEDStrip = ledFunction;
+        setLED = null;
     }
 
     public void setActive(boolean active) {
@@ -48,16 +50,24 @@ public class LEDStripSegment {
         return active;
     }
 
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Function<Integer, Color8Bit> getCurrentAction() {
+        return setLED;
+    }
+
     // solid color on
-    public Function<Integer, Color8Bit> on() {
-        return (i) -> color.getColor8Bit();
+    public void on() {
+        setLedAction((Integer i) -> color.getColor8Bit());
     }
 
     int m_rainbowFirstPixelHue = 180;
 
-    public Consumer<AddressableLEDBuffer> rainbow() {
+    public void rainbow() {
         m_rainbowFirstPixelHue = 180;
-        return (led) -> {
+        setLedAction((led) -> {
             for (var i = start; i <= end; i++) {
                 // Calculate the hue - hue is easier for rainbows because the color
                 // shape is a circle so only one value needs to precess
@@ -69,25 +79,25 @@ public class LEDStripSegment {
             m_rainbowFirstPixelHue += 3;
             // Check bounds
             m_rainbowFirstPixelHue %= 180;
-        };
+        });
     }
 
-    public Function<Integer, Color8Bit> off() {
-        return (i) -> Color.OFF.getColor8Bit();
+    public void off() {
+        setLedAction((Integer i) -> Color.OFF.getColor8Bit());
     }
 
     // blink based on time
-    public Function<Integer, Color8Bit> blink(long onTime, long offTime) {
-        return (i) -> {
+    public void blink(long onTime, long offTime) {
+        setLedAction((Integer i) -> {
             if (System.currentTimeMillis() % (onTime + offTime) <= onTime) {
                 return color.getColor8Bit();
             }
             return Color.OFF.getColor8Bit();
-        };
+        });
     }
 
-    public Function<Integer, Color8Bit> flame(int scalar, int currLedPos) {
-        return (i) -> {
+    public void flame(int scalar, int currLedPos) {
+        setLedAction((Integer i) -> {
             if (currLedPos < scalar) {
                 return color.getColor8BitAlpha(50 + (Math.random() * 40));
             } else if (currLedPos < scalar * 1.3) {
@@ -96,11 +106,12 @@ public class LEDStripSegment {
                 return color.getColor8BitAlpha(Math.random() * 40);
             }
             return color.getColor8BitAlpha(((Math.random() * 30) - 29) * 20);
-        };
+        });
     }
 
     int ledPos = start;
-    public Consumer<AddressableLEDBuffer> orbit(int r1, int g1, int b1, int r2, int g2, int b2, double percentLed) {
+
+    public void orbit(int r1, int g1, int b1, int r2, int g2, int b2, double percentLed) {
         int red1 = r1;
         int green1 = g1;
         int blue1 = b1;
@@ -108,8 +119,8 @@ public class LEDStripSegment {
         int green2 = g2;
         int blue2 = b2;
         int length = end - start;
-        int numberOrbit = (int) ((double)length * percentLed);
-        return (led) -> {
+        int numberOrbit = (int) ((double) length * percentLed);
+        setLedAction((AddressableLEDBuffer led) -> {
             for (int i = start; i <= end; i++) {
                 if (i >= ledPos && (i - ledPos) < numberOrbit) {
                     led.setRGB(i % length, red2, green2, blue2);
@@ -128,23 +139,15 @@ public class LEDStripSegment {
             if (ledPos > end) {
                 ledPos = start;
             }
-        };
+        });
     }
 
-    public Function<Integer, Color8Bit> chase(int curLedPos) {
+    public void chase(int curLedPos) {
         // TODO
         int chasePosition = 0;
         int chaseDirection = 1;
-        return (i) -> {
+        setLedAction((Integer i) -> {
             return new Color8Bit();
-        };
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public Function<Integer, Color8Bit> getCurrentAction() {
-        return setLED;
+        });
     }
 }

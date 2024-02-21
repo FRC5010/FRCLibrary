@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -717,6 +718,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime);
   }
 
+  public Field2d getField2d() {
+    return swerveDrive.field;
+  }
+  
   public static void useGlass(boolean shouldUseGlass) {
     useGlass = shouldUseGlass;
   }
