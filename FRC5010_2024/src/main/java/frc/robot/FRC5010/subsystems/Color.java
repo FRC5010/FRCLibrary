@@ -18,6 +18,7 @@ public enum Color {
     BLUE(0, 0, 255),
     ORANGE(255, 165, 30),
     PURPLE(100, 0, 255),
+    FIFTY_TEN_ORANGE(255, 80, 16),
     YELLOW(210, 255, 0);
 
     private Color8Bit color;

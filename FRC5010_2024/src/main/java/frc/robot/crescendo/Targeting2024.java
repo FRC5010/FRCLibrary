@@ -6,10 +6,13 @@ package frc.robot.crescendo;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.sim.ChassisReference;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,8 +48,8 @@ public class Targeting2024 {
     }
 
 
-    public double getAnglePowerToTarget() {
-        double targetAngle = getYawAngleToTarget(robotPose.get(), targetPose.get());
+    public double getAnglePowerToTarget(ChassisSpeeds chassisSpeeds) {
+        double targetAngle = AccountForHorizontalVelocity(robotPose.get(), Constants.Field.SHOT_POSE, chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, getPivotAngleToTarget(robotPose.get(), Constants.Field.SHOT_POSE), 50);
         SmartDashboard.putNumber("Yaw Angle to Target", targetAngle);
         thetaController.setGoal(targetAngle);
         return thetaController.calculate(Units.radiansToDegrees(robotPose.get().getRotation().getZ())) * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
@@ -60,7 +63,7 @@ public class Targeting2024 {
         return yawAngle;
     }
 
-    // Accurate within roughly 0.1 degrees
+
     public static double AccountForHorizontalVelocity(Pose3d robotPosition, Pose3d speakerPosition, double robotXVelocity, double robotYVelocity, double robotPivotAngle, double noteVelocity) {
         double noteVel = noteVelocity;
         double xDifference = speakerPosition.getY() - robotPosition.getY(); // In respect to speaker -(robotY - speakerY)

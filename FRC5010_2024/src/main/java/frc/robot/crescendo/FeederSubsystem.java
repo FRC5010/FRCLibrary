@@ -34,6 +34,7 @@ public class FeederSubsystem extends GenericSubsystem {
   private SimulatedEncoder feederSimEncoder = new SimulatedEncoder(22, 23);
   private SimpleMotorFeedforward feederFeedFwd;
   private DigitalInput beambreak;
+  private final String SIM_BEAMBREAK = "Simulated Beambreak";
 
   private static enum ControlState {
     Joystick,
@@ -72,6 +73,9 @@ public class FeederSubsystem extends GenericSubsystem {
     pid = feeder.getPIDController5010();
     feederFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
     beambreak = new DigitalInput(1);
+    values.declare(SIM_BEAMBREAK, false);
+  
+    
 
     values.declare(BEAM_BREAK_STATE, false);
 
@@ -188,8 +192,12 @@ public class FeederSubsystem extends GenericSubsystem {
 
   }
 
+  public void setSimulatedBeambreak(boolean value) {
+    values.set(SIM_BEAMBREAK, value);
+  }
+
   public boolean isBeamBroken() {
-    return !beambreak.get();
+    return Robot.isReal() ? !beambreak.get() : !values.getBoolean(SIM_BEAMBREAK);
   }
 
   public double getFeederFeedFwdVoltage(double velocity) {

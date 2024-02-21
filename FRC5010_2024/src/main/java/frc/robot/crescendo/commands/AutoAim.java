@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
+import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.Constants;
@@ -61,7 +62,9 @@ public class AutoAim extends Command {
     // TODO: Have to account for robot rotation just like with camera
     Transform3d pivotOrigin = new Transform3d(
         robotTranslation.plus(Constants.Physical.PIVOT_ORIGIN_OFFSET.getTranslation()), new Rotation3d());
-    double angleSpeed = targetingSystem.getAnglePowerToTarget();
+    ChassisSpeeds robotVelocity = ((SwerveDrivetrain)drive.getDrivetrain()).getChassisSpeeds();
+    robotVelocity = robotVelocity != null ? robotVelocity : new ChassisSpeeds();
+    double angleSpeed = targetingSystem.getAnglePowerToTarget(robotVelocity);
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, angleSpeed, drive.getDrivetrain().getHeading());
     drive.getDrivetrain().drive(chassisSpeeds);
     SmartDashboard.putNumber("Angle Speed", angleSpeed);

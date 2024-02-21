@@ -64,7 +64,7 @@ public class ClimbSubsystem extends GenericSubsystem {
   private final String RIGHT_CONVERSION_FACTOR = "Right Climb Conversion Factor";
   private final double RIGHT_CONVERSION_DEFAULT = 0.001;
 
-  private final double CLIMB_GEARING = 25;
+  private final double CLIMB_GEARING = 60;
   private final double CLIMB_WEIGHT_LB = 1.0;
   private final double CLIMB_DRUM_RADIUS = 1.0;
   private final double CLIMB_MIN_HEIGHT = 0.0;
@@ -81,6 +81,9 @@ public class ClimbSubsystem extends GenericSubsystem {
     values.declare(CURRENT_THRESHOLD, CURRENT_THRESHOLD_DEFAULT);
     values.declare(LEFT_CONVERSION_FACTOR, LEFT_CONVERSION_DEFAULT);
     values.declare(RIGHT_CONVERSION_FACTOR, RIGHT_CONVERSION_DEFAULT);
+
+    values.declare("Left Climb Position", getLeftPosition());
+    values.declare("Right Climb Position", getRightPosition());
 
     leftEncoder = (RevEncoder) leftMotor.getMotorEncoder();
     rightEncoder = (RevEncoder) rightMotor.getMotorEncoder();
@@ -181,6 +184,8 @@ public class ClimbSubsystem extends GenericSubsystem {
   public void periodic() {
     SmartDashboard.putBoolean("Left Climb Current Switch", leftCurrentSwitch.get());
     SmartDashboard.putBoolean("Right Climb Current Switch", rightCurrentSwitch.get());
+    values.set("Left Climb Position", getLeftPosition());
+    values.set("Right Climb Position", getRightPosition());
 
     update_encoder_extremas();
 
