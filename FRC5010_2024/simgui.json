@@ -73,7 +73,7 @@
     }
   },
   "NetworkTables Info": {
-    "Clients": {
+    "Connections": {
       "open": true
     },
     "visible": true
