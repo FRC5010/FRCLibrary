@@ -15,6 +15,7 @@ public class YAGSLSwervePose extends GenericPose {
     public YAGSLSwervePose(GenericGyro gyro, YAGSLSwerveDrivetrain drivetrain) {
         super(gyro);
         this.drivetrain = drivetrain;
+        field2d = drivetrain.getField2d();
     }
 
     @Override

@@ -44,24 +44,25 @@ public class RunIntake extends GenericCommand {
 
   }
 
-  Command feederCommand = Commands
-      .run(() -> feederSubsystem.setFeederSpeed(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()),
-          feederSubsystem)
-      .until(() -> feederSubsystem.isBeamBroken() || 0 == speed.getAsDouble())
-      .finallyDo(() -> {
-        feederSubsystem.stop();
-        if (feederSubsystem.isBeamBroken()) {
-          feederSubsystem.setNoteState(NoteState.Holding);
-        }
-      })
-      .andThen(Commands.run(() -> feederSubsystem.setFeederSpeed(-0.1))
-          .onlyIf(() -> feederSubsystem.isBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
-          .until(() -> !feederSubsystem.isBeamBroken())
-          .finallyDo(() -> {
-            feederSubsystem.setNoteState(NoteState.Loaded);
-            feederSubsystem.stop();
-          })
-      );
+  Command feederCommand() {
+    return Commands
+        .run(() -> feederSubsystem.setFeederSpeed(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()),
+            feederSubsystem)
+        .until(() -> feederSubsystem.isBeamBroken() || 0 == speed.getAsDouble())
+        .finallyDo(() -> {
+          feederSubsystem.stop();
+          if (feederSubsystem.isBeamBroken()) {
+            feederSubsystem.setNoteState(NoteState.Holding);
+          }
+        })
+        .andThen(Commands.run(() -> feederSubsystem.setFeederSpeed(-0.1))
+            .onlyIf(() -> feederSubsystem.isBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
+            .until(() -> !feederSubsystem.isBeamBroken())
+            .finallyDo(() -> {
+              feederSubsystem.setNoteState(NoteState.Loaded);
+              feederSubsystem.stop();
+            }));
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

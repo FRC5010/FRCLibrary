@@ -27,7 +27,7 @@ import frc.robot.FRC5010.Vision.VisionSystem;
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
   private VisionSystem vision;
-  private final Field2d field2d = new Field2d();
+  private final Field2d field2d;
   private final GenericPose poseTracker;
 
   private int closestTagToRobot;
@@ -37,13 +37,15 @@ public class DrivetrainPoseEstimator {
   public DrivetrainPoseEstimator(GenericPose poseTracker, VisionSystem vision) {
     this.poseTracker = poseTracker;
     this.vision = vision;
-
+    field2d = poseTracker.getField();
+    
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
-    tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(0, 4);
-    tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray());
+    tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(11, 0);
+    tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray()).withPosition(11, 1);
 
-    tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees())).withPosition(1, 4);
-    tab.add(field2d);
+    tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees()))
+      .withPosition(11, 2);
+    tab.add(field2d).withPosition(0, 0).withSize(11, 5);
 
     for (AprilTag at : vision.getFieldLayout().getTags()) {
       if (at.pose.getX() != 0 && at.pose.getY() != 0 && at.pose.getZ() != 0) {

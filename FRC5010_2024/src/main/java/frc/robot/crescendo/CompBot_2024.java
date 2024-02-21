@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.commands.LedDefaultCommand;
 import frc.robot.FRC5010.constants.GenericMechanism;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
@@ -69,10 +68,9 @@ public class CompBot_2024 extends GenericMechanism {
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
 
-                // ledSubsystem = new SegmentedLedSystem(0, 63);
-                // ledSubsystem.addLedSegment("Whole", 0, 63, Color.FIFTY_TEN_ORANGE);
+                ledSubsystem = new SegmentedLedSystem(0, 63, visual);
+                ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
 
-                
                 // Motor Setup
                 innerIntakeMotor = MotorFactory.NEO(1);
                 outerIntakeMotor = MotorFactory.NEO(5);
@@ -195,6 +193,10 @@ public class CompBot_2024 extends GenericMechanism {
                 // ledSubsystem.setDefaultCommand(new LEDStateHandler(ledSubsystem, () -> feederSubsystem.getNoteState()));
                 driver.createAButton().whileTrue(new AutoAim(pivotSubsystem,
                 shooterSubsystem, drive, targetingSystem));
+                ledSubsystem.setDefaultCommand(Commands.run(() -> {}, ledSubsystem)
+                        .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
+                // driver.createAButton().whileTrue(new AutoAim(pivotSubsystem,
+                // shooterSubsystem, drive, targetingSystem));
 
                 operator.createUpPovButton().onTrue(Commands.runOnce(() -> {
                 pivotSubsystem.setSlowdown(pivotSubsystem.getSlowdown() + 0.1);
