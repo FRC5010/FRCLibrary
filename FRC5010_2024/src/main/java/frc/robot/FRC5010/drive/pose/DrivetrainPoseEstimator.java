@@ -40,12 +40,12 @@ public class DrivetrainPoseEstimator {
     field2d = poseTracker.getField();
     
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
-    tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(9, 0);
-    tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray()).withPosition(9, 1);
+    tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(11, 0);
+    tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray()).withPosition(11, 1);
 
     tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees()))
-      .withPosition(9, 2);
-    tab.add(field2d).withPosition(0, 0).withSize(8, 4);
+      .withPosition(11, 2);
+    tab.add(field2d).withPosition(0, 0).withSize(11, 5);
 
     for (AprilTag at : vision.getFieldLayout().getTags()) {
       if (at.pose.getX() != 0 && at.pose.getY() != 0 && at.pose.getZ() != 0) {
