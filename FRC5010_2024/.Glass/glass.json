@@ -1,5 +1,13 @@
 {
   "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "PivotSubsystem": {
+          "open": true
+        },
+        "open": true
+      }
+    },
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pose/Field": "Field2d",
@@ -8,13 +16,6 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d"
-    },
-    "windows": {
-      "/Shuffleboard/Pose/Field": {
-        "window": {
-          "visible": true
-        }
-      }
     }
   },
   "NetworkTables Info": {

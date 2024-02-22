@@ -111,7 +111,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
-    swerveDrive.setCosineCompensator(false); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    
 
     /** 5010 Code */
     if (swerveConstants.getSwerveModuleConstants().getDriveFeedForward().size() > 0) {

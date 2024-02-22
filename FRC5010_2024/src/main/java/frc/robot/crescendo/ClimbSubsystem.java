@@ -22,6 +22,7 @@ import frc.robot.Robot;
 import frc.robot.FRC5010.constants.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.sensors.ValueSwitch;
+import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.RevEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -30,8 +31,8 @@ public class ClimbSubsystem extends GenericSubsystem {
   /** Creates a new ClimbSubsystem. */
   MotorController5010 leftMotor;
   MotorController5010 rightMotor;
-  RevEncoder leftEncoder;
-  RevEncoder rightEncoder;
+  GenericEncoder leftEncoder;
+  GenericEncoder rightEncoder;
   GenericGyro gyro;
 
   // Current Switches
@@ -56,13 +57,13 @@ public class ClimbSubsystem extends GenericSubsystem {
   // NetworkTable names
   private final String MAX_EXTENSION = "Max Extension";
 
-  private final double MAX_EXTENSION_DEFAULT = 15.0;
+  private final double MAX_EXTENSION_DEFAULT = 195.0;
   private final String CURRENT_THRESHOLD = "Climb Current Threshold";
   private final double CURRENT_THRESHOLD_DEFAULT = 40.0;
   private final String LEFT_CONVERSION_FACTOR = "Left Climb Conversion Factor";
-  private final double LEFT_CONVERSION_DEFAULT = 0.001;
+  private final double LEFT_CONVERSION_DEFAULT = 1.0;
   private final String RIGHT_CONVERSION_FACTOR = "Right Climb Conversion Factor";
-  private final double RIGHT_CONVERSION_DEFAULT = 0.001;
+  private final double RIGHT_CONVERSION_DEFAULT = 1.0;
 
   private final double CLIMB_GEARING = 60;
   private final double CLIMB_WEIGHT_LB = 1.0;
@@ -70,6 +71,7 @@ public class ClimbSubsystem extends GenericSubsystem {
   private final double CLIMB_MIN_HEIGHT = 0.0;
   private final double CLIMB_MAX_HEIGHT = 15.0;
   private final Color8Bit CLIMB_SIM_COLOR = new Color8Bit(Color.kPurple);
+  private boolean override = false;
 
   public ClimbSubsystem(MotorController5010 leftMotor, MotorController5010 rightMotor, GenericGyro gyro,
       Mechanism2d mechSim) {
@@ -82,11 +84,14 @@ public class ClimbSubsystem extends GenericSubsystem {
     values.declare(LEFT_CONVERSION_FACTOR, LEFT_CONVERSION_DEFAULT);
     values.declare(RIGHT_CONVERSION_FACTOR, RIGHT_CONVERSION_DEFAULT);
 
+;
+
+    leftEncoder =leftMotor.getMotorEncoder();
+    rightEncoder = rightMotor.getMotorEncoder();
+
+
     values.declare("Left Climb Position", getLeftPosition());
     values.declare("Right Climb Position", getRightPosition());
-
-    leftEncoder = (RevEncoder) leftMotor.getMotorEncoder();
-    rightEncoder = (RevEncoder) rightMotor.getMotorEncoder();
 
     leftEncoder.setPositionConversion(values.getDouble(LEFT_CONVERSION_FACTOR));
     rightEncoder.setPositionConversion(values.getDouble(RIGHT_CONVERSION_FACTOR));
@@ -116,23 +121,36 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   }
 
-  public boolean leftIsAtMin() {
-    if (getLeftPosition() < 0.0 || leftCurrentSwitch.get()) { // TODO: Add current check and switch...maybe reset
-                                                              // encoder at this point
+  public boolean leftIsAtMin(double speed) {
+    if ((speed < 0 && getLeftPosition() < 0.0) && !override) {
       return true;
     }
     return false;
   }
 
-  public boolean leftIsAtMax() {
-    if (leftMotor.get() > 0 && leftCurrentSwitch.get()) { // TODO: Add current switch
+  public boolean leftIsAtMax(double speed) {
+    if ((speed > 0 && getLeftPosition() > values.getDouble(MAX_EXTENSION)) && !override) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean rightIsAtMin(double speed) {
+    if ((speed < 0 && getRightPosition() < 0.0) && !override) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean rightIsAtMax(double speed) {
+    if ((speed > 0 && getRightPosition() > values.getDouble(MAX_EXTENSION)) && !override) {
       return true;
     }
     return false;
   }
 
   public void setLeftMotorSpeed(double speed) {
-    leftMotor.set(speed);
+    leftMotor.set(leftIsAtMin(speed) || leftIsAtMax(speed) ? 0.0 : speed);
   }
 
   public void stop() {
@@ -140,8 +158,12 @@ public class ClimbSubsystem extends GenericSubsystem {
     rightMotor.set(0);
   }
 
+  public void setOverride(boolean state) {
+    override = state;
+  }
+
   public void setRightMotorSpeed(double speed) {
-    rightMotor.set(speed);
+    rightMotor.set(rightIsAtMax(speed) || rightIsAtMin(speed) ? 0.0 : speed);
   }
 
   public double getLeftPosition() {
@@ -162,6 +184,11 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   public double getHorizontalTilt() {
     return gyro.getAngleY(); // TODO: Fix if necessary
+  }
+
+  public void zeroPosition() {
+    leftEncoder.setPosition(0);
+    rightEncoder.setPosition(0);
   }
 
   // Zeroes the encoder if current switch triggers and current encoder position is

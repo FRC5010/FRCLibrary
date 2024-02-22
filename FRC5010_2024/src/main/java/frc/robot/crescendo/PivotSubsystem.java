@@ -100,7 +100,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
     values.declare(PIVOT_kG, RobotBase.isReal() ? 0.57 : 6.05 ); 
     values.declare(PIVOT_kV, RobotBase.isReal() ? 0.0 : 0.01);
-    values.declare(PIVOT_kP, RobotBase.isReal() ? 0.00 : 0.01);
+    values.declare(PIVOT_kP, RobotBase.isReal() ? 0.005 : 0.01);
     values.declare(PIVOT_kD, RobotBase.isReal() ? 0.0000 : 0.003);
     values.declare(PIVOT_kS, RobotBase.isReal() ? 0.12 : 0.0);
     values.declare(PIVOT_kA, 0.0);
@@ -129,6 +129,7 @@ public class PivotSubsystem extends GenericSubsystem {
     robotSim = mechSim;
 
     leftLimitSwitch = new DigitalInput(0);
+    rightLimitSwitch = new DigitalInput(2);
     // TODO: ADD RIGHT LIMIT ONCE ACTUALLY WIRED
 
     
@@ -169,7 +170,7 @@ public class PivotSubsystem extends GenericSubsystem {
   }
 
   public boolean isAtMin() {
-    return (!leftLimitSwitch.get() || !rightLimitSwitch.get() || getPivotPosition() <= PIVOT_START_ANGLE);
+    return (isLeftLimitHit() || isRightLimitHit() || getPivotPosition() <= PIVOT_START_ANGLE);
   }
 
   public boolean isAtMax() {
@@ -177,12 +178,20 @@ public class PivotSubsystem extends GenericSubsystem {
   }
 
   public boolean isAtTarget() {
-    return Math.abs(getReference() - getPivotPosition()) < 0.5;
+    return Math.abs(getReference() - getPivotPosition()) < 0.25;
   }
 
   public void setInterpolatedShotAngle(double distance) {
     double angle = interpolationTree.get(distance);
     setReference(angle);
+  }
+
+  public boolean isLeftLimitHit() {
+    return !leftLimitSwitch.get();
+  }
+
+  public boolean isRightLimitHit() {
+    return !rightLimitSwitch.get();
   }
 
   public void runToReference() {
@@ -287,6 +296,8 @@ public class PivotSubsystem extends GenericSubsystem {
     SmartDashboard.putNumber("Pivot Motor", ((CANSparkMax)pivotMotor).getAppliedOutput() * RobotController.getBatteryVoltage());
     SmartDashboard.putNumber("Pivot Encoder", encoder.getPosition());
     SmartDashboard.putBoolean("Pivot At Target", isAtTarget());
+    SmartDashboard.putBoolean("Pivot Left Limit Hit", isLeftLimitHit());
+    SmartDashboard.putBoolean("Pivot Right Limit Hit", isRightLimitHit());
   }
 
   @Override

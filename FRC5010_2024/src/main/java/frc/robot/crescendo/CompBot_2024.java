@@ -75,12 +75,12 @@ public class CompBot_2024 extends GenericMechanism {
                 innerIntakeMotor = MotorFactory.NEO(1);
                 outerIntakeMotor = MotorFactory.NEO(5);
                 leftClimbMotor = MotorFactory.NEO(7); // TODO: Add correct port
-                rightClimbMotor = MotorFactory.NEO(8); // TODO: Add correct port
+                rightClimbMotor = MotorFactory.NEO(8).invert(true); // TODO: Add correct port
                 pivotMotor = MotorFactory.NEO(9).invert(true);
                 MotorFactory.NEO(10).setFollow(pivotMotor, true);
                 feederMotor = MotorFactory.NEO(11); // MotorFactory.NEO(11);
 
-                values.declare("FeederSpeed", 0.4);
+                values.declare("FeederSpeed", 1.0);
 
                 topShooterMotor = MotorFactory.KrakenX60(12);
                 bottomShooterMotor = MotorFactory.KrakenX60(14);
@@ -169,7 +169,7 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
-                pivotSubsystem.setDefaultCommand(new RunPivot(() -> operator.getRightYAxis(), pivotSubsystem)); 
+                pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem)); 
 
                 shooterSubsystem.setDefaultCommand(
                                 new RunShooter(() -> operator.getLeftTrigger() - operator.getRightTrigger(),
@@ -178,7 +178,7 @@ public class CompBot_2024 extends GenericMechanism {
 
                 operator.createRightBumper().whileTrue(
                         Commands.sequence(
-                                new RunFeeder(feederSubsystem, () -> -0.1).until(() -> !feederSubsystem.isBeamBroken())
+                                new RunFeeder(feederSubsystem, () -> -0.5).until(() -> !feederSubsystem.isBeamBroken())
 
                         )
                 );
@@ -186,13 +186,13 @@ public class CompBot_2024 extends GenericMechanism {
                 () -> operator.getRightYAxis(), climbSubsystem));
                 intakeSubsystem.setDefaultCommand(
                                 new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(),
-                                                () -> values.getDouble("FeederSpeed"), intakeSubsystem,
+                                                () -> -driver.getRightTrigger(), intakeSubsystem,
                                                 shooterSubsystem, feederSubsystem));
                 drive.setupDefaultCommands(driver, operator);
 
                 // ledSubsystem.setDefaultCommand(new LEDStateHandler(ledSubsystem, () -> feederSubsystem.getNoteState()));
-                driver.createAButton().whileTrue(new AutoAim(pivotSubsystem,
-                shooterSubsystem, drive, targetingSystem));
+                // driver.createAButton().whileTrue(new AutoAim(pivotSubsystem,
+                // shooterSubsystem, drive, targetingSystem));
                 ledSubsystem.setDefaultCommand(Commands.run(() -> {}, ledSubsystem)
                         .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
                 // driver.createAButton().whileTrue(new AutoAim(pivotSubsystem,
@@ -204,6 +204,9 @@ public class CompBot_2024 extends GenericMechanism {
                 operator.createDownPovButton().onTrue(Commands.runOnce(() -> {
                 pivotSubsystem.setSlowdown(pivotSubsystem.getSlowdown() - 0.1);
                 }, pivotSubsystem));
+
+                operator.createStartButton().onTrue(Commands.runOnce(() -> climbSubsystem.zeroPosition(), climbSubsystem));
+                operator.createBackButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true), () -> climbSubsystem.setOverride(false)));
         }
 
         @Override
