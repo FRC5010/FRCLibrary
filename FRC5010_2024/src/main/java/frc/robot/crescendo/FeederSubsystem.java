@@ -5,10 +5,12 @@
 package frc.robot.crescendo;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -64,7 +66,14 @@ public class FeederSubsystem extends GenericSubsystem {
   private double microAdjust = 10.0;
 
   private MechanismLigament2d feederMotorSim;
+  private MechanismRoot2d noteRoot;
+  private MechanismLigament2d note;
+  private double noteX = 0.1;
+  private double noteY = 0.1;
+  private double noteMotion = 0.05;
+
   private final String BEAM_BREAK_STATE = "Beam Break State";
+  private final String FEEDER_MOTOR_SPEED = "Feeder Motor";
 
   /** Creates a new FeederSubsystem. */
   public FeederSubsystem(Mechanism2d robotSim, MotorController5010 feeder) {
@@ -73,16 +82,18 @@ public class FeederSubsystem extends GenericSubsystem {
     pid = feeder.getPIDController5010();
     feederFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
     beambreak = new DigitalInput(1);
-    values.declare(SIM_BEAMBREAK, false);
-  
-    
+    values.declare(SIM_BEAMBREAK, true);
+   
 
     values.declare(BEAM_BREAK_STATE, false);
+    values.declare(FEEDER_MOTOR_SPEED, 0.0);
 
     pid.setValues(new GenericPID(0,0, 0));
 
     this.feederMotorSim = robotSim.getRoot("Feeder Motor", 0.40, 0.30)
       .append(new MechanismLigament2d("Feeder Motor", 0.1, 180, 5, new Color8Bit(Color.kMagenta)));
+    noteRoot = robotSim.getRoot("Note Root", noteX, noteY);
+    note = noteRoot.append(new MechanismLigament2d("Note", Units.inchesToMeters(14), 45, 5, new Color8Bit(Color.kOrangeRed)));
   }
 
   public Command getFeederSysIdRoutineCommand() {
@@ -223,7 +234,15 @@ public class FeederSubsystem extends GenericSubsystem {
 
   @Override
   public void periodic() {
-    feederMotorSim.setAngle(feederMotor.get() * 180 - 90);
+    double feederSpeed = feederMotor.get();
+    feederMotorSim.setAngle(feederSpeed * 180 - 90);
+    noteX -= Math.signum(feederSpeed) * noteMotion;
+    noteY -= Math.signum(feederSpeed) * noteMotion;
     values.set(BEAM_BREAK_STATE, isBeamBroken());
+    values.set(FEEDER_MOTOR_SPEED, feederMotor.get());
+    if (noteX < 0.1 || noteX > 1.0) noteX = 0.1;
+    if (noteY < 0.1 || noteY > 1.0) noteY = 0.1;
+    noteRoot.setPosition(noteX, noteY);
+    if (noteX > 0.5 && noteX < 0.55) values.set(SIM_BEAMBREAK, false);
   }
 }
