@@ -10,7 +10,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.FRC5010.constants.GenericCommand;
+import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.chargedup.Constants;
 import swervelib.SwerveController;

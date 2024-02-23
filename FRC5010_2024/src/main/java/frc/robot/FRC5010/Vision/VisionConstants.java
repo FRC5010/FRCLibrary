@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.FRC5010.constants.Persisted;
+import frc.robot.FRC5010.arch.Persisted;
 
 /** Add your docs here. */
 public class VisionConstants {

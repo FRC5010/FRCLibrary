@@ -6,8 +6,7 @@ package frc.robot.crescendo.commands;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FRC5010.constants.GenericCommand;
+import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.crescendo.ClimbSubsystem;
 
 public class RunClimb extends GenericCommand {

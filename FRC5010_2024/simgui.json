@@ -54,23 +54,13 @@
         }
       },
       "SmartDashboard": {
-        "FeederSubsystem": {
-          "open": true
-        },
-        "PivotSubsystem": {
-          "open": true
-        },
         "Robot Visual": {
           "Note Root": {
             "Note": {
               "open": true
             },
             "open": true
-          },
-          "open": true
-        },
-        "ShooterSubsystem": {
-          "open": true
+          }
         },
         "open": true,
         "swerve": {
@@ -79,7 +69,8 @@
           },
           "double[]##v_/SmartDashboard/swerve/measuredStates": {
             "open": true
-          }
+          },
+          "open": true
         }
       }
     }

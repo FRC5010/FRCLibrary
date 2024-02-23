@@ -101,7 +101,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     System.out.println("}");
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
       swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, 360, driveConversionFactor); // Use correct angleMotorConversionFactor later
@@ -751,8 +751,6 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     for (int moduleKey = 0; moduleKey < modules.length; moduleKey++) {
       double turningDeg = modules[moduleKey].getRelativePosition();
       double absEncDeg = modules[moduleKey].getAbsolutePosition();
-      SmartDashboard.putNumber("Motor Ang: " + moduleKey, turningDeg);
-      SmartDashboard.putNumber("Abs Angle: " + moduleKey, absEncDeg);
       // This method will be called once per scheduler run
       absEncDials.get(moduleKey).setAngle(absEncDeg + 90);
       motorDials.get(moduleKey).setAngle(turningDeg + 90);

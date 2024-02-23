@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.FRC5010.constants.GenericSubsystem;
+import frc.robot.FRC5010.arch.GenericSubsystem;
 
 public class SegmentedLedSystem extends GenericSubsystem {
   /** Creates a new NewLedSubsystem. */

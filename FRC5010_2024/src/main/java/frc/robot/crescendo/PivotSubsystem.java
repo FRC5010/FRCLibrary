@@ -28,13 +28,12 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
-import frc.robot.FRC5010.constants.GenericSubsystem;
+import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.SystemIdentification;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
@@ -79,6 +78,12 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String PIVOT_kD = "PivotkD";
   private final String MICRO_ADJUST = "Pivot Micro Adjustment";
   private final String SLOWDOWN = "Slowdown";
+
+  private static enum vals {
+    REFERENCE, MOTOR_SPEED, RUN_SPEED, RUN_REF, FF_VOLTAGE , ENCODER, AT_TARGET, 
+    LEFT_LIMIT_HIT, RIGHT_LIMIT_HIT
+  };
+  
   private static enum PivotState {
     JOYSTICK, POSITION
   }
@@ -106,6 +111,15 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kA, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
     values.declare(SLOWDOWN, 0.1);
+    values.declare(vals.FF_VOLTAGE.name(), 0);
+    values.declare(vals.RUN_REF.name(), false);
+    values.declare(vals.RUN_SPEED.name(), false);
+    values.declare(vals.MOTOR_SPEED.name(), 0.0);
+    values.declare(vals.REFERENCE.name(), 0.0);
+    values.declare(vals.ENCODER.name(), 0.0);
+    values.declare(vals.AT_TARGET.name(), false);
+    values.declare(vals.LEFT_LIMIT_HIT.name(), false);
+    values.declare(vals.RIGHT_LIMIT_HIT.name(), false);
 
     interpolationTree = new InterpolatingDoubleTreeMap();
 
@@ -196,7 +210,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
   public void runToReference() {
     double feedForward = getFeedFowardVoltage(isAtTarget() ? 0 : getReference() -  getPivotPosition());
-    SmartDashboard.putNumber("Pivot FF Voltage", feedForward);
+    values.set(vals.FF_VOLTAGE.name(), feedForward);
     
     if (!Robot.isReal()) {
       double currentError = getReference() - getPivotPosition();
@@ -210,8 +224,8 @@ public class PivotSubsystem extends GenericSubsystem {
       pivotPID.setP(values.getDouble(PIVOT_kP));
       pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
     }
-    SmartDashboard.putBoolean("Pivot Run Ref", true);
-    SmartDashboard.putBoolean("Pivot Set Speed", false);
+    values.set(vals.RUN_REF.name(), true);
+    values.set(vals.RUN_SPEED.name(), false);
   }
 
   public double getPivotPosition() {
@@ -258,9 +272,9 @@ public class PivotSubsystem extends GenericSubsystem {
   public void setSpeed(double speed) {
     double ff = getFeedFowardVoltage(0) / RobotController.getBatteryVoltage();
     pivotMotor.set(speed * values.getDouble(SLOWDOWN) + ff);
-    SmartDashboard.putBoolean("Pivot Set Speed", true);
-    SmartDashboard.putBoolean("Pivot Run Ref", false);
-    SmartDashboard.putNumber("Pivot Speed", speed);
+    values.set(vals.RUN_SPEED.name(), true);
+    values.set(vals.RUN_REF.name(), false);
+    values.set(vals.MOTOR_SPEED.name(), speed);
   }
 
   public void stateMachine(double joystickInput) {
@@ -291,13 +305,12 @@ public class PivotSubsystem extends GenericSubsystem {
 
     // This method will be called once per scheduler run
     values.set(PIVOT_ANGLE, getPivotPosition());
-    SmartDashboard.putNumber("Pivot Reference", getReference());
-    SmartDashboard.putNumber("Pivot Reference Rotation", Units.degreesToRotations(getReference()));
-    SmartDashboard.putNumber("Pivot Motor", ((CANSparkMax)pivotMotor).getAppliedOutput() * RobotController.getBatteryVoltage());
-    SmartDashboard.putNumber("Pivot Encoder", encoder.getPosition());
-    SmartDashboard.putBoolean("Pivot At Target", isAtTarget());
-    SmartDashboard.putBoolean("Pivot Left Limit Hit", isLeftLimitHit());
-    SmartDashboard.putBoolean("Pivot Right Limit Hit", isRightLimitHit());
+    values.set(vals.REFERENCE.name(), getReference());
+    values.set(vals.MOTOR_SPEED.name(), ((CANSparkMax)pivotMotor).getAppliedOutput() * RobotController.getBatteryVoltage());
+    values.set(vals.ENCODER.name(), encoder.getPosition());
+    values.set(vals.AT_TARGET.name(), isAtTarget());
+    values.set(vals.LEFT_LIMIT_HIT.name(), isLeftLimitHit());
+    values.set(vals.RIGHT_LIMIT_HIT.name(), isRightLimitHit());
   }
 
   @Override
@@ -317,8 +330,5 @@ public class PivotSubsystem extends GenericSubsystem {
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(pivotSim.getCurrentDrawAmps()));
-
-    // Update elevator visualization with simulated position
-    SmartDashboard.putNumber("Pivot Sim Rotation", Units.radiansToDegrees(pivotSim.getAngleRads()));
   }
 }

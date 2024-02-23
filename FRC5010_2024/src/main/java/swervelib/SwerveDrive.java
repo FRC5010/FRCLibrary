@@ -190,7 +190,7 @@ public class SwerveDrive
       SmartDashboard.putData("Field", field);
     }
 
-    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
+    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
     {
       SwerveDriveTelemetry.maxSpeed = maxSpeedMPS;
       SwerveDriveTelemetry.maxAngularVelocity = swerveController.config.maxAngularVelocity;
@@ -871,7 +871,7 @@ public class SwerveDrive
     {
       SwerveModuleState desiredState =
           new SwerveModuleState(0, swerveModule.configuration.moduleLocation.getAngle());
-      if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
+      if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
       {
         SwerveDriveTelemetry.desiredStates[swerveModule.moduleNumber * 2] =
             desiredState.angle.getDegrees();
@@ -932,7 +932,7 @@ public class SwerveDrive
       swerveDrivePoseEstimator.update(getYaw(), getModulePositions());
 
       // Update angle accumulator if the robot is simulated
-      if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
+      if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
       {
         Pose2d[] modulePoses = getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition());
         if (SwerveDriveTelemetry.isSimulation)
@@ -967,7 +967,7 @@ public class SwerveDrive
           SmartDashboard.putNumber("Raw IMU Yaw", getYaw().getDegrees());
           SmartDashboard.putNumber("Adjusted IMU Yaw", getOdometryHeading().getDegrees());
         }
-        if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
+        if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
         {
           SwerveDriveTelemetry.measuredStates[module.moduleNumber * 2] = moduleState.angle.getDegrees();
           SwerveDriveTelemetry.measuredStates[(module.moduleNumber * 2) + 1] = moduleState.speedMetersPerSecond;
@@ -983,7 +983,7 @@ public class SwerveDrive
         moduleSynchronizationCounter = 0;
       }
 
-      if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
+      if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
       {
         SwerveDriveTelemetry.updateData();
       }

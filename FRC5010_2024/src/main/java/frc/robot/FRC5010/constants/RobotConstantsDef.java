@@ -4,6 +4,8 @@
 
 package frc.robot.FRC5010.constants;
 
+import frc.robot.FRC5010.arch.Persisted;
+
 /** For Constants that don't change from year to year. */
 public class RobotConstantsDef {
     public static final String DRIVE_VISUAL_H = "driveVisualH";

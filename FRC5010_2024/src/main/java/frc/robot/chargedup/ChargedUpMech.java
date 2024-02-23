@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.FRC5010.constants.GenericMechanism;
+import frc.robot.FRC5010.arch.GenericMechanism;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.motors.MotorFactory;
 import frc.robot.FRC5010.motors.hardware.MotorModelConstants;

@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.Robot;
-import frc.robot.FRC5010.constants.GenericSubsystem;
+import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.sensors.ValueSwitch;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
@@ -64,6 +64,10 @@ public class ClimbSubsystem extends GenericSubsystem {
   private final double LEFT_CONVERSION_DEFAULT = 1.0;
   private final String RIGHT_CONVERSION_FACTOR = "Right Climb Conversion Factor";
   private final double RIGHT_CONVERSION_DEFAULT = 1.0;
+  private final String LEFT_CLIMB_CURRENT_SWITCH = "Left Climb Current Switch";
+  private final String RIGHT_CLIMB_CURRENT_SWITCH = "Right Climb Current Switch";
+  private final String LEFT_CLIMB_POSITION = "Left Climb Position";
+  private final String RIGHT_CLIMB_POSITION = "Right Climb Position";
 
   private final double CLIMB_GEARING = 60;
   private final double CLIMB_WEIGHT_LB = 1.0;
@@ -83,15 +87,16 @@ public class ClimbSubsystem extends GenericSubsystem {
     values.declare(CURRENT_THRESHOLD, CURRENT_THRESHOLD_DEFAULT);
     values.declare(LEFT_CONVERSION_FACTOR, LEFT_CONVERSION_DEFAULT);
     values.declare(RIGHT_CONVERSION_FACTOR, RIGHT_CONVERSION_DEFAULT);
-
+    values.declare(LEFT_CLIMB_CURRENT_SWITCH, false);
+    values.declare(RIGHT_CLIMB_CURRENT_SWITCH, false);
 ;
 
     leftEncoder =leftMotor.getMotorEncoder();
     rightEncoder = rightMotor.getMotorEncoder();
 
 
-    values.declare("Left Climb Position", getLeftPosition());
-    values.declare("Right Climb Position", getRightPosition());
+    values.declare(LEFT_CLIMB_POSITION, getLeftPosition());
+    values.declare(RIGHT_CLIMB_POSITION, getRightPosition());
 
     leftEncoder.setPositionConversion(values.getDouble(LEFT_CONVERSION_FACTOR));
     rightEncoder.setPositionConversion(values.getDouble(RIGHT_CONVERSION_FACTOR));
@@ -209,10 +214,10 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Left Climb Current Switch", leftCurrentSwitch.get());
-    SmartDashboard.putBoolean("Right Climb Current Switch", rightCurrentSwitch.get());
-    values.set("Left Climb Position", getLeftPosition());
-    values.set("Right Climb Position", getRightPosition());
+    values.set(LEFT_CLIMB_CURRENT_SWITCH, leftCurrentSwitch.get());
+    values.set(RIGHT_CLIMB_CURRENT_SWITCH, rightCurrentSwitch.get());
+    values.set(LEFT_CLIMB_POSITION, getLeftPosition());
+    values.set(RIGHT_CLIMB_POSITION, getRightPosition());
 
     update_encoder_extremas();
 

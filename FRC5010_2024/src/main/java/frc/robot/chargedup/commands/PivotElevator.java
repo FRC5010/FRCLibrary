@@ -4,7 +4,7 @@
 
 package frc.robot.chargedup.commands;
 
-import frc.robot.FRC5010.constants.GenericCommand;
+import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.ElevatorLevel;
 import frc.robot.chargedup.ElevatorSubsystem;

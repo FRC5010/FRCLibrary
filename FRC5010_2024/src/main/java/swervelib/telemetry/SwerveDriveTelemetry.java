@@ -126,6 +126,10 @@ public class SwerveDriveTelemetry
      */
     LOW,
     /**
+     * Medium telemetry data, swerve directory + field info
+     */
+    INFO,
+    /**
      * Full swerve drive data is sent back in both human and machine readable forms.
      */
     HIGH,

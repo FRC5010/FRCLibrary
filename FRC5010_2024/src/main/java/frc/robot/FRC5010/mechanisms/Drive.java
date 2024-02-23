@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.FRC5010.arch.GenericMechanism;
+import frc.robot.FRC5010.arch.Persisted;
 import frc.robot.FRC5010.constants.DrivePorts;
 import frc.robot.FRC5010.constants.GenericDrivetrainConstants;
-import frc.robot.FRC5010.constants.GenericMechanism;
-import frc.robot.FRC5010.constants.Persisted;
 import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.constants.SwerveModuleConstants;
@@ -161,6 +161,12 @@ public class Drive extends GenericMechanism {
     }
 
     @Override
+    /**
+     * Drive Axis - Left X & Y, Right X
+     * Reset Orientation - Start
+     * Lock Wheels - Left Bumper
+     * Field Oriented - B Button
+     */
     public void configureButtonBindings(Controller driver, Controller operator) {
         // If there needs to be some commands that are real or simulation only use this
         if (Robot.isReal()) {

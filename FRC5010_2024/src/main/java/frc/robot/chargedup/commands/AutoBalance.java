@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.FRC5010.constants.GenericCommand;
+import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 

@@ -4,7 +4,7 @@
 
 package frc.robot.chargedup.commands;
 
-import frc.robot.FRC5010.constants.GenericCommand;
+import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.chargedup.CheeseStick;
 
 public class CheeseStickCommand extends GenericCommand {
