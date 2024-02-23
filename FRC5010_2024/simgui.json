@@ -69,8 +69,7 @@
           },
           "double[]##v_/SmartDashboard/swerve/measuredStates": {
             "open": true
-          },
-          "open": true
+          }
         }
       }
     }
