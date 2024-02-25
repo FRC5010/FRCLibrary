@@ -135,6 +135,22 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void configureButtonBindings(Controller driver, Controller operator) {
+                /* >>>>>>>>>>>>>>>>>>>> ADDITIONAL AXIS <<<<<<<<<<<<<<<<<<<< */
+                driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07).negate());
+                driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07).negate());
+
+                operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07).negate());
+                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.07).negate().limit(0.25).rate(0.25));
+
+                operator.setRightXAxis(operator.createRightXAxis().deadzone(0.07).negate());
+                operator.setLeftXAxis(operator.createLeftXAxis().deadzone(0.07).negate());
+
+                operator.setLeftTrigger(operator.createLeftTrigger());
+                operator.setRightTrigger(operator.createRightTrigger());
+
+                /*
+                 * >>>>>>>>>>>>>>>>>>>> DRIVER BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                 */
                 /**
                  * Drive Axis - Left X & Y, Right X
                  * Reset Orientation - Start
@@ -148,78 +164,6 @@ public class CompBot_2024 extends GenericMechanism {
                                                 () -> (JoystickToSwerve) drive.getDefaultCommand()))
                                 .onFalse(Commands
                                                 .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL)));
-                driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07).negate());
-                driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07).negate());
-
-                // Podium Pivot
-                operator.createXButton().onTrue(Commands.runOnce(
-                                () -> {
-                                        pivotSubsystem.setReference(pivotSubsystem.PODIUM_SHOT);
-                                        shooterSubsystem.setShooterReference(6000, 6000);
-                                }, pivotSubsystem)).onFalse(Commands.runOnce(() -> {
-                                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
-                                        shooterSubsystem.setShooterReference(0, 0);
-                                }));
-                // Trap Pivot
-                operator.createBButton().onTrue(Commands
-                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem))
-                                .onFalse(Commands.runOnce(() -> {
-                                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
-                                }));
-                // Home Pivot
-                operator.createAButton().whileTrue(Commands
-                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL), pivotSubsystem));
-                // Amp Pivot
-                operator.createYButton().whileTrue(Commands
-                                .runOnce(() -> {
-                                        pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL);
-                                        shooterSubsystem.setShooterReference(2000, 2000);
-                                })
-
-                ).onFalse(Commands.runOnce(() -> {
-                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
-                        shooterSubsystem.setShooterReference(0, 0);
-                }));
-                // Run Shooter motors
-                operator.createLeftBumper()
-                                .whileTrue(Commands
-                                                .run(() -> shooterSubsystem.shooterStateMachine(1), shooterSubsystem)
-                                                .finallyDo(() -> shooterSubsystem.stopMotors()));
-                // Feed Note into Shooter
-                operator.createRightBumper().whileTrue(
-                                Commands.run(() -> feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed")),
-                                                feederSubsystem).finallyDo(() -> feederSubsystem.stop()));
-
-                driver.createBackButton()
-                                .whileTrue(Commands.runOnce(() -> feederSubsystem.setNoteState(NoteState.Empty)));
-
-                // Shooter micro adjust
-                operator.createUpPovButton().onTrue(shooterSubsystem.adjustShooterReferenceUp());
-                operator.createDownPovButton().onTrue(shooterSubsystem.adjustShooterReferenceDown());
-                // Pivot micro adjust
-                operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
-                operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
-
-                driver.createUpPovButton().onTrue(Commands.runOnce(() -> {
-                        pivotSubsystem.setSlowdown(pivotSubsystem.getSlowdown() + 0.1);
-                }, pivotSubsystem));
-                driver.createDownPovButton().onTrue(Commands.runOnce(() -> {
-                        pivotSubsystem.setSlowdown(pivotSubsystem.getSlowdown() - 0.1);
-                }, pivotSubsystem));
-
-                operator.setLeftTrigger(operator.createLeftTrigger());
-                operator.setRightTrigger(operator.createRightTrigger());
-
-                operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07).negate());
-                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.07).negate().limit(0.25).rate(0.25));
-
-                operator.setRightXAxis(operator.createRightXAxis().deadzone(0.07).negate());
-                operator.setLeftXAxis(operator.createLeftXAxis().deadzone(0.07).negate());
-
-                operator.createStartButton()
-                                .onTrue(Commands.runOnce(() -> climbSubsystem.zeroPosition(), climbSubsystem));
-                operator.createBackButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
-                                () -> climbSubsystem.setOverride(false)));
 
                 driver.createRightBumper()
                                 .whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
@@ -231,6 +175,74 @@ public class CompBot_2024 extends GenericMechanism {
                                                                 new Rotation2d()))
                                                 .alongWith(new RunIntake(() -> 1.0, () -> 0.5, intakeSubsystem,
                                                                 feederSubsystem)));
+
+                driver.createUpPovButton().onTrue(Commands.runOnce(() -> {
+                        pivotSubsystem.setSlowdown(pivotSubsystem.getSlowdown() + 0.1);
+                }, pivotSubsystem));
+                driver.createDownPovButton().onTrue(Commands.runOnce(() -> {
+                        pivotSubsystem.setSlowdown(pivotSubsystem.getSlowdown() - 0.1);
+                }, pivotSubsystem));
+
+                driver.createBackButton()
+                                .whileTrue(Commands.runOnce(() -> feederSubsystem.setNoteState(NoteState.Empty)));
+
+                /*
+                 * >>>>>>>>>>>>>>>>>>>>>>>>>>>> OPERATOR BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                 */
+                // Home Pivot
+                operator.createAButton().whileTrue(Commands
+                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL), pivotSubsystem));
+                // Podium Pivot
+                operator.createXButton().onTrue(Commands.runOnce(
+                                () -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.PODIUM_SHOT);
+                                        shooterSubsystem.setShooterReference(6000, 6000);
+                                }, pivotSubsystem)).onFalse(Commands.runOnce(() -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+                                        shooterSubsystem.setShooterReference(0, 0);
+                                }));
+
+                // Amp Pivot
+                operator.createYButton().whileTrue(Commands
+                                .runOnce(() -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL);
+                                        shooterSubsystem.setShooterReference(2000, 2000);
+                                })
+
+                ).onFalse(Commands.runOnce(() -> {
+                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+                        shooterSubsystem.setShooterReference(0, 0);
+                }));
+
+                // Trap Pivot
+                operator.createBButton().onTrue(Commands
+                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem));
+
+                // Run Shooter motors
+                operator.createRightBumper()
+                                .whileTrue(Commands
+                                                .run(() -> shooterSubsystem.shooterStateMachine(1), shooterSubsystem)
+                                                .finallyDo(() -> shooterSubsystem.stopMotors()));
+                // Feed Note into Shooter
+                operator.createLeftBumper().whileTrue(
+                                Commands.run(() -> feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed")),
+                                                feederSubsystem).finallyDo(() -> feederSubsystem.stop()));
+
+                // Shooter micro adjust
+                operator.createUpPovButton().onTrue(shooterSubsystem.adjustShooterReferenceUp());
+                operator.createDownPovButton().onTrue(shooterSubsystem.adjustShooterReferenceDown());
+                // Pivot micro adjust
+                operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
+                operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
+
+                operator.createStartButton()
+                                .onTrue(Commands.runOnce(() -> climbSubsystem.zeroPosition(), climbSubsystem));
+                operator.createBackButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
+                                () -> climbSubsystem.setOverride(false)));
+
+                /*
+                 * >>>>>>>>>>>>>>>>>>>>>>>>>>>> BOARD BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                 */
         }
 
         @Override
@@ -242,12 +254,13 @@ public class CompBot_2024 extends GenericMechanism {
                 shooterSubsystem.setDefaultCommand(
                                 new RunShooter(() -> 0.0, shooterSubsystem, feederSubsystem));
 
-                climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(),
-                                () -> operator.getRightYAxis(), climbSubsystem));
                 intakeSubsystem.setDefaultCommand(
                                 new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(), () -> 0.5,
                                                 intakeSubsystem,
                                                 feederSubsystem));
+
+                climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(),
+                                () -> operator.getRightYAxis(), climbSubsystem));
 
                 // ledSubsystem.setDefaultCommand(new LEDStateHandler(ledSubsystem, () ->
                 // feederSubsystem.getNoteState()));
