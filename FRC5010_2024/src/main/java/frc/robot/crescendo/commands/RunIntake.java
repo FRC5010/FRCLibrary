@@ -4,6 +4,7 @@
 
 package frc.robot.crescendo.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,14 +26,43 @@ public class RunIntake extends GenericCommand {
 
   boolean feederStopFlag = false;
 
+  Command feederCommand;
+
   /** Creates a new RunIntake. */
-  public RunIntake(DoubleSupplier joystick, DoubleSupplier feeder, IntakeSubsystem intakeSubsystem,
-      ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem) {
+  public RunIntake(DoubleSupplier joystick, DoubleSupplier feederSpeed, IntakeSubsystem intakeSubsystem,
+      FeederSubsystem feederSubsystem) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
-    this.shooterSubsystem = shooterSubsystem;
+    this.feederSpeed = feederSpeed;
     this.feederSubsystem = feederSubsystem;
-    this.feederSpeed = feeder;
+
+    feederCommand = Commands
+        .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()),
+            feederSubsystem)
+        .onlyIf(() -> feederSubsystem.getNoteState() == NoteState.Empty
+            || feederSubsystem.getNoteState() == NoteState.Holding)
+        .until(() -> feederSubsystem.getNoteState() == NoteState.Holding || 0 == speed.getAsDouble())
+        .finallyDo(() -> {
+          feederSubsystem.stop();
+          if (feederSubsystem.isBeamBroken()) {
+          feederSubsystem.setNoteState(NoteState.Holding);
+          }
+        })
+        .andThen(Commands.run(() -> feederSubsystem.setFeederSpeed(0.7 * feederSpeed.getAsDouble()))
+            .onlyIf(() -> feederSubsystem.isBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
+            .until(() -> !feederSubsystem.isBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
+            .finallyDo(() -> {
+              feederSubsystem.setNoteState(NoteState.Loaded);
+              feederSubsystem.stop();
+            }))
+        .andThen(Commands.waitSeconds(0.1))    
+        .andThen(Commands.run(() -> feederSubsystem.setFeederSpeed(-0.7 * feederSpeed.getAsDouble()))
+            .onlyIf(() -> !feederSubsystem.isBeamBroken() || NoteState.Loaded == feederSubsystem.getNoteState())
+            .until(() -> feederSubsystem.isBeamBroken() || feederSubsystem.getNoteState() == NoteState.Shooting)
+            .finallyDo(() -> {
+              feederSubsystem.setNoteState(NoteState.Shooting);
+              feederSubsystem.stop();
+            }));
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
@@ -44,45 +74,23 @@ public class RunIntake extends GenericCommand {
 
   }
 
-  Command feederCommand() {
-    return Commands
-        .run(() -> feederSubsystem.setFeederSpeed(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()),
-            feederSubsystem)
-        .until(() -> feederSubsystem.isBeamBroken() || 0 == speed.getAsDouble())
-        .finallyDo(() -> {
-          feederSubsystem.stop();
-          if (feederSubsystem.isBeamBroken()) {
-            feederSubsystem.setNoteState(NoteState.Holding);
-          }
-        })
-        .andThen(Commands.run(() -> feederSubsystem.setFeederSpeed(-0.1))
-            .onlyIf(() -> feederSubsystem.isBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
-            .until(() -> !feederSubsystem.isBeamBroken())
-            .finallyDo(() -> {
-              feederSubsystem.setNoteState(NoteState.Loaded);
-              feederSubsystem.stop();
-            }));
-  }
-
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     double velocity = speed.getAsDouble();
-    intakeSubsystem.stateMachine(!feederSubsystem.isBeamBroken() ? velocity : 0.0);
+    intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity : 0.0);
     if (velocity != 0) {
-      feederStopFlag = true;
-      if (feederSubsystem.isBeamBroken()) {
-        feederSubsystem.setFeederSpeed(0.0);
-        feederSubsystem.setNoteState(FeederSubsystem.NoteState.Holding);
-      } else {
-        feederSubsystem.setFeederSpeed(Math.signum(velocity) * feederSpeed.getAsDouble());
-      }
+      // feederStopFlag = true;
+      // if (feederSubsystem.isBeamBroken()) {
+      // feederSubsystem.setFeederSpeed(0.0);
+      // feederSubsystem.setNoteState(FeederSubsystem.NoteState.Holding);
+      // } else {
+      // feederSubsystem.setFeederSpeed(Math.signum(velocity) *
+      // feederSpeed.getAsDouble());
+      // }
 
       // Just need to do this if welocity is != 0
-      // CommandScheduler.getInstance().schedule(feederCommand);
-    } else if (feederStopFlag) {
-      feederStopFlag = false;
-      feederSubsystem.stop();
+      CommandScheduler.getInstance().schedule(feederCommand);
     }
   }
 

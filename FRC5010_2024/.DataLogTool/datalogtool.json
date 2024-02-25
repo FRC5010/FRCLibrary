@@ -1,6 +1,7 @@
 {
   "download": {
     "localDir": "C:\\Users\\robot\\Downloads\\Sys ID",
+    "remoteDir": "/var",
     "serverTeam": "5010"
   }
 }

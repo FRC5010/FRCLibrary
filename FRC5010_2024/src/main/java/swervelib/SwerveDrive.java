@@ -485,11 +485,11 @@ public class SwerveDrive
     }
 
     // Display commanded speed for testing
-    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
+    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.INFO)
     {
       SmartDashboard.putString("RobotVelocity", velocity.toString());
     }
-    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
+    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
     {
       SwerveDriveTelemetry.desiredChassisSpeeds[1] = velocity.vyMetersPerSecond;
       SwerveDriveTelemetry.desiredChassisSpeeds[0] = velocity.vxMetersPerSecond;

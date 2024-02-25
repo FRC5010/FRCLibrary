@@ -40,7 +40,14 @@ public class MK4iSwerveModule extends GenericSwerveModule {
                 false,
                 false
         );
-
+        public static final SwerveModuleConstants MK4I_L3_KRAKEN_NEO = new SwerveModuleConstants(
+                0.115573139,
+                (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0),
+                true,
+                (14.0 / 50.0) * (10.0 / 60.0),
+                false,
+                false
+        );
     private GenericPID pid = new GenericPID(3, 0.0, 0); 
     private MotorFeedFwdConstants motorConstants = new MotorFeedFwdConstants(0, 0.0016156, 4.2354e-05);
 

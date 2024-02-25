@@ -29,6 +29,7 @@ public class DrivetrainPoseEstimator {
   private VisionSystem vision;
   private final Field2d field2d;
   private final GenericPose poseTracker;
+  private boolean disableVisionUpdate = false;
 
   private int closestTagToRobot;
   private Pose3d closestTargetToRobot;
@@ -38,13 +39,13 @@ public class DrivetrainPoseEstimator {
     this.poseTracker = poseTracker;
     this.vision = vision;
     field2d = poseTracker.getField();
-    
+
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
     tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(11, 0);
     tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray()).withPosition(11, 1);
 
     tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees()))
-      .withPosition(11, 2);
+        .withPosition(11, 2);
     tab.add(field2d).withPosition(0, 0).withSize(11, 5);
 
     for (AprilTag at : vision.getFieldLayout().getTags()) {
@@ -70,8 +71,13 @@ public class DrivetrainPoseEstimator {
     return new Pose3d(poseTracker.getCurrentPose());
   }
 
+  public void setDisableVisionUpdate(boolean disable) {
+    disableVisionUpdate = disable;
+  }
+
   public Pose3d getProjectedPose3d(double time, ChassisSpeeds robotFieldSpeed) {
-    Transform3d movement = new Transform3d(robotFieldSpeed.vxMetersPerSecond * time, robotFieldSpeed.vyMetersPerSecond * time, 0, new Rotation3d());
+    Transform3d movement = new Transform3d(robotFieldSpeed.vxMetersPerSecond * time,
+        robotFieldSpeed.vyMetersPerSecond * time, 0, new Rotation3d());
     return getCurrentPose3d().plus(movement);
   }
 
@@ -105,7 +111,7 @@ public class DrivetrainPoseEstimator {
   public Pose3d updatePoseFromClosestVisionTarget() {
     double angleYaw = vision.getAngleX();
     double anglePitch = vision.getAngleY();
-    double distance = vision.getDistance();
+    double distance = -vision.getDistance();
     Transform3d cameraTransform = vision.getCameraToRobot();
 
     Pose3d targetPose = null;
@@ -144,19 +150,23 @@ public class DrivetrainPoseEstimator {
 
   public void update() {
     poseTracker.updateLocalMeasurements();
-    Map<String, Pose2d> poses = vision.getRawValues().getRobotPoses();
-    Map<String, Double> poseDistances = vision.getRawValues().getPoseDistances();
-    for (String camera : poses.keySet()) {
-      Pose2d robotPose = poses.get(camera);
-      Double poseDistance = poseDistances.get(camera);
-      if (null != robotPose) {
-        double imageCaptureTime = vision.getRawValues().getLatency(camera);
+    if (!disableVisionUpdate) {
+      Map<String, Pose2d> poses = vision.getRawValues().getRobotPoses();
+      Map<String, Double> poseDistances = vision.getRawValues().getPoseDistances();
+      for (String camera : poses.keySet()) {
+        Pose2d robotPose = poses.get(camera);
+        Double poseDistance = poseDistances.get(camera);
+        if (null != robotPose) {
+          double imageCaptureTime = vision.getRawValues().getLatency(camera);
 
-        if (vision.getRawValues().getFiducialIds().get(camera) > 0 && (RobotState.isDisabled()
-            || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
-            || 2.0 > poseDistance)) {
-          poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
+          if (vision.getRawValues().getFiducialIds().get(camera) > 0 && (RobotState.isDisabled()
+              || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
+              || 2.0 > poseDistance)) {
+            poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
+          }
         }
+
+        
       }
     }
     field2d.setRobotPose(getCurrentPose());

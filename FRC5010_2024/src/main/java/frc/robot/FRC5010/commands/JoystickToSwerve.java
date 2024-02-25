@@ -38,6 +38,14 @@ public class JoystickToSwerve extends Command {
   public void initialize() {
   }
 
+  public void setTurnSpeedFunction(DoubleSupplier turnSpeedFunction) {
+    turnSpdFunction = turnSpeedFunction;
+  }
+
+  public DoubleSupplier getTurnSpeedFunction() {
+    return turnSpdFunction;
+  }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {

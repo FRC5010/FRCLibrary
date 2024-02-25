@@ -7,6 +7,7 @@ package frc.robot.crescendo;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -54,7 +55,7 @@ public class FeederSubsystem extends GenericSubsystem {
     Holding,
     Loaded,
     Shooting,
-  } 
+  }
 
   private ControlState feederState = ControlState.Joystick;
   private NoteState noteState = NoteState.Empty;
@@ -74,6 +75,7 @@ public class FeederSubsystem extends GenericSubsystem {
 
   private final String BEAM_BREAK_STATE = "Beam Break State";
   private final String FEEDER_MOTOR_SPEED = "Feeder Motor";
+  private final String NOTE_STATE = "Note State";
 
   /** Creates a new FeederSubsystem. */
   public FeederSubsystem(Mechanism2d robotSim, MotorController5010 feeder) {
@@ -83,21 +85,25 @@ public class FeederSubsystem extends GenericSubsystem {
     feederFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
     beambreak = new DigitalInput(1);
     values.declare(SIM_BEAMBREAK, true);
-   
+
+    noteState = DriverStation.isFMSAttached() ? NoteState.Loaded : isBeamBroken() ? NoteState.Holding : NoteState.Empty;
 
     values.declare(BEAM_BREAK_STATE, false);
     values.declare(FEEDER_MOTOR_SPEED, 0.0);
+    values.declare(NOTE_STATE, noteState.toString());
 
-    pid.setValues(new GenericPID(0,0, 0));
+    pid.setValues(new GenericPID(0, 0, 0));
 
     this.feederMotorSim = robotSim.getRoot("Feeder Motor", 0.40, 0.30)
-      .append(new MechanismLigament2d("Feeder Motor", 0.1, 180, 5, new Color8Bit(Color.kMagenta)));
+        .append(new MechanismLigament2d("Feeder Motor", 0.1, 180, 5, new Color8Bit(Color.kMagenta)));
     noteRoot = robotSim.getRoot("Note Root", noteX, noteY);
-    note = noteRoot.append(new MechanismLigament2d("Note", Units.inchesToMeters(14), 45, 5, new Color8Bit(Color.kOrangeRed)));
+    note = noteRoot
+        .append(new MechanismLigament2d("Note", Units.inchesToMeters(14), 45, 5, new Color8Bit(Color.kOrangeRed)));
   }
 
   public Command getFeederSysIdRoutineCommand() {
-    return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(feederMotor, feederMotor.getMotorEncoder(), "Top Motor", this), 5, 3, 3);
+    return SystemIdentification.getSysIdFullCommand(
+        SystemIdentification.rpmSysIdRoutine(feederMotor, feederMotor.getMotorEncoder(), "Top Motor", this), 5, 3, 3);
   }
 
   public void setFeederReference(double speed) {
@@ -124,11 +130,38 @@ public class FeederSubsystem extends GenericSubsystem {
       }
     }, () -> {
       stop();
-    }, this).beforeStarting(() -> setFeederSpeed(1.0), this).until(() ->getNoteState().equals(NoteState.Empty));
+    }, this).beforeStarting(() -> setFeederSpeed(1.0), this).until(() -> getNoteState().equals(NoteState.Empty));
   }
 
   public double getFeederVelocity() {
     return Robot.isReal() ? encoder.getVelocity() : feederSimEncoder.getVelocity();
+  }
+
+  public void transitionNoteState() {
+    switch (noteState) {
+      case Empty:
+        if (isBeamBroken()) {
+          noteState = NoteState.Holding;
+        }
+        break;
+      case Holding:
+        if (!isBeamBroken()) {
+          noteState = NoteState.Loaded;
+        }
+        break;
+      case Loaded:
+        if (isBeamBroken()) {
+          noteState = NoteState.Shooting;
+        }
+        break;
+      case Shooting:
+        if (!isBeamBroken()) {
+          noteState = NoteState.Empty;
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   public void feederStateMachine(double feeder) {
@@ -137,7 +170,7 @@ public class FeederSubsystem extends GenericSubsystem {
 
         if (feeder == 0) {
           feederState = ControlState.Velocity;
-         
+
           setFeederReference(0.0);
           runToReferenceFeeder();
 
@@ -145,7 +178,7 @@ public class FeederSubsystem extends GenericSubsystem {
           setFeederSpeed(feeder);
         }
         break;
-    
+
       case Velocity:
 
         if (feeder != 0) {
@@ -156,6 +189,7 @@ public class FeederSubsystem extends GenericSubsystem {
         }
         break;
     }
+    transitionNoteState();
   }
 
   public NoteState getNoteState() {
@@ -184,19 +218,16 @@ public class FeederSubsystem extends GenericSubsystem {
     double currentTime = RobotController.getFPGATime() / 1E6;
     double errorRate = (currentError - feederPrevError) / (currentTime - feederPrevTime);
 
-
     double voltage = currentError * pid.getP() + (errorRate * pid.getD());
 
     double feedforward = getFeederFeedFwdVoltage(voltage);
 
-    
     if (!Robot.isReal()) {
 
-      feederMotor.set(feedforward/ RobotController.getBatteryVoltage() + feedforward);
+      feederMotor.set(feedforward / RobotController.getBatteryVoltage() + feedforward);
     } else {
       pid.setReference(getFeederReference(), PIDControlType.VELOCITY, feedforward);
     }
-
 
     feederPrevTime = currentTime;
     feederPrevError = currentError;
@@ -215,7 +246,6 @@ public class FeederSubsystem extends GenericSubsystem {
     return feederFeedFwd.calculate(velocity);
   }
 
-
   public void setFeederSpeed(double speed) {
     feederMotor.set(speed);
   }
@@ -226,10 +256,11 @@ public class FeederSubsystem extends GenericSubsystem {
   }
 
   public Command adjustFeederReferenceUp() {
-    return Commands.runOnce(() -> setFeederReference(getFeederReference()+microAdjust), this);
+    return Commands.runOnce(() -> setFeederReference(getFeederReference() + microAdjust), this);
   }
+
   public Command adjustFeederReferenceDown() {
-    return Commands.runOnce(() -> setFeederReference(getFeederReference()-microAdjust), this);
+    return Commands.runOnce(() -> setFeederReference(getFeederReference() - microAdjust), this);
   }
 
   @Override
@@ -240,9 +271,13 @@ public class FeederSubsystem extends GenericSubsystem {
     noteY -= Math.signum(feederSpeed) * noteMotion;
     values.set(BEAM_BREAK_STATE, isBeamBroken());
     values.set(FEEDER_MOTOR_SPEED, feederMotor.get());
-    if (noteX < 0.1 || noteX > 1.0) noteX = 0.1;
-    if (noteY < 0.1 || noteY > 1.0) noteY = 0.1;
+    values.set(NOTE_STATE, noteState.toString());
+    if (noteX < 0.1 || noteX > 1.0)
+      noteX = 0.1;
+    if (noteY < 0.1 || noteY > 1.0)
+      noteY = 0.1;
     noteRoot.setPosition(noteX, noteY);
-    if (noteX > 0.5 && noteX < 0.55) values.set(SIM_BEAMBREAK, false);
+    if (noteX > 0.5 && noteX < 0.55)
+      values.set(SIM_BEAMBREAK, false);
   }
 }

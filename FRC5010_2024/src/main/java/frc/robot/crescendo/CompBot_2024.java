@@ -6,8 +6,11 @@ package frc.robot.crescendo;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -19,6 +22,9 @@ import frc.robot.Robot;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.arch.GenericMechanism;
+import frc.robot.FRC5010.commands.DriveToPosition;
+import frc.robot.FRC5010.commands.JoystickToSwerve;
+import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
@@ -31,12 +37,10 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.Color;
-import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
+import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
-import frc.robot.crescendo.commands.LEDStateHandler;
 import frc.robot.crescendo.commands.RunClimb;
-import frc.robot.crescendo.commands.RunFeeder;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
@@ -68,7 +72,7 @@ public class CompBot_2024 extends GenericMechanism {
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
 
-                ledSubsystem = new SegmentedLedSystem(0, 63, visual);
+                ledSubsystem = new SegmentedLedSystem(0, 34, visual);
                 ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
 
                 // Motor Setup
@@ -82,14 +86,15 @@ public class CompBot_2024 extends GenericMechanism {
 
                 values.declare("FeederSpeed", 1.0);
 
-                topShooterMotor = MotorFactory.KrakenX60(12);
-                bottomShooterMotor = MotorFactory.KrakenX60(14);
+                topShooterMotor = MotorFactory.KrakenX60(12).invert(true);
+                bottomShooterMotor = MotorFactory.KrakenX60(14).invert(true);
 
                 visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
 
                 gyro = new PigeonGyro(13);
 
                 // visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
+
                 pivotSubsystem = new PivotSubsystem(pivotMotor, mechVisual);
                 climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro,
                                 mechVisual);
@@ -97,22 +102,23 @@ public class CompBot_2024 extends GenericMechanism {
                                 Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
 
                 // Setup Swerve Constants
-                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(10);
+                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
                 swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
                 swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
                 swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
-                swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(14.5);
+                swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
 
-                swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3);
-                // swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft", new
-                // MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // FL
-                // swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright", new
-                // MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // FR
-                // swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backleft", new
-                // MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BL
-                // swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright", new
-                // MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BR
+                swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3_KRAKEN_NEO);
+                swerveConstants.getSwerveModuleConstants().setkWheelDiameterMeters(0.115573139);
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft",
+                                new MotorFeedFwdConstants(0.13212, 1.9208, 0.20617)); // FL
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright",
+                                new MotorFeedFwdConstants(0.15576, 1.9648, 0.17833)); // FR
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backleft",
+                                new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BL
+                swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
+                                new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BR
                 swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
 
                 drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
@@ -137,41 +143,62 @@ public class CompBot_2024 extends GenericMechanism {
                  */
                 drive.configureButtonBindings(driver, operator);
 
-                if (Robot.isSimulation()) {
-                        driver.createAButton().whileTrue(
-                                        new AutoAim(pivotSubsystem, shooterSubsystem, drive, targetingSystem));
-                }
+                driver.createAButton().whileTrue(
+                                new AutoAim(pivotSubsystem, shooterSubsystem, drive, targetingSystem,
+                                                () -> (JoystickToSwerve) drive.getDefaultCommand()))
+                                .onFalse(Commands
+                                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL)));
                 driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07).negate());
                 driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07).negate());
 
                 // Podium Pivot
                 operator.createXButton().onTrue(Commands.runOnce(
-                                () -> pivotSubsystem.setReference(pivotSubsystem.PODIUM_SHOT), pivotSubsystem));
+                                () -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.PODIUM_SHOT);
+                                        shooterSubsystem.setShooterReference(6000, 6000);
+                                }, pivotSubsystem)).onFalse(Commands.runOnce(() -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+                                        shooterSubsystem.setShooterReference(0, 0);
+                                }));
                 // Trap Pivot
                 operator.createBButton().onTrue(Commands
-                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem));
+                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem))
+                                .onFalse(Commands.runOnce(() -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+                                }));
                 // Home Pivot
-                operator.createAButton().onTrue(Commands
+                operator.createAButton().whileTrue(Commands
                                 .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL), pivotSubsystem));
                 // Amp Pivot
-                operator.createYButton().onTrue(Commands
-                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL), pivotSubsystem));
+                operator.createYButton().whileTrue(Commands
+                                .runOnce(() -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL);
+                                        shooterSubsystem.setShooterReference(2000, 2000);
+                                })
+
+                ).onFalse(Commands.runOnce(() -> {
+                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+                        shooterSubsystem.setShooterReference(0, 0);
+                }));
                 // Run Shooter motors
                 operator.createLeftBumper()
                                 .whileTrue(Commands
-                                                .run(() -> shooterSubsystem.shooterStateMachine(-1), shooterSubsystem)
+                                                .run(() -> shooterSubsystem.shooterStateMachine(1), shooterSubsystem)
                                                 .finallyDo(() -> shooterSubsystem.stopMotors()));
                 // Feed Note into Shooter
                 operator.createRightBumper().whileTrue(
                                 Commands.run(() -> feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed")),
                                                 feederSubsystem).finallyDo(() -> feederSubsystem.stop()));
 
+                driver.createBackButton()
+                                .whileTrue(Commands.runOnce(() -> feederSubsystem.setNoteState(NoteState.Empty)));
+
                 // Shooter micro adjust
                 operator.createUpPovButton().onTrue(shooterSubsystem.adjustShooterReferenceUp());
                 operator.createDownPovButton().onTrue(shooterSubsystem.adjustShooterReferenceDown());
                 // Pivot micro adjust
-                operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
-                operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
+                operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
+                operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
 
                 driver.createUpPovButton().onTrue(Commands.runOnce(() -> {
                         pivotSubsystem.setSlowdown(pivotSubsystem.getSlowdown() + 0.1);
@@ -193,6 +220,17 @@ public class CompBot_2024 extends GenericMechanism {
                                 .onTrue(Commands.runOnce(() -> climbSubsystem.zeroPosition(), climbSubsystem));
                 operator.createBackButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
                                 () -> climbSubsystem.setOverride(false)));
+
+                driver.createRightBumper()
+                                .whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                                                () -> drive.getDrivetrain().getPoseEstimator()
+                                                                .getPoseFromClosestVisionTarget(),
+                                                null,
+                                                new Transform2d(new Translation2d(Units.inchesToMeters(-13.5), 0),
+                                                                new Rotation2d()))
+                                                .alongWith(new RunIntake(() -> 1.0, () -> 0.5, intakeSubsystem,
+                                                                feederSubsystem)));
         }
 
         @Override
@@ -202,32 +240,20 @@ public class CompBot_2024 extends GenericMechanism {
                 pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem));
 
                 shooterSubsystem.setDefaultCommand(
-                                new RunShooter(() -> operator.getLeftTrigger() - operator.getRightTrigger(),
-                                                () -> operator.getLeftTrigger() - operator.getRightTrigger(),
-                                                shooterSubsystem, feederSubsystem));
+                                new RunShooter(() -> 0.0, shooterSubsystem, feederSubsystem));
 
-                operator.createRightBumper().whileTrue(
-                                Commands.sequence(
-                                                new RunFeeder(feederSubsystem, () -> -0.5)
-                                                                .until(() -> !feederSubsystem.isBeamBroken())
-
-                                ));
                 climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(),
                                 () -> operator.getRightYAxis(), climbSubsystem));
                 intakeSubsystem.setDefaultCommand(
-                                new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(),
-                                                () -> -driver.getRightTrigger(), intakeSubsystem,
-                                                shooterSubsystem, feederSubsystem));
+                                new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(), () -> 0.5,
+                                                intakeSubsystem,
+                                                feederSubsystem));
 
                 // ledSubsystem.setDefaultCommand(new LEDStateHandler(ledSubsystem, () ->
                 // feederSubsystem.getNoteState()));
-                // driver.createAButton().whileTrue(new AutoAim(pivotSubsystem,
-                // shooterSubsystem, drive, targetingSystem));
                 ledSubsystem.setDefaultCommand(Commands.run(() -> {
                 }, ledSubsystem)
                                 .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
-                // driver.createAButton().whileTrue(new AutoAim(pivotSubsystem,
-                // shooterSubsystem, drive, targetingSystem));
         }
 
         @Override
@@ -282,10 +308,11 @@ public class CompBot_2024 extends GenericMechanism {
                                                                         new Rotation3d(0, 0,
                                                                                         Units.degreesToRadians(-30)))),
                                         PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
-                        // visionSystem.addLimeLightTargetCam("orange", 0.3556, -10, 0, 1,
-                        // new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(7.25),
-                        // Units.inchesToMeters(12.5),
-                        // new Rotation3d(0, 0, Units.degreesToRadians(180))));
+                        visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(11.829),
+                                        -10, 0, 1,
+                                        new Transform3d(Units.inchesToMeters(-13.317), Units.inchesToMeters(-4.467),
+                                                        Units.inchesToMeters(11.829),
+                                                        new Rotation3d(0, 0, Units.degreesToRadians(180))));
                 }
         }
 

@@ -72,7 +72,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
-  public        double      maximumSpeed = Units.feetToMeters(14.5);
+  public        double      maximumSpeed = Units.feetToMeters(19.5);
 
     /** 5010 Code */
   public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants,
@@ -556,6 +556,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   @Override
   public void periodic()
   {
+    SmartDashboard.putNumber("Left Front", swerveDrive.getModulePositions()[0].distanceMeters);
+    SmartDashboard.putNumber("Right Front", swerveDrive.getModulePositions()[1].distanceMeters);
+    SmartDashboard.putNumber("Left Back", swerveDrive.getModulePositions()[2].distanceMeters);
+    SmartDashboard.putNumber("Right Back", swerveDrive.getModulePositions()[3].distanceMeters);
     poseEstimator.update();
     hasIssues();
     if (RobotBase.isSimulation() || useGlass) {

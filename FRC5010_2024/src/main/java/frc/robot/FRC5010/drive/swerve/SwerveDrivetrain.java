@@ -4,6 +4,8 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -19,13 +21,16 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.arch.Persisted;
+import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.GenericDrivetrain;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.SwervePose;
 import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
+import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
@@ -159,13 +164,14 @@ public class SwerveDrivetrain extends GenericDrivetrain {
     }
 
     public void setAutoBuilder() {
-    
-    AutoBuilder.configureHolonomic(
+
+        AutoBuilder.configureHolonomic(
                 () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
-               (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the
-                this::getChassisSpeeds, //  ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the
+                this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::drive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+                                                 // Constants class
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                         4.5, // Max module speed, in m/s
@@ -173,7 +179,8 @@ public class SwerveDrivetrain extends GenericDrivetrain {
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // Boolean supplier that controls when the path will be mirrored for the red
+                    // alliance
                     // This will flip the path being followed to the red side of the field.
                     // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
@@ -185,7 +192,16 @@ public class SwerveDrivetrain extends GenericDrivetrain {
                 },
                 this // Reference to this subsystem to set requirements
         );
-  }
+    }
+
+    public Command createDefaultCommand(Controller driverXbox, DoubleSupplier rotationSupplier) {
+        // System.out.println("brrrrr");
+        DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
+        DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
+
+        return new JoystickToSwerve(this, leftY, leftX, rotationSupplier, () -> isFieldOrientedDrive);
+        // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented);
+    }
 
     public void disabledBehavior() {
         frontLeft.resetAbsoluteEncoder();

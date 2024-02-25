@@ -129,6 +129,10 @@ public class Drive extends GenericMechanism {
         drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervethrifty",
                 vision);
     }
+    
+    public Command getDefaultCommand() {
+        return defaultDriveCommand;
+    }
 
     public void setupDefaultCommands(Controller driver, Controller operator) {
         // Handle real or simulation case for default commands

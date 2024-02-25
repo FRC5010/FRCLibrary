@@ -49,9 +49,13 @@
   "NetworkTables": {
     "transitory": {
       "Shuffleboard": {
+        "Pose": {
+          "open": true
+        },
         "Robot": {
           "open": true
-        }
+        },
+        "open": true
       },
       "SmartDashboard": {
         "Robot Visual": {

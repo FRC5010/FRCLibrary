@@ -90,7 +90,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private PivotState pivotState = PivotState.POSITION;
 
   public final double HOME_LEVEL = MIN_PIVOT_POSITION;
-  public final double AMP_LEVEL = 49;
+  public final double AMP_LEVEL = 79;
   public final double TRAP_LEVEL = 75;
   public final double INTAKE_LEVEL = HOME_LEVEL; // TODO: Make accurate
   public final double PODIUM_SHOT = 12.3;
@@ -111,7 +111,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kA, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
     values.declare(SLOWDOWN, 0.1);
-    values.declare(vals.FF_VOLTAGE.name(), 0);
+    values.declare(vals.FF_VOLTAGE.name(), 0.0);
     values.declare(vals.RUN_REF.name(), false);
     values.declare(vals.RUN_SPEED.name(), false);
     values.declare(vals.MOTOR_SPEED.name(), 0.0);

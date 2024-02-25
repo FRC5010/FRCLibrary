@@ -10,6 +10,7 @@ import com.ctre.phoenix6.sim.ChassisReference;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -23,36 +24,41 @@ import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 public class Targeting2024 {
 
     private static ProfiledPIDController thetaController;
-    private TrapezoidProfile.Constraints thetaConstraints; 
+    private TrapezoidProfile.Constraints thetaConstraints;
     private SwerveDrivetrain swerve;
-    private GenericPID thetaPID = new GenericPID(0.25, 0, 0);
+    private GenericPID thetaPID = new GenericPID(0.25, 0, 0.005);
 
     Supplier<Pose3d> robotPose;
     Supplier<Pose3d> targetPose;
 
     public Targeting2024(SwerveDrivetrain swerve, Supplier<Pose3d> robotPose, Supplier<Pose3d> targetPosition) {
         thetaConstraints = new TrapezoidProfile.Constraints(
-            swerve.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(), swerve.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond());
+                swerve.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(),
+                swerve.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond());
 
-        thetaController = new ProfiledPIDController(thetaPID.getkP(), thetaPID.getkI(), thetaPID.getkD(), thetaConstraints);
-        thetaController.setTolerance(0.01);
+        thetaController = new ProfiledPIDController(thetaPID.getkP(), thetaPID.getkI(), thetaPID.getkD(),
+                thetaConstraints);
+        thetaController.setTolerance(0.05);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         this.targetPose = targetPosition;
         this.robotPose = robotPose;
         this.swerve = swerve;
-    }   
+    }
 
     public void init() {
         thetaController.reset(robotPose.get().getRotation().getZ());
     }
 
-
     public double getAnglePowerToTarget(ChassisSpeeds chassisSpeeds) {
-        double targetAngle = AccountForHorizontalVelocity(robotPose.get(), Constants.Field.SHOT_POSE, chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, getPivotAngleToTarget(robotPose.get(), Constants.Field.SHOT_POSE), 50);
+
+        double targetAngle = AccountForHorizontalVelocity(robotPose.get(), Constants.Field.SHOT_POSE,
+                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
+                getPivotAngleToTarget(robotPose.get(), Constants.Field.SHOT_POSE), 50);
         SmartDashboard.putNumber("Yaw Angle to Target", targetAngle);
-        thetaController.setGoal(targetAngle);
-        return thetaController.calculate(Units.radiansToDegrees(robotPose.get().getRotation().getZ())) * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
+        thetaController.setGoal(Units.degreesToRadians(targetAngle));
+        return thetaController.atGoal() ? 0 : thetaController.calculate(robotPose.get().getRotation().getZ())
+                * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
     }
 
     public static double getYawAngleToTarget(Pose3d from, Pose3d target) {
@@ -63,17 +69,22 @@ public class Targeting2024 {
         return yawAngle;
     }
 
-
-    public static double AccountForHorizontalVelocity(Pose3d robotPosition, Pose3d speakerPosition, double robotXVelocity, double robotYVelocity, double robotPivotAngle, double noteVelocity) {
+    public static double AccountForHorizontalVelocity(Pose3d robotPosition, Pose3d speakerPosition,
+            double robotXVelocity, double robotYVelocity, double robotPivotAngle, double noteVelocity) {
         double noteVel = noteVelocity;
-        double xDifference = speakerPosition.getY() - robotPosition.getY(); // In respect to speaker -(robotY - speakerY)
-        double yDifference = robotPosition.getX() - speakerPosition.getX(); // In respect to speaker (must be positive) (robotX - speakerX)
+        double xDifference = speakerPosition.getY() - robotPosition.getY(); // In respect to speaker -(robotY -
+                                                                            // speakerY)
+        double yDifference = robotPosition.getX() - speakerPosition.getX(); // In respect to speaker (must be positive)
+                                                                            // (robotX - speakerX)
+        SmartDashboard.putNumber("x-difference", yDifference);
+        SmartDashboard.putNumber("y-difference", -xDifference);
         double robotXVel = robotYVelocity; // In respect to speaker (robotYVelocity)
         double robotYVel = -robotXVelocity; // In respect to speaker -(robotXVelocity)
         double pivotAngle = Math.toRadians(robotPivotAngle);
         double targetValue = ((xDifference * robotXVel) - (yDifference * robotYVel)) / (noteVel * Math.cos(pivotAngle));
         double currentTheta = xDifference > 0.0 ? -Math.PI / 4 : Math.PI / 4;
-        double currentDifference = (yDifference * Math.cos(currentTheta)) - (xDifference * Math.sin(currentTheta)) - targetValue;
+        double currentDifference = (yDifference * Math.cos(currentTheta)) - (xDifference * Math.sin(currentTheta))
+                - targetValue;
         double originalSign = Math.signum(currentDifference);
         double currentSign = originalSign;
         double currentInterval = Math.PI / 2;
@@ -85,23 +96,31 @@ public class Targeting2024 {
                 currentTheta += currentInterval;
             }
             currentInterval /= 2;
-            currentDifference = (yDifference * Math.cos(currentTheta)) - (xDifference * Math.sin(currentTheta)) - targetValue;
+            currentDifference = (yDifference * Math.cos(currentTheta)) - (xDifference * Math.sin(currentTheta))
+                    - targetValue;
             currentSign = Math.signum(currentDifference);
         }
 
-        return Math.toDegrees(currentTheta) + 90 > 180 ? Math.toDegrees(currentTheta) - 270 : Math.toDegrees(currentTheta) + 90;
+        return Math.toDegrees(currentTheta) + 90 > 180 ? Math.toDegrees(currentTheta) - 270
+                : Math.toDegrees(currentTheta) + 90;
     }
 
-    public static double getPivotAngleToTarget(Pose3d from, Pose3d target) { // Change to actually work with weird pivot...
+    public static double getPivotAngleToTarget(Pose3d from, Pose3d target) { // Change to actually work with weird
+                                                                             // pivot...
         Translation3d difference = from.getTranslation().minus(target.getTranslation());
         double hypotenousA = Math.sqrt(Math.pow(difference.getX(), 2) + Math.pow(difference.getY(), 2));
         double pivotAngle = Math.atan2(difference.getZ(), hypotenousA);
         return Math.toDegrees(pivotAngle);
     }
 
-
-
-
-
+    public double getTargetingRotation(Supplier<Translation3d> robotTranslation, SwerveDrivetrain drivetrain) {
+        // TODO: Have to account for robot rotation just like with camera
+        
+        ChassisSpeeds robotVelocity = drivetrain.getChassisSpeeds();
+        robotVelocity = robotVelocity != null ? robotVelocity : new ChassisSpeeds();
+        double angleSpeed = getAnglePowerToTarget(robotVelocity);
+        SmartDashboard.putNumber("Targeting Angle Power", angleSpeed);
+        return angleSpeed;
+    }
 
 }

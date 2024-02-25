@@ -2,6 +2,12 @@
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
+        "FeederSubsystem": {
+          "open": true
+        },
+        "IntakeSubsystem": {
+          "open": true
+        },
         "PivotSubsystem": {
           "open": true
         },
@@ -22,7 +28,8 @@
     "visible": true
   },
   "NetworkTables Settings": {
-    "mode": "Client (NT3)",
-    "serverTeam": "10.50.10.2"
+    "mode": "Client (NT4)",
+    "serverTeam": "10.50.10.2",
+    "visible": false
   }
 }
