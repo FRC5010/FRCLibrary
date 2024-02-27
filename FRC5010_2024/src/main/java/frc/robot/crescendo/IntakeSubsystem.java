@@ -31,10 +31,10 @@ public class IntakeSubsystem extends GenericSubsystem {
   private MotorController5010 topIntakeMotor;
   private MotorController5010 bottomIntakeMotor;
 
-  private RevEncoder topEncoder;
-  private RevEncoder bottomEncoder;
-  private SparkPIDController topPID;
-  private SparkPIDController bottomPID;
+  // private RevEncoder topEncoder;
+  // private RevEncoder bottomEncoder;
+  // private SparkPIDController topPID;
+  // private SparkPIDController bottomPID;
 
   private SimpleMotorFeedforward feedforward;
 
@@ -78,24 +78,24 @@ public class IntakeSubsystem extends GenericSubsystem {
     bottomFeedFwd = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
 
     topIntakeMotor = top;
-    topEncoder = (RevEncoder) topIntakeMotor.getMotorEncoder();
+    //topEncoder = (RevEncoder) topIntakeMotor.getMotorEncoder();
 
     bottomIntakeMotor = bottom;
-    bottomEncoder = (RevEncoder) bottomIntakeMotor.getMotorEncoder();
+    //bottomEncoder = (RevEncoder) bottomIntakeMotor.getMotorEncoder();
 
-    topEncoder.setPositionConversion(topConversionFactor);
-    bottomEncoder.setPositionConversion(bottomConversionFactor);
+    //topEncoder.setPositionConversion(topConversionFactor);
+    //bottomEncoder.setPositionConversion(bottomConversionFactor);
 
-    topPID = ((CANSparkMax) topIntakeMotor.getMotor()).getPIDController();
-    bottomPID = ((CANSparkMax) bottomIntakeMotor.getMotor()).getPIDController();
+    // topPID = ((CANSparkMax) topIntakeMotor.getMotor()).getPIDController();
+    // bottomPID = ((CANSparkMax) bottomIntakeMotor.getMotor()).getPIDController();
 
-    topPID.setP(0.0);
-    topPID.setI(0.0);
-    topPID.setD(0.0);
+    // topPID.setP(0.0);
+    // topPID.setI(0.0);
+    // topPID.setD(0.0);
 
-    bottomPID.setP(0.0);
-    bottomPID.setI(0.0);
-    bottomPID.setD(0.0);
+    // bottomPID.setP(0.0);
+    // bottomPID.setI(0.0);
+    // bottomPID.setD(0.0);
 
 
     simTop = new FlywheelSim(DCMotor.getNEO(1), 1, 1);
@@ -164,13 +164,13 @@ public class IntakeSubsystem extends GenericSubsystem {
     bottomIntakeMotor.set(bottomSpeed);
   }
 
-  public double getTopIntakeVelocity() {
-    return Robot.isReal() ? topEncoder.getVelocity() : simTopEncoder.getVelocity();
-  }
+  // public double getTopIntakeVelocity() {
+  //   return Robot.isReal() ? topEncoder.getVelocity() : simTopEncoder.getVelocity();
+  // }
 
-  public double getBottomIntakeVelocity() {
-    return Robot.isReal() ? bottomEncoder.getVelocity() : simBottomEncoder.getVelocity();
-  }
+  // public double getBottomIntakeVelocity() {
+  //   return Robot.isReal() ? bottomEncoder.getVelocity() : simBottomEncoder.getVelocity();
+  // }
 
   public double getTopReference() {
     return topReference;
@@ -187,42 +187,42 @@ public class IntakeSubsystem extends GenericSubsystem {
 
   public void topRunToReference() {
 
-    double currentError = getTopReference() - getTopIntakeVelocity();
-    double currentTime = RobotController.getFPGATime() / 1E6;
-    double errorRate = (currentError - topPreviousError) / (currentTime - topPreviousTime);
-    double voltage = currentError * topPID.getP() + (errorRate * topPID.getD());
-    double feedForward = getTopFeedFwdVoltage(getTopReference());
+    // double currentError = getTopReference() - getTopIntakeVelocity();
+    // double currentTime = RobotController.getFPGATime() / 1E6;
+    // double errorRate = (currentError - topPreviousError) / (currentTime - topPreviousTime);
+    // double voltage = currentError * topPID.getP() + (errorRate * topPID.getD());
+    // double feedForward = getTopFeedFwdVoltage(getTopReference());
   
     
-    if (!Robot.isReal()) {
-      topIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
-    } else {
-      topPID.setReference(getTopReference(), CANSparkBase.ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
-    }
+    // if (!Robot.isReal()) {
+    //   topIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
+    // } else {
+    //   topPID.setReference(getTopReference(), CANSparkBase.ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+    // }
   
 
-    topPreviousError = currentError;
-    topPreviousTime = currentTime;
+  //   topPreviousError = currentError;
+  //   topPreviousTime = currentTime;
   }
 
   public void bottomRunToReference() {
 
-    double currentError = getBottomReference() - getBottomIntakeVelocity();
-    double currentTime = RobotController.getFPGATime() / 1E6;
-    double errorRate = (currentError - bottomPreviousError) / (currentTime - bottomPreviousTime);
-    double voltage = currentError * bottomPID.getP() + (errorRate * bottomPID.getD());
-    double feedForward = getBottomFeedFwdVoltage(getBottomReference());
+    // double currentError = getBottomReference() - getBottomIntakeVelocity();
+    // double currentTime = RobotController.getFPGATime() / 1E6;
+    // double errorRate = (currentError - bottomPreviousError) / (currentTime - bottomPreviousTime);
+    // double voltage = currentError * bottomPID.getP() + (errorRate * bottomPID.getD());
+    // double feedForward = getBottomFeedFwdVoltage(getBottomReference());
    
     
-    if (!Robot.isReal()) {
-      bottomIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
-    } else {
-      bottomPID.setReference(getBottomReference(), CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
-    }
+    // if (!Robot.isReal()) {
+    //   bottomIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
+    // } else {
+    //   bottomPID.setReference(getBottomReference(), CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
+    // }
 
 
-    bottomPreviousError = currentError;
-    bottomPreviousTime = currentTime;
+    // bottomPreviousError = currentError;
+    // bottomPreviousTime = currentTime;
   }
 
 

@@ -76,8 +76,8 @@ public class CompBot_2024 extends GenericMechanism {
                 ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
 
                 // Motor Setup
-                innerIntakeMotor = MotorFactory.NEO(1);
-                outerIntakeMotor = MotorFactory.NEO(5);
+                innerIntakeMotor = MotorFactory.KrakenX60(1);
+                outerIntakeMotor = MotorFactory.KrakenX60(5);
                 leftClimbMotor = MotorFactory.NEO(7); // TODO: Add correct port
                 rightClimbMotor = MotorFactory.NEO(8).invert(true); // TODO: Add correct port
                 pivotMotor = MotorFactory.NEO(9).invert(true);
@@ -321,11 +321,11 @@ public class CompBot_2024 extends GenericMechanism {
                                                                         new Rotation3d(0, 0,
                                                                                         Units.degreesToRadians(-30)))),
                                         PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
-                        visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(11.829),
-                                        -10, 0, 1,
-                                        new Transform3d(Units.inchesToMeters(-13.317), Units.inchesToMeters(-4.467),
-                                                        Units.inchesToMeters(11.829),
-                                                        new Rotation3d(0, 0, Units.degreesToRadians(180))));
+                        // visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(11.829),
+                        //                 -10, 0, 1,
+                        //                 new Transform3d(Units.inchesToMeters(-13.317), Units.inchesToMeters(-4.467),
+                        //                                 Units.inchesToMeters(11.829),
+                        //                                 new Rotation3d(0, 0, Units.degreesToRadians(180))));
                 }
         }
 

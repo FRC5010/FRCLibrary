@@ -36,8 +36,10 @@ public class FeederSubsystem extends GenericSubsystem {
   private GenericEncoder encoder;
   private SimulatedEncoder feederSimEncoder = new SimulatedEncoder(22, 23);
   private SimpleMotorFeedforward feederFeedFwd;
-  private DigitalInput beambreak;
-  private final String SIM_BEAMBREAK = "Simulated Beambreak";
+  private DigitalInput stopBeamBreak;
+  private DigitalInput detectBeamBreak;
+  private final String SIM_STOP_BEAMBREAK = "Simulated Stop Beambreak";
+  private final String SIM_DETECT_BEAMBREAK = "Simulated Detect Beambreak";
 
   private static enum ControlState {
     Joystick,
@@ -73,7 +75,8 @@ public class FeederSubsystem extends GenericSubsystem {
   private double noteY = 0.1;
   private double noteMotion = 0.05;
 
-  private final String BEAM_BREAK_STATE = "Beam Break State";
+  private final String STOP_BEAM_BREAK_STATE = "Stop Beam Break State";
+  private final String DETECT_BEAM_BREAK_STATE = "Detect Beam Break State";
   private final String FEEDER_MOTOR_SPEED = "Feeder Motor";
   private final String NOTE_STATE = "Note State";
 
@@ -83,12 +86,16 @@ public class FeederSubsystem extends GenericSubsystem {
     encoder = feeder.getMotorEncoder();
     pid = feeder.getPIDController5010();
     feederFeedFwd = SwerveMath.createDriveFeedforward(12, NEO.MAXRPM, 1.19);
-    beambreak = new DigitalInput(1);
-    values.declare(SIM_BEAMBREAK, true);
+    stopBeamBreak = new DigitalInput(1);
+    detectBeamBreak = new DigitalInput(3);
+    values.declare(SIM_STOP_BEAMBREAK, true);
+    values.declare(SIM_DETECT_BEAMBREAK, true);
 
-    noteState = DriverStation.isFMSAttached() ? NoteState.Loaded : isBeamBroken() ? NoteState.Holding : NoteState.Empty;
+    noteState = DriverStation.isFMSAttached() ? NoteState.Loaded
+        : isStopBeamBroken() ? NoteState.Holding : NoteState.Empty;
 
-    values.declare(BEAM_BREAK_STATE, false);
+    values.declare(STOP_BEAM_BREAK_STATE, false);
+    values.declare(DETECT_BEAM_BREAK_STATE, false);
     values.declare(FEEDER_MOTOR_SPEED, 0.0);
     values.declare(NOTE_STATE, noteState.toString());
 
@@ -118,14 +125,14 @@ public class FeederSubsystem extends GenericSubsystem {
     return Commands.runEnd(() -> setFeederSpeed(-0.1), () -> {
       stop();
       setNoteState(NoteState.Loaded);
-    }, this).until(() -> !isBeamBroken());
+    }, this).until(() -> !isStopBeamBroken());
   }
 
   public Command shootNote() {
     return Commands.runEnd(() -> {
-      if (noteState == NoteState.Holding && isBeamBroken()) {
+      if (noteState == NoteState.Holding && isStopBeamBroken()) {
         noteState = NoteState.Shooting;
-      } else if (noteState == NoteState.Shooting && !isBeamBroken()) {
+      } else if (noteState == NoteState.Shooting && !isStopBeamBroken()) {
         noteState = NoteState.Empty;
       }
     }, () -> {
@@ -140,22 +147,22 @@ public class FeederSubsystem extends GenericSubsystem {
   public void transitionNoteState() {
     switch (noteState) {
       case Empty:
-        if (isBeamBroken()) {
+        if (isStopBeamBroken()) {
           noteState = NoteState.Holding;
         }
         break;
       case Holding:
-        if (!isBeamBroken()) {
+        if (!isStopBeamBroken()) {
           noteState = NoteState.Loaded;
         }
         break;
       case Loaded:
-        if (isBeamBroken()) {
+        if (isStopBeamBroken()) {
           noteState = NoteState.Shooting;
         }
         break;
       case Shooting:
-        if (!isBeamBroken()) {
+        if (!isStopBeamBroken()) {
           noteState = NoteState.Empty;
         }
         break;
@@ -234,12 +241,19 @@ public class FeederSubsystem extends GenericSubsystem {
 
   }
 
-  public void setSimulatedBeambreak(boolean value) {
-    values.set(SIM_BEAMBREAK, value);
+  public void setSimulatedStopBeambreak(boolean value) {
+    values.set(SIM_STOP_BEAMBREAK, value);
+  }
+  public void setSimulatedDetectBeambreak(boolean value) {
+    values.set(SIM_DETECT_BEAMBREAK, value);
   }
 
-  public boolean isBeamBroken() {
-    return Robot.isReal() ? !beambreak.get() : !values.getBoolean(SIM_BEAMBREAK);
+  public boolean isStopBeamBroken() {
+    return Robot.isReal() ? !stopBeamBreak.get() : !values.getBoolean(SIM_STOP_BEAMBREAK);
+  }
+
+  public boolean isDetectBeamBroken() {
+    return Robot.isReal() ? !detectBeamBreak.get() : !values.getBoolean(SIM_DETECT_BEAMBREAK);
   }
 
   public double getFeederFeedFwdVoltage(double velocity) {
@@ -269,7 +283,8 @@ public class FeederSubsystem extends GenericSubsystem {
     feederMotorSim.setAngle(feederSpeed * 180 - 90);
     noteX -= Math.signum(feederSpeed) * noteMotion;
     noteY -= Math.signum(feederSpeed) * noteMotion;
-    values.set(BEAM_BREAK_STATE, isBeamBroken());
+    values.set(STOP_BEAM_BREAK_STATE, isStopBeamBroken());
+    values.set(DETECT_BEAM_BREAK_STATE, isDetectBeamBroken());
     values.set(FEEDER_MOTOR_SPEED, feederMotor.get());
     values.set(NOTE_STATE, noteState.toString());
     if (noteX < 0.1 || noteX > 1.0)
@@ -278,6 +293,7 @@ public class FeederSubsystem extends GenericSubsystem {
       noteY = 0.1;
     noteRoot.setPosition(noteX, noteY);
     if (noteX > 0.5 && noteX < 0.55)
-      values.set(SIM_BEAMBREAK, false);
+      values.set(SIM_STOP_BEAMBREAK, false);
+      values.set(SIM_DETECT_BEAMBREAK, false);
   }
 }
