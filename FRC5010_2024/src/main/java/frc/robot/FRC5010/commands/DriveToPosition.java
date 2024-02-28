@@ -45,13 +45,13 @@ public class DriveToPosition extends GenericCommand {
   public DriveToPosition(SwerveDrivetrain swerveSubsystem, Supplier<Pose2d> poseProvider,
       Supplier<Pose3d> targetPoseProvider, LedSubsystem ledSubsystem, Transform2d offset) {
     xConstraints = new TrapezoidProfile.Constraints(
-        swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(),
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(),
         swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
     yConstraints = new TrapezoidProfile.Constraints(
-        swerveSubsystem.getSwerveConstants().getkPhysicalMaxSpeedMetersPerSecond(),
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(),
         swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
     thetaConstraints = new TrapezoidProfile.Constraints(
-        swerveSubsystem.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(),
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond(),
         swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond());
 
     xController = new ProfiledPIDController(pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(),
@@ -97,8 +97,6 @@ public class DriveToPosition extends GenericCommand {
     if (null != targetPoseProvider.get()) {
       updateTargetPose(targetPoseProvider.get().toPose2d().transformBy(targetTransform));
     } 
-    
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.

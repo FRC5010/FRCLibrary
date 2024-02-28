@@ -5,6 +5,7 @@
 package frc.robot.FRC5010.drive.pose;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
@@ -42,4 +43,8 @@ public class YAGSLSwervePose extends GenericPose {
         drivetrain.resetOdometry(pose);
     }
 
+    @Override
+    public Rotation2d getGyroRotation2d() {
+        return drivetrain.getHeading();
+    }
 }

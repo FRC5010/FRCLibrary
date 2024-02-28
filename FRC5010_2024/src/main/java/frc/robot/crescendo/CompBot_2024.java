@@ -26,6 +26,7 @@ import frc.robot.FRC5010.commands.DriveToPosition;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
+import frc.robot.FRC5010.constants.TranslationConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
@@ -171,9 +172,8 @@ public class CompBot_2024 extends GenericMechanism {
                                                 () -> drive.getDrivetrain().getPoseEstimator()
                                                                 .getPoseFromClosestVisionTarget(),
                                                 null,
-                                                new Transform2d(new Translation2d(Units.inchesToMeters(-13.5), 0),
-                                                                new Rotation2d()))
-                                                .alongWith(new RunIntake(() -> 1.0, () -> 0.5, intakeSubsystem,
+                                                TranslationConstants.noteTransform)
+                                                .deadlineWith(new RunIntake(() -> 1.0, () -> 0.5, intakeSubsystem,
                                                                 feederSubsystem)));
 
                 driver.createUpPovButton().onTrue(Commands.runOnce(() -> {
@@ -321,11 +321,11 @@ public class CompBot_2024 extends GenericMechanism {
                                                                         new Rotation3d(0, 0,
                                                                                         Units.degreesToRadians(-30)))),
                                         PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
-                        // visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(11.829),
-                        //                 -10, 0, 1,
-                        //                 new Transform3d(Units.inchesToMeters(-13.317), Units.inchesToMeters(-4.467),
-                        //                                 Units.inchesToMeters(11.829),
-                        //                                 new Rotation3d(0, 0, Units.degreesToRadians(180))));
+                        visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(14.264),
+                                        -10, 0, 1,
+                                        new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
+                                                        Units.inchesToMeters(14.264),
+                                                        new Rotation3d(0, 0, Units.degreesToRadians(180))));
                 }
         }
 

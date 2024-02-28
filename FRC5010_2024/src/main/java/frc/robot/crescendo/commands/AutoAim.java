@@ -65,7 +65,7 @@ public class AutoAim extends Command {
     double pivotAngle = Targeting2024.getPivotAngleToTarget(new Pose3d(pivotOrigin.getTranslation(), pivotOrigin.getRotation()), Constants.Field.SHOT_POSE);
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
     pivotSubsystem.setReference(pivotAngle + 44.1);
-      // pivotSubsystem.setReference(4000);
+      // shooterSubsystem.setReference(4000);
   }
 
   // Called once the command ends or is interrupted.

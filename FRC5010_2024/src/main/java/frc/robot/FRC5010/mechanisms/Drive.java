@@ -174,18 +174,17 @@ public class Drive extends GenericMechanism {
     public void configureButtonBindings(Controller driver, Controller operator) {
         // If there needs to be some commands that are real or simulation only use this
         if (Robot.isReal()) {
-
+            driver.createBButton().onTrue(Commands.runOnce(() -> drivetrain.toggleFieldOrientedDrive()));
+            driver.createStartButton().onTrue(Commands.runOnce(() -> drivetrain.resetOrientation()));
         } else {
 
         }
+        // Put commands that can be both real and simulation afterwards
 
         driver.setLeftXAxis(driver.createLeftXAxis().negate().deadzone(0.08).cubed());
         driver.setLeftYAxis(driver.createLeftYAxis().negate().deadzone(0.08).cubed());
         driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.08));
 
-        // Put commands that can be both real and simulation afterwards
-        driver.createBButton().onTrue(Commands.runOnce(() -> drivetrain.toggleFieldOrientedDrive()));
-        driver.createStartButton().onTrue(Commands.runOnce(() -> drivetrain.resetOrientation()));
         driver.createLeftBumper().whileTrue(Commands.run(() -> {
             drivetrain.lockWheels();
         }, drivetrain));
