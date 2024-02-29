@@ -585,10 +585,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   public void setChassisSpeedsWithAngleSupplier(ChassisSpeeds chassisSpeeds) {
-    ChassisSpeeds angleSuppliedChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+    ChassisSpeeds angleSuppliedChassisSpeeds = new ChassisSpeeds(
         chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-        null != angleSpeedSupplier ? angleSpeedSupplier.getAsDouble() : chassisSpeeds.omegaRadiansPerSecond,
-        getHeading());
+        null != angleSpeedSupplier ? angleSpeedSupplier.getAsDouble() : chassisSpeeds.omegaRadiansPerSecond);
     setChassisSpeeds(angleSuppliedChassisSpeeds);
   }
 

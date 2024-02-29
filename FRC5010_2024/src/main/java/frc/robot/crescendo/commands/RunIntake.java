@@ -91,7 +91,7 @@ public class RunIntake extends GenericCommand {
       // }
 
       // Just need to do this if welocity is != 0
-      //CommandScheduler.getInstance().schedule(feederCommand);
+      CommandScheduler.getInstance().schedule(feederCommand);
     }
   }
 

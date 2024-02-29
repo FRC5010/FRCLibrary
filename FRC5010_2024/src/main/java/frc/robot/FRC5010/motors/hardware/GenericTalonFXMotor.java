@@ -9,6 +9,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -29,6 +30,8 @@ import frc.robot.FRC5010.sensors.encoder.TalonFXEncoder;
 public class GenericTalonFXMotor extends TalonFX implements MotorController5010 {
     protected int motorCurrentLimit;
     protected int controllerCurrentLimit;
+
+    protected TalonFXConfiguration configuration = new TalonFXConfiguration();
     
     public GenericTalonFXMotor(int port) {
         super(port);
@@ -44,7 +47,11 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
     @Override
     public MotorController5010 setCurrentLimit(int limit) {
         motorCurrentLimit = limit;
-        super.getConfigurator().apply(new CurrentLimitsConfigs().withStatorCurrentLimit(limit)); // TODO: Add error handling
+        TalonFXConfigurator cfg = super.getConfigurator();
+        cfg.refresh(configuration.CurrentLimits);
+        cfg.apply(
+            configuration.CurrentLimits.withStatorCurrentLimit(limit)
+                                    .withStatorCurrentLimitEnable(true));
         return this;
     }
 

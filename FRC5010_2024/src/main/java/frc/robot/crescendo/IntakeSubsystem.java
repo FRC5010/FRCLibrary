@@ -36,6 +36,9 @@ public class IntakeSubsystem extends GenericSubsystem {
 
   private SimpleMotorFeedforward feedforward;
 
+  private final String TOP_SPEED = "Top Intake Speed";
+  private final String BOTTOM_SPEED = "Bottom Intake Speed";
+
   private double topReference = 0.0;
   private double bottomReference = 0.0;
 
@@ -74,6 +77,9 @@ public class IntakeSubsystem extends GenericSubsystem {
   public IntakeSubsystem(MotorController5010 top, MotorController5010 bottom, Mechanism2d mechSim) {
     topFeedFwd = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
     bottomFeedFwd = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
+
+    values.declare(TOP_SPEED, 0.0);
+    values.declare(BOTTOM_SPEED, 0.0);
 
     topIntakeMotor = top;
     topEncoder = topIntakeMotor.getMotorEncoder();
@@ -231,6 +237,9 @@ public class IntakeSubsystem extends GenericSubsystem {
 
     topIntakeSim.setAngle(topIntakeMotor.get() * 180);
     bottomIntakeSim.setAngle(bottomIntakeMotor.get()* 180);
+
+    values.set(TOP_SPEED, topEncoder.getVelocity());
+    values.set(BOTTOM_SPEED, bottomEncoder.getVelocity());
 
   }
 

@@ -78,7 +78,7 @@ public class KitBot2024 extends GenericMechanism {
                 topShooterMotor = MotorFactory.NEO(33);
                 bottomShooterMotor = MotorFactory.NEO(9);
                 bottomShooterMotor.setFollow(topShooterMotor);
-                shooter = new ShooterSubsystem(topShooterMotor);
+                //shooter = new ShooterSubsystem(topShooterMotor);
                 // Uncomment when using PhotonVision
                 // multiVision.addPhotonCamera("LeftCamera", 1,
                 // new Transform3d( // This describes the vector between the camera lens to the
@@ -109,7 +109,7 @@ public class KitBot2024 extends GenericMechanism {
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
                 drive.setupDefaultCommands(driver, operator);
-                shooter.setDefaultCommand(new RunShooter(shooter, () -> driver.getRightTrigger() - driver.getLeftTrigger()));
+                //shooter.setDefaultCommand(new RunShooter(shooter, () -> driver.getRightTrigger() - driver.getLeftTrigger()));
         }
 
         @Override
