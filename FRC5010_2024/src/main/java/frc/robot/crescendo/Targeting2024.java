@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.sim.ChassisReference;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -23,7 +24,7 @@ import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 /** Add your docs here. */
 public class Targeting2024 {
 
-    private static ProfiledPIDController thetaController;
+    private static PIDController thetaController;
     private TrapezoidProfile.Constraints thetaConstraints;
     private SwerveDrivetrain swerve;
     private GenericPID thetaPID = new GenericPID(0.25, 0, 0.005);
@@ -36,8 +37,7 @@ public class Targeting2024 {
                 swerve.getSwerveConstants().getkPhysicalMaxAngularSpeedRadiansPerSecond(),
                 swerve.getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond());
 
-        thetaController = new ProfiledPIDController(thetaPID.getkP(), thetaPID.getkI(), thetaPID.getkD(),
-                thetaConstraints);
+        thetaController = new PIDController(thetaPID.getkP(), thetaPID.getkI(), thetaPID.getkD());
         thetaController.setTolerance(0.05);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -47,17 +47,17 @@ public class Targeting2024 {
     }
 
     public void init() {
-        thetaController.reset(robotPose.get().getRotation().getZ());
+        thetaController.reset();
     }
 
     public double getAnglePowerToTarget(ChassisSpeeds chassisSpeeds) {
 
-        double targetAngle = AccountForHorizontalVelocity(robotPose.get(), Constants.Field.SHOT_POSE,
+        double targetAngle = AccountForHorizontalVelocity(robotPose.get(), Constants.Field.BLUE_SHOT_POSE,
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                getPivotAngleToTarget(robotPose.get(), Constants.Field.SHOT_POSE), 50);
+                getPivotAngleToTarget(robotPose.get(), Constants.Field.BLUE_SHOT_POSE), 50);
         SmartDashboard.putNumber("Yaw Angle to Target", targetAngle);
-        thetaController.setGoal(Units.degreesToRadians(targetAngle));
-        return thetaController.atGoal() ? 0 : thetaController.calculate(robotPose.get().getRotation().getZ())
+        thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
+        return thetaController.atSetpoint() ? 0 : thetaController.calculate(robotPose.get().getRotation().getZ())
                 * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
     }
 
@@ -85,20 +85,13 @@ public class Targeting2024 {
         double currentTheta = xDifference > 0.0 ? -Math.PI / 4 : Math.PI / 4;
         double currentDifference = (yDifference * Math.cos(currentTheta)) - (xDifference * Math.sin(currentTheta))
                 - targetValue;
-        double originalSign = Math.signum(currentDifference);
-        double currentSign = originalSign;
         double currentInterval = Math.PI / 2;
 
         while (currentInterval > 0.002) {
-            if (originalSign != currentSign) {
-                currentTheta -= currentInterval;
-            } else {
-                currentTheta += currentInterval;
-            }
+            currentTheta += Math.signum(currentDifference) * currentInterval;
             currentInterval /= 2;
             currentDifference = (yDifference * Math.cos(currentTheta)) - (xDifference * Math.sin(currentTheta))
                     - targetValue;
-            currentSign = Math.signum(currentDifference);
         }
 
         return Math.toDegrees(currentTheta) + 90 > 180 ? Math.toDegrees(currentTheta) - 270
@@ -107,7 +100,7 @@ public class Targeting2024 {
 
     public static double getPivotAngleToTarget(Pose3d from, Pose3d target) { // Change to actually work with weird
                                                                              // pivot...
-        Translation3d difference = from.getTranslation().minus(target.getTranslation());
+        Translation3d difference = target.getTranslation().minus(from.getTranslation());
         double hypotenousA = Math.sqrt(Math.pow(difference.getX(), 2) + Math.pow(difference.getY(), 2));
         double pivotAngle = Math.atan2(difference.getZ(), hypotenousA);
         return Math.toDegrees(pivotAngle);

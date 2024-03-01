@@ -138,6 +138,8 @@ public class FeederSubsystem extends GenericSubsystem {
     }, () -> {
       stop();
     }, this).beforeStarting(() -> setFeederSpeed(1.0), this).until(() -> getNoteState().equals(NoteState.Empty));
+
+
   }
 
   public double getFeederVelocity() {
@@ -145,30 +147,18 @@ public class FeederSubsystem extends GenericSubsystem {
   }
 
   public void transitionNoteState() {
-    switch (noteState) {
-      case Empty:
-        if (isStopBeamBroken()) {
-          noteState = NoteState.Holding;
-        }
-        break;
-      case Holding:
-        if (!isStopBeamBroken()) {
-          noteState = NoteState.Loaded;
-        }
-        break;
-      case Loaded:
-        if (isStopBeamBroken()) {
-          noteState = NoteState.Shooting;
-        }
-        break;
-      case Shooting:
-        if (!isStopBeamBroken()) {
-          noteState = NoteState.Empty;
-        }
-        break;
-      default:
-        break;
-    }
+    if (isDetectBeamBroken()) {
+      if (isStopBeamBroken()) {
+        noteState = NoteState.Holding;
+      } else if (noteState == NoteState.Holding) {
+        noteState = NoteState.Loaded;
+      }
+      // Limbo...
+    } else if (isStopBeamBroken()) {
+        noteState = NoteState.Shooting;
+    } else {
+        noteState = NoteState.Empty;
+      }
   }
 
   public void feederStateMachine(double feeder) {
@@ -255,6 +245,9 @@ public class FeederSubsystem extends GenericSubsystem {
   public boolean isDetectBeamBroken() {
     return Robot.isReal() ? !detectBeamBreak.get() : !values.getBoolean(SIM_DETECT_BEAMBREAK);
   }
+
+
+
 
   public double getFeederFeedFwdVoltage(double velocity) {
     return feederFeedFwd.calculate(velocity);

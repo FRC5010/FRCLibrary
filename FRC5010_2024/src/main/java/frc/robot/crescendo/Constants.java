@@ -22,9 +22,13 @@ public final class Constants {
         public static final Pose3d SPEAKER_POSE_BLUE = new Pose3d(
                 new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(218.42), 0.0),
                 new Rotation3d());
-        private static final Transform3d SHOT_OFFSET = new Transform3d(
+        private static final Transform3d BLUE_SHOT_OFFSET = new Transform3d(
                 new Translation3d(0.0, Units.inchesToMeters(-9.055), Units.inchesToMeters(80.515)),
                 new Rotation3d());
-        public static Pose3d SHOT_POSE = SPEAKER_POSE_BLUE.plus(SHOT_OFFSET);
+        private static final Transform3d RED_SHOT_OFFSET = new Transform3d(
+                new Translation3d(0.0, Units.inchesToMeters(9.055), Units.inchesToMeters(80.515)),
+                new Rotation3d());
+        public static Pose3d BLUE_SHOT_POSE = SPEAKER_POSE_BLUE.plus(BLUE_SHOT_OFFSET);
+        public static Pose3d RED_SHOT_POSE = SPEAKER_POSE_RED.plus(RED_SHOT_OFFSET);
     }
 }

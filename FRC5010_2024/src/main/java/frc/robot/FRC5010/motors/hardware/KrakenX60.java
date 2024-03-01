@@ -4,11 +4,14 @@
 
 package frc.robot.FRC5010.motors.hardware;
 
+import frc.robot.FRC5010.motors.MotorConstants;
+
 /** Add your docs here. */
 public class KrakenX60 extends GenericTalonFXMotor {
     public final static double MAXRPM = 6000;
     public KrakenX60(int port) {
         super(port);
+        setCurrentLimit(MotorConstants.CurrentLimits.KrakenX60);
     }
 
 }

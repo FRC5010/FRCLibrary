@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
@@ -38,6 +39,7 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.Color;
+import frc.robot.FRC5010.subsystems.PowerDistribution5010;
 import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
@@ -69,12 +71,14 @@ public class CompBot_2024 extends GenericMechanism {
         private SegmentedLedSystem ledSubsystem;
 
         private Targeting2024 targetingSystem;
+        private PowerDistribution5010 powerDistribution5010;
 
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
 
                 ledSubsystem = new SegmentedLedSystem(0, 34, visual);
                 ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
+                powerDistribution5010 = new PowerDistribution5010();
 
                 // Motor Setup
                 innerIntakeMotor = MotorFactory.KrakenX60(1);
@@ -97,6 +101,7 @@ public class CompBot_2024 extends GenericMechanism {
                 // visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
 
                 pivotSubsystem = new PivotSubsystem(pivotMotor, mechVisual);
+        
                 climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro,
                                 mechVisual);
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES),
@@ -126,7 +131,7 @@ public class CompBot_2024 extends GenericMechanism {
                                 "mk4i_L3_kraken_neo");
                 targetingSystem = new Targeting2024((SwerveDrivetrain) drive.getDrivetrain(),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
-                                () -> Constants.Field.SHOT_POSE);
+                                () -> Constants.Field.BLUE_SHOT_POSE);
 
                 shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, bottomShooterMotor);
                 feederSubsystem = new FeederSubsystem(visual, feederMotor);
