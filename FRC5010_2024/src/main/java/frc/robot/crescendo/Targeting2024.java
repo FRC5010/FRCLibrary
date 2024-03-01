@@ -52,9 +52,9 @@ public class Targeting2024 {
 
     public double getAnglePowerToTarget(ChassisSpeeds chassisSpeeds) {
 
-        double targetAngle = AccountForHorizontalVelocity(robotPose.get(), Constants.Field.SHOT_POSE,
+        double targetAngle = AccountForHorizontalVelocity(robotPose.get(), Constants.Field.BLUE_SHOT_POSE,
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-                getPivotAngleToTarget(robotPose.get(), Constants.Field.SHOT_POSE), 50);
+                getPivotAngleToTarget(robotPose.get(), Constants.Field.BLUE_SHOT_POSE), 50);
         SmartDashboard.putNumber("Yaw Angle to Target", targetAngle);
         thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
         return thetaController.atSetpoint() ? 0 : thetaController.calculate(robotPose.get().getRotation().getZ())
