@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionSystem;
@@ -39,6 +40,8 @@ public class KitBot2024 extends GenericMechanism {
         private ShooterSubsystem shooter;
         private MotorController5010 topShooterMotor;
         private MotorController5010 bottomShooterMotor;
+
+        private JoystickButton shootButton;
 
         public KitBot2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
@@ -75,10 +78,10 @@ public class KitBot2024 extends GenericMechanism {
                 drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
                                 "swervemk4icc");
 
-                topShooterMotor = MotorFactory.NEO(33);
-                bottomShooterMotor = MotorFactory.NEO(9);
-                bottomShooterMotor.setFollow(topShooterMotor);
-                shooter = new ShooterSubsystem(topShooterMotor);
+                topShooterMotor = MotorFactory.NEO(9);
+                bottomShooterMotor = MotorFactory.NEO(33);
+             
+                shooter = new ShooterSubsystem(topShooterMotor, bottomShooterMotor);
                 // Uncomment when using PhotonVision
                 // multiVision.addPhotonCamera("LeftCamera", 1,
                 // new Transform3d( // This describes the vector between the camera lens to the
@@ -102,6 +105,9 @@ public class KitBot2024 extends GenericMechanism {
                 driver.createBackButton().onTrue(new InstantCommand(() -> drive.getDrivetrain().resetEncoders()));
                 driver.setRightTrigger(driver.createRightTrigger().deadzone(0.07));
                 driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07));
+                shootButton = driver.createRightBumper();
+
+
 
                 drive.configureButtonBindings(driver, operator);
         }
@@ -109,7 +115,9 @@ public class KitBot2024 extends GenericMechanism {
         @Override
         public void setupDefaultCommands(Controller driver, Controller operator) {
                 drive.setupDefaultCommands(driver, operator);
-                shooter.setDefaultCommand(new RunShooter(shooter, () -> driver.getRightTrigger() - driver.getLeftTrigger()));
+                shooter.setDefaultCommand(new RunShooter(shooter, () -> driver.getRightTrigger() - driver.getLeftTrigger(), 
+                () -> shootButton.getAsBoolean() ? 1.0 : 0 - driver.getLeftTrigger() 
+                ));
         }
 
         @Override

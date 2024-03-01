@@ -12,11 +12,13 @@ import frc.robot.chargedup.ShooterSubsystem;
 public class RunShooter extends Command {
   /** Creates a new RunShooter. */
   ShooterSubsystem shooter;
-  DoubleSupplier speed;
-  public RunShooter(ShooterSubsystem shooter, DoubleSupplier speed) {
+  DoubleSupplier feederSpeed;
+  DoubleSupplier shooterSpeed;
+  public RunShooter(ShooterSubsystem shooter, DoubleSupplier shooterSpeed, DoubleSupplier feederSpeed) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
-    this.speed = speed;
+    this.feederSpeed = feederSpeed;
+    this.shooterSpeed = shooterSpeed;
     addRequirements(shooter);
   }
 
@@ -27,7 +29,8 @@ public class RunShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setSpeed(speed.getAsDouble());
+    shooter.setShooterSpeed(shooterSpeed.getAsDouble());
+    shooter.setFeederSpeed(feederSpeed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

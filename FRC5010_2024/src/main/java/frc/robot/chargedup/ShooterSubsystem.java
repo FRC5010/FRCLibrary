@@ -10,12 +10,18 @@ import frc.robot.FRC5010.motors.MotorController5010;
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new Shooter. */
   MotorController5010 shooterMotor;
-  public ShooterSubsystem(MotorController5010 shooterMotor) {
+  MotorController5010 feederMotor;
+  public ShooterSubsystem(MotorController5010 shooterMotor, MotorController5010 feederMotor) {
+    this.feederMotor = feederMotor;
     this.shooterMotor = shooterMotor;
   }
 
-  public void setSpeed(double speed) {
+  public void setShooterSpeed(double speed) {
     shooterMotor.set(speed);
+  }
+
+  public void setFeederSpeed(double speed) {
+    feederMotor.set(speed);
   }
 
   public void stop() {
