@@ -147,18 +147,32 @@ public class FeederSubsystem extends GenericSubsystem {
   }
 
   public void transitionNoteState() {
-    if (isDetectBeamBroken()) {
-      if (isStopBeamBroken()) {
-        noteState = NoteState.Holding;
-      } else if (noteState == NoteState.Holding) {
-        noteState = NoteState.Loaded;
-      }
-      // Limbo...
-    } else if (isStopBeamBroken()) {
-        noteState = NoteState.Shooting;
-    } else {
-        noteState = NoteState.Empty;
-      }
+    switch (noteState) {
+      case Empty:
+        if (isStopBeamBroken() && isDetectBeamBroken()) {
+          noteState = NoteState.Holding;
+        }
+      break;
+      case Holding:
+        if (!isDetectBeamBroken()) {
+          noteState = NoteState.Empty;
+        } else if (!isStopBeamBroken()) {
+          noteState = NoteState.Loaded;
+        }
+      break;
+      case Loaded:
+        if (isDetectBeamBroken() && isStopBeamBroken()) {
+          noteState = NoteState.Shooting;
+        } else if (!isDetectBeamBroken()) {
+          noteState = NoteState.Empty;
+        }
+      break;
+      case Shooting:
+        if (!isStopBeamBroken()) {
+          noteState = NoteState.Empty;
+        }
+    }
+    
   }
 
   public void feederStateMachine(double feeder) {

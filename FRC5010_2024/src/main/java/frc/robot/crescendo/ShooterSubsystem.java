@@ -104,11 +104,13 @@ public class ShooterSubsystem extends GenericSubsystem {
     topPID.setI(0.0000001);    
     topPID.setIZone(100);
     topPID.setD(0);
+    topPID.setTolerance(200);
   
     bottomPID.setP(0.00049915);
     bottomPID.setI(0.0000001);  
     bottomPID.setIZone(100);  
     bottomPID.setD(0);
+    bottomPID.setTolerance(200);
 
 
 
@@ -238,6 +240,10 @@ public class ShooterSubsystem extends GenericSubsystem {
  
   }
 
+  public boolean isAtTarget() {
+    return topPID.isAtTarget() && bottomPID.isAtTarget();
+  }
+
   
 
   public Double getTopReference() {
@@ -275,7 +281,7 @@ public class ShooterSubsystem extends GenericSubsystem {
     bottomMotorSim.setAngle(botMotor.get() * 180 - 90);
   
     values.set(vals.TOP_VELOCITY.name(), topEncoder.getVelocity());
-    values.set(vals.BOTTOM_FF.name(), bottomEncoder.getVelocity());
+    values.set(vals.BOTTOM_VELOCITY.name(), bottomEncoder.getVelocity());
   }
 
   @Override

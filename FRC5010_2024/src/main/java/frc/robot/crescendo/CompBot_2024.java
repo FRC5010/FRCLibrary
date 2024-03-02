@@ -13,7 +13,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,6 +46,7 @@ import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.RunClimb;
+import frc.robot.crescendo.commands.RunFeeder;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
@@ -101,7 +104,7 @@ public class CompBot_2024 extends GenericMechanism {
                 // visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
 
                 pivotSubsystem = new PivotSubsystem(pivotMotor, mechVisual);
-        
+
                 climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro,
                                 mechVisual);
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES),
@@ -122,9 +125,9 @@ public class CompBot_2024 extends GenericMechanism {
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright",
                                 new MotorFeedFwdConstants(0.15576, 1.9648, 0.17833)); // FR
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backleft",
-                                new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BL
+                                new MotorFeedFwdConstants(0.1163, 1.9497, 0.34564)); // BL
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
-                                new MotorFeedFwdConstants(0.24241, 2.38, 0.43145)); // BR
+                                new MotorFeedFwdConstants(0.1163, 1.9497, 0.34564)); // BR
                 swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
 
                 drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
@@ -153,6 +156,11 @@ public class CompBot_2024 extends GenericMechanism {
 
                 operator.setLeftTrigger(operator.createLeftTrigger());
                 operator.setRightTrigger(operator.createRightTrigger());
+                drive.configureButtonBindings(driver, operator);
+
+                if (DriverStation.isTest()) {
+                        return;
+                }
 
                 /*
                  * >>>>>>>>>>>>>>>>>>>> DRIVER BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -163,10 +171,9 @@ public class CompBot_2024 extends GenericMechanism {
                  * Lock Wheels - Left Bumper
                  * Field Oriented - B Button
                  */
-                drive.configureButtonBindings(driver, operator);
 
                 driver.createAButton().whileTrue(
-                                new AutoAim(pivotSubsystem, shooterSubsystem, drive, targetingSystem,
+                                new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
                                                 () -> (JoystickToSwerve) drive.getDefaultCommand()))
                                 .onFalse(Commands
                                                 .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL)));
@@ -226,8 +233,10 @@ public class CompBot_2024 extends GenericMechanism {
                 // Run Shooter motors
                 operator.createRightBumper()
                                 .whileTrue(Commands
-                                                .run(() -> shooterSubsystem.shooterStateMachine(1), shooterSubsystem)
-                                                .finallyDo(() -> shooterSubsystem.stopMotors()));
+                                                .run(() -> {
+                                                        shooterSubsystem.setShooterReference(6000, 6000);
+                                                })
+                                                .finallyDo(() -> shooterSubsystem.setShooterReference(0, 0)));
                 // Feed Note into Shooter
                 operator.createLeftBumper().whileTrue(
                                 Commands.run(() -> feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed")),
@@ -269,6 +278,8 @@ public class CompBot_2024 extends GenericMechanism {
 
                 // ledSubsystem.setDefaultCommand(new LEDStateHandler(ledSubsystem, () ->
                 // feederSubsystem.getNoteState()));
+
+                // feederSubsystem.setDefaultCommand(new RunFeeder(feederSubsystem, () -> 0.0));
                 ledSubsystem.setDefaultCommand(Commands.run(() -> {
                 }, ledSubsystem)
                                 .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
@@ -280,10 +291,10 @@ public class CompBot_2024 extends GenericMechanism {
                 shooterSubsystem.removeDefaultCommand();
                 intakeSubsystem.removeDefaultCommand();
 
-                driver.createAButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
-                driver.createBButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
+                // driver.createAButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
+                // driver.createBButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
                 driver.createYButton().whileTrue(feederSubsystem.getFeederSysIdRoutineCommand());
-                driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
+                // driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
                 driver.createLeftBumper().whileTrue(intakeSubsystem.getBottomSysIdRoutineCommand());
                 driver.createRightBumper().whileTrue(intakeSubsystem.getTopSysIdRoutineCommand());
                 // pivotSubsystem.setDefaultCommand(Commands.run(() ->
@@ -302,7 +313,7 @@ public class CompBot_2024 extends GenericMechanism {
                 // climbSubsystem.setRightMotorSpeed(operator.getLeftTrigger());
                 // }, climbSubsystem));
 
-                // drive.setupTestDefaultCommands(driver, operator);
+                drive.setupTestDefaultCommands(driver, operator);
         }
 
         @Override

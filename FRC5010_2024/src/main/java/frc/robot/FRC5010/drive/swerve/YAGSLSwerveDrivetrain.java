@@ -598,13 +598,21 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
-    // driverXbox.createAButton().whileTrue(sysIdAngleMotorCommand());
-    // driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
-    // driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());
     return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
     // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented);
   }
 
+  public Command createDefaultTestCommand(Controller driverXbox) {
+    DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
+    DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
+    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
+
+    driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
+    driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());
+    return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
+  }
+  
   @Override
   public void stop() {
     swerveDrive.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));

@@ -11,7 +11,9 @@ public interface PIDController5010 {
     public static enum PIDControlType {
         POSITION, VELOCITY, VOLTAGE, CURRENT, DUTY_CYCLE
     }
-
+    
+    public void setTolerance(double tolerance);
+    public double getTolerance();
     public void setValues(GenericPID pid);
     public void setP(double p);
     public void setI(double i);
@@ -30,6 +32,7 @@ public interface PIDController5010 {
     public double getIZone();
     public double getReference();
     public PIDControlType getControlType();
+    public boolean isAtTarget();
     
 
 }

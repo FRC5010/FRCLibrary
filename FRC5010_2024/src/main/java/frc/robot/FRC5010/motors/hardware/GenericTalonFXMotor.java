@@ -47,13 +47,20 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
     @Override
     public MotorController5010 setCurrentLimit(int limit) {
         motorCurrentLimit = limit;
+
+        CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
+        currentLimits.StatorCurrentLimitEnable = true;
+        currentLimits.StatorCurrentLimit = limit;
+        currentLimits.SupplyCurrentLimit = 40;
+        currentLimits.SupplyCurrentLimitEnable = true;
+        
         TalonFXConfigurator cfg = super.getConfigurator();
         cfg.refresh(configuration.CurrentLimits);
-        cfg.apply(
-            configuration.CurrentLimits.withStatorCurrentLimit(limit)
-                                    .withStatorCurrentLimitEnable(true));
+        cfg.apply(currentLimits);
+
         return this;
     }
+
 
     @Override
     public MotorController5010 setSlewRate(double rate) {

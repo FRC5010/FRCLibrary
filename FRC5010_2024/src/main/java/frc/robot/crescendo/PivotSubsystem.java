@@ -107,7 +107,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kV, RobotBase.isReal() ? 0.0 : 0.01);
     values.declare(PIVOT_kP, RobotBase.isReal() ? 0.005 : 0.01);
     values.declare(PIVOT_kD, RobotBase.isReal() ? 0.0000 : 0.003);
-    values.declare(PIVOT_kS, RobotBase.isReal() ? 0.12 : 0.0);
+    values.declare(PIVOT_kS, RobotBase.isReal() ? 0.22 : 0.0);
     values.declare(PIVOT_kA, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
     values.declare(SLOWDOWN, 0.1);
@@ -135,6 +135,7 @@ public class PivotSubsystem extends GenericSubsystem {
     pivotPID.setPositionPIDWrappingEnabled(true);
     pivotPID.setPositionPIDWrappingMinInput(0);
     pivotPID.setPositionPIDWrappingMaxInput(360);
+    
 
     pivotPID.setP(0.0);
     pivotPID.setI(0);
@@ -192,7 +193,7 @@ public class PivotSubsystem extends GenericSubsystem {
   }
 
   public boolean isAtTarget() {
-    return Math.abs(getReference() - getPivotPosition()) < 0.25;
+    return Math.abs(getReference() - getPivotPosition()) < 1;
   }
 
   public void setInterpolatedShotAngle(double distance) {

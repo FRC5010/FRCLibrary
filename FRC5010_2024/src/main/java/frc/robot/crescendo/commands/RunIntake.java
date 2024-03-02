@@ -4,7 +4,8 @@
 
 package frc.robot.crescendo.commands;
 
-import java.util.function.BooleanSupplier;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -12,9 +13,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.crescendo.FeederSubsystem;
+import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.IntakeSubsystem;
 import frc.robot.crescendo.ShooterSubsystem;
-import frc.robot.crescendo.FeederSubsystem.NoteState;
 
 public class RunIntake extends GenericCommand {
 
@@ -27,6 +28,9 @@ public class RunIntake extends GenericCommand {
   boolean feederStopFlag = false;
 
   Command feederCommand;
+  Command holdingCommand;
+  Command selectorCommand;
+  Command loadedCommand;
 
   /** Creates a new RunIntake. */
   public RunIntake(DoubleSupplier joystick, DoubleSupplier feederSpeed, IntakeSubsystem intakeSubsystem,
@@ -36,34 +40,30 @@ public class RunIntake extends GenericCommand {
     this.feederSpeed = feederSpeed;
     this.feederSubsystem = feederSubsystem;
 
+    Map<NoteState, Command> intakeCommands = new HashMap<>();
     feederCommand = Commands
         .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()),
             feederSubsystem)
-        .onlyIf(() -> feederSubsystem.getNoteState() == NoteState.Empty
-            || feederSubsystem.getNoteState() == NoteState.Holding)
         .until(() -> feederSubsystem.getNoteState() == NoteState.Holding || 0 == speed.getAsDouble())
         .finallyDo(() -> {
           feederSubsystem.stop();
-          if (feederSubsystem.isStopBeamBroken()) {
-          feederSubsystem.setNoteState(NoteState.Holding);
-          }
         })
-        .andThen(Commands.run(() -> feederSubsystem.setFeederSpeed(0.7 * feederSpeed.getAsDouble()))
+        .andThen(Commands.run(() -> feederSubsystem.feederStateMachine(0.2 * feederSpeed.getAsDouble()))
             .onlyIf(() -> feederSubsystem.isStopBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
             .until(() -> !feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
             .finallyDo(() -> {
-              feederSubsystem.setNoteState(NoteState.Loaded);
-              feederSubsystem.stop();
-            }))
-        .andThen(Commands.waitSeconds(0.1))    
-        .andThen(Commands.run(() -> feederSubsystem.setFeederSpeed(-0.7 * feederSpeed.getAsDouble()))
-            .onlyIf(() -> !feederSubsystem.isStopBeamBroken() || NoteState.Loaded == feederSubsystem.getNoteState())
-            .until(() -> feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Shooting)
-            .finallyDo(() -> {
-              feederSubsystem.setNoteState(NoteState.Shooting);
               feederSubsystem.stop();
             }));
 
+    holdingCommand = Commands.run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
+            feederSubsystem).until(() -> 0 == speed.getAsDouble());
+    loadedCommand = Commands.run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
+            feederSubsystem).until(() -> 0 == speed.getAsDouble());
+    intakeCommands.put(NoteState.Empty, feederCommand);
+    intakeCommands.put(NoteState.Holding, holdingCommand);
+    intakeCommands.put(NoteState.Loaded, loadedCommand);
+
+    selectorCommand = Commands.select(intakeCommands, () -> feederSubsystem.getNoteState());
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
   }
@@ -74,12 +74,12 @@ public class RunIntake extends GenericCommand {
 
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
+  // Called every time the scheduler runs while the command is scheduled
   @Override
   public void execute() {
     double velocity = speed.getAsDouble();
     //intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity : 0.0);
-    intakeSubsystem.setIntakeSpeed(velocity, velocity);
+    // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
       // feederStopFlag = true;
       // if (feederSubsystem.isBeamBroken()) {
@@ -91,7 +91,7 @@ public class RunIntake extends GenericCommand {
       // }
 
       // Just need to do this if welocity is != 0
-      CommandScheduler.getInstance().schedule(feederCommand);
+      CommandScheduler.getInstance().schedule(selectorCommand);
     }
   }
 

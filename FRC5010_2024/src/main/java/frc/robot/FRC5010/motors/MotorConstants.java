@@ -7,8 +7,8 @@ package frc.robot.FRC5010.motors;
 /** Add your docs here. */
 public class MotorConstants {
     public static class CurrentLimits {
-        public static int Neo = 40;
-        public static int Neo550 = 20;
-        public static int KrakenX60 = 80;
+        public static final int Neo = 40;
+        public static final int Neo550 = 20;
+        public static final int KrakenX60 = 80;
     }
 }

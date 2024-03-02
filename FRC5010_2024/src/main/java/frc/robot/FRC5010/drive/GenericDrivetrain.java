@@ -76,6 +76,14 @@ public abstract class GenericDrivetrain extends SubsystemBase {
                 () -> isFieldOrientedDrive);
     }
 
+    public Command createDefaultTestCommand(Controller driver) {
+        return new DefaultDriveCommand(this,
+                () -> driver.getLeftYAxis(),
+                () -> driver.getLeftXAxis(),
+                () -> driver.getRightXAxis(),
+                () -> isFieldOrientedDrive);
+    }
+
     public boolean hasIssues() {
         return false;
     }

@@ -7,6 +7,7 @@ package frc.robot.FRC5010.mechanisms;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -129,7 +130,7 @@ public class Drive extends GenericMechanism {
         drivetrain = new YAGSLSwerveDrivetrain(mechVisual, gyro, (SwerveConstants) driveConstants, "swervethrifty",
                 vision);
     }
-    
+
     public Command getDefaultCommand() {
         return defaultDriveCommand;
     }
@@ -153,7 +154,7 @@ public class Drive extends GenericMechanism {
     public void setupTestDefaultCommands(Controller driver, Controller operator) {
         if (Robot.isReal()) {
             if (defaultDriveCommand == null) {
-                this.defaultDriveCommand = drivetrain.createDefaultCommand(driver);
+                this.defaultDriveCommand = drivetrain.createDefaultTestCommand(driver);
                 drivetrain.setDefaultCommand(defaultDriveCommand);
             }
         } else {
@@ -173,21 +174,22 @@ public class Drive extends GenericMechanism {
      */
     public void configureButtonBindings(Controller driver, Controller operator) {
         // If there needs to be some commands that are real or simulation only use this
-        if (Robot.isReal()) {
-            driver.createBButton().onTrue(Commands.runOnce(() -> drivetrain.toggleFieldOrientedDrive()));
-            driver.createStartButton().onTrue(Commands.runOnce(() -> drivetrain.resetOrientation()));
-        } else {
+        if (!DriverStation.isTest()) {
+            if (Robot.isReal()) {
+                driver.createBButton().onTrue(Commands.runOnce(() -> drivetrain.toggleFieldOrientedDrive()));
+                driver.createStartButton().onTrue(Commands.runOnce(() -> drivetrain.resetOrientation()));
+            } else {
 
+            }
+            driver.createLeftBumper().whileTrue(Commands.run(() -> {
+                drivetrain.lockWheels();
+            }, drivetrain));
         }
         // Put commands that can be both real and simulation afterwards
 
         driver.setLeftXAxis(driver.createLeftXAxis().negate().deadzone(0.08).cubed());
         driver.setLeftYAxis(driver.createLeftYAxis().negate().deadzone(0.08).cubed());
         driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.08));
-
-        driver.createLeftBumper().whileTrue(Commands.run(() -> {
-            drivetrain.lockWheels();
-        }, drivetrain));
     }
 
     public GenericDrivetrain getDrivetrain() {
@@ -292,8 +294,6 @@ public class Drive extends GenericMechanism {
     public void initAutoCommands() {
         drivetrain.setAutoBuilder();
     }
-
-
 
     public Command generateAutoCommand(Command autoCommand) {
         return autoCommand.beforeStarting(() -> {

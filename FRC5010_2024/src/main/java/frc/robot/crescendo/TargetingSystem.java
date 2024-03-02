@@ -99,12 +99,11 @@ public class TargetingSystem extends GenericSubsystem {
         double static_angle = Math.atan(y / x);
         double note_x = launchVelocity * Math.cos(static_angle);
         double note_y = launchVelocity * Math.sin(static_angle);
-        double x_total = note_x + speeds.vxMetersPerSecond;
-        double y_total = note_y + speeds.vyMetersPerSecond;
-        double moving_angle = vectorAngleDifference(x, y, x_total, y_total);
-        double accounted_angle = static_angle - moving_angle;
+        double x_total_accounted = note_x - speeds.vxMetersPerSecond;
+        double y_total_accounted = note_y - speeds.vyMetersPerSecond;
+        double accounted_angle = Math.atan(y_total_accounted/x_total_accounted);
         values.set(HORIZONTAL_ANGLE, accounted_angle);
-        return Units.radiansToDegrees(accounted_angle);
+        return AccountForVelocity ? Units.radiansToDegrees(accounted_angle) : Units.radiansToDegrees(static_angle);
 
     }
 

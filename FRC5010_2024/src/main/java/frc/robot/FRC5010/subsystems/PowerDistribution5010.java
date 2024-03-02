@@ -24,6 +24,7 @@ public class PowerDistribution5010 extends GenericSubsystem {
   private void declareInitialValues() {
     values.declare(TOTAL_CURRENT, 0.0);
     values.declare(PDP_VOLTAGE, 0.0);
+    values.declare(UNREGISTERED_CURRENT, 0.0);
     values.declare(AVERAGE_PREFIX + TOTAL_CURRENT, 0.0);
     values.declare(AVERAGE_PREFIX + PDP_VOLTAGE, 0.0);
   }

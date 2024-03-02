@@ -17,6 +17,7 @@ public class RevPID implements PIDController5010 {
     SparkPIDController controller;
     ControlType sparkControlType = ControlType.kVoltage;
     private double reference = 0.0;
+    private double tolerance = 0.0;
 
     public RevPID(GenericRevBrushlessMotor motor) {
         this.motor = motor;
@@ -64,6 +65,28 @@ public class RevPID implements PIDController5010 {
         setControlType(controlType);
         this.reference = reference;
         controller.setReference(feedforward, sparkControlType, 0, feedforward);
+    }
+
+    @Override
+    public boolean isAtTarget() {
+        switch (sparkControlType) {
+            case kVelocity:
+            return Math.abs(getReference() - motor.getEncoder().getVelocity()) < tolerance;
+            case kPosition:
+            return Math.abs(getReference() - motor.getEncoder().getPosition()) < tolerance;
+            default:
+            return false;
+        }
+    }
+
+    @Override
+    public void setTolerance(double value) {
+        tolerance = value;
+    }
+
+    @Override
+    public double getTolerance() {
+        return tolerance;
     }
 
     @Override

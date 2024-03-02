@@ -20,6 +20,7 @@ public class TalonFXPID implements PIDController5010 {
     Slot0Configs PIDConfigs = new Slot0Configs();
     PIDControlType controlType = PIDControlType.VOLTAGE;
     double reference = 0.0;
+    double tolerance;
 
     public TalonFXPID(GenericTalonFXMotor motor) {
         this.motor = motor;
@@ -48,6 +49,28 @@ public class TalonFXPID implements PIDController5010 {
         }
     }
 
+    @Override
+    public boolean isAtTarget() {
+        switch (controlType) {
+            case VELOCITY:
+            return Math.abs(getReference() - motor.getVelocity().getValueAsDouble()) < tolerance;
+            case POSITION:
+            return Math.abs(getReference() - motor.getPosition().getValueAsDouble()) < tolerance;
+            default:
+            return false;
+        }
+    }
+
+
+    @Override
+    public void setTolerance(double value) {
+        tolerance = value;
+    }
+
+    @Override
+    public double getTolerance() {
+        return tolerance;
+    }
 
     @Override
     public void setValues(GenericPID pid) {

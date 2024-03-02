@@ -26,6 +26,7 @@ import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
 import frc.robot.FRC5010.subsystems.LedSubsystem;
+import frc.robot.FRC5010.subsystems.PowerDistribution5010;
 import frc.robot.chargedup.commands.RunShooter;
 
 /** Add your docs here. */
@@ -40,6 +41,7 @@ public class KitBot2024 extends GenericMechanism {
         private ShooterSubsystem shooter;
         private MotorController5010 topShooterMotor;
         private MotorController5010 bottomShooterMotor;
+        private PowerDistribution5010 powerDistribution;
 
         private JoystickButton shootButton;
 
@@ -72,6 +74,7 @@ public class KitBot2024 extends GenericMechanism {
                 // ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
                 // "http://10.50.10.11:5800/").withPosition(0, 0).withSize(7,4);
+                powerDistribution = new PowerDistribution5010();
 
                 gyro = new PigeonGyro(15);
 
@@ -82,6 +85,7 @@ public class KitBot2024 extends GenericMechanism {
                 bottomShooterMotor = MotorFactory.NEO(33);
              
                 shooter = new ShooterSubsystem(topShooterMotor, bottomShooterMotor);
+                powerDistribution.registerChannel("", 0);
                 // Uncomment when using PhotonVision
                 // multiVision.addPhotonCamera("LeftCamera", 1,
                 // new Transform3d( // This describes the vector between the camera lens to the
@@ -90,6 +94,7 @@ public class KitBot2024 extends GenericMechanism {
                 // new Translation3d(Units.inchesToMeters(27.75 / 2),
                 // Units.inchesToMeters(2.5),
                 // Units.inchesToMeters(36.75)),
+                
                 // new Rotation3d(0, 0, Units.degreesToRadians(90))),
                 // PoseStrategy.MULTI_TAG_PNP,
                 // drive.getDrivetrain().getPoseEstimator());

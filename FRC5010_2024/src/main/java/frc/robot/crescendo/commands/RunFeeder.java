@@ -28,7 +28,7 @@ public class RunFeeder extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    feederSubsystem.setFeederSpeed(speed.getAsDouble());
+    feederSubsystem.feederStateMachine(speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

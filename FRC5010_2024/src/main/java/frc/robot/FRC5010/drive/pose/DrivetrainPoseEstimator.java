@@ -21,8 +21,11 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionSystem;
+import frc.robot.crescendo.Constants;
+import frc.robot.crescendo.Targeting2024;
 
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
@@ -150,7 +153,7 @@ public class DrivetrainPoseEstimator {
 
   public void update() {
     poseTracker.updateLocalMeasurements();
-    if (!disableVisionUpdate) {
+    if (true) {
       Map<String, Pose2d> poses = vision.getRawValues().getRobotPoses();
       Map<String, Double> poseDistances = vision.getRawValues().getPoseDistances();
       for (String camera : poses.keySet()) {
@@ -161,7 +164,7 @@ public class DrivetrainPoseEstimator {
 
           if (vision.getRawValues().getFiducialIds().get(camera) > 0 && (RobotState.isDisabled()
               || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
-              || 2.0 > poseDistance)) {
+              || 3.0 > poseDistance)) {
             poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
           }
         }
@@ -173,6 +176,7 @@ public class DrivetrainPoseEstimator {
 
     closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
     closestTargetToRobot = updatePoseFromClosestVisionTarget();
+    SmartDashboard.putNumber("Distance to Speaker", getCurrentPose().getTranslation().getDistance(Constants.Field.BLUE_SHOT_POSE.getTranslation().toTranslation2d()));
   }
 
   /**
