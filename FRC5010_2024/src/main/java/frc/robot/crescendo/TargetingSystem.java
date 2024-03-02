@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -28,6 +29,8 @@ public class TargetingSystem extends GenericSubsystem {
     private final String kD = "Targeting kD";
     private final String TOLERANCE = "Targeting Tolerance";
 
+    private static InterpolatingDoubleTreeMap pivotInterpolation = new InterpolatingDoubleTreeMap();
+
     // Output Values
     private final String TURN_POWER = "Turn Power";
     private final String HORIZONTAL_ANGLE = "Horizontal Angle";
@@ -43,7 +46,7 @@ public class TargetingSystem extends GenericSubsystem {
         values.declare(kP, 0.25);
         values.declare(kI, 0);
         values.declare(kD, 0.005);
-        values.declare(TOLERANCE, 0.05);
+        values.declare(TOLERANCE, 0.01);
 
         values.declare(TURN_POWER, 0.0);
         values.declare(HORIZONTAL_ANGLE, 0.0);
@@ -54,6 +57,13 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController = new PIDController(values.getDouble(kP), values.getDouble(kI), values.getDouble(kD));
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        pivotInterpolation.put(1.52, 0.67);
+        pivotInterpolation.put(2.004, 7.00);
+        pivotInterpolation.put(2.57, 12.65);
+        pivotInterpolation.put(3.07, 17.1);
+        pivotInterpolation.put(3.506, 19.66);
+        pivotInterpolation.put(4.07, 21.422);
     }
 
     public Pose3d getSpeakerTarget(Alliance alliance) {
@@ -79,31 +89,32 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController.setTolerance(values.getDouble(TOLERANCE));
     }
 
+    public boolean isAtTargetYaw() {
+        return thetaController.atSetpoint();
+    }
+
     public double getPivotAngle() {
-        return 0.0;
+        return interpolatePivotAngle(currentTarget.get(), robotPose.get());
     }
-
-    private static double vectorAngleDifference(double x1, double y1, double x2, double y2) {
-        return Math.atan2(x1 * y2 - y1 * x2, dotProduct2d(x1, y1, x2, y2));
-    }
-    
-    private static double dotProduct2d(double x1, double y1, double x2, double y2) {
-        return x1 * x2 + y1 * y2;
-    }
-
 
     public double getHorizontalAngle(boolean AccountForVelocity, double launchVelocity) {
         ChassisSpeeds speeds = AccountForVelocity ? swerve.getChassisSpeeds() : new ChassisSpeeds();
         double x = currentTarget.get().getTranslation().getX() - robotPose.get().getTranslation().getX();
         double y = currentTarget.get().getTranslation().getY() - robotPose.get().getTranslation().getY();
-        double static_angle = Math.atan(y / x);
+        double static_angle = Math.atan2(y, x);
+        if (!AccountForVelocity) {
+            values.set(HORIZONTAL_ANGLE, static_angle);
+            return Units.radiansToDegrees(-static_angle) + 180;
+        }
+
+        // Account for Horizontal velocity
         double note_x = launchVelocity * Math.cos(static_angle);
         double note_y = launchVelocity * Math.sin(static_angle);
         double x_total_accounted = note_x - speeds.vxMetersPerSecond;
         double y_total_accounted = note_y - speeds.vyMetersPerSecond;
         double accounted_angle = Math.atan(y_total_accounted/x_total_accounted);
         values.set(HORIZONTAL_ANGLE, accounted_angle);
-        return AccountForVelocity ? Units.radiansToDegrees(accounted_angle) : Units.radiansToDegrees(static_angle);
+        return Units.radiansToDegrees(-accounted_angle) + 180;
 
     }
 
@@ -113,6 +124,14 @@ public class TargetingSystem extends GenericSubsystem {
         double angle = Math.atan2(y, x);
         values.set(PIVOT_ANGLE, angle);
         return Units.radiansToDegrees(angle);
+    }
+
+    public static double interpolatePivotAngle(double distance) {
+        return pivotInterpolation.get(distance);
+    }
+
+    public static double interpolatePivotAngle(Pose3d target, Pose3d robot) {
+        return pivotInterpolation.get(target.getTranslation().toTranslation2d().getDistance(robot.getTranslation().toTranslation2d()));
     }
 
     public double getTurnPower() {
