@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FRC5010.arch.GenericCommand;
+import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
@@ -28,6 +29,7 @@ public class RunIntake extends GenericCommand {
   PivotSubsystem pivotSubsystem;
 
   boolean feederStopFlag = false;
+  Controller rumbleController;
 
   Command feederCommand;
   Command holdingCommand;
@@ -36,13 +38,13 @@ public class RunIntake extends GenericCommand {
 
   /** Creates a new RunIntake. */
   public RunIntake(DoubleSupplier joystick, DoubleSupplier feederSpeed, IntakeSubsystem intakeSubsystem,
-      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem) {
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, Controller rumbleController) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
     this.feederSpeed = feederSpeed;
     this.feederSubsystem = feederSubsystem;
     this.pivotSubsystem = pivotSubsystem;
-
+    this.rumbleController = rumbleController;
     
     
     // Use addRequirements() here to declare subsystem dependencies.
@@ -59,13 +61,21 @@ public class RunIntake extends GenericCommand {
         .until(() -> feederSubsystem.getNoteState() == NoteState.Holding || 0 == speed.getAsDouble())
         .finallyDo(() -> {
           feederSubsystem.feederStateMachine(0);
+
         })
-        .andThen(Commands.run(() -> feederSubsystem.feederStateMachine(0.5 * feederSpeed.getAsDouble()))
+        .andThen(
+
+          Commands.run(() -> feederSubsystem.feederStateMachine(0.5 * feederSpeed.getAsDouble()))
             .onlyIf(() -> feederSubsystem.isStopBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
             .until(() -> !feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
             .finallyDo(() -> {
               feederSubsystem.feederStateMachine(0);
-            }));
+            
+            }).andThen(
+              Commands.runOnce(() -> rumbleController.setRumble(1)).andThen(
+              Commands.waitSeconds(1)).finallyDo(() -> rumbleController.setRumble(0))
+            ).onlyIf(() -> null != rumbleController && feederSubsystem.getNoteState() == NoteState.Loaded)
+          );
 
     holdingCommand = Commands.run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
             feederSubsystem).until(() -> 0 == speed.getAsDouble());
@@ -82,7 +92,8 @@ public class RunIntake extends GenericCommand {
   @Override
   public void execute() {
     double velocity = speed.getAsDouble();
-    intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity : 0.0);
+    intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity : feederSubsystem.getNoteState() == NoteState.Holding ? -velocity : 0);
+    
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
       if (velocity < 0) {

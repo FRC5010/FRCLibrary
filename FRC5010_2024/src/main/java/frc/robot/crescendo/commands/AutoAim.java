@@ -101,16 +101,16 @@ public class AutoAim extends Command {
     SmartDashboard.putBoolean("Pivot Target", pivotSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Shooter Target", shooterSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
-    if (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw()) {
-      if (cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) {
-        feederSubsystem.feederStateMachine(-1.0);
+    // if (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw()) {
+    //   if (cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) {
+    //     feederSubsystem.feederStateMachine(-1.0);
 
-      }
-      cycleCounter++;
+    //   }
+    //   cycleCounter++;
 
-    } else {
-      cycleCounter = 0;
-    }
+    // } else {
+    //   cycleCounter = 0;
+    // }
   }
 
   // Called once the command ends or is interrupted.

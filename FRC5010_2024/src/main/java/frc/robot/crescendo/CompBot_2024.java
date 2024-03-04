@@ -75,7 +75,7 @@ public class CompBot_2024 extends GenericMechanism {
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
 
-                RobotContainer.setLoggingLevel(LogLevel.PRODUCTION);
+                RobotContainer.setLoggingLevel(LogLevel.DEBUG);
 
                 ledSubsystem = new SegmentedLedSystem(0, 34, visual);
                 ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
@@ -302,7 +302,7 @@ public class CompBot_2024 extends GenericMechanism {
                                 new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(), () -> 0.5,
                                                 intakeSubsystem,
                                                 feederSubsystem,
-                                                pivotSubsystem));
+                                                pivotSubsystem, driver));
 
                 climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(),
                                 () -> operator.getRightYAxis(), climbSubsystem));
@@ -380,7 +380,7 @@ public class CompBot_2024 extends GenericMechanism {
         public void initAutoCommands() {
                 drive.initAutoCommands();
                 NamedCommands.registerCommand("Intake Note",
-                                new RunIntake(() -> -1.0, () -> 0.5, intakeSubsystem, feederSubsystem, pivotSubsystem)
+                                new RunIntake(() -> -1.0, () -> 0.5, intakeSubsystem, feederSubsystem, pivotSubsystem, null)
                                                 .until(() -> feederSubsystem.getNoteState() == NoteState.Loaded));
 
                 NamedCommands.registerCommand("Auto Aim",

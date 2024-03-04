@@ -7,6 +7,7 @@ package frc.robot.FRC5010.sensors;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.HIDType;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
@@ -161,6 +162,10 @@ public class Controller {
 
     public Controller(int port) {
         joystick = new Joystick(port);
+    }
+
+    public void setRumble(double power) {
+        joystick.setRumble(RumbleType.kBothRumble, power);
     }
 
     public boolean isPluggedIn() {
