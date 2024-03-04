@@ -44,9 +44,9 @@ public class TargetingSystem extends GenericSubsystem {
 
         // Declare Values
         values.declare(kP, 0.25);
-        values.declare(kI, 0);
+        values.declare(kI, 0.0);
         values.declare(kD, 0.005);
-        values.declare(TOLERANCE, 0.01);
+        values.declare(TOLERANCE, 0.03);
 
         values.declare(TURN_POWER, 0.0);
         values.declare(HORIZONTAL_ANGLE, 0.0);
@@ -57,7 +57,7 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController = new PIDController(values.getDouble(kP), values.getDouble(kI), values.getDouble(kD));
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
+        pivotInterpolation.put(0.95, -10.0);
         pivotInterpolation.put(1.52, 0.67);
         pivotInterpolation.put(2.004, 7.00);
         pivotInterpolation.put(2.57, 12.65);
@@ -66,7 +66,7 @@ public class TargetingSystem extends GenericSubsystem {
         pivotInterpolation.put(4.07, 21.422);
     }
 
-    public Pose3d getSpeakerTarget(Alliance alliance) {
+    public static Pose3d getSpeakerTarget(Alliance alliance) {
         return alliance == Alliance.Blue ? Constants.Field.BLUE_SHOT_POSE : Constants.Field.RED_SHOT_POSE;
     }
 
@@ -94,8 +94,13 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public double getPivotAngle() {
-        return interpolatePivotAngle(currentTarget.get(), robotPose.get());
+
+        double angle = interpolatePivotAngle(currentTarget.get(), robotPose.get());
+        values.set(PIVOT_ANGLE, angle);
+        return angle;
     }
+
+    
 
     public double getHorizontalAngle(boolean AccountForVelocity, double launchVelocity) {
         ChassisSpeeds speeds = AccountForVelocity ? swerve.getChassisSpeeds() : new ChassisSpeeds();
@@ -103,18 +108,22 @@ public class TargetingSystem extends GenericSubsystem {
         double y = currentTarget.get().getTranslation().getY() - robotPose.get().getTranslation().getY();
         double static_angle = Math.atan2(y, x);
         if (!AccountForVelocity) {
-            values.set(HORIZONTAL_ANGLE, static_angle);
-            return Units.radiansToDegrees(-static_angle) + 180;
+            values.set(HORIZONTAL_ANGLE, Units.radiansToDegrees(static_angle));
+            return Units.radiansToDegrees(static_angle);
         }
 
         // Account for Horizontal velocity
-        double note_x = launchVelocity * Math.cos(static_angle);
-        double note_y = launchVelocity * Math.sin(static_angle);
-        double x_total_accounted = note_x - speeds.vxMetersPerSecond;
-        double y_total_accounted = note_y - speeds.vyMetersPerSecond;
-        double accounted_angle = Math.atan(y_total_accounted/x_total_accounted);
-        values.set(HORIZONTAL_ANGLE, accounted_angle);
-        return Units.radiansToDegrees(-accounted_angle) + 180;
+        double speaker_x_velocity = -speeds.vxMetersPerSecond;
+        double speaker_y_velocity = -speeds.vyMetersPerSecond;
+        
+        int convergence_trials = 10;
+        for (int i = 0; i<convergence_trials; i++) {
+            // Gets current distance to speaker
+            
+        }
+
+        values.set(HORIZONTAL_ANGLE, 0);
+        return Units.radiansToDegrees(0);
 
     }
 
@@ -135,9 +144,9 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public double getTurnPower() {
-        double targetAngle = 0.0;
+        double targetAngle = getHorizontalAngle(false, 0.0);
         updateControllerValues();
-        thetaController.setSetpoint(targetAngle);
+        thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
         return thetaController.atSetpoint() ? 0.0 : thetaController.calculate(robotPose.get().getRotation().getZ())
                 * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond(); // Stops rotating robot  once at setpoint within tolerance.
     }

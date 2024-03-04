@@ -12,11 +12,14 @@ import java.util.Map;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.RobotContainer;
 
 /** Add your docs here. */
 public class AprilTags {
@@ -86,7 +89,7 @@ public class AprilTags {
         try {
             aprilTagFieldLayout = AprilTagFieldLayout
                     .loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-               
+            aprilTagFieldLayout.setOrigin(RobotContainer.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);   
             List<AprilTag> aprilTagPoses = new ArrayList<>();       
             for (AprilTag5010 aprilTag : AprilTag5010.values()) {
                 aprilTagPoses.add(new AprilTag(aprilTag.ordinal(), aprilTag.pose));

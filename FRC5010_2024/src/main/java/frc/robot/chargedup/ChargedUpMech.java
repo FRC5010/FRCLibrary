@@ -292,12 +292,12 @@ public class ChargedUpMech extends GenericMechanism {
 
 	@Override
 	public void initAutoCommands() {
-		NamedCommands.registerCommand("Pivot to Ground", new PivotElevator(pivotSubsystem, ElevatorLevel.ground));
-		NamedCommands.registerCommand("Pivot to High", new PivotElevator(pivotSubsystem, ElevatorLevel.high));
-		NamedCommands.registerCommand("Auto Note Pickup", new InstantCommand(() -> {
-		}));
-		NamedCommands.registerCommand("Auto Note Shoot", new InstantCommand(() -> {
-		}));
+		// NamedCommands.registerCommand("Pivot to Ground", new PivotElevator(pivotSubsystem, ElevatorLevel.ground));
+		// NamedCommands.registerCommand("Pivot to High", new PivotElevator(pivotSubsystem, ElevatorLevel.high));
+		// NamedCommands.registerCommand("Auto Note Pickup", new InstantCommand(() -> {
+		// }));
+		// NamedCommands.registerCommand("Auto Note Shoot", new InstantCommand(() -> {
+		// }));
 	}
 
 	@Override

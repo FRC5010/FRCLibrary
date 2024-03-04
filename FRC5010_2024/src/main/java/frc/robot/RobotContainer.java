@@ -58,6 +58,12 @@ public class RobotContainer extends GenericMechanism {
   private static String MAC_Address = "MAC ADDRESS";
   private DigitalInput startupBypass;
 
+  public enum LogLevel {
+    DEBUG,
+    PRODUCTION
+  }
+  public static LogLevel logLevel = LogLevel.DEBUG;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -84,6 +90,7 @@ public class RobotContainer extends GenericMechanism {
 
     DriverStation.silenceJoystickConnectionWarning(true);
     alliance = determineAllianceColor();
+    SmartDashboard.putString("Alliance", alliance.get().toString());
     
     initRealOrSim();
 
@@ -91,6 +98,14 @@ public class RobotContainer extends GenericMechanism {
     configureButtonBindings(driver, operator);
     initAutoCommands();
     WpiNetworkTableValuesHelper.loadRegisteredToNetworkTables();
+  }
+
+  public static LogLevel getLoggingLevel() {
+    return logLevel;
+  }
+
+  public static void setLoggingLevel(LogLevel level) {
+    logLevel = level;
   }
 
   public static String WHO_AM_I = "WhoAmI";

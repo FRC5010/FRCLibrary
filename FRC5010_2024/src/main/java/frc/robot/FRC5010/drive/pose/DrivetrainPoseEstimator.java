@@ -22,10 +22,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.crescendo.Constants;
-import frc.robot.crescendo.Targeting2024;
+import frc.robot.crescendo.TargetingSystem;
+
 
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
@@ -165,7 +167,10 @@ public class DrivetrainPoseEstimator {
           if (vision.getRawValues().getFiducialIds().get(camera) > 0 && (RobotState.isDisabled()
               || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
               || 3.0 > poseDistance)) {
+            SmartDashboard.putBoolean("April Tag Pose Updating", true);
             poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
+          } else {
+            SmartDashboard.putBoolean("April Tag Pose Updating", false);
           }
         }
 
@@ -176,7 +181,7 @@ public class DrivetrainPoseEstimator {
 
     closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
     closestTargetToRobot = updatePoseFromClosestVisionTarget();
-    SmartDashboard.putNumber("Distance to Speaker", getCurrentPose().getTranslation().getDistance(Constants.Field.BLUE_SHOT_POSE.getTranslation().toTranslation2d()));
+    SmartDashboard.putNumber("Distance to Speaker", getCurrentPose().getTranslation().getDistance(TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()).getTranslation().toTranslation2d()));
   }
 
   /**

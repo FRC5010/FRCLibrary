@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -26,10 +25,13 @@ import frc.robot.FRC5010.motors.SystemIdentification;
 import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
+import frc.robot.FRC5010.subsystems.Color;
+import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import swervelib.math.SwerveMath;
 
 public class FeederSubsystem extends GenericSubsystem {
 
+  private SegmentedLedSystem ledSubsystem;
   private MotorController5010 feederMotor;
   private PIDController5010 pid;
   private double reference;
@@ -81,7 +83,9 @@ public class FeederSubsystem extends GenericSubsystem {
   private final String NOTE_STATE = "Note State";
 
   /** Creates a new FeederSubsystem. */
-  public FeederSubsystem(Mechanism2d robotSim, MotorController5010 feeder) {
+  public FeederSubsystem(Mechanism2d robotSim, MotorController5010 feeder, SegmentedLedSystem ledSubsystem) {
+    this.ledSubsystem = ledSubsystem;
+
     feederMotor = feeder;
     encoder = feeder.getMotorEncoder();
     pid = feeder.getPIDController5010();
@@ -92,7 +96,7 @@ public class FeederSubsystem extends GenericSubsystem {
     values.declare(SIM_DETECT_BEAMBREAK, true);
 
     noteState = DriverStation.isFMSAttached() ? NoteState.Loaded
-        : isStopBeamBroken() ? NoteState.Holding : NoteState.Empty;
+        : isDetectBeamBroken() ? NoteState.Loaded : NoteState.Empty;
 
     values.declare(STOP_BEAM_BREAK_STATE, false);
     values.declare(DETECT_BEAM_BREAK_STATE, false);
@@ -102,10 +106,11 @@ public class FeederSubsystem extends GenericSubsystem {
     pid.setValues(new GenericPID(0, 0, 0));
 
     this.feederMotorSim = robotSim.getRoot("Feeder Motor", 0.40, 0.30)
-        .append(new MechanismLigament2d("Feeder Motor", 0.1, 180, 5, new Color8Bit(Color.kMagenta)));
+        .append(new MechanismLigament2d("Feeder Motor", 0.1, 180, 5, Color.PURPLE.getColor8Bit()));
     noteRoot = robotSim.getRoot("Note Root", noteX, noteY);
     note = noteRoot
-        .append(new MechanismLigament2d("Note", Units.inchesToMeters(14), 45, 5, new Color8Bit(Color.kOrangeRed)));
+        .append(
+            new MechanismLigament2d("Note", Units.inchesToMeters(14), 45, 5, Color.FIFTY_TEN_ORANGE.getColor8Bit()));
   }
 
   public Command getFeederSysIdRoutineCommand() {
@@ -139,7 +144,6 @@ public class FeederSubsystem extends GenericSubsystem {
       stop();
     }, this).beforeStarting(() -> setFeederSpeed(1.0), this).until(() -> getNoteState().equals(NoteState.Empty));
 
-
   }
 
   public double getFeederVelocity() {
@@ -152,27 +156,41 @@ public class FeederSubsystem extends GenericSubsystem {
         if (isStopBeamBroken() && isDetectBeamBroken()) {
           noteState = NoteState.Holding;
         }
-      break;
+        break;
       case Holding:
         if (!isDetectBeamBroken()) {
           noteState = NoteState.Empty;
         } else if (!isStopBeamBroken()) {
           noteState = NoteState.Loaded;
         }
-      break;
+        break;
       case Loaded:
         if (isDetectBeamBroken() && isStopBeamBroken()) {
           noteState = NoteState.Shooting;
         } else if (!isDetectBeamBroken()) {
           noteState = NoteState.Empty;
         }
-      break;
+        break;
       case Shooting:
         if (!isStopBeamBroken()) {
           noteState = NoteState.Empty;
         }
     }
-    
+
+    switch (noteState) {
+      case Empty:
+        ledSubsystem.setWholeStripState((Integer i) -> Color.RED.getColor8Bit());
+        break;
+      case Holding:
+        ledSubsystem.setWholeStripState((Integer i) -> Color.ORANGE.getColor8Bit());
+        break;
+      case Loaded:
+        ledSubsystem.setWholeStripState((Integer i) -> Color.PURPLE.getColor8Bit());
+        break;
+      case Shooting:
+        ledSubsystem.setWholeStripState((Integer i) -> Color.FIFTY_TEN_ORANGE.getColor8Bit());
+        break;
+    }
   }
 
   public void feederStateMachine(double feeder) {
@@ -248,6 +266,7 @@ public class FeederSubsystem extends GenericSubsystem {
   public void setSimulatedStopBeambreak(boolean value) {
     values.set(SIM_STOP_BEAMBREAK, value);
   }
+
   public void setSimulatedDetectBeambreak(boolean value) {
     values.set(SIM_DETECT_BEAMBREAK, value);
   }
@@ -259,9 +278,6 @@ public class FeederSubsystem extends GenericSubsystem {
   public boolean isDetectBeamBroken() {
     return Robot.isReal() ? !detectBeamBreak.get() : !values.getBoolean(SIM_DETECT_BEAMBREAK);
   }
-
-
-
 
   public double getFeederFeedFwdVoltage(double velocity) {
     return feederFeedFwd.calculate(velocity);
@@ -292,7 +308,7 @@ public class FeederSubsystem extends GenericSubsystem {
     noteY -= Math.signum(feederSpeed) * noteMotion;
     values.set(STOP_BEAM_BREAK_STATE, isStopBeamBroken());
     values.set(DETECT_BEAM_BREAK_STATE, isDetectBeamBroken());
-    values.set(FEEDER_MOTOR_SPEED, feederMotor.get());
+    values.set(FEEDER_MOTOR_SPEED, feederMotor.getMotorEncoder().getVelocity());
     values.set(NOTE_STATE, noteState.toString());
     if (noteX < 0.1 || noteX > 1.0)
       noteX = 0.1;
@@ -301,6 +317,6 @@ public class FeederSubsystem extends GenericSubsystem {
     noteRoot.setPosition(noteX, noteY);
     if (noteX > 0.5 && noteX < 0.55)
       values.set(SIM_STOP_BEAMBREAK, false);
-      values.set(SIM_DETECT_BEAMBREAK, false);
+    values.set(SIM_DETECT_BEAMBREAK, false);
   }
 }

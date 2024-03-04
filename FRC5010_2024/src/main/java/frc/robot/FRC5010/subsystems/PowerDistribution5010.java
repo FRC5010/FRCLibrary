@@ -3,11 +3,15 @@ package frc.robot.FRC5010.subsystems;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.arch.GenericSubsystem;
+import frc.robot.RobotContainer.LogLevel;
 
 public class PowerDistribution5010 extends GenericSubsystem {
-  private PowerDistribution powerDistribution = new PowerDistribution();
+  private PowerDistribution powerDistribution;
   private static final String UNREGISTERED_CURRENT = "Unregistered Current";
   private static final String TOTAL_CURRENT = "Total Current";
   private static final String PDP_VOLTAGE = "PDP Voltage";
@@ -17,7 +21,16 @@ public class PowerDistribution5010 extends GenericSubsystem {
   private Map<String, Double> averages = new HashMap<>();
   private Map<String, Integer> counts = new HashMap<>();
 
+  private LinearFilter currentFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+  private LinearFilter voltageFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+
   public PowerDistribution5010() {
+    powerDistribution= new PowerDistribution();
+    declareInitialValues();
+  }
+
+  public PowerDistribution5010(int id, ModuleType type) {
+    powerDistribution = new PowerDistribution(id, type);
     declareInitialValues();
   }
 
@@ -48,29 +61,31 @@ public class PowerDistribution5010 extends GenericSubsystem {
 
   @Override
   public void periodic() {
-    double totalCurrent = powerDistribution.getTotalCurrent();
-    double pdpVoltage = powerDistribution.getVoltage();
-    double accountedCurrent = 0.0;
-
-    // TODO: Maybe add a verbosity level to the logging...cause it could be a lot
-    updatePdpValues(totalCurrent, pdpVoltage);
-    updateChannelValues(accountedCurrent);
-    values.set(UNREGISTERED_CURRENT, totalCurrent - accountedCurrent);
+    if (LogLevel.DEBUG == RobotContainer.getLoggingLevel()) {
+      double totalCurrent = powerDistribution.getTotalCurrent();
+      double pdpVoltage = powerDistribution.getVoltage();
+      // TODO: Maybe add a verbosity level to the logging...cause it could be a lot
+      updatePdpValues(totalCurrent, pdpVoltage);
+      double accountedCurrent = updateChannelValues();
+      values.set(UNREGISTERED_CURRENT, totalCurrent - accountedCurrent);
+    }
   }
 
   private void updatePdpValues(double totalCurrent, double pdpVoltage) {
     values.set(TOTAL_CURRENT, totalCurrent);
     values.set(PDP_VOLTAGE, pdpVoltage);
-    values.set(AVERAGE_PREFIX + TOTAL_CURRENT, updateAverage(TOTAL_CURRENT, totalCurrent));
-    values.set(AVERAGE_PREFIX + PDP_VOLTAGE, updateAverage(PDP_VOLTAGE, pdpVoltage));
+    values.set(AVERAGE_PREFIX + TOTAL_CURRENT, currentFilter.calculate(totalCurrent));
+    values.set(AVERAGE_PREFIX + PDP_VOLTAGE, voltageFilter.calculate(pdpVoltage));
   }
 
-  private void updateChannelValues(double accountedCurrent) {
+  private double updateChannelValues() {
+    double accountedCurrent = 0.0;
     for (Map.Entry<String, Integer> entry : channels.entrySet()) {
       double current = powerDistribution.getCurrent(entry.getValue());
       accountedCurrent += current;
       values.set(entry.getKey(), current);
       values.set(AVERAGE_PREFIX + entry.getKey(), updateAverage(entry.getKey(), current));
     }
+    return accountedCurrent;
   }
 }

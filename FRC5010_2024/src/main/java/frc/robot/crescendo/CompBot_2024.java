@@ -6,30 +6,27 @@ package frc.robot.crescendo;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Robot;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.LogLevel;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.arch.GenericMechanism;
-import frc.robot.FRC5010.commands.DriveToPosition;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.constants.TranslationConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
@@ -46,7 +43,6 @@ import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.RunClimb;
-import frc.robot.crescendo.commands.RunFeeder;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
@@ -73,11 +69,13 @@ public class CompBot_2024 extends GenericMechanism {
         private Drive drive;
         private SegmentedLedSystem ledSubsystem;
 
-        private Targeting2024 targetingSystem;
+        private TargetingSystem targetingSystem;
         private PowerDistribution5010 powerDistribution5010;
 
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
+
+                RobotContainer.setLoggingLevel(LogLevel.PRODUCTION);
 
                 ledSubsystem = new SegmentedLedSystem(0, 34, visual);
                 ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
@@ -111,14 +109,9 @@ public class CompBot_2024 extends GenericMechanism {
                                 Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
 
                 // Setup Swerve Constants
-                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
-                swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
-
-                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
-                swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
-                swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
 
                 swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3_KRAKEN_NEO);
+                swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
                 swerveConstants.getSwerveModuleConstants().setkWheelDiameterMeters(0.115573139);
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft",
                                 new MotorFeedFwdConstants(0.13212, 1.9208, 0.20617)); // FL
@@ -128,17 +121,25 @@ public class CompBot_2024 extends GenericMechanism {
                                 new MotorFeedFwdConstants(0.1163, 1.9497, 0.34564)); // BL
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
                                 new MotorFeedFwdConstants(0.1163, 1.9497, 0.34564)); // BR
-                swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
+
+                swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
+                swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+
+                swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
+                swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+                swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
 
                 drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
                                 "mk4i_L3_kraken_neo");
-                targetingSystem = new Targeting2024((SwerveDrivetrain) drive.getDrivetrain(),
+                targetingSystem = new TargetingSystem(
+                                () -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
                                 () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
-                                () -> Constants.Field.BLUE_SHOT_POSE);
+                                (SwerveDrivetrain) drive.getDrivetrain());
 
                 shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, bottomShooterMotor);
-                feederSubsystem = new FeederSubsystem(visual, feederMotor);
+                feederSubsystem = new FeederSubsystem(visual, feederMotor, ledSubsystem);
                 intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);
+
                 initRealOrSim();
         }
 
@@ -149,7 +150,7 @@ public class CompBot_2024 extends GenericMechanism {
                 driver.setLeftTrigger(driver.createLeftTrigger().deadzone(0.07).negate());
 
                 operator.setLeftYAxis(operator.createLeftYAxis().deadzone(0.07).negate());
-                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.07).negate().limit(0.25).rate(0.25));
+                operator.setRightYAxis(operator.createRightYAxis().deadzone(0.07).negate());
 
                 operator.setRightXAxis(operator.createRightXAxis().deadzone(0.07).negate());
                 operator.setLeftXAxis(operator.createLeftXAxis().deadzone(0.07).negate());
@@ -172,21 +173,32 @@ public class CompBot_2024 extends GenericMechanism {
                  * Field Oriented - B Button
                  */
 
-                driver.createAButton().whileTrue(
+                JoystickButton autoaimButton = driver.createAButton();
+
+                autoaimButton.whileTrue(
                                 new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
                                                 () -> (JoystickToSwerve) drive.getDefaultCommand()))
-                                .onFalse(Commands
-                                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL)));
+                                .onFalse(Commands.waitSeconds(0.5).andThen(
+                                                Commands.runOnce(() -> pivotSubsystem
+                                                                .setReference(pivotSubsystem.HOME_LEVEL))
+                                                                .unless(() -> autoaimButton.getAsBoolean())));
+
+                // driver.createRightBumper()
+                // .whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
+                // () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
+                // () -> drive.getDrivetrain().getPoseEstimator()
+                // .getPoseFromClosestVisionTarget(),
+                // null,
+                // TranslationConstants.noteTransform)
+                // .deadlineWith(new RunIntake(() -> 1.0, () -> 0.5, intakeSubsystem,
+                // feederSubsystem)));
 
                 driver.createRightBumper()
-                                .whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
-                                                () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose(),
-                                                () -> drive.getDrivetrain().getPoseEstimator()
-                                                                .getPoseFromClosestVisionTarget(),
-                                                null,
-                                                TranslationConstants.noteTransform)
-                                                .deadlineWith(new RunIntake(() -> 1.0, () -> 0.5, intakeSubsystem,
-                                                                feederSubsystem)));
+                                .whileTrue(
+                                                new JoystickToSwerve((SwerveDrivetrain) drive.getDrivetrain(),
+                                                                () -> Math.sin(-visionSystem.getAngleY()) * 1.25,
+                                                                () -> Math.sin(visionSystem.getAngleX()),
+                                                                () -> Math.sin(visionSystem.getAngleX()), () -> true));
 
                 driver.createUpPovButton().onTrue(Commands.runOnce(() -> {
                         pivotSubsystem.setSlowdown(pivotSubsystem.getSlowdown() + 0.1);
@@ -198,12 +210,24 @@ public class CompBot_2024 extends GenericMechanism {
                 driver.createBackButton()
                                 .whileTrue(Commands.runOnce(() -> feederSubsystem.setNoteState(NoteState.Empty)));
 
+                driver.createYButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
+                                () -> climbSubsystem.setOverride(false)));
+
                 /*
                  * >>>>>>>>>>>>>>>>>>>>>>>>>>>> OPERATOR BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                  */
                 // Home Pivot
-                operator.createAButton().whileTrue(Commands
-                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL), pivotSubsystem));
+                operator.createAButton().onTrue(Commands.parallel(
+                                Commands.runOnce(() -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+                                }, pivotSubsystem),
+                                Commands.run(() -> {
+                                        climbSubsystem.setLeftMotorSpeed(climbSubsystem.leftIsAtMin(-0.5) ? 0 : -1);
+                                        climbSubsystem.setRightMotorSpeed(climbSubsystem.rightIsAtMin(-0.5) ? 0 : -1);
+                                }, climbSubsystem).until(() -> climbSubsystem.leftIsAtMin(-0.1)
+                                                && climbSubsystem.rightIsAtMin(-0.1))
+
+                ));
                 // Podium Pivot
                 operator.createXButton().onTrue(Commands.runOnce(
                                 () -> {
@@ -227,8 +251,14 @@ public class CompBot_2024 extends GenericMechanism {
                 }));
 
                 // Trap Pivot
-                operator.createBButton().onTrue(Commands
-                                .runOnce(() -> pivotSubsystem.setReference(pivotSubsystem.TRAP_LEVEL), pivotSubsystem));
+                operator.createBButton().onTrue(Commands.runOnce(
+                                () -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.SHUTTLE_LEVEL);
+                                        shooterSubsystem.setShooterReference(6000, 6000);
+                                }, pivotSubsystem)).onFalse(Commands.runOnce(() -> {
+                                        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+                                        shooterSubsystem.setShooterReference(0, 0);
+                                }));
 
                 // Run Shooter motors
                 operator.createRightBumper()
@@ -240,7 +270,8 @@ public class CompBot_2024 extends GenericMechanism {
                 // Feed Note into Shooter
                 operator.createLeftBumper().whileTrue(
                                 Commands.run(() -> feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed")),
-                                                feederSubsystem).finallyDo(() -> feederSubsystem.stop()));
+                                                feederSubsystem)
+                                                .finallyDo(() -> feederSubsystem.feederStateMachine(0.0)));
 
                 // Shooter micro adjust
                 operator.createUpPovButton().onTrue(shooterSubsystem.adjustShooterReferenceUp());
@@ -249,10 +280,8 @@ public class CompBot_2024 extends GenericMechanism {
                 operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
                 operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
 
-                operator.createStartButton()
+                operator.createBackButton()
                                 .onTrue(Commands.runOnce(() -> climbSubsystem.zeroPosition(), climbSubsystem));
-                operator.createBackButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
-                                () -> climbSubsystem.setOverride(false)));
 
                 /*
                  * >>>>>>>>>>>>>>>>>>>>>>>>>>>> BOARD BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -263,7 +292,8 @@ public class CompBot_2024 extends GenericMechanism {
         public void setupDefaultCommands(Controller driver, Controller operator) {
                 drive.setupDefaultCommands(driver, operator);
 
-                pivotSubsystem.setDefaultCommand(new RunPivot(() -> 0.0, pivotSubsystem));
+                pivotSubsystem.setDefaultCommand(new RunPivot(
+                                () -> operator.getRightTrigger() - operator.getLeftTrigger(), pivotSubsystem));
 
                 shooterSubsystem.setDefaultCommand(
                                 new RunShooter(() -> 0.0, shooterSubsystem, feederSubsystem));
@@ -271,7 +301,8 @@ public class CompBot_2024 extends GenericMechanism {
                 intakeSubsystem.setDefaultCommand(
                                 new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(), () -> 0.5,
                                                 intakeSubsystem,
-                                                feederSubsystem));
+                                                feederSubsystem,
+                                                pivotSubsystem));
 
                 climbSubsystem.setDefaultCommand(new RunClimb(() -> operator.getLeftYAxis(),
                                 () -> operator.getRightYAxis(), climbSubsystem));
@@ -321,21 +352,21 @@ public class CompBot_2024 extends GenericMechanism {
                 if (RobotBase.isReal()) {
                         visionSystem.addPhotonCamera("Left Camera", 2,
                                         new Transform3d(
-                                                        new Translation3d(Units.inchesToMeters(-11.66),
-                                                                        Units.inchesToMeters(4.739),
+                                                        new Translation3d(0.40, // Units.inchesToMeters(-11.66)
+                                                                        .12,
                                                                         Units.inchesToMeters(8.256)),
-                                                        new Rotation3d(0, Units.degreesToRadians(25), 0).rotateBy(
+                                                        new Rotation3d(0, Units.degreesToRadians(28), 0).rotateBy(
                                                                         new Rotation3d(0, 0,
-                                                                                        Units.degreesToRadians(30)))),
+                                                                                        Units.degreesToRadians(20)))),
                                         PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
                         visionSystem.addPhotonCamera("Right Camera", 3,
                                         new Transform3d(
-                                                        new Translation3d(Units.inchesToMeters(-11.66),
-                                                                        Units.inchesToMeters(-4.739),
+                                                        new Translation3d(0.4,
+                                                                        -.12,
                                                                         Units.inchesToMeters(8.256)),
-                                                        new Rotation3d(0, Units.degreesToRadians(25), 0).rotateBy(
+                                                        new Rotation3d(0, Units.degreesToRadians(28), 0).rotateBy(
                                                                         new Rotation3d(0, 0,
-                                                                                        Units.degreesToRadians(-30)))),
+                                                                                        Units.degreesToRadians(-20)))),
                                         PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
                         visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(14.264),
                                         -10, 0, 1,
@@ -348,6 +379,16 @@ public class CompBot_2024 extends GenericMechanism {
         @Override
         public void initAutoCommands() {
                 drive.initAutoCommands();
+                NamedCommands.registerCommand("Intake Note",
+                                new RunIntake(() -> -1.0, () -> 0.5, intakeSubsystem, feederSubsystem, pivotSubsystem)
+                                                .until(() -> feederSubsystem.getNoteState() == NoteState.Loaded));
+
+                NamedCommands.registerCommand("Auto Aim",
+                                new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
+                                                false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
+                NamedCommands.registerCommand("Auto Aim With Drive",
+                                new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
+                                                true).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
         }
 
         public void disabledBehavior() {

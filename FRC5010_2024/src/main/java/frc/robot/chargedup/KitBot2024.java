@@ -94,7 +94,8 @@ public class KitBot2024 extends GenericMechanism {
                 // new Translation3d(Units.inchesToMeters(27.75 / 2),
                 // Units.inchesToMeters(2.5),
                 // Units.inchesToMeters(36.75)),
-                
+                multiVision.addLimeLightCamera("kitbot", 4);
+                multiVision.setUpdateValues(true);
                 // new Rotation3d(0, 0, Units.degreesToRadians(90))),
                 // PoseStrategy.MULTI_TAG_PNP,
                 // drive.getDrivetrain().getPoseEstimator());

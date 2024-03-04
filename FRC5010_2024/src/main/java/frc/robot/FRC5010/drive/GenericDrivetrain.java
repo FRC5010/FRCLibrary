@@ -7,10 +7,12 @@ package frc.robot.FRC5010.drive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.commands.DefaultDriveCommand;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.sensors.Controller;
@@ -62,7 +64,7 @@ public abstract class GenericDrivetrain extends SubsystemBase {
     }
 
     public void resetOrientation() {
-        poseEstimator.resetToPose(new Pose2d(poseEstimator.getCurrentPose().getTranslation(), new Rotation2d()));
+        poseEstimator.resetToPose(new Pose2d(poseEstimator.getCurrentPose().getTranslation(), new Rotation2d(RobotContainer.getAlliance() == Alliance.Blue ? 0 : Math.PI)));
     }
 
     public void lockWheels() {

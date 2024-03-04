@@ -66,6 +66,9 @@
             "open": true
           }
         },
+        "TargetingSystem": {
+          "open": true
+        },
         "open": true,
         "swerve": {
           "double[]##v_/SmartDashboard/swerve/desiredStates": {

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FRC5010.arch.GenericCommand;
+import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.IntakeSubsystem;
@@ -24,6 +25,7 @@ public class RunIntake extends GenericCommand {
   IntakeSubsystem intakeSubsystem;
   ShooterSubsystem shooterSubsystem;
   FeederSubsystem feederSubsystem;
+  PivotSubsystem pivotSubsystem;
 
   boolean feederStopFlag = false;
 
@@ -34,25 +36,35 @@ public class RunIntake extends GenericCommand {
 
   /** Creates a new RunIntake. */
   public RunIntake(DoubleSupplier joystick, DoubleSupplier feederSpeed, IntakeSubsystem intakeSubsystem,
-      FeederSubsystem feederSubsystem) {
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
     this.feederSpeed = feederSpeed;
     this.feederSubsystem = feederSubsystem;
+    this.pivotSubsystem = pivotSubsystem;
 
+    
+    
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(intakeSubsystem);
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void init() {
     Map<NoteState, Command> intakeCommands = new HashMap<>();
     feederCommand = Commands
         .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()),
             feederSubsystem)
         .until(() -> feederSubsystem.getNoteState() == NoteState.Holding || 0 == speed.getAsDouble())
         .finallyDo(() -> {
-          feederSubsystem.stop();
+          feederSubsystem.feederStateMachine(0);
         })
-        .andThen(Commands.run(() -> feederSubsystem.feederStateMachine(0.2 * feederSpeed.getAsDouble()))
+        .andThen(Commands.run(() -> feederSubsystem.feederStateMachine(0.5 * feederSpeed.getAsDouble()))
             .onlyIf(() -> feederSubsystem.isStopBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
             .until(() -> !feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
             .finallyDo(() -> {
-              feederSubsystem.stop();
+              feederSubsystem.feederStateMachine(0);
             }));
 
     holdingCommand = Commands.run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
@@ -64,23 +76,18 @@ public class RunIntake extends GenericCommand {
     intakeCommands.put(NoteState.Loaded, loadedCommand);
 
     selectorCommand = Commands.select(intakeCommands, () -> feederSubsystem.getNoteState());
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem);
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void init() {
-
   }
 
   // Called every time the scheduler runs while the command is scheduled
   @Override
   public void execute() {
     double velocity = speed.getAsDouble();
-    //intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity : 0.0);
+    intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity : 0.0);
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
+      if (velocity < 0) {
+        pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
+      }
       // feederStopFlag = true;
       // if (feederSubsystem.isBeamBroken()) {
       // feederSubsystem.setFeederSpeed(0.0);

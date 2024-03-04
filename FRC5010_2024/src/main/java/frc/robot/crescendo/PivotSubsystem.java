@@ -92,6 +92,7 @@ public class PivotSubsystem extends GenericSubsystem {
   public final double HOME_LEVEL = MIN_PIVOT_POSITION;
   public final double AMP_LEVEL = 79;
   public final double TRAP_LEVEL = 75;
+  public final double SHUTTLE_LEVEL = 60;
   public final double INTAKE_LEVEL = HOME_LEVEL; // TODO: Make accurate
   public final double PODIUM_SHOT = 12.3;
   
