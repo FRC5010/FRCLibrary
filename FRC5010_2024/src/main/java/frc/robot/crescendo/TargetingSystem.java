@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -19,6 +20,11 @@ import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 /** Add your docs here. */
 public class TargetingSystem extends GenericSubsystem {
     private Supplier<Pose3d> currentTarget;
+    // Velocity Extrapolation
+    private Pose3d extrapolatedTarget = new Pose3d();
+    private int convergence_trials = 10;
+    
+
     private Supplier<Pose3d> robotPose;
     private SwerveDrivetrain swerve;
 
@@ -94,36 +100,57 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public double getPivotAngle() {
-
         double angle = interpolatePivotAngle(currentTarget.get(), robotPose.get());
         values.set(PIVOT_ANGLE, angle);
         return angle;
     }
 
+    public double getPivotAngle(double launchVelocity) {
+        // TODO: Make sure extrapolated target is updated, and don't call it twice to waste cpu
+        double angle = interpolatePivotAngle(extrapolatedTarget, robotPose.get());
+        values.set(PIVOT_ANGLE, angle);
+        return angle;
+    }
+
+    /* 
+    Predicts and sets predicted target position based on time for note to reach target and robot velocity
+    */ 
+    public void extrapolateTargetPosition(double launchVelocity, ChassisSpeeds robotVelocity, Pose3d robotPosition) {
+        double speaker_x_velocity = -robotVelocity.vxMetersPerSecond;
+        double speaker_y_velocity = -robotVelocity.vyMetersPerSecond;
+        Translation3d predicted_target_location = currentTarget.get().getTranslation();
+        
+        for (int i = 0; i<convergence_trials; i++) {
+            // Gets current distance to target
+            double distance = predicted_target_location.getDistance(robotPose.get().getTranslation());
+            // Get time to target
+            double time = distance / launchVelocity;
+            // apply time to target to speaker position
+            predicted_target_location = new Translation3d(currentTarget.get().getX() + speaker_x_velocity * time, currentTarget.get().getY() + speaker_y_velocity * time, currentTarget.get().getZ());
+            
+        }
+        extrapolatedTarget = new Pose3d(predicted_target_location, currentTarget.get().getRotation());
+    } 
+
     
 
-    public double getHorizontalAngle(boolean AccountForVelocity, double launchVelocity) {
-        ChassisSpeeds speeds = AccountForVelocity ? swerve.getChassisSpeeds() : new ChassisSpeeds();
+    public double getHorizontalAngle() {
         double x = currentTarget.get().getTranslation().getX() - robotPose.get().getTranslation().getX();
         double y = currentTarget.get().getTranslation().getY() - robotPose.get().getTranslation().getY();
         double static_angle = Math.atan2(y, x);
-        if (!AccountForVelocity) {
-            values.set(HORIZONTAL_ANGLE, Units.radiansToDegrees(static_angle));
-            return Units.radiansToDegrees(static_angle);
-        }
+        values.set(HORIZONTAL_ANGLE, Units.radiansToDegrees(static_angle));
+        return Units.radiansToDegrees(static_angle);
 
-        // Account for Horizontal velocity
-        double speaker_x_velocity = -speeds.vxMetersPerSecond;
-        double speaker_y_velocity = -speeds.vyMetersPerSecond;
-        
-        int convergence_trials = 10;
-        for (int i = 0; i<convergence_trials; i++) {
-            // Gets current distance to speaker
-            
-        }
+    }
 
-        values.set(HORIZONTAL_ANGLE, 0);
-        return Units.radiansToDegrees(0);
+    public double getHorizontalAngle(double launchVelocity) {
+        ChassisSpeeds speeds = swerve.getChassisSpeeds();
+        // Extrapolate target position based on robot velocity
+        extrapolateTargetPosition(launchVelocity, speeds, robotPose.get());
+        double angle = Math.atan2(extrapolatedTarget.getY() - robotPose.get().getTranslation().getY(), extrapolatedTarget.getX() - robotPose.get().getTranslation().getX());
+
+        values.set(HORIZONTAL_ANGLE, angle);
+        return Units.radiansToDegrees(angle);
 
     }
 
@@ -144,7 +171,7 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public double getTurnPower() {
-        double targetAngle = getHorizontalAngle(false, 0.0);
+        double targetAngle = getHorizontalAngle();
         updateControllerValues();
         thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
         return thetaController.atSetpoint() ? 0.0 : thetaController.calculate(robotPose.get().getRotation().getZ())
