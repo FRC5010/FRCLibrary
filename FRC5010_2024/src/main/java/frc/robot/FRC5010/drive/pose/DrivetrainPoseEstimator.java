@@ -28,7 +28,6 @@ import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.TargetingSystem;
 
-
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
   private VisionSystem vision;
@@ -99,17 +98,19 @@ public class DrivetrainPoseEstimator {
   }
 
   public int getClosestTagToRobot() {
+    closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
     return closestTagToRobot;
   }
 
   public Pose3d getPoseFromClosestTag() {
-    Pose3d targetPose = vision.getFieldLayout().getTagPose(closestTagToRobot)
+    Pose3d targetPose = vision.getFieldLayout().getTagPose(getClosestTagToRobot())
         .orElse(getCurrentPose3d());
     field2d.getObject("Closest Tag").setPose(targetPose.toPose2d());
     return targetPose;
   }
 
   public Pose3d getPoseFromClosestVisionTarget() {
+    closestTargetToRobot = updatePoseFromClosestVisionTarget();
     return closestTargetToRobot;
   }
 
@@ -174,14 +175,12 @@ public class DrivetrainPoseEstimator {
           }
         }
 
-        
       }
     }
     field2d.setRobotPose(getCurrentPose());
 
-    closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
-    closestTargetToRobot = updatePoseFromClosestVisionTarget();
-    SmartDashboard.putNumber("Distance to Speaker", getCurrentPose().getTranslation().getDistance(TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()).getTranslation().toTranslation2d()));
+    SmartDashboard.putNumber("Distance to Speaker", getCurrentPose().getTranslation().getDistance(
+        TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()).getTranslation().toTranslation2d()));
   }
 
   /**

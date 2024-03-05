@@ -15,6 +15,7 @@ public class LEDStripSegment {
     private int start, end;
     private Color color;
     private boolean active = false;
+    private boolean needsUpdate = false;
     public Function<Integer, Color8Bit> setLED = null;
     public Consumer<AddressableLEDBuffer> setLEDStrip = null;
 
@@ -44,14 +45,24 @@ public class LEDStripSegment {
 
     public void setActive(boolean active) {
         this.active = active;
+        this.needsUpdate = true;
     }
 
     public boolean isActive() {
         return active;
     }
 
+    public void setNeedsUpdate(boolean update) {
+        needsUpdate = update;
+    }
+
+    public boolean needsUpdate() {
+        return needsUpdate;
+    }
+
     public void setColor(Color color) {
         this.color = color;
+        needsUpdate = true;
     }
 
     public Function<Integer, Color8Bit> getCurrentAction() {
@@ -61,12 +72,14 @@ public class LEDStripSegment {
     // solid color on
     public void on() {
         setLedAction((Integer i) -> color.getColor8Bit());
+        needsUpdate = true;
     }
 
     int m_rainbowFirstPixelHue = 180;
 
     public void rainbow() {
         m_rainbowFirstPixelHue = 180;
+        needsUpdate = true;
         setLedAction((led) -> {
             for (var i = start; i <= end; i++) {
                 // Calculate the hue - hue is easier for rainbows because the color
@@ -79,16 +92,20 @@ public class LEDStripSegment {
             m_rainbowFirstPixelHue += 3;
             // Check bounds
             m_rainbowFirstPixelHue %= 180;
+            needsUpdate = true;
         });
     }
 
     public void off() {
         setLedAction((Integer i) -> Color.OFF.getColor8Bit());
+        needsUpdate = true;
     }
 
     // blink based on time
     public void blink(long onTime, long offTime) {
+        needsUpdate = true;
         setLedAction((Integer i) -> {
+            needsUpdate = true;
             if (System.currentTimeMillis() % (onTime + offTime) <= onTime) {
                 return color.getColor8Bit();
             }
@@ -97,7 +114,9 @@ public class LEDStripSegment {
     }
 
     public void flame(int scalar, int currLedPos) {
+        needsUpdate = true;
         setLedAction((Integer i) -> {
+            needsUpdate = true;
             if (currLedPos < scalar) {
                 return color.getColor8BitAlpha(50 + (Math.random() * 40));
             } else if (currLedPos < scalar * 1.3) {
@@ -120,7 +139,9 @@ public class LEDStripSegment {
         int blue2 = b2;
         int length = end - start;
         int numberOrbit = (int) ((double) length * percentLed);
+        needsUpdate = true;
         setLedAction((AddressableLEDBuffer led) -> {
+            needsUpdate = true;
             for (int i = start; i <= end; i++) {
                 if (i >= ledPos && (i - ledPos) < numberOrbit) {
                     led.setRGB(i % length, red2, green2, blue2);
@@ -142,12 +163,32 @@ public class LEDStripSegment {
         });
     }
 
-    public void chase(int curLedPos) {
-        // TODO
-        int chasePosition = 0;
-        int chaseDirection = 1;
+    public void chase() {
+        needsUpdate = true;
+        int length = end - start;
+        color = Color.RED;
         setLedAction((Integer i) -> {
-            return new Color8Bit();
+            int pos = i - start;
+            needsUpdate = true;
+            long currentTime = System.currentTimeMillis();
+            long chasePos = (length * (currentTime % 1000)) / 1000;
+            long timeSecs = currentTime / 1000;
+            boolean evenOdd = timeSecs == (2 * (timeSecs / 2));
+            if (evenOdd) chasePos = length - chasePos;
+            if (chasePos == pos) {
+                return color.getColor8Bit();
+            } else {
+                double colorPer = 0;
+                if (pos < chasePos) {
+                    colorPer = 1.0 - ((double)(chasePos - pos) / (chasePos - start));
+                } else {
+                    colorPer = 1.0 - ((double)(pos - chasePos) / (end - chasePos));
+                }
+                int red = (int) Math.round(color.getColor8Bit().red * colorPer);
+                int green = (int) Math.round(color.getColor8Bit().green * colorPer);
+                int blue = (int) Math.round(color.getColor8Bit().blue * colorPer);
+                return new Color8Bit(red, green, blue);
+            }
         });
     }
 }

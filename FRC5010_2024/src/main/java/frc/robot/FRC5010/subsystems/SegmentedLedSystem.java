@@ -13,6 +13,7 @@ import java.util.function.Function;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -24,6 +25,7 @@ public class SegmentedLedSystem extends GenericSubsystem {
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
   private AddressableLEDBuffer m_ledOff;
+  private boolean needsUpdate = false;
 
   private Color currColor = Color.OFF;
   public final String ALL = "All";
@@ -61,22 +63,31 @@ public class SegmentedLedSystem extends GenericSubsystem {
   public void periodic() {
     for (String name : ledStripSegments.keySet()) {
       LEDStripSegment segment = ledStripSegments.get(name);
-      if (segment.isActive()) {
+      if (segment.isActive() && segment.needsUpdate()) {
+        needsUpdate |= segment.needsUpdate();
+        segment.setNeedsUpdate(false);
         if (null != segment.setLEDStrip) {
           segment.setLEDStrip.accept(m_ledBuffer);
-          for (int i = segment.start(); i <= segment.end(); ++i) {
-            simLEDs.get(i).setColor(m_ledBuffer.getLED8Bit(i));
+          if (RobotBase.isSimulation()) {
+            for (int i = segment.start(); i <= segment.end(); ++i) {
+              simLEDs.get(i).setColor(m_ledBuffer.getLED8Bit(i));
+            }
           }
         } else {
           for (int i = segment.start(); i <= segment.end(); ++i) {
             Color8Bit color = segment.setLED.apply(i - segment.start());
             m_ledBuffer.setLED(i, color);
-            simLEDs.get(i).setColor(color);
+            if (RobotBase.isSimulation()) {
+              simLEDs.get(i).setColor(color);
+            }
           }
         }
       }
     }
-    m_led.setData(m_ledBuffer);
+    if (needsUpdate) {
+      m_led.setData(m_ledBuffer);
+      needsUpdate = false;
+    }
   }
 
   public LEDStripSegment getStrip(String name) {
@@ -103,12 +114,14 @@ public class SegmentedLedSystem extends GenericSubsystem {
     ledStripSegments.values().stream().forEach(it -> it.setActive(false));
     ledStripSegments.get(ALL).setLedAction(state);
     ledStripSegments.get(ALL).setActive(true);
+    needsUpdate = true;
   }
 
   public void setWholeStripState(Consumer<AddressableLEDBuffer> state) {
     ledStripSegments.values().stream().forEach(it -> it.setActive(false));
     ledStripSegments.get(ALL).setLedAction(state);
     ledStripSegments.get(ALL).setActive(true);
+    needsUpdate = true;
   }
 
 }
