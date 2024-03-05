@@ -313,7 +313,8 @@ public class CompBot_2024 extends GenericMechanism {
                 // feederSubsystem.setDefaultCommand(new RunFeeder(feederSubsystem, () -> 0.0));
                 ledSubsystem.setDefaultCommand(Commands.run(() -> {
                 }, ledSubsystem)
-                                .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
+                                .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).setColor(Color.RED)
+                                                .chase(true)));
         }
 
         @Override
@@ -380,7 +381,8 @@ public class CompBot_2024 extends GenericMechanism {
         public void initAutoCommands() {
                 drive.initAutoCommands();
                 NamedCommands.registerCommand("Intake Note",
-                                new RunIntake(() -> -1.0, () -> 0.5, intakeSubsystem, feederSubsystem, pivotSubsystem, null)
+                                new RunIntake(() -> -1.0, () -> 0.5, intakeSubsystem, feederSubsystem, pivotSubsystem,
+                                                null)
                                                 .until(() -> feederSubsystem.getNoteState() == NoteState.Loaded));
 
                 NamedCommands.registerCommand("Auto Aim",

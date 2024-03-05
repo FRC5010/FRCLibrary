@@ -13,13 +13,19 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 /** Add your docs here. */
 public class LEDStripSegment {
     private int start, end;
-    private Color color;
+    private Color8Bit color;
     private boolean active = false;
     private boolean needsUpdate = false;
     public Function<Integer, Color8Bit> setLED = null;
     public Consumer<AddressableLEDBuffer> setLEDStrip = null;
 
     public LEDStripSegment(int start, int end, Color color) {
+        this.start = start;
+        this.end = end;
+        this.color = color.getColor8Bit();
+    }
+
+    public LEDStripSegment(int start, int end, Color8Bit color) {
         this.start = start;
         this.end = end;
         this.color = color;
@@ -43,9 +49,10 @@ public class LEDStripSegment {
         setLED = null;
     }
 
-    public void setActive(boolean active) {
+    public LEDStripSegment setActive(boolean active) {
         this.active = active;
         this.needsUpdate = true;
+        return this;
     }
 
     public boolean isActive() {
@@ -60,9 +67,10 @@ public class LEDStripSegment {
         return needsUpdate;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public LEDStripSegment setColor(Color color) {
+        this.color = color.getColor8Bit();
         needsUpdate = true;
+        return this;
     }
 
     public Function<Integer, Color8Bit> getCurrentAction() {
@@ -71,7 +79,7 @@ public class LEDStripSegment {
 
     // solid color on
     public void on() {
-        setLedAction((Integer i) -> color.getColor8Bit());
+        setLedAction((Integer i) -> color);
         needsUpdate = true;
     }
 
@@ -107,7 +115,7 @@ public class LEDStripSegment {
         setLedAction((Integer i) -> {
             needsUpdate = true;
             if (System.currentTimeMillis() % (onTime + offTime) <= onTime) {
-                return color.getColor8Bit();
+                return color;
             }
             return Color.OFF.getColor8Bit();
         });
@@ -118,13 +126,13 @@ public class LEDStripSegment {
         setLedAction((Integer i) -> {
             needsUpdate = true;
             if (currLedPos < scalar) {
-                return color.getColor8BitAlpha(50 + (Math.random() * 40));
+                return Color.getColor8BitAlpha(color, 50 + (Math.random() * 40));
             } else if (currLedPos < scalar * 1.3) {
-                return color.getColor8BitAlpha(30 + (Math.random() * 40));
+                return Color.getColor8BitAlpha(color, 30 + (Math.random() * 40));
             } else if (currLedPos < scalar * 2) {
-                return color.getColor8BitAlpha(Math.random() * 40);
+                return Color.getColor8BitAlpha(color, Math.random() * 40);
             }
-            return color.getColor8BitAlpha(((Math.random() * 30) - 29) * 20);
+            return Color.getColor8BitAlpha(color, ((Math.random() * 30) - 29) * 20);
         });
     }
 
@@ -163,10 +171,9 @@ public class LEDStripSegment {
         });
     }
 
-    public void chase() {
+    public void chase(boolean rainbow) {
         needsUpdate = true;
         int length = end - start;
-        color = Color.RED;
         setLedAction((Integer i) -> {
             int pos = i - start;
             needsUpdate = true;
@@ -174,19 +181,29 @@ public class LEDStripSegment {
             long chasePos = (length * (currentTime % 1000)) / 1000;
             long timeSecs = currentTime / 1000;
             boolean evenOdd = timeSecs == (2 * (timeSecs / 2));
-            if (evenOdd) chasePos = length - chasePos;
+            if (rainbow && i == end) {
+                final var hue = (m_rainbowFirstPixelHue + (i * 180 / (end - start))) % 180;
+                // Set the value
+                color = Color.fromHSV(hue, 255, 128);
+                // Increase by to make the rainbow "move"
+                m_rainbowFirstPixelHue += 3;
+                // Check bounds
+                m_rainbowFirstPixelHue %= 180;
+            }
+            if (evenOdd)
+                chasePos = length - chasePos;
             if (chasePos == pos) {
-                return color.getColor8Bit();
+                return color;
             } else {
                 double colorPer = 0;
                 if (pos < chasePos) {
-                    colorPer = 1.0 - ((double)(chasePos - pos) / (chasePos - start));
+                    colorPer = 1.0 - ((double) (chasePos - pos) / (chasePos - start));
                 } else {
-                    colorPer = 1.0 - ((double)(pos - chasePos) / (end - chasePos));
+                    colorPer = 1.0 - ((double) (pos - chasePos) / (end - chasePos));
                 }
-                int red = (int) Math.round(color.getColor8Bit().red * colorPer);
-                int green = (int) Math.round(color.getColor8Bit().green * colorPer);
-                int blue = (int) Math.round(color.getColor8Bit().blue * colorPer);
+                int red = (int) Math.round(color.red * colorPer);
+                int green = (int) Math.round(color.green * colorPer);
+                int blue = (int) Math.round(color.blue * colorPer);
                 return new Color8Bit(red, green, blue);
             }
         });
