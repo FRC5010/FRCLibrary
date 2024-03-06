@@ -10,12 +10,15 @@ import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.crescendo.ClimbSubsystem;
 
 public class RunClimb extends GenericCommand {
+
+
   DoubleSupplier leftSpeed;
   DoubleSupplier rightSpeed;
 
   ClimbSubsystem climbSubsystem;
   /** Creates a new JoystickClimb. */
   public RunClimb(DoubleSupplier leftSpeed, DoubleSupplier rightSpeed, ClimbSubsystem climbSubsystem) {
+
     this.leftSpeed = leftSpeed;
     this.rightSpeed = rightSpeed;
     this.climbSubsystem = climbSubsystem;

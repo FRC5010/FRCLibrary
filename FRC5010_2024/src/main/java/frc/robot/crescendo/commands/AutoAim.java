@@ -103,7 +103,7 @@ public class AutoAim extends Command {
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
     // if (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw()) {
     //   if (cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) {
-    //     feederSubsystem.feederStateMachine(-1.0);
+    //     feederSubsystem.feederStateMachine(1.0);
 
     //   }
     //   cycleCounter++;

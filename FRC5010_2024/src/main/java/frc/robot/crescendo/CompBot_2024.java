@@ -299,7 +299,8 @@ public class CompBot_2024 extends GenericMechanism {
                                 new RunShooter(() -> 0.0, shooterSubsystem, feederSubsystem));
 
                 intakeSubsystem.setDefaultCommand(
-                                new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(), () -> 0.5,
+                                new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(),
+                                () -> 0.5,
                                                 intakeSubsystem,
                                                 feederSubsystem,
                                                 pivotSubsystem, driver));

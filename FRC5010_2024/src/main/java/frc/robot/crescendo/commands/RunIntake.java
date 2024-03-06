@@ -51,6 +51,20 @@ public class RunIntake extends GenericCommand {
     addRequirements(intakeSubsystem);
   }
 
+
+   public RunIntake(DoubleSupplier joystick, IntakeSubsystem intakeSubsystem,
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, Controller rumbleController) {
+    this.speed = joystick;
+    this.intakeSubsystem = intakeSubsystem;
+    this.feederSpeed = () -> Math.abs(speed.getAsDouble()) * feederSubsystem.getSpeedFactor();
+    this.feederSubsystem = feederSubsystem;
+    this.pivotSubsystem = pivotSubsystem;
+    this.rumbleController = rumbleController;
+    
+    
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(intakeSubsystem);
+  }
   // Called when the command is initially scheduled.
   @Override
   public void init() {

@@ -48,6 +48,8 @@ public class IntakeSubsystem extends GenericSubsystem {
   private double bottomPreviousError;
   private double bottomPreviousTime;
 
+  private String INTAKE_SLOWDOWN = "Intake Slowdown";
+
   // Simulation Parts
   private Mechanism2d robotSim;
 
@@ -80,6 +82,7 @@ public class IntakeSubsystem extends GenericSubsystem {
 
     values.declare(TOP_SPEED, 0.0);
     values.declare(BOTTOM_SPEED, 0.0);
+    values.declare(INTAKE_SLOWDOWN, 0.8);
 
     topIntakeMotor = top;
     topEncoder = topIntakeMotor.getMotorEncoder();
@@ -139,6 +142,7 @@ public class IntakeSubsystem extends GenericSubsystem {
   }
 
   public void stateMachine(double joystick) {
+    double slowed = joystick * values.getDouble(INTAKE_SLOWDOWN);
     switch (intakeState) {
       case Joystick:
         if (joystick == 0) {
@@ -147,14 +151,14 @@ public class IntakeSubsystem extends GenericSubsystem {
           topRunToReference();
           bottomRunToReference();
         } else {
-          setIntakeSpeed(joystick, joystick);
+          setIntakeSpeed(slowed, slowed);
         }
         break;
     
       case Velocity:
         if (joystick != 0) {
           intakeState = IntakeState.Joystick;
-          setIntakeSpeed(joystick, joystick);
+          setIntakeSpeed(slowed, slowed);
         } else {
           topRunToReference();
           bottomRunToReference();

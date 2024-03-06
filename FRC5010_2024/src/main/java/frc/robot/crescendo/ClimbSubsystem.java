@@ -52,9 +52,12 @@ public class ClimbSubsystem extends GenericSubsystem {
   SimulatedEncoder leftSimEncoder = new SimulatedEncoder(12, 13);
   SimulatedEncoder rightSimEncoder = new SimulatedEncoder(14, 15);
 
+  
   private final double MAX_POSITION_DEVIANCE = 3.0;
 
   // NetworkTable names
+
+
   private final String MAX_EXTENSION = "Max Extension";
 
   private final double MAX_EXTENSION_DEFAULT = 195.0;
@@ -68,6 +71,7 @@ public class ClimbSubsystem extends GenericSubsystem {
   private final String RIGHT_CLIMB_CURRENT_SWITCH = "Right Climb Current Switch";
   private final String LEFT_CLIMB_POSITION = "Left Climb Position";
   private final String RIGHT_CLIMB_POSITION = "Right Climb Position";
+  private final String AUTO_BALANCE = "Auto Climb Balancing";
 
   private final double CLIMB_GEARING = 60;
   private final double CLIMB_WEIGHT_LB = 1.0;
@@ -89,6 +93,7 @@ public class ClimbSubsystem extends GenericSubsystem {
     values.declare(RIGHT_CONVERSION_FACTOR, RIGHT_CONVERSION_DEFAULT);
     values.declare(LEFT_CLIMB_CURRENT_SWITCH, false);
     values.declare(RIGHT_CLIMB_CURRENT_SWITCH, false);
+    values.declare(AUTO_BALANCE, false);
 ;
 
     leftEncoder =leftMotor.getMotorEncoder();
@@ -152,6 +157,17 @@ public class ClimbSubsystem extends GenericSubsystem {
       return true;
     }
     return false;
+  }
+
+
+  public void climbStateMachine (double left, double right) {
+    if (values.getBoolean(AUTO_BALANCE)) {
+
+
+    } else {
+      setLeftMotorSpeed(left);
+      setRightMotorSpeed(right);
+    }
   }
 
   public void setLeftMotorSpeed(double speed) {

@@ -81,6 +81,7 @@ public class FeederSubsystem extends GenericSubsystem {
   private final String DETECT_BEAM_BREAK_STATE = "Detect Beam Break State";
   private final String FEEDER_MOTOR_SPEED = "Feeder Motor";
   private final String NOTE_STATE = "Note State";
+  private final String INTAKE_SPEED_FACTOR = "Intake Speed Factor";
 
   /** Creates a new FeederSubsystem. */
   public FeederSubsystem(Mechanism2d robotSim, MotorController5010 feeder, SegmentedLedSystem ledSubsystem) {
@@ -94,6 +95,7 @@ public class FeederSubsystem extends GenericSubsystem {
     detectBeamBreak = new DigitalInput(3);
     values.declare(SIM_STOP_BEAMBREAK, true);
     values.declare(SIM_DETECT_BEAMBREAK, true);
+    values.declare(INTAKE_SPEED_FACTOR, 1.1);
 
     noteState = DriverStation.isFMSAttached() ? NoteState.Loaded
         : isDetectBeamBroken() ? NoteState.Loaded : NoteState.Empty;
@@ -227,6 +229,14 @@ public class FeederSubsystem extends GenericSubsystem {
 
   public void setNoteState(NoteState state) {
     noteState = state;
+  }
+
+  public double getSpeedFactor() {
+    return values.getDouble(INTAKE_SPEED_FACTOR);
+  }
+
+  public void setSpeedFactor(double factor) {
+    values.set(INTAKE_SPEED_FACTOR, factor);
   }
 
   public void emptied() {
