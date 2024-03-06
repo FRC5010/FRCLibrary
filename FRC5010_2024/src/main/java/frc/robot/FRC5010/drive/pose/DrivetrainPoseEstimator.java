@@ -28,7 +28,6 @@ import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.TargetingSystem;
 
-
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
   private VisionSystem vision;
@@ -99,17 +98,19 @@ public class DrivetrainPoseEstimator {
   }
 
   public int getClosestTagToRobot() {
+    closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
     return closestTagToRobot;
   }
 
   public Pose3d getPoseFromClosestTag() {
-    Pose3d targetPose = vision.getFieldLayout().getTagPose(closestTagToRobot)
+    Pose3d targetPose = vision.getFieldLayout().getTagPose(getClosestTagToRobot())
         .orElse(getCurrentPose3d());
     field2d.getObject("Closest Tag").setPose(targetPose.toPose2d());
     return targetPose;
   }
 
   public Pose3d getPoseFromClosestVisionTarget() {
+    closestTargetToRobot = updatePoseFromClosestVisionTarget();
     return closestTargetToRobot;
   }
 
@@ -158,6 +159,7 @@ public class DrivetrainPoseEstimator {
     if (true) {
       Map<String, Pose2d> poses = vision.getRawValues().getRobotPoses();
       Map<String, Double> poseDistances = vision.getRawValues().getPoseDistances();
+      boolean visionUpdated = false;
       for (String camera : poses.keySet()) {
         Pose2d robotPose = poses.get(camera);
         Double poseDistance = poseDistances.get(camera);
@@ -167,21 +169,17 @@ public class DrivetrainPoseEstimator {
           if (vision.getRawValues().getFiducialIds().get(camera) > 0 && (RobotState.isDisabled()
               || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
               || 3.0 > poseDistance)) {
-            SmartDashboard.putBoolean("April Tag Pose Updating", true);
+            visionUpdated = true;
             poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
-          } else {
-            SmartDashboard.putBoolean("April Tag Pose Updating", false);
           }
         }
-
-        
       }
+      SmartDashboard.putBoolean("April Tag Pose Updating", visionUpdated);
     }
     field2d.setRobotPose(getCurrentPose());
 
-    closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
-    closestTargetToRobot = updatePoseFromClosestVisionTarget();
-    SmartDashboard.putNumber("Distance to Speaker", getCurrentPose().getTranslation().getDistance(TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()).getTranslation().toTranslation2d()));
+    SmartDashboard.putNumber("Distance to Speaker", getCurrentPose().getTranslation().getDistance(
+        TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()).getTranslation().toTranslation2d()));
   }
 
   /**

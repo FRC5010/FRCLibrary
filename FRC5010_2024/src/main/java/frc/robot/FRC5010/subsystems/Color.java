@@ -34,7 +34,11 @@ public enum Color {
         return color;
     }
 
-    public Color8Bit getColor8BitAlpha(double alphaPercent) {
+    public static Color8Bit fromHSV(int hue, int sat, int value) {
+        return new Color8Bit(edu.wpi.first.wpilibj.util.Color.fromHSV(hue, sat, value).toHexString());
+    }
+
+    public static Color8Bit getColor8BitAlpha(Color8Bit color, double alphaPercent) {
 
         // change the intensity of the led color.
         // keeps it between 0 and 100 percent intensity

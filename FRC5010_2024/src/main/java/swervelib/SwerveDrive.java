@@ -185,7 +185,7 @@ public class SwerveDrive
     setMaximumSpeed(maxSpeedMPS);
 
     // Initialize Telemetry
-    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
+    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.POSE.ordinal())
     {
       SmartDashboard.putData("Field", field);
     }
@@ -660,7 +660,7 @@ public class SwerveDrive
    */
   public void postTrajectory(Trajectory trajectory)
   {
-    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
+    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.POSE.ordinal())
     {
       field.getObject("Trajectory").setTrajectory(trajectory);
     }
@@ -839,9 +839,9 @@ public class SwerveDrive
       module.maxSpeed = maximumSpeed;
       if (updateModuleFeedforward)
       {
-        module.feedforward = SwerveMath.createDriveFeedforward(optimalVoltage,
-                                                               maximumSpeed,
-                                                               swerveDriveConfiguration.physicalCharacteristics.wheelGripCoefficientOfFriction);
+        module.setFeedforward(SwerveMath.createDriveFeedforward(optimalVoltage,
+                                                                maximumSpeed,
+                                                                swerveDriveConfiguration.physicalCharacteristics.wheelGripCoefficientOfFriction));
       }
     }
   }
@@ -851,7 +851,7 @@ public class SwerveDrive
    * {@link SwerveDrive#setRawModuleStates(SwerveModuleState[], boolean)} function and
    * {@link SwerveController#getTargetSpeeds(double, double, double, double, double)} functions. This function overrides
    * what was placed in the JSON and could damage your motor/robot if set too high or unachievable rates. Overwrites the
-   * {@link SwerveModule#feedforward}.
+   * {@link SwerveModule#setFeedforward(SimpleMotorFeedforward)}.
    *
    * @param maximumSpeed Maximum speed for the drive motors in meters / second.
    */
@@ -908,13 +908,13 @@ public class SwerveDrive
   /**
    * Setup the swerve module feedforward.
    *
-   * @param feedforward Feedforward for the drive motor on swerve modules.
+   * @param driveFeedforward Feedforward for the drive motor on swerve modules.
    */
-  public void replaceSwerveModuleFeedforward(SimpleMotorFeedforward feedforward)
+  public void replaceSwerveModuleFeedforward(SimpleMotorFeedforward driveFeedforward)
   {
     for (SwerveModule swerveModule : swerveModules)
     {
-      swerveModule.feedforward = feedforward;
+      swerveModule.setFeedforward(driveFeedforward);
     }
   }
 
@@ -951,7 +951,7 @@ public class SwerveDrive
         SwerveDriveTelemetry.robotRotation = getOdometryHeading().getDegrees();
       }
 
-      if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
+      if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.POSE.ordinal())
       {
         field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
       }
@@ -1114,7 +1114,7 @@ public class SwerveDrive
   {
     for (SwerveModule module : swerveModules)
     {
-      module.configuration.driveMotor.setPosition(0);
+      module.getDriveMotor().setPosition(0);
     }
   }
 

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.arch.GenericMechanism;
 import frc.robot.FRC5010.arch.Persisted;
 import frc.robot.FRC5010.arch.PersistedEnums;
@@ -52,7 +54,7 @@ public class RobotContainer extends GenericMechanism {
   private SendableChooser<Command> command;
   private Controller driver;
   private Controller operator;
-  private static Optional<Alliance> alliance;
+  private static Alliance alliance;
   public static Constants constants;
   private GenericMechanism robot;
   private static String MAC_Address = "MAC ADDRESS";
@@ -62,6 +64,7 @@ public class RobotContainer extends GenericMechanism {
     DEBUG,
     PRODUCTION
   }
+
   public static LogLevel logLevel = LogLevel.DEBUG;
 
   /**
@@ -90,8 +93,8 @@ public class RobotContainer extends GenericMechanism {
 
     DriverStation.silenceJoystickConnectionWarning(true);
     alliance = determineAllianceColor();
-    SmartDashboard.putString("Alliance", alliance.get().toString());
-    
+    SmartDashboard.putString("Alliance", alliance.toString());
+
     initRealOrSim();
 
     // Configure the button bindings
@@ -117,7 +120,7 @@ public class RobotContainer extends GenericMechanism {
     public static final String COMP_BOT_2023 = "00:80:2F:33:04:33";
     public static final String BABY_SWERVE = "BabySwerve";
     public static final String PRACTICE_BOT = "PracticeBot";
-    public static final String CURTS_LAPTOP_SIM = "4E:82:A9:77:48:61";//"D2:57:7B:3E:C0:47";
+    public static final String CURTS_LAPTOP_SIM = "4E:82:A9:77:48:61";// "D2:57:7B:3E:C0:47";
     public static final String MAIN_5010_LAPTOP = "04:EC:D8:22:DA:59";
   }
 
@@ -140,8 +143,6 @@ public class RobotContainer extends GenericMechanism {
 
     robotFactory();
   }
-
-
 
   private String whereAmI() {
     try {
@@ -195,9 +196,9 @@ public class RobotContainer extends GenericMechanism {
           robot = new PracticeBot(mechVisual, shuffleTab);
           break;
         }
-        case Robots.MAIN_5010_LAPTOP:  {
+        case Robots.MAIN_5010_LAPTOP: {
           robot = new CompBot_2024(mechVisual, shuffleTab);
-          //robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+          // robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
           break;
         }
         case Robots.CURTS_LAPTOP_SIM: {
@@ -214,7 +215,7 @@ public class RobotContainer extends GenericMechanism {
               robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
               break;
             }
-            default:  {
+            default: {
               robot = new CompBot_2024(mechVisual, shuffleTab);
             }
           }
@@ -227,9 +228,9 @@ public class RobotContainer extends GenericMechanism {
 
       }
     }
-    log(">>>>> MAC ADDRESS: "+whichRobot+"<<<<");
+    log(">>>>> MAC ADDRESS: " + whichRobot + "<<<<");
     log(">>>>>>>>>> Running " + robot.getClass().getSimpleName() + " <<<<<<<<<<");
-  
+
   }
 
   /**
@@ -252,15 +253,22 @@ public class RobotContainer extends GenericMechanism {
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
-    if (!DriverStation.isTest()) {
+    if (DriverStation.isTeleop()) {
       robot.setupDefaultCommands(driver, operator);
-    } else {
+    } else if (DriverStation.isTest()) {
       robot.setupTestDefaultCommmands(driver, operator);
     }
   }
 
   // Just sets up defalt commands (setUpDeftCom)
-  public void setupDefaultCommands() {
+  public void setupDefaults() {
+    alliance = determineAllianceColor();
+    SmartDashboard.putString("Alliance", alliance.toString());
+
+    AprilTags.aprilTagFieldLayout
+        .setOrigin(RobotContainer.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+            : OriginPosition.kRedAllianceWallRightSide);
+
     setupDefaultCommands(driver, operator);
   }
 
@@ -280,37 +288,18 @@ public class RobotContainer extends GenericMechanism {
     // This crashes 2024 right now
     command = AutoBuilder.buildAutoChooser();
     if (null != command) {
-     shuffleTab.add("Auto Modes", command).withSize(2, 1);
+      shuffleTab.add("Auto Modes", command).withSize(2, 1);
     }
- 
+
   }
 
-  public Optional<Alliance> determineAllianceColor() {
+  public Alliance determineAllianceColor() {
     Optional<Alliance> color = DriverStation.getAlliance();
-    if (color.isPresent()) {
-    if (Alliance.Red.equals(color.get())) {
-      /**
-       * TODO: What to setup if alliance is Red
-       */
-    } else if (Alliance.Blue.equals(color.get())) {
-      /**
-       * TODO: What to setup if alliance is Blue
-       */
-    } else {
-      /**
-       * TODO: What to setup if alliance is not set?
-       */
-    }
-    // Return alliance color so that setup functions can also store/pass
-     }
-    return color;
-
+    return color.orElse(Alliance.Blue);
   }
-
 
   public static Alliance getAlliance() {
-    
-    return alliance.get();
+    return alliance;
   }
 
   public void disabledBehavior() {

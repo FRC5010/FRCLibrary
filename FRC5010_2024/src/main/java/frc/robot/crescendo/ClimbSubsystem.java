@@ -207,6 +207,15 @@ public class ClimbSubsystem extends GenericSubsystem {
     return gyro.getAngleY(); // TODO: Fix if necessary
   }
 
+  public void setBalancedSpeed(double speed) {
+    double robotTilt = getHorizontalTilt();
+    double rightSpeed = -Math.sin(Units.degreesToRadians(robotTilt)) + speed;
+    double leftSpeed = Math.sin(Units.degreesToRadians(robotTilt)) + speed;
+    setLeftMotorSpeed(leftSpeed);
+    setRightMotorSpeed(rightSpeed);
+  }
+
+
   public void zeroPosition() {
     leftEncoder.setPosition(0);
     rightEncoder.setPosition(0);

@@ -106,7 +106,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
     // objects being created.
-    SwerveDriveTelemetry.verbosity = LogLevel.DEBUG == RobotContainer.getLoggingLevel() ? TelemetryVerbosity.HIGH : TelemetryVerbosity.INFO;
+    SwerveDriveTelemetry.verbosity = LogLevel.DEBUG == RobotContainer.getLoggingLevel() ? TelemetryVerbosity.POSE : TelemetryVerbosity.INFO;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
       swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, 360, driveConversionFactor); // Use
@@ -132,7 +132,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
         double kS = ff.getkS();
         double kV = ff.getkV();
         double kA = ff.getkA();
-        swerveModuleMap.get(module).feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+        swerveModuleMap.get(module).setFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
       });
     }
     poseEstimator = new DrivetrainPoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);

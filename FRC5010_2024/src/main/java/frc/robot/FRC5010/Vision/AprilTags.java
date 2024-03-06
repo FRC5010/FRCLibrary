@@ -25,7 +25,7 @@ import frc.robot.RobotContainer;
 public class AprilTags {
     public static AprilTagFieldLayout aprilTagFieldLayout;
     public static AprilTagFieldLayout aprilTagRoomLayout;
-    public static Map<Pose2d, Integer> poseToID = new HashMap<>(); 
+    public static Map<Pose2d, Integer> poseToID = new HashMap<>();
 
     public static enum AprilTag5010 {
         // TODO: Define April Tag positions here.
@@ -53,7 +53,7 @@ public class AprilTags {
         ID21(0, 0, 0, 0, 0),
         ID22(0, 0, 0, 0, 0),
         ID23("C102B Door", Units.inchesToMeters(274.5), Units.inchesToMeters(455.625), Units.inchesToMeters(69.75),
-        Units.degreesToRadians(180), 0),
+                Units.degreesToRadians(180), 0),
         ID24("Broken TV", Units.inchesToMeters(0), Units.inchesToMeters(189.625), Units.inchesToMeters(69.75), 0, 0),
         ID25("Corner Cabinet 2", Units.inchesToMeters(36.875), Units.inchesToMeters(14.25),
                 Units.inchesToMeters(70.875), Units.degreesToRadians(90), Units.degreesToRadians(0)),
@@ -89,8 +89,8 @@ public class AprilTags {
         try {
             aprilTagFieldLayout = AprilTagFieldLayout
                     .loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-            aprilTagFieldLayout.setOrigin(RobotContainer.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);   
-            List<AprilTag> aprilTagPoses = new ArrayList<>();       
+
+            List<AprilTag> aprilTagPoses = new ArrayList<>();
             for (AprilTag5010 aprilTag : AprilTag5010.values()) {
                 aprilTagPoses.add(new AprilTag(aprilTag.ordinal(), aprilTag.pose));
             }
