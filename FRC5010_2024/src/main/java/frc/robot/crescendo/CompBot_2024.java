@@ -75,7 +75,7 @@ public class CompBot_2024 extends GenericMechanism {
         public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
                 super(visual, displayTab);
 
-                RobotContainer.setLoggingLevel(LogLevel.DEBUG);
+                RobotContainer.setLoggingLevel(LogLevel.PRODUCTION);
 
                 ledSubsystem = new SegmentedLedSystem(0, 34, visual);
                 ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());

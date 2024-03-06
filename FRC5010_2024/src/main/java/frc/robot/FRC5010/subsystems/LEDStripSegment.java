@@ -121,9 +121,9 @@ public class LEDStripSegment {
         });
     }
 
-    public void flame(int scalar, int currLedPos) {
+    public void flame(int scalar) {
         needsUpdate = true;
-        setLedAction((Integer i) -> {
+        setLedAction((Integer currLedPos) -> {
             needsUpdate = true;
             if (currLedPos < scalar) {
                 return Color.getColor8BitAlpha(color, 50 + (Math.random() * 40));
