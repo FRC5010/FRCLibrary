@@ -214,6 +214,8 @@ public class CompBot_2024 extends GenericMechanism {
 
                 driver.createYButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
                                 () -> climbSubsystem.setOverride(false)));
+                driver.createXButton().whileTrue(Commands.startEnd(() -> climbSubsystem.enableClimb(true),
+                                () -> climbSubsystem.enableClimb(false)));
 
                 /*
                  * >>>>>>>>>>>>>>>>>>>>>>>>>>>> OPERATOR BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -283,7 +285,20 @@ public class CompBot_2024 extends GenericMechanism {
                 operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
 
                 operator.createBackButton()
-                                .onTrue(Commands.runOnce(() -> climbSubsystem.zeroPosition(), climbSubsystem));
+                                .onTrue((Commands.run(() -> {
+                                        climbSubsystem.setLeftMotorSpeed(-0.5);
+                                        climbSubsystem.setRightMotorSpeed(-0.5);
+                                }, climbSubsystem)
+                                .until(() -> {
+                                        return climbSubsystem.leftIsAtMin(-0.5) && 
+                                        climbSubsystem.rightIsAtMin(-0.5);
+                                }))
+                                .andThen(Commands
+                                                .run(() -> {
+                                                        climbSubsystem.setLeftMotorSpeed(0);
+                                                        climbSubsystem.setRightMotorSpeed(0);
+                                                },
+                                                climbSubsystem)));
 
                 operator.createStartButton()
                                 .onTrue(Commands.runOnce(() -> climbSubsystem
@@ -328,15 +343,6 @@ public class CompBot_2024 extends GenericMechanism {
                 ledSubsystem.setDefaultCommand(Commands.run(() -> {
                 }, ledSubsystem)
                                 .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
-
-                // CommandScheduler.getInstance().schedule(
-                //                 (Commands.run(() -> climbSubsystem.setLeftMotorSpeed(-0.5), climbSubsystem)
-                //                                 .until(() -> climbSubsystem.leftIsAtMin(-0.5)))
-                //                                 .andThen(Commands
-                //                                                 .run(() -> climbSubsystem.setRightMotorSpeed(-0.5),
-                //                                                                 climbSubsystem)
-                //                                                 .until(() -> climbSubsystem
-                //                                                                 .rightIsAtMin(-0.5))));
         }
 
         @Override

@@ -52,15 +52,14 @@ public class ClimbSubsystem extends GenericSubsystem {
   SimulatedEncoder leftSimEncoder = new SimulatedEncoder(12, 13);
   SimulatedEncoder rightSimEncoder = new SimulatedEncoder(14, 15);
 
-  
   private final double MAX_POSITION_DEVIANCE = 3.0;
 
   // NetworkTable names
 
-
   private final String MAX_EXTENSION = "Max Extension";
-
   private final double MAX_EXTENSION_DEFAULT = 195.0;
+  private final String SAFE_LIMIT = "Safe Limit";
+  private final double SAFE_LIMIT_DEFAULT = 150.0;
   private final String CURRENT_THRESHOLD = "Climb Current Threshold";
   private final double CURRENT_THRESHOLD_DEFAULT = 15.0;
   private final String LEFT_CONVERSION_FACTOR = "Left Climb Conversion Factor";
@@ -72,12 +71,13 @@ public class ClimbSubsystem extends GenericSubsystem {
   private final String LEFT_CLIMB_POSITION = "Left Climb Position";
   private final String RIGHT_CLIMB_POSITION = "Right Climb Position";
   private final String AUTO_BALANCE = "Auto Climb Balancing";
+  private final String ENABLE_CLIMB = "Enable Climb";
 
-  private final double CLIMB_GEARING = 60;
+  private final double CLIMB_GEARING = 1;
   private final double CLIMB_WEIGHT_LB = 1.0;
-  private final double CLIMB_DRUM_RADIUS = 1.0;
+  private final double CLIMB_DRUM_RADIUS = 0.05;
   private final double CLIMB_MIN_HEIGHT = 0.0;
-  private final double CLIMB_MAX_HEIGHT = 15.0;
+  private final double CLIMB_MAX_HEIGHT = 200.0;
   private final Color8Bit CLIMB_SIM_COLOR = new Color8Bit(Color.kPurple);
   private boolean override = false;
 
@@ -93,12 +93,12 @@ public class ClimbSubsystem extends GenericSubsystem {
     values.declare(RIGHT_CONVERSION_FACTOR, RIGHT_CONVERSION_DEFAULT);
     values.declare(LEFT_CLIMB_CURRENT_SWITCH, false);
     values.declare(RIGHT_CLIMB_CURRENT_SWITCH, false);
-    values.declare(AUTO_BALANCE, false);
-;
+    values.declare(AUTO_BALANCE, true);
+    values.declare(ENABLE_CLIMB, false);
+    values.declare(SAFE_LIMIT, SAFE_LIMIT_DEFAULT);
 
-    leftEncoder =leftMotor.getMotorEncoder();
+    leftEncoder = leftMotor.getMotorEncoder();
     rightEncoder = rightMotor.getMotorEncoder();
-
 
     values.declare(LEFT_CLIMB_POSITION, getLeftPosition());
     values.declare(RIGHT_CLIMB_POSITION, getRightPosition());
@@ -131,8 +131,16 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   }
 
+  public void enableClimb(boolean enable) {
+    values.set(ENABLE_CLIMB, enable);
+  }
+
+  private double getMinPosition() {
+    return values.getBoolean(ENABLE_CLIMB) ? values.getDouble(SAFE_LIMIT) : 0.0;
+  }
+
   public boolean leftIsAtMin(double speed) {
-    if ((speed < 0 && getLeftPosition() < 0.0) && !override) {
+    if ((speed < 0 && getLeftPosition() < getMinPosition()) && !override) {
       return true;
     }
     return false;
@@ -146,7 +154,7 @@ public class ClimbSubsystem extends GenericSubsystem {
   }
 
   public boolean rightIsAtMin(double speed) {
-    if ((speed < 0 && getRightPosition() < 0.0) && !override) {
+    if ((speed < 0 && getRightPosition() < getMinPosition()) && !override) {
       return true;
     }
     return false;
@@ -167,13 +175,14 @@ public class ClimbSubsystem extends GenericSubsystem {
     return values.getBoolean(AUTO_BALANCE);
   }
 
-
-  public void climbStateMachine (double left, double right) {
-    if (values.getBoolean(AUTO_BALANCE)) {
-      setBalancedSpeed(left);
-    } else {
-      setLeftMotorSpeed(left);
-      setRightMotorSpeed(right);
+  public void climbStateMachine(double left, double right) {
+    if (values.getBoolean(ENABLE_CLIMB) || override) {
+      if (values.getBoolean(AUTO_BALANCE)) {
+        setBalancedSpeed(left);
+      } else {
+        setLeftMotorSpeed(left);
+        setRightMotorSpeed(right);
+      }
     }
   }
 
@@ -222,7 +231,6 @@ public class ClimbSubsystem extends GenericSubsystem {
     setRightMotorSpeed(rightSpeed);
   }
 
-
   public void zeroPosition() {
     leftEncoder.setPosition(0);
     rightEncoder.setPosition(0);
@@ -253,8 +261,8 @@ public class ClimbSubsystem extends GenericSubsystem {
 
     update_encoder_extremas();
 
-    simLeftClimbArm.setLength(getLeftPosition() + 0.05);
-    simRightClimbArm.setLength(getRightPosition() + 0.05);
+    simLeftClimbArm.setLength(0.5 * getLeftPosition()/CLIMB_MAX_HEIGHT + 0.05);
+    simRightClimbArm.setLength(0.5 * getRightPosition()/CLIMB_MAX_HEIGHT + 0.05);
   }
 
   @Override
