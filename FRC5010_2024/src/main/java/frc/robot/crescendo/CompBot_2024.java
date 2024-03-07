@@ -329,14 +329,14 @@ public class CompBot_2024 extends GenericMechanism {
                 }, ledSubsystem)
                                 .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
 
-                CommandScheduler.getInstance().schedule(
-                                (Commands.run(() -> climbSubsystem.setLeftMotorSpeed(-0.5), climbSubsystem)
-                                                .until(() -> climbSubsystem.leftIsAtMin(-0.5)))
-                                                .andThen(Commands
-                                                                .run(() -> climbSubsystem.setRightMotorSpeed(-0.5),
-                                                                                climbSubsystem)
-                                                                .until(() -> climbSubsystem
-                                                                                .rightIsAtMin(-0.5))));
+                // CommandScheduler.getInstance().schedule(
+                //                 (Commands.run(() -> climbSubsystem.setLeftMotorSpeed(-0.5), climbSubsystem)
+                //                                 .until(() -> climbSubsystem.leftIsAtMin(-0.5)))
+                //                                 .andThen(Commands
+                //                                                 .run(() -> climbSubsystem.setRightMotorSpeed(-0.5),
+                //                                                                 climbSubsystem)
+                //                                                 .until(() -> climbSubsystem
+                //                                                                 .rightIsAtMin(-0.5))));
         }
 
         @Override
