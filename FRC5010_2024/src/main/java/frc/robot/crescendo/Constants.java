@@ -1,5 +1,7 @@
 package frc.robot.crescendo;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -12,6 +14,9 @@ public final class Constants {
                 public static final double WHEEL_BASE_INCHES = 21.5;
                 public static final Transform3d PIVOT_ORIGIN_OFFSET = new Transform3d(new Translation3d(0.0, 0.0, 0.65),
                                 new Rotation3d());
+                public static final double SHOOTER_ANGLE_OFFSET = 52.071; // TODO: Measure this accurately on real robot
+                public static final double PIVOT_EXIT_POINT_ANGLE_OFFSET = 145.112; // TODO: Measure this accurately
+                public static final double PIVOT_SHOOTER_RADIUS = 0.245; // Meters
 
         }
 

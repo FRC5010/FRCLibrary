@@ -4,16 +4,18 @@
 
 package frc.robot.crescendo;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 
@@ -23,6 +25,7 @@ public class TargetingSystem extends GenericSubsystem {
     // Velocity Extrapolation
     private Pose3d extrapolatedTarget = new Pose3d();
     private int convergence_trials = 10;
+    private boolean ranExtrapolation = false;
 
 
     
@@ -112,28 +115,48 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public double getPivotAngle(double launchVelocity) {
-        // TODO: Make sure extrapolated target is updated, and don't call it twice to waste cpu
+        ChassisSpeeds speeds = swerve.getChassisSpeeds();
+        extrapolateTargetPosition(launchVelocity, speeds, extrapolatedTarget);
         double angle = interpolatePivotAngle(extrapolatedTarget, robotPose.get());
         values.set(PIVOT_ANGLE, angle);
         return angle;
+    }
+
+    public static double getShooterAngle(double pivotAngle) {
+        return Constants.Physical.SHOOTER_ANGLE_OFFSET - pivotAngle;
+    }
+
+    public static double getAngleToExitPoint(double pivotAngle) {
+        return Constants.Physical.PIVOT_EXIT_POINT_ANGLE_OFFSET - pivotAngle;
+    }
+
+    public static Translation3d getExitOffset(double pivotAngle) {
+        return new Translation3d(Constants.Physical.PIVOT_SHOOTER_RADIUS, 0.0, 0.0).rotateBy(new Rotation3d(Units.degreesToRadians(getAngleToExitPoint(pivotAngle)), 0, 0));
     }
 
     /* 
     Predicts and sets predicted target position based on time for note to reach target and robot velocity
     */ 
     public void extrapolateTargetPosition(double launchVelocity, ChassisSpeeds robotVelocity, Pose3d robotPosition) {
+        if (ranExtrapolation) {
+            return;
+        }
         double speaker_x_velocity = -robotVelocity.vxMetersPerSecond;
         double speaker_y_velocity = -robotVelocity.vyMetersPerSecond;
         Translation3d predicted_target_location = currentTarget.get().getTranslation();
         
         for (int i = 0; i<convergence_trials; i++) {
             // Gets current distance to target
-            double distance = predicted_target_location.getDistance(robotPose.get().getTranslation());
+            double distance = predicted_target_location.toTranslation2d().getDistance(robotPose.get().getTranslation().toTranslation2d());
             // Pivot Angle
-            // double pivotAngle = interpolatePivotAngle(predicted_target_location.toTranslation2d().getDistance(robotPose.get().getTranslation().toTranslation2d()));
-            // TODO: Add constant to get pivot angle from ground and then calculate horizontal velocity
+            double pivotAngle = interpolatePivotAngle(distance);
+            double shooterAngle = getShooterAngle(pivotAngle);
+            double horizontalVelocity = launchVelocity * Math.cos(Units.degreesToRadians(shooterAngle));
+
+            // TODO: Possibly account for pivot offset and shooter exit point
+
             // Get time to target
-            double time = distance / launchVelocity;
+            double time = distance / horizontalVelocity;
             // apply time to target to speaker position
             predicted_target_location = new Translation3d(currentTarget.get().getX() + speaker_x_velocity * time, currentTarget.get().getY() + speaker_y_velocity * time, currentTarget.get().getZ());
             
@@ -160,7 +183,10 @@ public class TargetingSystem extends GenericSubsystem {
 
         values.set(HORIZONTAL_ANGLE, angle);
         return Units.radiansToDegrees(angle);
+    }
 
+    public Optional<Rotation2d> getRotationTarget(double launchVelocity) {
+        return Optional.of(Rotation2d.fromDegrees(getHorizontalAngle(launchVelocity)));
     }
 
     public double getPivotAngleToTarget() { // TODO: Account for gravity
@@ -185,6 +211,10 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
         return thetaController.atSetpoint() ? 0.0 : thetaController.calculate(robotPose.get().getRotation().getZ())
                 * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond(); // Stops rotating robot  once at setpoint within tolerance.
+    }
+
+    public void periodic() {
+        ranExtrapolation = false;
     }
 
 }

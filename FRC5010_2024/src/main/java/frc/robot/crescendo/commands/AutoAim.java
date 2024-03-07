@@ -4,10 +4,12 @@
 
 package frc.robot.crescendo.commands;
 
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -78,7 +80,7 @@ public class AutoAim extends Command {
       originalTurnSpeed = driveCommand.get().getTurnSpeedFunction();
       driveCommand.get().setTurnSpeedFunction(() -> targetingSystem.getTurnPower());
     } else if (useAutoDrive) {
-      ((YAGSLSwerveDrivetrain) drive.getDrivetrain()).setAngleSupplier(() -> targetingSystem.getTurnPower());
+      PPHolonomicDriveController.setRotationTargetOverride(() -> targetingSystem.getRotationTarget(1.0));
     } 
     cycleCounter = 0;
   }
@@ -101,16 +103,18 @@ public class AutoAim extends Command {
     SmartDashboard.putBoolean("Pivot Target", pivotSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Shooter Target", shooterSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
-    // if (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw()) {
-    //   if (cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) {
-    //     feederSubsystem.feederStateMachine(1.0);
+    if (useAutoDrive || driveCommand == null) {
+      if (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw()) {
+        if (cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) {
+          feederSubsystem.feederStateMachine(1.0);
 
-    //   }
-    //   cycleCounter++;
+        }
+        cycleCounter++;
 
-    // } else {
-    //   cycleCounter = 0;
-    // }
+      } else {
+        cycleCounter = 0;
+      }
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -119,7 +123,7 @@ public class AutoAim extends Command {
     if (driveCommand != null) {
       driveCommand.get().setTurnSpeedFunction(originalTurnSpeed);
     } else {
-      ((YAGSLSwerveDrivetrain) drive.getDrivetrain()).setAngleSupplier(null);
+      PPHolonomicDriveController.setRotationTargetOverride(() -> Optional.empty());
     }
     robotPose.setDisableVisionUpdate(false);
     feederSubsystem.setFeederSpeed(0);
