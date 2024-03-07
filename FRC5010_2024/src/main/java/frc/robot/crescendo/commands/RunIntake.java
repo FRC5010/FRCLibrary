@@ -45,14 +45,12 @@ public class RunIntake extends GenericCommand {
     this.feederSubsystem = feederSubsystem;
     this.pivotSubsystem = pivotSubsystem;
     this.rumbleController = rumbleController;
-    
-    
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
   }
 
-
-   public RunIntake(DoubleSupplier joystick, IntakeSubsystem intakeSubsystem,
+  public RunIntake(DoubleSupplier joystick, IntakeSubsystem intakeSubsystem,
       FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, Controller rumbleController) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
@@ -60,11 +58,11 @@ public class RunIntake extends GenericCommand {
     this.feederSubsystem = feederSubsystem;
     this.pivotSubsystem = pivotSubsystem;
     this.rumbleController = rumbleController;
-    
-    
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
   }
+
   // Called when the command is initially scheduled.
   @Override
   public void init() {
@@ -78,23 +76,25 @@ public class RunIntake extends GenericCommand {
 
         })
         .andThen(
+            Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.25))
+                .onlyIf(() -> feederSubsystem.isStopBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
+                .until(() -> !feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
+                .finallyDo(() -> {
+                  feederSubsystem.feederStateMachine(0);
+                }))
+        .alongWith(
+            (Commands.runOnce(() -> rumbleController.setRumble(1)).andThen(
+                Commands.waitSeconds(1)).finallyDo(() -> rumbleController.setRumble(0)))
+                .onlyIf(() -> null != rumbleController && feederSubsystem.getNoteState() == NoteState.Holding));
 
-          Commands.run(() -> feederSubsystem.feederStateMachine(0.5 * feederSpeed.getAsDouble()))
-            .onlyIf(() -> feederSubsystem.isStopBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
-            .until(() -> !feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
-            .finallyDo(() -> {
-              feederSubsystem.feederStateMachine(0);
-            
-            }).andThen(
-              Commands.runOnce(() -> rumbleController.setRumble(1)).andThen(
-              Commands.waitSeconds(1)).finallyDo(() -> rumbleController.setRumble(0))
-            ).onlyIf(() -> null != rumbleController && feederSubsystem.getNoteState() == NoteState.Loaded)
-          );
-
-    holdingCommand = Commands.run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
-            feederSubsystem).until(() -> 0 == speed.getAsDouble());
-    loadedCommand = Commands.run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
-            feederSubsystem).until(() -> 0 == speed.getAsDouble());
+    holdingCommand = Commands.run(
+        () -> feederSubsystem.feederStateMachine(
+            Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
+        feederSubsystem).until(() -> 0 == speed.getAsDouble());
+    loadedCommand = Commands.run(
+        () -> feederSubsystem.feederStateMachine(
+            Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
+        feederSubsystem).until(() -> 0 == speed.getAsDouble());
     intakeCommands.put(NoteState.Empty, feederCommand);
     intakeCommands.put(NoteState.Holding, holdingCommand);
     intakeCommands.put(NoteState.Loaded, loadedCommand);
@@ -106,8 +106,9 @@ public class RunIntake extends GenericCommand {
   @Override
   public void execute() {
     double velocity = speed.getAsDouble();
-    intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity : feederSubsystem.getNoteState() == NoteState.Holding ? -velocity : 0);
-    
+    intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity
+        : feederSubsystem.getNoteState() == NoteState.Holding ? -velocity * 0.25 : 0);
+
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
       if (velocity < 0) {

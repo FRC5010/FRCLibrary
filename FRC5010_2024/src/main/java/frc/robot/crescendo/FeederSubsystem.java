@@ -184,13 +184,13 @@ public class FeederSubsystem extends GenericSubsystem {
         ledSubsystem.setWholeStripState((Integer i) -> Color.RED.getColor8Bit());
         break;
       case Holding:
-        ledSubsystem.setWholeStripState((Integer i) -> Color.ORANGE.getColor8Bit());
+        ledSubsystem.setWholeStripState((Integer i) -> Color.BLUE.getColor8Bit());
         break;
       case Loaded:
-        ledSubsystem.setWholeStripState((Integer i) -> Color.PURPLE.getColor8Bit());
+        ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
         break;
       case Shooting:
-        ledSubsystem.setWholeStripState((Integer i) -> Color.FIFTY_TEN_ORANGE.getColor8Bit());
+        ledSubsystem.setWholeStripState((Integer i) -> Color.ORANGE.getColor8Bit());
         break;
     }
   }

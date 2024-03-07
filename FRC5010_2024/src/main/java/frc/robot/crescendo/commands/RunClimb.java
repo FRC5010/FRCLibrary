@@ -36,8 +36,7 @@ public class RunClimb extends GenericCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climbSubsystem.setLeftMotorSpeed(leftSpeed.getAsDouble());
-    climbSubsystem.setRightMotorSpeed(rightSpeed.getAsDouble());
+    climbSubsystem.climbStateMachine(leftSpeed.getAsDouble(), rightSpeed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

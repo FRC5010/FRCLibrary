@@ -62,7 +62,7 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   private final double MAX_EXTENSION_DEFAULT = 195.0;
   private final String CURRENT_THRESHOLD = "Climb Current Threshold";
-  private final double CURRENT_THRESHOLD_DEFAULT = 40.0;
+  private final double CURRENT_THRESHOLD_DEFAULT = 15.0;
   private final String LEFT_CONVERSION_FACTOR = "Left Climb Conversion Factor";
   private final double LEFT_CONVERSION_DEFAULT = 1.0;
   private final String RIGHT_CONVERSION_FACTOR = "Right Climb Conversion Factor";
@@ -159,11 +159,18 @@ public class ClimbSubsystem extends GenericSubsystem {
     return false;
   }
 
+  public void setAutobalanceMode(boolean state) {
+    values.set(AUTO_BALANCE, state);
+  }
+
+  public boolean getAutobalanceMode() {
+    return values.getBoolean(AUTO_BALANCE);
+  }
+
 
   public void climbStateMachine (double left, double right) {
     if (values.getBoolean(AUTO_BALANCE)) {
-
-
+      setBalancedSpeed(left);
     } else {
       setLeftMotorSpeed(left);
       setRightMotorSpeed(right);

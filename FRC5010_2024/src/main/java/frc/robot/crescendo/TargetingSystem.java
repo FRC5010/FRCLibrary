@@ -23,6 +23,8 @@ public class TargetingSystem extends GenericSubsystem {
     // Velocity Extrapolation
     private Pose3d extrapolatedTarget = new Pose3d();
     private int convergence_trials = 10;
+
+
     
 
     private Supplier<Pose3d> robotPose;
@@ -88,6 +90,10 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController.reset();
     }
 
+    public double getLaunchVelocity(double shooterVelocity) {
+        return Units.feetToMeters(38);
+    }
+
     public void updateControllerValues() {
         thetaController.setP(values.getDouble(kP));
         thetaController.setI(values.getDouble(kI));
@@ -123,6 +129,9 @@ public class TargetingSystem extends GenericSubsystem {
         for (int i = 0; i<convergence_trials; i++) {
             // Gets current distance to target
             double distance = predicted_target_location.getDistance(robotPose.get().getTranslation());
+            // Pivot Angle
+            // double pivotAngle = interpolatePivotAngle(predicted_target_location.toTranslation2d().getDistance(robotPose.get().getTranslation().toTranslation2d()));
+            // TODO: Add constant to get pivot angle from ground and then calculate horizontal velocity
             // Get time to target
             double time = distance / launchVelocity;
             // apply time to target to speaker position
@@ -171,7 +180,7 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public double getTurnPower() {
-        double targetAngle = getHorizontalAngle();
+        double targetAngle = getHorizontalAngle(getLaunchVelocity(1.0));
         updateControllerValues();
         thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
         return thetaController.atSetpoint() ? 0.0 : thetaController.calculate(robotPose.get().getRotation().getZ())

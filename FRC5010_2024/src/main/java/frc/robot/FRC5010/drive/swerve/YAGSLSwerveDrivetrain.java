@@ -593,6 +593,11 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     setChassisSpeeds(angleSuppliedChassisSpeeds);
   }
 
+  @Override
+  public ChassisSpeeds getChassisSpeeds() {
+    return getFieldVelocity();
+  }
+
   public Command createDefaultCommand(Controller driverXbox) {
     // System.out.println("brrrrr");
     DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();

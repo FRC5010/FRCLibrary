@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.LogLevel;
@@ -178,7 +180,7 @@ public class CompBot_2024 extends GenericMechanism {
                 autoaimButton.whileTrue(
                                 new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
                                                 () -> (JoystickToSwerve) drive.getDefaultCommand()))
-                                .onFalse(Commands.waitSeconds(0.5).andThen(
+                                .onFalse(Commands.waitSeconds(0.05).andThen(
                                                 Commands.runOnce(() -> pivotSubsystem
                                                                 .setReference(pivotSubsystem.HOME_LEVEL))
                                                                 .unless(() -> autoaimButton.getAsBoolean())));
@@ -283,6 +285,17 @@ public class CompBot_2024 extends GenericMechanism {
                 operator.createBackButton()
                                 .onTrue(Commands.runOnce(() -> climbSubsystem.zeroPosition(), climbSubsystem));
 
+                operator.createStartButton()
+                                .onTrue(Commands.runOnce(() -> climbSubsystem
+                                                .setAutobalanceMode(!climbSubsystem.getAutobalanceMode()))
+                                                .andThen(
+                                                                Commands.runOnce(() -> operator.setRumble(1))
+                                                                                .onlyIf(() -> climbSubsystem
+                                                                                                .getAutobalanceMode())
+                                                                                .andThen(Commands.waitSeconds(0.5))
+                                                                                .finallyDo(() -> operator
+                                                                                                .setRumble(0))));
+
                 /*
                  * >>>>>>>>>>>>>>>>>>>>>>>>>>>> BOARD BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                  */
@@ -300,7 +313,7 @@ public class CompBot_2024 extends GenericMechanism {
 
                 intakeSubsystem.setDefaultCommand(
                                 new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(),
-                                () -> 0.5,
+                                                () -> 0.5,
                                                 intakeSubsystem,
                                                 feederSubsystem,
                                                 pivotSubsystem, driver));
@@ -314,8 +327,16 @@ public class CompBot_2024 extends GenericMechanism {
                 // feederSubsystem.setDefaultCommand(new RunFeeder(feederSubsystem, () -> 0.0));
                 ledSubsystem.setDefaultCommand(Commands.run(() -> {
                 }, ledSubsystem)
-                                .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).setColor(Color.RED)
-                                                .chase(true)));
+                                .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
+
+                CommandScheduler.getInstance().schedule(
+                                (Commands.run(() -> climbSubsystem.setLeftMotorSpeed(-0.5), climbSubsystem)
+                                                .until(() -> climbSubsystem.leftIsAtMin(-0.5)))
+                                                .andThen(Commands
+                                                                .run(() -> climbSubsystem.setRightMotorSpeed(-0.5),
+                                                                                climbSubsystem)
+                                                                .until(() -> climbSubsystem
+                                                                                .rightIsAtMin(-0.5))));
         }
 
         @Override
