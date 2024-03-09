@@ -23,7 +23,6 @@ import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.sensors.ValueSwitch;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
-import frc.robot.FRC5010.sensors.encoder.RevEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
@@ -72,6 +71,8 @@ public class ClimbSubsystem extends GenericSubsystem {
   private final String RIGHT_CLIMB_POSITION = "Right Climb Position";
   private final String AUTO_BALANCE = "Auto Climb Balancing";
   private final String ENABLE_CLIMB = "Enable Climb";
+  private final String LEFT_CURRENT = "Left Current";
+  private final String RIGHT_CURRENT = "Right Current";
 
   private final double CLIMB_GEARING = 1;
   private final double CLIMB_WEIGHT_LB = 1.0;
@@ -96,6 +97,8 @@ public class ClimbSubsystem extends GenericSubsystem {
     values.declare(AUTO_BALANCE, true);
     values.declare(ENABLE_CLIMB, false);
     values.declare(SAFE_LIMIT, SAFE_LIMIT_DEFAULT);
+    values.declare(LEFT_CURRENT, ((CANSparkMax) leftMotor).getOutputCurrent());
+    values.declare(RIGHT_CURRENT, ((CANSparkMax) rightMotor).getOutputCurrent());
 
     leftEncoder = leftMotor.getMotorEncoder();
     rightEncoder = rightMotor.getMotorEncoder();
@@ -139,6 +142,10 @@ public class ClimbSubsystem extends GenericSubsystem {
     return values.getBoolean(ENABLE_CLIMB) ? values.getDouble(SAFE_LIMIT) : 0.0;
   }
 
+  private double getMaxPosition() {
+    return values.getBoolean(ENABLE_CLIMB) ? values.getDouble(MAX_EXTENSION): values.getDouble(SAFE_LIMIT);
+  }
+
   public boolean leftIsAtMin(double speed) {
     if ((speed < 0 && getLeftPosition() < getMinPosition()) && !override) {
       return true;
@@ -147,7 +154,7 @@ public class ClimbSubsystem extends GenericSubsystem {
   }
 
   public boolean leftIsAtMax(double speed) {
-    if ((speed > 0 && getLeftPosition() > values.getDouble(MAX_EXTENSION)) && !override) {
+    if ((speed > 0 && getLeftPosition() > getMaxPosition()) && !override) {
       return true;
     }
     return false;
@@ -161,7 +168,7 @@ public class ClimbSubsystem extends GenericSubsystem {
   }
 
   public boolean rightIsAtMax(double speed) {
-    if ((speed > 0 && getRightPosition() > values.getDouble(MAX_EXTENSION)) && !override) {
+    if ((speed > 0 && getRightPosition() > getMaxPosition()) && !override) {
       return true;
     }
     return false;
@@ -176,14 +183,12 @@ public class ClimbSubsystem extends GenericSubsystem {
   }
 
   public void climbStateMachine(double left, double right) {
-    if (values.getBoolean(ENABLE_CLIMB) || override) {
       if (values.getBoolean(AUTO_BALANCE)) {
         setBalancedSpeed(left);
       } else {
         setLeftMotorSpeed(left);
         setRightMotorSpeed(right);
       }
-    }
   }
 
   public void setLeftMotorSpeed(double speed) {
@@ -238,20 +243,21 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   // Zeroes the encoder if current switch triggers and current encoder position is
   // close enough
-  private void update_encoder_extremas() {
-    if (leftCurrentSwitch.get() && getLeftPosition() < MAX_POSITION_DEVIANCE) {
+  private void updateEncoderMinMax() {
+    if (leftCurrentSwitch.get() && leftMotor.get() < 0) {
       leftEncoder.setPosition(0);
-    } else if (leftCurrentSwitch.get() && getLeftPosition() > values.getDouble(MAX_EXTENSION)) {
+    } else if (leftCurrentSwitch.get() && leftMotor.get() > 0) {
       leftEncoder.setPosition(values.getDouble(MAX_EXTENSION));
     }
 
-    if (rightCurrentSwitch.get() && getRightPosition() < MAX_POSITION_DEVIANCE) {
+    if (rightCurrentSwitch.get() && rightMotor.get() < 0) {
       rightEncoder.setPosition(0);
-    } else if (rightCurrentSwitch.get() && getRightPosition() > values.getDouble(MAX_EXTENSION)) {
+    } else if (rightCurrentSwitch.get() && rightMotor.get() > 0) {
       rightEncoder.setPosition(values.getDouble(MAX_EXTENSION));
     }
 
-    SmartDashboard.putNumber("Left Climb Motor", leftMotor.get());
+    values.set(LEFT_CURRENT, ((CANSparkMax) leftMotor).getOutputCurrent());
+    values.set(RIGHT_CURRENT, ((CANSparkMax) rightMotor).getOutputCurrent());
   }
 
   @Override
@@ -261,7 +267,7 @@ public class ClimbSubsystem extends GenericSubsystem {
     values.set(LEFT_CLIMB_POSITION, getLeftPosition());
     values.set(RIGHT_CLIMB_POSITION, getRightPosition());
 
-    update_encoder_extremas();
+    updateEncoderMinMax();
 
     simLeftClimbArm.setLength(0.5 * getLeftPosition()/CLIMB_MAX_HEIGHT + 0.05);
     simRightClimbArm.setLength(0.5 * getRightPosition()/CLIMB_MAX_HEIGHT + 0.05);

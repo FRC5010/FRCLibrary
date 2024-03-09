@@ -17,12 +17,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.LogLevel;
@@ -43,12 +42,12 @@ import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import frc.robot.FRC5010.subsystems.Color;
+import frc.robot.FRC5010.subsystems.LEDStripSegment;
 import frc.robot.FRC5010.subsystems.PowerDistribution5010;
 import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.RunClimb;
-import frc.robot.crescendo.commands.RunFeeder;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
@@ -74,7 +73,7 @@ public class CompBot_2024 extends GenericMechanism {
         private MotorController5010 rightClimbMotor;
         private Drive drive;
         private SegmentedLedSystem ledSubsystem;
-
+		private LEDStripSegment allLEDs;
         private TargetingSystem targetingSystem;
         private PowerDistribution5010 powerDistribution5010;
 
@@ -91,7 +90,11 @@ public class CompBot_2024 extends GenericMechanism {
                 RobotContainer.setLoggingLevel(LogLevel.DEBUG);
 
                 ledSubsystem = new SegmentedLedSystem(0, 34, visual);
-                ledSubsystem.setWholeStripState((Integer i) -> Color.ORANGE.getColor8Bit());
+				ledSubsystem.setWholeStripState((Integer i) -> RobotContainer.chooseAllianceColor().getColor8Bit());
+
+                allLEDs = ledSubsystem.getStrip(ledSubsystem.ALL);
+				allLEDs.chase(false);
+
                 powerDistribution5010 = new PowerDistribution5010();
 
                 // Motor Setup
@@ -369,8 +372,9 @@ public class CompBot_2024 extends GenericMechanism {
                 // feederSubsystem.getNoteState()));
 
                 // feederSubsystem.setDefaultCommand(new RunFeeder(feederSubsystem, () -> 0.0));
-                ledSubsystem.setDefaultCommand(Commands.run(() -> ledSubsystem.getStrip(ledSubsystem.ALL).setColor(Color.ORANGE).chase(false), ledSubsystem)
-                                .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).setColor(Color.RED).chase(false)));
+				ledSubsystem.setDefaultCommand(Commands.run(() -> {}, ledSubsystem)
+					.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
+				ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
         }
 
         @Override
@@ -400,7 +404,9 @@ public class CompBot_2024 extends GenericMechanism {
                 // climbSubsystem.setLeftMotorSpeed(operator.getLeftTrigger());
                 // climbSubsystem.setRightMotorSpeed(operator.getLeftTrigger());
                 // }, climbSubsystem));
-
+				ledSubsystem.setDefaultCommand(Commands.run(() -> {}, ledSubsystem)
+					.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
+				ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
                 drive.setupTestDefaultCommands(driver, operator);
         }
 
@@ -435,6 +441,7 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void initAutoCommands() {
+				allLEDs.setColor(RobotContainer.chooseAllianceColor()).on();
                 drive.initAutoCommands();
                 NamedCommands.registerCommand("Intake Note", runIntake.get());
                 NamedCommands.registerCommand("Auto Intake", autoIntake.get());
@@ -452,7 +459,7 @@ public class CompBot_2024 extends GenericMechanism {
 
         public void disabledBehavior() {
 
-        }
+		}
 
         @Override
         public Command generateAutoCommand(Command autoCommand) {
