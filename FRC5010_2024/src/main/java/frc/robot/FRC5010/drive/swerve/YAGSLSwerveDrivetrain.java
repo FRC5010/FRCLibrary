@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AutonConstants;
@@ -106,7 +107,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
     // objects being created.
-    SwerveDriveTelemetry.verbosity = LogLevel.DEBUG == RobotContainer.getLoggingLevel() ? TelemetryVerbosity.POSE : TelemetryVerbosity.INFO;
+    SwerveDriveTelemetry.verbosity = LogLevel.DEBUG == RobotContainer.getLoggingLevel() ? TelemetryVerbosity.HIGH : TelemetryVerbosity.INFO;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
       swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, 360, driveConversionFactor); // Use
@@ -617,6 +618,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
     driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
     driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());
+    //return Commands.run(() -> SwerveDriveTest.centerModules(swerveDrive), this);
     return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
   }
   

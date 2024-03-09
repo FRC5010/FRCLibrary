@@ -250,6 +250,8 @@ public class ClimbSubsystem extends GenericSubsystem {
     } else if (rightCurrentSwitch.get() && getRightPosition() > values.getDouble(MAX_EXTENSION)) {
       rightEncoder.setPosition(values.getDouble(MAX_EXTENSION));
     }
+
+    SmartDashboard.putNumber("Left Climb Motor", leftMotor.get());
   }
 
   @Override

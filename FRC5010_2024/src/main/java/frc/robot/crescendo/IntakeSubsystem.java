@@ -189,6 +189,7 @@ public class IntakeSubsystem extends GenericSubsystem {
   }
 
   public void setReference(double topSpeed, double bottomSpeed) {
+    intakeState = IntakeState.Velocity;
     topReference = topSpeed;
     bottomReference = bottomSpeed;
   }
