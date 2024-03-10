@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -90,11 +91,11 @@ public class RunIntake extends GenericCommand {
     holdingCommand = Commands.run(
         () -> feederSubsystem.feederStateMachine(
             Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
-        feederSubsystem).until(() -> 0 == speed.getAsDouble());
+        feederSubsystem).until(() -> 0 == speed.getAsDouble()).onlyIf(() -> DriverStation.isTeleop());
     loadedCommand = Commands.run(
         () -> feederSubsystem.feederStateMachine(
             Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
-        feederSubsystem).until(() -> 0 == speed.getAsDouble());
+        feederSubsystem).until(() -> 0 == speed.getAsDouble()).onlyIf(() -> DriverStation.isTeleop());
     intakeCommands.put(NoteState.Empty, feederCommand);
     intakeCommands.put(NoteState.Holding, holdingCommand);
     intakeCommands.put(NoteState.Loaded, loadedCommand);

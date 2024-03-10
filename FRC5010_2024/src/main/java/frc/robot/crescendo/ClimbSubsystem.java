@@ -94,7 +94,7 @@ public class ClimbSubsystem extends GenericSubsystem {
     values.declare(RIGHT_CONVERSION_FACTOR, RIGHT_CONVERSION_DEFAULT);
     values.declare(LEFT_CLIMB_CURRENT_SWITCH, false);
     values.declare(RIGHT_CLIMB_CURRENT_SWITCH, false);
-    values.declare(AUTO_BALANCE, true);
+    values.declare(AUTO_BALANCE, false);
     values.declare(ENABLE_CLIMB, false);
     values.declare(SAFE_LIMIT, SAFE_LIMIT_DEFAULT);
     values.declare(LEFT_CURRENT, ((CANSparkMax) leftMotor).getOutputCurrent());
@@ -136,6 +136,7 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   public void enableClimb(boolean enable) {
     values.set(ENABLE_CLIMB, enable);
+    values.set(AUTO_BALANCE, enable);
   }
 
   private double getMinPosition() {

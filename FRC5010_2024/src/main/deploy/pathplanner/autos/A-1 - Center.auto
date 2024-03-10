@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7715598119123349,
+      "y": 6.647847099794428
+    },
+    "rotation": -120.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Blind Shot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note A-1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 1 to Left Center"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Aim"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.constants.GenericPID;
 import frc.robot.FRC5010.motors.PIDController5010;
 import frc.robot.FRC5010.motors.hardware.GenericTalonFXMotor;
@@ -53,6 +54,9 @@ public class TalonFXPID implements PIDController5010 {
     public boolean isAtTarget() {
         switch (controlType) {
             case VELOCITY:
+            SmartDashboard.putNumber("PID Velocity Difference from Reference" + motor.getDeviceID(), Math.abs(getReference() - motor.getVelocity().getValueAsDouble()));
+            SmartDashboard.putNumber("Motor Velocity" + motor.getDeviceID(), motor.getVelocity().getValueAsDouble());
+            SmartDashboard.putNumber("Closed Loop Reference" + motor.getDeviceID(), motor.getClosedLoopReference().getValueAsDouble());
             return Math.abs(getReference() - motor.getVelocity().getValueAsDouble()) < tolerance;
             case POSITION:
             return Math.abs(getReference() - motor.getPosition().getValueAsDouble()) < tolerance;
@@ -143,7 +147,7 @@ public class TalonFXPID implements PIDController5010 {
 
     @Override
     public double getReference() {
-        return reference;
+        return motor.getClosedLoopReference().getValueAsDouble();
     }
 
     @Override

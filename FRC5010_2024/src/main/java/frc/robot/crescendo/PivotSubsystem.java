@@ -106,7 +106,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
     values.declare(PIVOT_kG, RobotBase.isReal() ? 0.57 : 6.05 ); 
     values.declare(PIVOT_kV, RobotBase.isReal() ? 0.0 : 0.01);
-    values.declare(PIVOT_kP, RobotBase.isReal() ? 0.005 : 0.01);
+    values.declare(PIVOT_kP, RobotBase.isReal() ? 0.015 : 0.01);
     values.declare(PIVOT_kD, RobotBase.isReal() ? 0.0000 : 0.003);
     values.declare(PIVOT_kS, RobotBase.isReal() ? 0.22 : 0.0);
     values.declare(PIVOT_kA, 0.0);
@@ -194,7 +194,7 @@ public class PivotSubsystem extends GenericSubsystem {
   }
 
   public boolean isAtTarget() {
-    return Math.abs(getReference() - getPivotPosition()) < 1;
+    return Math.abs(getReference() - getPivotPosition()) < 0.5;
   }
 
   public void setInterpolatedShotAngle(double distance) {
@@ -259,7 +259,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
     pivotFeedforward = new ArmFeedforward(pivotKS, pivotKG, pivotKV, pivotKA);
     double vel = Math.signum(error) * (Math.abs(error) > 5 ? 1 : 0.25) * 2;
-    double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), Units.degreesToRadians(vel));
+    double ff = pivotFeedforward.calculate(Units.degreesToRadians(getPivotPosition()), Units.degreesToRadians(0));
 
     return ff;
   }

@@ -12,26 +12,19 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Blind Shot"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Auto Aim With Drive"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Note"
-                      }
-                    }
-                  ]
+                  "name": "Intake Note"
                 }
               },
               {
@@ -94,19 +87,19 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot From Right"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "Shoot From Right"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
-                  "name": "Auto Aim With Drive"
+                  "name": "Auto Aim"
                 }
               }
             ]

@@ -11,7 +11,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 
 public class JoystickToSwerve extends Command {
@@ -70,9 +72,10 @@ public class JoystickToSwerve extends Command {
         .minus(new Rotation2d(gyroRate));
 
     if (fieldOrientedDrive.getAsBoolean()) {
+      Alliance alliance = RobotContainer.getAlliance();
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          xSpeed,
-          ySpeed,
+          alliance == Alliance.Red ? -xSpeed : xSpeed,
+          alliance == Alliance.Red ? -ySpeed : ySpeed,
           turnSpeed,
           correctedRotation);
     } else {

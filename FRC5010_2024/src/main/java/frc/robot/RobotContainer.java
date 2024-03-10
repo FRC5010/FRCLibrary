@@ -254,7 +254,7 @@ public class RobotContainer extends GenericMechanism {
 
 	@Override
 	public void setupDefaultCommands(Controller driver, Controller operator) {
-		if (DriverStation.isTeleop()) {
+		if (DriverStation.isTeleop() || DriverStation.isAutonomous()) {
 			robot.setupDefaultCommands(driver, operator);
 		} else if (DriverStation.isTest()) {
 			robot.setupTestDefaultCommmands(driver, operator);
@@ -266,9 +266,9 @@ public class RobotContainer extends GenericMechanism {
 		alliance = determineAllianceColor();
 		SmartDashboard.putString("Alliance", alliance.toString());
 
-		AprilTags.aprilTagFieldLayout
-				.setOrigin(RobotContainer.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
-						: OriginPosition.kRedAllianceWallRightSide);
+		// AprilTags.aprilTagFieldLayout
+		// 		.setOrigin(RobotContainer.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+		// 				: OriginPosition.kRedAllianceWallRightSide);
 
 		setupDefaultCommands(driver, operator);
 	}

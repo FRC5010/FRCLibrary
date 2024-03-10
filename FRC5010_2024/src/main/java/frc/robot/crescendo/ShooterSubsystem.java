@@ -9,6 +9,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -104,13 +105,13 @@ public class ShooterSubsystem extends GenericSubsystem {
     topPID.setI(0.0000001);    
     topPID.setIZone(100);
     topPID.setD(0);
-    topPID.setTolerance(200);
+    topPID.setTolerance(5);
   
     bottomPID.setP(0.00049915);
     bottomPID.setI(0.0000001);  
     bottomPID.setIZone(100);  
     bottomPID.setD(0);
-    bottomPID.setTolerance(200);
+    bottomPID.setTolerance(5);
 
 
 
@@ -282,6 +283,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   
     values.set(vals.TOP_VELOCITY.name(), topEncoder.getVelocity());
     values.set(vals.BOTTOM_VELOCITY.name(), bottomEncoder.getVelocity());
+    SmartDashboard.putBoolean("Shooter At Reference", isAtTarget());
   }
 
   @Override

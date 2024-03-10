@@ -94,7 +94,7 @@ public class AutoAim extends Command {
     double pivotAngle = targetingSystem.getPivotAngle();
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
     pivotSubsystem.setReference(pivotAngle);
-    shooterSubsystem.setShooterReference(6000, 6000);
+    shooterSubsystem.setShooterReference(5000, 5000);
     double turnSpeed = targetingSystem.getTurnPower();
     if (!useAutoDrive && driveCommand == null) {
 
@@ -103,11 +103,11 @@ public class AutoAim extends Command {
     SmartDashboard.putBoolean("Pivot Target", pivotSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Shooter Target", shooterSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
-    if (useAutoDrive || driveCommand == null) {
+    if (useAutoDrive || driveCommand == null || true) {
       if (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw()) {
         if (cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) {
-          feederSubsystem.feederStateMachine(1.0);
-
+          feederSubsystem.feederStateMachine(-1.0);
+          
         }
         cycleCounter++;
 
@@ -126,7 +126,7 @@ public class AutoAim extends Command {
       PPHolonomicDriveController.setRotationTargetOverride(() -> Optional.empty());
     }
     robotPose.setDisableVisionUpdate(false);
-    feederSubsystem.setFeederSpeed(0);
+    feederSubsystem.feederStateMachine(0);
     shooterSubsystem.setShooterReference(0, 0);
   }
 

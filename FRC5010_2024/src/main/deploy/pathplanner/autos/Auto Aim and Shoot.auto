@@ -2,19 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5,
-      "y": 7.0
+      "x": 1.4229570277322372,
+      "y": 5.503960098829289
     },
-    "rotation": 0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Rotate Test"
+            "name": "Auto Aim"
           }
         }
       ]

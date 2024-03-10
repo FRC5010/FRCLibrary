@@ -17,9 +17,8 @@ public class RunShooter extends Command {
   private ShooterSubsystem shooter;
   private FeederSubsystem feeder;
   /** Creates a new Intake. */
-  public RunShooter(DoubleSupplier shooterSpeed, ShooterSubsystem shooter, FeederSubsystem feeder) {
+  public RunShooter(DoubleSupplier shooterSpeed, ShooterSubsystem shooter) {
     this.shooterSpeed = shooterSpeed;
-    this.feederSpeed = feederSpeed;
     this.shooter = shooter;
     this.feeder = feeder;
     // Use addRequirements() here to declare subsystem dependencies.

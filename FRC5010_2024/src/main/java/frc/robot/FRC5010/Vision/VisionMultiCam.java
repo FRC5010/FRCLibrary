@@ -61,6 +61,10 @@ public class VisionMultiCam extends VisionSystem {
         return cameras.get(cameraName).getCameraToRobot();
     }
 
+    public VisionSystem getCamera(String name) {
+        return cameras.get(name);
+    }
+    
     @Override
     public void update() {
         rawValues.clearValues();

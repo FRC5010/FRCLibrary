@@ -16,6 +16,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 
@@ -26,9 +27,6 @@ public class TargetingSystem extends GenericSubsystem {
     private Pose3d extrapolatedTarget = new Pose3d();
     private int convergence_trials = 10;
     private boolean ranExtrapolation = false;
-
-
-    
 
     private Supplier<Pose3d> robotPose;
     private SwerveDrivetrain swerve;
@@ -47,17 +45,16 @@ public class TargetingSystem extends GenericSubsystem {
     private final String HORIZONTAL_ANGLE = "Horizontal Angle";
     private final String PIVOT_ANGLE = "Pivot Angle";
 
-
     public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve) {
         this.currentTarget = targetSupplier;
         this.robotPose = robotPose;
         this.swerve = swerve;
 
         // Declare Values
-        values.declare(kP, 0.25);
+        values.declare(kP, 0.4);
         values.declare(kI, 0.0);
-        values.declare(kD, 0.005);
-        values.declare(TOLERANCE, 0.03);
+        values.declare(kD, 0.04);
+        values.declare(TOLERANCE, 0.01);
 
         values.declare(TURN_POWER, 0.0);
         values.declare(HORIZONTAL_ANGLE, 0.0);
@@ -68,13 +65,32 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController = new PIDController(values.getDouble(kP), values.getDouble(kI), values.getDouble(kD));
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
-        pivotInterpolation.put(0.95, -10.0);
-        pivotInterpolation.put(1.52, 0.67);
-        pivotInterpolation.put(2.004, 7.00);
-        pivotInterpolation.put(2.57, 12.65);
-        pivotInterpolation.put(3.07, 17.1);
-        pivotInterpolation.put(3.506, 19.66);
-        pivotInterpolation.put(4.07, 21.422);
+
+        // pivotInterpolation.put(1.31, -9.13);
+        // pivotInterpolation.put(1.5048895591176392, -7.03);
+        // pivotInterpolation.put(2.03, 0.70);
+        // pivotInterpolation.put(2.51, 11.97);
+        // pivotInterpolation.put(3.0603081350196564, 16.15);
+        // pivotInterpolation.put(3.5087656150916264, 17.23);
+        // pivotInterpolation.put(4.0007891303420235, 20.0);
+        // pivotInterpolation.put(4.506227107522188, 22.48);
+        // pivotInterpolation.put(5.000167775843761, 22.0);
+
+        pivotInterpolation.put(1.32, -9.13);
+        pivotInterpolation.put(1.51, -7.03);
+        pivotInterpolation.put(1.76, -2.80);
+        pivotInterpolation.put(2.01, 3.52);
+        pivotInterpolation.put(2.26, 5.29);
+        pivotInterpolation.put(2.52, 8.79);
+        pivotInterpolation.put(2.75, 11.24);
+        pivotInterpolation.put(3.00, 11.96);
+        pivotInterpolation.put(3.26, 14.0);
+        pivotInterpolation.put(3.53, 15.80);
+        pivotInterpolation.put(3.75, 16.87);
+        pivotInterpolation.put(4.00, 18.26);
+        pivotInterpolation.put(4.25, 19.33);
+        pivotInterpolation.put(4.49, 20.37);
+        pivotInterpolation.put(4.76, 20.40);
     }
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
@@ -131,12 +147,14 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public static Translation3d getExitOffset(double pivotAngle) {
-        return new Translation3d(Constants.Physical.PIVOT_SHOOTER_RADIUS, 0.0, 0.0).rotateBy(new Rotation3d(Units.degreesToRadians(getAngleToExitPoint(pivotAngle)), 0, 0));
+        return new Translation3d(Constants.Physical.PIVOT_SHOOTER_RADIUS, 0.0, 0.0)
+                .rotateBy(new Rotation3d(Units.degreesToRadians(getAngleToExitPoint(pivotAngle)), 0, 0));
     }
 
-    /* 
-    Predicts and sets predicted target position based on time for note to reach target and robot velocity
-    */ 
+    /*
+     * Predicts and sets predicted target position based on time for note to reach
+     * target and robot velocity
+     */
     public void extrapolateTargetPosition(double launchVelocity, ChassisSpeeds robotVelocity, Pose3d robotPosition) {
         if (ranExtrapolation) {
             return;
@@ -144,10 +162,11 @@ public class TargetingSystem extends GenericSubsystem {
         double speaker_x_velocity = -robotVelocity.vxMetersPerSecond;
         double speaker_y_velocity = -robotVelocity.vyMetersPerSecond;
         Translation3d predicted_target_location = currentTarget.get().getTranslation();
-        
-        for (int i = 0; i<convergence_trials; i++) {
+
+        for (int i = 0; i < convergence_trials; i++) {
             // Gets current distance to target
-            double distance = predicted_target_location.toTranslation2d().getDistance(robotPose.get().getTranslation().toTranslation2d());
+            double distance = predicted_target_location.toTranslation2d()
+                    .getDistance(robotPose.get().getTranslation().toTranslation2d());
             // Pivot Angle
             double pivotAngle = interpolatePivotAngle(distance);
             double shooterAngle = getShooterAngle(pivotAngle);
@@ -158,13 +177,12 @@ public class TargetingSystem extends GenericSubsystem {
             // Get time to target
             double time = distance / horizontalVelocity;
             // apply time to target to speaker position
-            predicted_target_location = new Translation3d(currentTarget.get().getX() + speaker_x_velocity * time, currentTarget.get().getY() + speaker_y_velocity * time, currentTarget.get().getZ());
-            
+            predicted_target_location = new Translation3d(currentTarget.get().getX() + speaker_x_velocity * time,
+                    currentTarget.get().getY() + speaker_y_velocity * time, currentTarget.get().getZ());
+
         }
         extrapolatedTarget = new Pose3d(predicted_target_location, currentTarget.get().getRotation());
-    } 
-
-    
+    }
 
     public double getHorizontalAngle() {
         double x = currentTarget.get().getTranslation().getX() - robotPose.get().getTranslation().getX();
@@ -179,7 +197,8 @@ public class TargetingSystem extends GenericSubsystem {
         ChassisSpeeds speeds = swerve.getChassisSpeeds();
         // Extrapolate target position based on robot velocity
         extrapolateTargetPosition(launchVelocity, speeds, robotPose.get());
-        double angle = Math.atan2(extrapolatedTarget.getY() - robotPose.get().getTranslation().getY(), extrapolatedTarget.getX() - robotPose.get().getTranslation().getX());
+        double angle = Math.atan2(extrapolatedTarget.getY() - robotPose.get().getTranslation().getY(),
+                extrapolatedTarget.getX() - robotPose.get().getTranslation().getX());
 
         values.set(HORIZONTAL_ANGLE, angle);
         return Units.radiansToDegrees(angle);
@@ -202,15 +221,20 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public static double interpolatePivotAngle(Pose3d target, Pose3d robot) {
-        return pivotInterpolation.get(target.getTranslation().toTranslation2d().getDistance(robot.getTranslation().toTranslation2d()));
+        return pivotInterpolation
+                .get(target.getTranslation().toTranslation2d().getDistance(robot.getTranslation().toTranslation2d()));
     }
 
     public double getTurnPower() {
-        double targetAngle = getHorizontalAngle(getLaunchVelocity(1.0));
+        double targetAngle = getHorizontalAngle();
         updateControllerValues();
         thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
-        return thetaController.atSetpoint() ? 0.0 : thetaController.calculate(robotPose.get().getRotation().getZ())
-                * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond(); // Stops rotating robot  once at setpoint within tolerance.
+        double output = thetaController.calculate(robotPose.get().getRotation().getZ());
+        SmartDashboard.putBoolean("Theta Controller at Setpoint", thetaController.atSetpoint());
+        return thetaController.atSetpoint() ? 0.0
+                : output
+                        * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
+        // Stops rotating robot once at setpoint within tolerance.
     }
 
     public void periodic() {

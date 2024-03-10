@@ -17,7 +17,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,7 +40,6 @@ import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
-import frc.robot.FRC5010.subsystems.Color;
 import frc.robot.FRC5010.subsystems.LEDStripSegment;
 import frc.robot.FRC5010.subsystems.PowerDistribution5010;
 import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
@@ -73,7 +71,7 @@ public class CompBot_2024 extends GenericMechanism {
         private MotorController5010 rightClimbMotor;
         private Drive drive;
         private SegmentedLedSystem ledSubsystem;
-		private LEDStripSegment allLEDs;
+        private LEDStripSegment allLEDs;
         private TargetingSystem targetingSystem;
         private PowerDistribution5010 powerDistribution5010;
 
@@ -90,10 +88,10 @@ public class CompBot_2024 extends GenericMechanism {
                 RobotContainer.setLoggingLevel(LogLevel.DEBUG);
 
                 ledSubsystem = new SegmentedLedSystem(0, 34, visual);
-				ledSubsystem.setWholeStripState((Integer i) -> RobotContainer.chooseAllianceColor().getColor8Bit());
+                ledSubsystem.setWholeStripState((Integer i) -> RobotContainer.chooseAllianceColor().getColor8Bit());
 
                 allLEDs = ledSubsystem.getStrip(ledSubsystem.ALL);
-				allLEDs.chase(false);
+                allLEDs.chase(false);
 
                 powerDistribution5010 = new PowerDistribution5010();
 
@@ -130,13 +128,13 @@ public class CompBot_2024 extends GenericMechanism {
                 swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
                 swerveConstants.getSwerveModuleConstants().setkWheelDiameterMeters(0.115573139);
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft",
-                                new MotorFeedFwdConstants(0.13212, 1.9208, 0.20617)); // FL
+                                new MotorFeedFwdConstants(0.17204, 2.0698, 0.29611)); // FL
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright",
-                                new MotorFeedFwdConstants(0.15576, 1.9648, 0.17833)); // FR
+                                new MotorFeedFwdConstants(0.13752, 2.0659, 0.46677)); // FR
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backleft",
-                                new MotorFeedFwdConstants(0.1163, 1.9497, 0.34564)); // BL
+                                new MotorFeedFwdConstants(0.16356, 2.1167, 0.29725)); // BL
                 swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
-                                new MotorFeedFwdConstants(0.1163, 1.9497, 0.34564)); // BR
+                                new MotorFeedFwdConstants(0.16026, 2.1268, 0.29725)); // BR
 
                 swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
                 swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
@@ -176,7 +174,8 @@ public class CompBot_2024 extends GenericMechanism {
                 drive.configureButtonBindings(driver, operator);
 
                 /* >>>>>>>>>>>>>>>>>>>> Common Commands <<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-                runIntake = () -> new RunIntake(() -> -1.0, () -> 0.5, intakeSubsystem, feederSubsystem, pivotSubsystem,
+                runIntake = () -> new RunIntake(() -> -0.75, () -> 0.5, intakeSubsystem, feederSubsystem,
+                                pivotSubsystem,
                                 null)
                                 .until(() -> feederSubsystem.getNoteState() == NoteState.Loaded);
 
@@ -185,9 +184,10 @@ public class CompBot_2024 extends GenericMechanism {
 
                 autoIntake = () -> runIntake.get().deadlineWith(
                                 new JoystickToSwerve((SwerveDrivetrain) drive.getDrivetrain(),
-                                                () -> Math.sin((visionSystem.getAngleY()) * 1.25) + 0.1,
-                                                () -> Math.sin(-visionSystem.getAngleX()),
-                                                () -> Math.sin(-visionSystem.getAngleX()), () -> true))
+                                                () -> visionSystem.getCamera("orange").getAngleY() * -0.01,
+                                                () -> visionSystem.getCamera("orange").getAngleX() * 0.005,
+                                                () -> visionSystem.getCamera("orange").getAngleX() * 0.001,
+                                                () -> false))
                                 .andThen(stopDrivetrain.get());
 
                 rumbleOperator = () -> Commands
@@ -196,12 +196,8 @@ public class CompBot_2024 extends GenericMechanism {
 
                 runShooter = () -> Commands
                                 .run(() -> {
-                                        shooterSubsystem.setShooterReference(6000, 6000);
-                                        intakeSubsystem.setReference(6000, 6000);
-                                })
-                                .finallyDo(() -> {
-                                        shooterSubsystem.setShooterReference(0, 0);
-                                        intakeSubsystem.setReference(0, 0);
+                                        shooterSubsystem.setShooterReference(5000, 5000);
+                                        intakeSubsystem.setReference(1000, 1000);
                                 });
 
                 runFeeder = () -> Commands
@@ -236,7 +232,8 @@ public class CompBot_2024 extends GenericMechanism {
                 driver.createYButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
                                 () -> climbSubsystem.setOverride(false)));
 
-                driver.createXButton().whileTrue(autoIntake.get());
+                driver.createXButton().whileTrue(
+                                autoIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding));
 
                 // driver.createRightBumper()
                 // .whileTrue(new DriveToPosition((SwerveDrivetrain) drive.getDrivetrain(),
@@ -310,7 +307,10 @@ public class CompBot_2024 extends GenericMechanism {
                                 }));
 
                 // Run Shooter motors
-                operator.createRightBumper().whileTrue(runShooter.get());
+                operator.createRightBumper().whileTrue(runShooter.get().finallyDo(() -> {
+                        shooterSubsystem.setShooterReference(0, 0);
+                        intakeSubsystem.setReference(0, 0);
+                }));
                 // Feed Note into Shooter
                 operator.createLeftBumper().whileTrue(runFeeder.get());
 
@@ -356,7 +356,7 @@ public class CompBot_2024 extends GenericMechanism {
                                 () -> operator.getRightTrigger() - operator.getLeftTrigger(), pivotSubsystem));
 
                 shooterSubsystem.setDefaultCommand(
-                                new RunShooter(() -> 0.0, shooterSubsystem, feederSubsystem));
+                                new RunShooter(() -> 0.0, shooterSubsystem));
 
                 intakeSubsystem.setDefaultCommand(
                                 new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(),
@@ -372,9 +372,10 @@ public class CompBot_2024 extends GenericMechanism {
                 // feederSubsystem.getNoteState()));
 
                 // feederSubsystem.setDefaultCommand(new RunFeeder(feederSubsystem, () -> 0.0));
-				ledSubsystem.setDefaultCommand(Commands.run(() -> {}, ledSubsystem)
-					.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
-				ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
+                ledSubsystem.setDefaultCommand(Commands.run(() -> {
+                }, ledSubsystem)
+                                .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
+                ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
         }
 
         @Override
@@ -404,9 +405,10 @@ public class CompBot_2024 extends GenericMechanism {
                 // climbSubsystem.setLeftMotorSpeed(operator.getLeftTrigger());
                 // climbSubsystem.setRightMotorSpeed(operator.getLeftTrigger());
                 // }, climbSubsystem));
-				ledSubsystem.setDefaultCommand(Commands.run(() -> {}, ledSubsystem)
-					.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
-				ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
+                ledSubsystem.setDefaultCommand(Commands.run(() -> {
+                }, ledSubsystem)
+                                .finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
+                ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
                 drive.setupTestDefaultCommands(driver, operator);
         }
 
@@ -441,25 +443,35 @@ public class CompBot_2024 extends GenericMechanism {
 
         @Override
         public void initAutoCommands() {
-				allLEDs.setColor(RobotContainer.chooseAllianceColor()).on();
+                allLEDs.setColor(RobotContainer.chooseAllianceColor()).on();
                 drive.initAutoCommands();
                 NamedCommands.registerCommand("Intake Note", runIntake.get());
                 NamedCommands.registerCommand("Auto Intake", autoIntake.get());
 
                 NamedCommands.registerCommand("Auto Aim",
                                 new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-                                                false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
+                                                false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
+                                                .finallyDo(() -> pivotSubsystem
+                                                                .setReference(pivotSubsystem.HOME_LEVEL)));
                 NamedCommands.registerCommand("Auto Aim With Drive",
                                 new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
                                                 true).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
-                NamedCommands.registerCommand("Blind Shot", runShooter.get().until(() -> shooterSubsystem.isAtTarget())
-                                .andThen(runShooter.get().alongWith(runFeeder.get())
-                                                .until(() -> feederSubsystem.getNoteState() == NoteState.Empty)));
+                NamedCommands.registerCommand("Blind Shot",
+                                runShooter.get().withTimeout(0.75).andThen(Commands
+                                                .run(() -> feederSubsystem.feederStateMachine(-1.0))
+                                                .until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
+                                                .finallyDo(() -> {
+                                                        feederSubsystem.feederStateMachine(0.0);
+                                                        shooterSubsystem.setShooterReference(0, 0);
+                                                })));
+
+                NamedCommands.registerCommand("Pivot Shuttle", Commands.startEnd(
+                                () -> pivotSubsystem.setReference(pivotSubsystem.SHUTTLE_LEVEL), () -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL)));
         }
 
         public void disabledBehavior() {
 
-		}
+        }
 
         @Override
         public Command generateAutoCommand(Command autoCommand) {

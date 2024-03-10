@@ -3,52 +3,58 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.254860202028098,
-        "y": 2.466735702702175
+        "x": 0.6500098649400036,
+        "y": 1.439899371826079
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0949136435503464,
-        "y": 2.466735702702175
+        "x": 3.5765585881969004,
+        "y": 1.3370494166956444
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.580019929270629,
-        "y": 2.466735702702175
+        "x": 6.016907523564478,
+        "y": 1.8138992086640215
       },
       "prevControl": {
-        "x": 3.165806366897539,
-        "y": 2.466735702702175
+        "x": 4.6424581231850395,
+        "y": 1.1967994778814164
       },
       "nextControl": {
-        "x": 5.317522050583595,
-        "y": 2.466735702702175
+        "x": 7.1451862212988155,
+        "y": 2.320473317850867
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.934780484945588,
-        "y": 2.466735702702175
+        "x": 8.08325662209411,
+        "y": 2.4590489272094715
       },
       "prevControl": {
-        "x": 7.103526928558124,
-        "y": 2.466735702702175
+        "x": 7.166957021841151,
+        "y": 2.4122989476047296
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": 133.29372331287283,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Pivot to High",
+      "name": "Pivot to Shuttle",
       "waypointRelativePos": 0.05,
       "command": {
         "type": "sequential",
@@ -57,13 +63,24 @@
             {
               "type": "named",
               "data": {
-                "name": "Pivot to High"
+                "name": "Pivot to Shuttle"
               }
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.55,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
             {
               "type": "named",
               "data": {
-                "name": "Pivot to Ground"
+                "name": "Blind Shot"
               }
             }
           ]
@@ -79,11 +96,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -178.83086067209265,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }
