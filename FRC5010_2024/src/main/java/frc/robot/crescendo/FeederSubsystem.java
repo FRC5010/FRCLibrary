@@ -227,6 +227,7 @@ public class FeederSubsystem extends GenericSubsystem {
   }
 
   public NoteState getNoteState() {
+    transitionNoteState();
     return noteState;
   }
 

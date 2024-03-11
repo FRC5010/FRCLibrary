@@ -382,19 +382,21 @@ public class CompBot_2024 extends GenericMechanism {
                 shooterSubsystem.removeDefaultCommand();
                 intakeSubsystem.removeDefaultCommand();
 
-                // driver.createAButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
-                // driver.createBButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
-                driver.createYButton().whileTrue(feederSubsystem.getFeederSysIdRoutineCommand());
+                driver.createYButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
+                driver.createXButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
+
+                driver.createStartButton().whileTrue(feederSubsystem.getFeederSysIdRoutineCommand());
                 // driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
                 driver.createLeftBumper().whileTrue(intakeSubsystem.getBottomSysIdRoutineCommand());
                 driver.createRightBumper().whileTrue(intakeSubsystem.getTopSysIdRoutineCommand());
                 // pivotSubsystem.setDefaultCommand(Commands.run(() ->
                 // pivotSubsystem.setSpeed(operator.getLeftYAxis()), pivotSubsystem));
-                shooterSubsystem.setDefaultCommand(Commands.run(() -> {
-                        feederSubsystem.setFeederSpeed(operator.getLeftTrigger() - operator.getRightTrigger());
-                        // shooterSubsystem.setShooterSpeed(operator.getRightXAxis(),
-                        // operator.getRightXAxis());
-                }, shooterSubsystem));
+                // shooterSubsystem.setDefaultCommand(Commands.run(() -> {
+                //         feederSubsystem.setFeederSpeed(operator.getLeftTrigger() - operator.getRightTrigger());
+                //         // shooterSubsystem.setShooterSpeed(operator.getRightXAxis(),
+                //         // operator.getRightXAxis());
+                // }, shooterSubsystem));
+
                 intakeSubsystem.setDefaultCommand(Commands.run(
                                 () -> intakeSubsystem.setIntakeSpeed(driver.getLeftTrigger() - driver.getRightTrigger(),
                                                 driver.getLeftTrigger() - driver.getRightTrigger()),

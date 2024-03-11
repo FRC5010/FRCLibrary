@@ -51,7 +51,7 @@ public class TargetingSystem extends GenericSubsystem {
         this.swerve = swerve;
 
         // Declare Values
-        values.declare(kP, 0.4);
+        values.declare(kP, 0.28);
         values.declare(kI, 0.0);
         values.declare(kD, 0.04);
         values.declare(TOLERANCE, 0.01);
