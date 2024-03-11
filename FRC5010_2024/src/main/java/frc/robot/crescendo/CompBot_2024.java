@@ -45,10 +45,12 @@ import frc.robot.FRC5010.subsystems.PowerDistribution5010;
 import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
+import frc.robot.crescendo.commands.AutoIntake;
 import frc.robot.crescendo.commands.RunClimb;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
+import swervelib.SwerveDrive;
 
 /** Add your docs here. */
 public class CompBot_2024 extends GenericMechanism {
@@ -183,11 +185,7 @@ public class CompBot_2024 extends GenericMechanism {
                                 drive.getDrivetrain());
 
                 autoIntake = () -> runIntake.get().deadlineWith(
-                                new JoystickToSwerve((SwerveDrivetrain) drive.getDrivetrain(),
-                                                () -> visionSystem.getCamera("orange").getAngleY() * -0.01,
-                                                () -> visionSystem.getCamera("orange").getAngleX() * 0.005,
-                                                () -> visionSystem.getCamera("orange").getAngleX() * 0.001,
-                                                () -> false))
+                               new AutoIntake((SwerveDrivetrain)drive.getDrivetrain(), visionSystem.getCamera("orange")))
                                 .andThen(stopDrivetrain.get());
 
                 rumbleOperator = () -> Commands
@@ -196,7 +194,7 @@ public class CompBot_2024 extends GenericMechanism {
 
                 runShooter = () -> Commands
                                 .run(() -> {
-                                        shooterSubsystem.setShooterReference(5000, 5000);
+                                        shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED, Constants.Physical.BOTTOM_SHOOTING_SPEED);
                                         intakeSubsystem.setReference(1000, 1000);
                                 });
 

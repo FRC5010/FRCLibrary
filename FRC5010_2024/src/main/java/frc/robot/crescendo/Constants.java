@@ -18,6 +18,9 @@ public final class Constants {
                 public static final double PIVOT_EXIT_POINT_ANGLE_OFFSET = 145.112; // TODO: Measure this accurately
                 public static final double PIVOT_SHOOTER_RADIUS = 0.245; // Meters
 
+                public static final double BOTTOM_SHOOTING_SPEED = 4750;
+                public static final double TOP_SHOOTING_SPEED = 5000;
+
         }
 
         public static final class Field {
