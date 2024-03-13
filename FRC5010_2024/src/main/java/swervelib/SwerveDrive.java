@@ -1,6 +1,17 @@
 package swervelib;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -22,13 +33,6 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.imu.Pigeon2Swerve;
 import swervelib.imu.SwerveIMU;
@@ -134,6 +138,20 @@ public class SwerveDrive
    */
   private       double                   maxSpeedMPS;
 
+	/**
+	 * Standard deviations of model states. Increase these numbers to trust your
+	 * model's state estimates less. This matrix is in the form [x, y, theta]ᵀ,
+	 * with units in meters and radians, then meters.
+	 */
+	private static final Vector<N3> STATE_STDS = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+
+	/**
+	 * Standard deviations of the vision measurements. Increase these numbers to
+	 * trust global measurements from vision less. This matrix is in the form
+	 * [x, y, theta]ᵀ, with units in meters and radians.
+	 */
+	private static final Vector<N3> VISION_STDS = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+
   /**
    * Creates a new swerve drivebase subsystem. Robot is controlled via the {@link SwerveDrive#drive} method, or via the
    * {@link SwerveDrive#setRawModuleStates} method. The {@link SwerveDrive#drive} method incorporates kinematics-- it
@@ -179,7 +197,8 @@ public class SwerveDrive
             getYaw(),
             getModulePositions(),
             new Pose2d(new Translation2d(0, 0),
-                       Rotation2d.fromDegrees(0))); // x,y,heading in radians; Vision measurement std dev, higher=less weight
+                       Rotation2d.fromDegrees(0)),
+			STATE_STDS, VISION_STDS); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
     setMaximumSpeed(maxSpeedMPS);
