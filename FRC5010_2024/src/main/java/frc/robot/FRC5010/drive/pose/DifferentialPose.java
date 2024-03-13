@@ -39,7 +39,7 @@ public class DifferentialPose extends GenericPose {
         rightEncoder.reset();
     }
 
-    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
+    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance) {
         //poseEstimator.resetPosition(robotPose, robotPose.getRotation());
         // m_poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
     }

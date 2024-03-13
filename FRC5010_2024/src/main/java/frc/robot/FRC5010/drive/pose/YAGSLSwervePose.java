@@ -24,8 +24,8 @@ public class YAGSLSwervePose extends GenericPose {
     }
 
     @Override
-    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
-        drivetrain.updateVisionMeasurements(robotPose, imageCaptureTime);
+    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance) {
+        drivetrain.updateVisionMeasurements(robotPose, imageCaptureTime, distance);
     }
 
     @Override

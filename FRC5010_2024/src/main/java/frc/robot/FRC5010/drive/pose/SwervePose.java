@@ -42,7 +42,7 @@ public class SwervePose extends GenericPose {
     }
 
     @Override
-    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
+    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance) {
         poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
     }
 

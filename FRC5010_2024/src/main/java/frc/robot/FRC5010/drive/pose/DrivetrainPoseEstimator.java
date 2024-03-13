@@ -156,11 +156,12 @@ public class DrivetrainPoseEstimator {
 
   public void update() {
     poseTracker.updateLocalMeasurements();
-    if (true) {
+    if (!disableVisionUpdate) {
       Map<String, Pose2d> poses = vision.getRawValues().getRobotPoses();
       Map<String, Double> poseDistances = vision.getRawValues().getPoseDistances();
       boolean visionUpdated = false;
       for (String camera : poses.keySet()) {
+        SmartDashboard.putBoolean(camera, false);
         Pose2d robotPose = poses.get(camera);
         Double poseDistance = poseDistances.get(camera);
         if (null != robotPose) {
@@ -170,7 +171,8 @@ public class DrivetrainPoseEstimator {
               || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
               || 3.0 > poseDistance)) {
             visionUpdated = true;
-            poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime);
+            SmartDashboard.putBoolean(camera, true);
+            poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime, poseDistance);
           }
         }
       }
