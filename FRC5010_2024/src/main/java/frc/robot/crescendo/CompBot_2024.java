@@ -199,13 +199,19 @@ public class CompBot_2024 extends GenericMechanism {
                                 .run(() -> {
                                         shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
                                                         Constants.Physical.BOTTOM_SHOOTING_SPEED);
-                                        intakeSubsystem.setReference(1000, 1000);
+                                        
                                 });
 
                 runFeeder = () -> Commands
-                                .run(() -> feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed")),
+                                .run(() -> {
+                                        feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed"));
+                                        intakeSubsystem.setReference(-1000, -1000);
+                                },
                                                 feederSubsystem)
-                                .finallyDo(() -> feederSubsystem.feederStateMachine(0.0));
+                                .finallyDo(() -> {
+                                        feederSubsystem.feederStateMachine(0.0);
+                                        intakeSubsystem.setReference(0, 0);
+                                });
 
                 spinIntake = () -> Commands.startEnd(
                                 () -> intakeSubsystem.setReference(-1000, -1000),
