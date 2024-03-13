@@ -20,6 +20,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,6 +29,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -761,8 +764,15 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     return false;
   }
 
+  /**	
+	 * Standard deviations of the vision measurements. Increase these numbers to
+	 * trust global measurements from vision less. This matrix is in the form
+	 * [x, y, theta]ᵀ, with units in meters and radians.
+  */
+  private static final Vector<N3> VISION_STDS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+
   public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime) {
-    swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime);
+    swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime, VISION_STDS);
   }
 
   public Field2d getField2d() {

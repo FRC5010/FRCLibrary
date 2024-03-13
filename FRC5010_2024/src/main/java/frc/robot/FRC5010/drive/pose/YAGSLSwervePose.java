@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
-/** Add your docs here. */
 public class YAGSLSwervePose extends GenericPose {
     private YAGSLSwerveDrivetrain drivetrain;
 
