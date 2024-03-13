@@ -1,0 +1,90 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Pose/Field": "Field2d",
+      "/Shuffleboard/Robot/Auto Modes": "String Chooser",
+      "/SmartDashboard/Drive Visual": "Mechanism2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/MoveElevator_ground": "Command",
+      "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
+      "/SmartDashboard/Pigeon 2 (v6) [15]": "Gyro",
+      "/SmartDashboard/Robot Visual": "Mechanism2d"
+    },
+    "windows": {
+      "/Shuffleboard/Pose/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Drive Visual": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Visual": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        "Pose": {
+          "open": true
+        },
+        "Robot": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "Robot Visual": {
+          "Note Root": {
+            "Note": {
+              "open": true
+            },
+            "open": true
+          }
+        },
+        "TargetingSystem": {
+          "open": true
+        },
+        "open": true,
+        "swerve": {
+          "double[]##v_/SmartDashboard/swerve/desiredStates": {
+            "open": true
+          },
+          "double[]##v_/SmartDashboard/swerve/measuredStates": {
+            "open": true
+          }
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
+    "visible": true
+  }
+}
