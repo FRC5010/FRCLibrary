@@ -38,6 +38,9 @@ public class IntakeSubsystem extends GenericSubsystem {
 
   private final String TOP_SPEED = "Top Intake Speed";
   private final String BOTTOM_SPEED = "Bottom Intake Speed";
+  private final String TOP_REFERENCE = "Top Intake Reference";
+  private final String BOTTOM_REFERENCE = "Bottom Intake Reference";
+  private final String IS_IN_PID_CONTROL = "Is PID Controlled?";
 
   private double topReference = 0.0;
   private double bottomReference = 0.0;
@@ -77,12 +80,15 @@ public class IntakeSubsystem extends GenericSubsystem {
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem(MotorController5010 top, MotorController5010 bottom, Mechanism2d mechSim) {
-    topFeedFwd = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
-    bottomFeedFwd = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
+    topFeedFwd = new SimpleMotorFeedforward(0.29808, 0.12554, 0.0032103);
+    bottomFeedFwd = new SimpleMotorFeedforward(0.21824, 0.21824, 0.0033022);
 
     values.declare(TOP_SPEED, 0.0);
     values.declare(BOTTOM_SPEED, 0.0);
     values.declare(INTAKE_SLOWDOWN, 0.8);
+    values.declare(TOP_REFERENCE, 0.0);
+    values.declare(BOTTOM_REFERENCE, 0.0);
+    values.declare(IS_IN_PID_CONTROL, false);
 
     topIntakeMotor = top;
     topEncoder = topIntakeMotor.getMotorEncoder();
@@ -96,11 +102,11 @@ public class IntakeSubsystem extends GenericSubsystem {
     topPID = topIntakeMotor.getPIDController5010();
     bottomPID = bottomIntakeMotor.getPIDController5010();
 
-    topPID.setP(0.0);
+    topPID.setP(0.00011926);
     topPID.setI(0.0);
     topPID.setD(0.0);
 
-    bottomPID.setP(0.0);
+    bottomPID.setP(1.9961E-05);
     bottomPID.setI(0.0);
     bottomPID.setD(0.0);
 
@@ -132,12 +138,12 @@ public class IntakeSubsystem extends GenericSubsystem {
 
   public Command getBottomSysIdRoutineCommand() {
     return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(bottomIntakeMotor,
-        bottomIntakeMotor.getMotorEncoder(), "Bottom Motor", this), 5, 3, 3);
+        bottomIntakeMotor.getMotorEncoder(), "Bottom Motor", this), 10, 3, 3);
   }
 
   public Command getTopSysIdRoutineCommand() {
     return SystemIdentification.getSysIdFullCommand(
-        SystemIdentification.rpmSysIdRoutine(topIntakeMotor, topIntakeMotor.getMotorEncoder(), "Top Motor", this), 5, 3,
+        SystemIdentification.rpmSysIdRoutine(topIntakeMotor, topIntakeMotor.getMotorEncoder(), "Top Motor", this), 10, 3,
         3);
   }
 
@@ -195,39 +201,39 @@ public class IntakeSubsystem extends GenericSubsystem {
   }
 
   public void topRunToReference() {
+     double feedForward = getTopFeedFwdVoltage(getTopReference());
+
+    if (Robot.isReal()) {
+      topPID.setReference(getTopReference(), PIDControlType.VELOCITY, feedForward);
+      return;
+    }
+
 
     double currentError = getTopReference() - getTopIntakeVelocity();
     double currentTime = RobotController.getFPGATime() / 1E6;
     double errorRate = (currentError - topPreviousError) / (currentTime - topPreviousTime);
     double voltage = currentError * topPID.getP() + (errorRate * topPID.getD());
-    double feedForward = getTopFeedFwdVoltage(getTopReference());
   
-    
-    if (!Robot.isReal()) {
-      topIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
-    } else {
-      topPID.setReference(getTopReference(), PIDControlType.VELOCITY, feedForward);
-    }
+    topIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
   
-
     topPreviousError = currentError;
     topPreviousTime = currentTime;
   }
 
   public void bottomRunToReference() {
+    double feedForward = getBottomFeedFwdVoltage(getBottomReference());
+
+    if (Robot.isReal()) {
+      bottomPID.setReference(getBottomReference(), PIDControlType.VELOCITY, feedForward);
+      return;
+    }
+
     double currentError = getBottomReference() - getBottomIntakeVelocity();
     double currentTime = RobotController.getFPGATime() / 1E6;
     double errorRate = (currentError - bottomPreviousError) / (currentTime - bottomPreviousTime);
     double voltage = currentError * bottomPID.getP() + (errorRate * bottomPID.getD());
-    double feedForward = getBottomFeedFwdVoltage(getBottomReference());
-   
     
-    if (!Robot.isReal()) {
-      bottomIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
-    } else {
-      bottomPID.setReference(getBottomReference(), PIDControlType.VELOCITY, feedForward);
-    }
-
+    bottomIntakeMotor.set(feedForward/ RobotController.getBatteryVoltage() + voltage);
 
     bottomPreviousError = currentError;
     bottomPreviousTime = currentTime;
@@ -245,6 +251,9 @@ public class IntakeSubsystem extends GenericSubsystem {
 
     values.set(TOP_SPEED, topEncoder.getVelocity());
     values.set(BOTTOM_SPEED, bottomEncoder.getVelocity());
+    values.set(TOP_REFERENCE, getTopReference());
+    values.set(BOTTOM_REFERENCE, getBottomReference());
+    values.set(IS_IN_PID_CONTROL, intakeState == IntakeState.Velocity ? true : false);
 
   }
 

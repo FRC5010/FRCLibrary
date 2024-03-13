@@ -208,8 +208,8 @@ public class CompBot_2024 extends GenericMechanism {
                                 .finallyDo(() -> feederSubsystem.feederStateMachine(0.0));
 
                 spinIntake = () -> Commands.startEnd(
-                                () -> intakeSubsystem.setReference(1000, 1000),
-                                () -> intakeSubsystem.setReference(0, 0), intakeSubsystem).withTimeout(0.5);
+                                () -> intakeSubsystem.setReference(-1000, -1000),
+                                () -> intakeSubsystem.setReference(0, 0)).withTimeout(0.5);
 
                 blindShot = () -> Commands.run(() -> feederSubsystem.feederStateMachine(-1.0))
                                 .alongWith(spinIntake.get())
@@ -330,8 +330,8 @@ public class CompBot_2024 extends GenericMechanism {
                 operator.createLeftBumper().whileTrue(runFeeder.get());
 
                 // Shooter micro adjust
-                operator.createUpPovButton().onTrue(shooterSubsystem.adjustShooterReferenceUp());
-                operator.createDownPovButton().onTrue(shooterSubsystem.adjustShooterReferenceDown());
+                operator.createUpPovButton().onTrue(spinIntake.get());
+                operator.createDownPovButton().onTrue(Commands.runOnce(() -> intakeSubsystem.setReference(0, 0)));
                 // Pivot micro adjust
                 operator.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
                 operator.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
@@ -358,6 +358,8 @@ public class CompBot_2024 extends GenericMechanism {
                                                 .setAutobalanceMode(!climbSubsystem.getAutobalanceMode()))
                                                 .andThen(rumbleOperator.get()
                                                                 .onlyIf(() -> climbSubsystem.getAutobalanceMode())));
+
+                
 
                 /*
                  * >>>>>>>>>>>>>>>>>>>>>>>>>>>> BOARD BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
