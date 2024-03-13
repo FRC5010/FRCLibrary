@@ -31,7 +31,7 @@ public class AutoIntake extends GenericCommand {
     this.visionSystem = vision;
 
     values.declare(X_SPEED, -0.03);
-    values.declare(Y_SPEED, 0.03);
+    values.declare(Y_SPEED, 0.02);
     values.declare(ANGLE_SPEED, 0.001);
     
     // Use addRequirements() here to declare subsystem dependencies.
