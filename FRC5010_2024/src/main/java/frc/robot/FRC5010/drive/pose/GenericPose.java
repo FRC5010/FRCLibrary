@@ -80,7 +80,7 @@ public abstract class GenericPose {
     gyro.reset();
   };
 
-  public abstract void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime);
+  public abstract void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance);
   public abstract void updateLocalMeasurements();
   public abstract Pose2d getCurrentPose();
   public abstract void resetToPose(Pose2d pose);

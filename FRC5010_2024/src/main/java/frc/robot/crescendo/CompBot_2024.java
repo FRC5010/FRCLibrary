@@ -199,13 +199,19 @@ public class CompBot_2024 extends GenericMechanism {
                                 .run(() -> {
                                         shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
                                                         Constants.Physical.BOTTOM_SHOOTING_SPEED);
-                                        intakeSubsystem.setReference(1000, 1000);
+
                                 });
 
                 runFeeder = () -> Commands
-                                .run(() -> feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed")),
+                                .run(() -> {
+                                        feederSubsystem.feederStateMachine(-values.getDouble("FeederSpeed"));
+                                        intakeSubsystem.setReference(-1000, -1000);
+                                },
                                                 feederSubsystem)
-                                .finallyDo(() -> feederSubsystem.feederStateMachine(0.0));
+                                .finallyDo(() -> {
+                                        feederSubsystem.feederStateMachine(0.0);
+                                        intakeSubsystem.setReference(0, 0);
+                                });
 
                 spinIntake = () -> Commands.startEnd(
                                 () -> intakeSubsystem.setReference(-1000, -1000),
@@ -359,8 +365,6 @@ public class CompBot_2024 extends GenericMechanism {
                                                 .andThen(rumbleOperator.get()
                                                                 .onlyIf(() -> climbSubsystem.getAutobalanceMode())));
 
-                
-
                 /*
                  * >>>>>>>>>>>>>>>>>>>>>>>>>>>> BOARD BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                  */
@@ -417,6 +421,10 @@ public class CompBot_2024 extends GenericMechanism {
                 // // shooterSubsystem.setShooterSpeed(operator.getRightXAxis(),
                 // // operator.getRightXAxis());
                 // }, shooterSubsystem));
+
+                // Pivot Microadjust
+                driver.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
+                driver.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
 
                 intakeSubsystem.setDefaultCommand(Commands.run(
                                 () -> intakeSubsystem.setIntakeSpeed(driver.getLeftTrigger() - driver.getRightTrigger(),
@@ -486,13 +494,21 @@ public class CompBot_2024 extends GenericMechanism {
                 // pivotSubsystem.setReference(pivotSubsystem.LOW_SHUTTLE_LEVEL);
                 // shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
                 // Constants.Physical.BOTTOM_SHOOTING_SPEED);
-                // })).
-                // blindShot.get().andThen(
+                // })).blindShot.get().andThen(
                 // () -> {
                 // pivotSubsystem.setReference(
                 // pivotSubsystem.HOME_LEVEL);
                 // shooterSubsystem.setShooterReference(0, 0);
-                // })));
+                // }));
+
+                NamedCommands.registerCommand("Pivot Shuttle", Commands.runOnce(() -> {
+                        pivotSubsystem.setReference(pivotSubsystem.LOW_SHUTTLE_LEVEL);
+                        shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
+                                        Constants.Physical.BOTTOM_SHOOTING_SPEED);
+                }).andThen(spinIntake.get()).andThen(blindShot.get()).andThen(() -> {
+                        pivotSubsystem.setReference(
+                                        pivotSubsystem.HOME_LEVEL);
+                }));
         }
 
         public void disabledBehavior() {
