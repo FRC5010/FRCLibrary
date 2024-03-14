@@ -424,6 +424,10 @@ public class CompBot_2024 extends GenericMechanism {
                 // // operator.getRightXAxis());
                 // }, shooterSubsystem));
 
+                // Pivot Microadjust
+                driver.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
+                driver.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
+
                 intakeSubsystem.setDefaultCommand(Commands.run(
                                 () -> intakeSubsystem.setIntakeSpeed(driver.getLeftTrigger() - driver.getRightTrigger(),
                                                 driver.getLeftTrigger() - driver.getRightTrigger()),

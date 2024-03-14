@@ -113,7 +113,7 @@ public class RunIntake extends GenericCommand {
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
       if (velocity < 0) {
-        // pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
+        pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
       }
       // feederStopFlag = true;
       // if (feederSubsystem.isBeamBroken()) {
