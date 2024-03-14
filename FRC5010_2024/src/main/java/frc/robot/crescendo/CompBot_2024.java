@@ -199,7 +199,7 @@ public class CompBot_2024 extends GenericMechanism {
                                 .run(() -> {
                                         shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
                                                         Constants.Physical.BOTTOM_SHOOTING_SPEED);
-                                        
+
                                 });
 
                 runFeeder = () -> Commands
@@ -365,8 +365,6 @@ public class CompBot_2024 extends GenericMechanism {
                                                 .andThen(rumbleOperator.get()
                                                                 .onlyIf(() -> climbSubsystem.getAutobalanceMode())));
 
-                
-
                 /*
                  * >>>>>>>>>>>>>>>>>>>>>>>>>>>> BOARD BUTTONS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                  */
@@ -496,13 +494,21 @@ public class CompBot_2024 extends GenericMechanism {
                 // pivotSubsystem.setReference(pivotSubsystem.LOW_SHUTTLE_LEVEL);
                 // shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
                 // Constants.Physical.BOTTOM_SHOOTING_SPEED);
-                // })).
-                // blindShot.get().andThen(
+                // })).blindShot.get().andThen(
                 // () -> {
                 // pivotSubsystem.setReference(
                 // pivotSubsystem.HOME_LEVEL);
                 // shooterSubsystem.setShooterReference(0, 0);
-                // })));
+                // }));
+
+                NamedCommands.registerCommand("Pivot Shuttle", Commands.runOnce(() -> {
+                        pivotSubsystem.setReference(pivotSubsystem.LOW_SHUTTLE_LEVEL);
+                        shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
+                                        Constants.Physical.BOTTOM_SHOOTING_SPEED);
+                }).andThen(spinIntake.get()).andThen(blindShot.get()).andThen(() -> {
+                        pivotSubsystem.setReference(
+                                        pivotSubsystem.HOME_LEVEL);
+                }));
         }
 
         public void disabledBehavior() {
