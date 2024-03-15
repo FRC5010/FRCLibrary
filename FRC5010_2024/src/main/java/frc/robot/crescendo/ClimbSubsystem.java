@@ -252,13 +252,13 @@ public class ClimbSubsystem extends GenericSubsystem {
   private void updateEncoderMinMax() {
     if (!values.getBoolean(ENABLE_CLIMB)) {
       if (leftCurrentSwitch.get() && leftMotor.get() < 0) {
-      leftEncoder.setPosition(0);
-    }
+        leftEncoder.setPosition(0);
+      }
 
-    if (rightCurrentSwitch.get() && rightMotor.get() < 0) {
-      rightEncoder.setPosition(0);
-    } 
-  }
+      if (rightCurrentSwitch.get() && rightMotor.get() < 0) {
+        rightEncoder.setPosition(0);
+      }
+    }
 
     values.set(LEFT_CURRENT, ((CANSparkMax) leftMotor).getOutputCurrent());
     values.set(RIGHT_CURRENT, ((CANSparkMax) rightMotor).getOutputCurrent());
