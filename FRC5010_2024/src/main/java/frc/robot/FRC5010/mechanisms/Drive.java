@@ -298,7 +298,7 @@ public class Drive extends GenericMechanism {
     public Command generateAutoCommand(Command autoCommand) {
         return autoCommand.beforeStarting(() -> {
             drivetrain.resetEncoders();
-        });// .until(() -> drivetrain.hasIssues());
+        }).until(() -> drivetrain.hasIssues());
     }
 
     public void disabledBehavior() {

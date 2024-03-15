@@ -247,8 +247,20 @@ public class FeederSubsystem extends GenericSubsystem {
     setNoteState(NoteState.Empty);
   }
 
+  public boolean isEmptied() {
+	return NoteState.Empty == getNoteState();
+  }
+
+  public boolean isHolding() {
+	return NoteState.Holding == getNoteState();
+  }
+
   public void holding() {
     setNoteState(NoteState.Holding);
+  }
+
+  public boolean isLoaded() {
+	return NoteState.Loaded == getNoteState();
   }
 
   public void loaded() {
