@@ -136,6 +136,9 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   public void enableClimb(boolean enable) {
     values.set(ENABLE_CLIMB, enable);
+  }
+
+  public void enableAutoClimb(boolean enable) {
     values.set(AUTO_BALANCE, enable);
   }
 
@@ -233,8 +236,8 @@ public class ClimbSubsystem extends GenericSubsystem {
     double robotTilt = getHorizontalTilt();
     double rightSpeed = -Math.sin(Units.degreesToRadians(robotTilt)) + speed;
     double leftSpeed = Math.sin(Units.degreesToRadians(robotTilt)) + speed;
-    setLeftMotorSpeed(leftSpeed);
-    setRightMotorSpeed(rightSpeed);
+    setLeftMotorSpeed(speed != 0 ? leftSpeed : 0);
+    setRightMotorSpeed(speed != 0 ? rightSpeed : 0);
   }
 
   public boolean isAtZero() {

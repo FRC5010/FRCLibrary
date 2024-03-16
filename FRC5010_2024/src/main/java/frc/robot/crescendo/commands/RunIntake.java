@@ -7,6 +7,7 @@ package frc.robot.crescendo.commands;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +30,7 @@ public class RunIntake extends GenericCommand {
   FeederSubsystem feederSubsystem;
   PivotSubsystem pivotSubsystem;
 
+
   boolean feederStopFlag = false;
   Controller rumbleController;
 
@@ -37,28 +39,34 @@ public class RunIntake extends GenericCommand {
   Command selectorCommand;
   Command loadedCommand;
 
+  Supplier<Command> allowIntakeRunCommand;
+
   /** Creates a new RunIntake. */
   public RunIntake(DoubleSupplier joystick, DoubleSupplier feederSpeed, IntakeSubsystem intakeSubsystem,
-      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, Controller rumbleController) {
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Controller rumbleController) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
     this.feederSpeed = feederSpeed;
     this.feederSubsystem = feederSubsystem;
     this.pivotSubsystem = pivotSubsystem;
     this.rumbleController = rumbleController;
+    this.shooterSubsystem = shooterSubsystem;
+
+
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
   }
 
   public RunIntake(DoubleSupplier joystick, IntakeSubsystem intakeSubsystem,
-      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, Controller rumbleController) {
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Controller rumbleController) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
     this.feederSpeed = () -> Math.abs(speed.getAsDouble()) * feederSubsystem.getSpeedFactor();
     this.feederSubsystem = feederSubsystem;
     this.pivotSubsystem = pivotSubsystem;
     this.rumbleController = rumbleController;
+    this.shooterSubsystem = shooterSubsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
@@ -67,6 +75,14 @@ public class RunIntake extends GenericCommand {
   // Called when the command is initially scheduled.
   @Override
   public void init() {
+
+    allowIntakeRunCommand = () -> (Commands.run(
+        () -> feederSubsystem.feederStateMachine(
+            Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
+        feederSubsystem).until(() -> 0 == speed.getAsDouble()).onlyIf(() -> DriverStation.isTeleop()));
+    
+    
+
     Map<NoteState, Command> intakeCommands = new HashMap<>();
     feederCommand = Commands
         .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()),
@@ -97,8 +113,9 @@ public class RunIntake extends GenericCommand {
             Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
         feederSubsystem).until(() -> 0 == speed.getAsDouble()).onlyIf(() -> DriverStation.isTeleop());
     intakeCommands.put(NoteState.Empty, feederCommand);
-    intakeCommands.put(NoteState.Holding, holdingCommand);
-    intakeCommands.put(NoteState.Loaded, loadedCommand);
+    intakeCommands.put(NoteState.Holding, allowIntakeRunCommand.get());
+
+    intakeCommands.put(NoteState.Loaded, allowIntakeRunCommand.get());
 
     selectorCommand = Commands.select(intakeCommands, () -> feederSubsystem.getNoteState());
   }

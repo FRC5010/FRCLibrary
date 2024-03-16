@@ -141,6 +141,12 @@ public class TargetingSystem extends GenericSubsystem {
         return thetaController.atSetpoint();
     }
 
+    public double getStraightLinePivotAngle() {
+        double distance = getFlatDistanceToTarget();
+        double z = currentTarget.get().getTranslation().getZ();
+        return Units.radiansToDegrees(Math.atan2(z, distance));
+    }
+
     public double getPivotAngle() {
         double angle = interpolatePivotAngle(currentTarget.get(), robotPose.get());
         values.set(PIVOT_ANGLE, angle);
@@ -208,6 +214,10 @@ public class TargetingSystem extends GenericSubsystem {
         values.set(HORIZONTAL_ANGLE, Units.radiansToDegrees(static_angle));
         return Units.radiansToDegrees(static_angle);
 
+    }
+
+    public double getFlatDistanceToTarget() {
+        return currentTarget.get().getTranslation().toTranslation2d().getDistance(robotPose.get().getTranslation().toTranslation2d());
     }
 
     public double getHorizontalAngle(double launchVelocity) {

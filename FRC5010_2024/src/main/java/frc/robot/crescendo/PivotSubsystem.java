@@ -65,7 +65,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
   private final double MIN_PIVOT_POSITION = -11; // Degrees
   private final double PIVOT_START_ANGLE = MIN_PIVOT_POSITION;
-  private final double PIVOT_END_ANGLE = 100;
+  private final double PIVOT_END_ANGLE = 90;
   private final String PIVOT_kS = "PivotkS";
   private final String PIVOT_kA = "PivotkA";
   private final double PIVOT_GEARING = (5.0 * 68.0 / 24.0) *  (80.0 / 24.0);
@@ -303,8 +303,15 @@ public class PivotSubsystem extends GenericSubsystem {
     }
   }
 
+  private void pivotSoftLimit() {
+    if ((pivotMotor.get() > 0 && isAtMax()) || (pivotMotor.get() < 0 && isAtMin())) {
+      pivotMotor.set(0);
+    }
+  }
+
   @Override
   public void periodic() {
+    pivotSoftLimit();
 
     // This method will be called once per scheduler run
     values.set(PIVOT_ANGLE, getPivotPosition());
@@ -315,6 +322,8 @@ public class PivotSubsystem extends GenericSubsystem {
     values.set(vals.LEFT_LIMIT_HIT.name(), isLeftLimitHit());
     values.set(vals.RIGHT_LIMIT_HIT.name(), isRightLimitHit());
   }
+
+
 
   @Override
   public void simulationPeriodic() {

@@ -58,8 +58,10 @@ public class FeederSubsystem extends GenericSubsystem {
   public static enum NoteState {
     Empty,
     Holding,
+    Locked,
     Loaded,
     Shooting,
+    
   }
 
   private ControlState feederState = ControlState.Joystick;

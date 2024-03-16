@@ -12,19 +12,26 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Blind Shot"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Intake Note"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Auto Aim"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake Note"
+                      }
+                    }
+                  ]
                 }
               },
               {
