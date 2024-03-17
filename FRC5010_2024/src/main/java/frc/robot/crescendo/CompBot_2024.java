@@ -144,7 +144,7 @@ public class CompBot_2024 extends GenericMechanism {
 		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
 		swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
-		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1);
+		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(2);
 		swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
 		swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
 
