@@ -45,6 +45,9 @@ public class TargetingSystem extends GenericSubsystem {
     private final String HORIZONTAL_ANGLE = "Horizontal Angle";
     private final String PIVOT_ANGLE = "Pivot Angle";
 
+
+    private final double DEFAULT_TOLERANCE = 0.01;
+
     public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve) {
         this.currentTarget = targetSupplier;
         this.robotPose = robotPose;
@@ -54,7 +57,7 @@ public class TargetingSystem extends GenericSubsystem {
         values.declare(kP, 0.28);
         values.declare(kI, 0.0);
         values.declare(kD, 0.04);
-        values.declare(TOLERANCE, 0.01);
+        values.declare(TOLERANCE, DEFAULT_TOLERANCE);
 
         values.declare(TURN_POWER, 0.0);
         values.declare(HORIZONTAL_ANGLE, 0.0);
@@ -121,6 +124,14 @@ public class TargetingSystem extends GenericSubsystem {
     public Pose3d getTarget() {
         return currentTarget.get();
     }
+
+    public void setTolerance(double value) {
+        values.set(TOLERANCE, value);
+      }
+    
+      public void resetToleranceToDefaults() {
+        values.set(TOLERANCE, DEFAULT_TOLERANCE);
+      }
 
     public void init() {
         thetaController.reset();

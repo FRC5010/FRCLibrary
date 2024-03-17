@@ -69,6 +69,8 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final String SHOOTER_REFERENCE_BOTTOM = "Bottom Shooter Reference";
   private final String MICRO_ADJUST = "Micro Adjust";
 
+  private final double DEFAULT_TOLERANCE = 5;
+
   private static enum vals {
     REFERENCE, JOYSTICK, BOTTOM_FF, TOP_FF, BOTTOM_VELOCITY, TOP_VELOCITY
   }  
@@ -105,13 +107,13 @@ public class ShooterSubsystem extends GenericSubsystem {
     topPID.setI(0.0000001);    
     topPID.setIZone(100);
     topPID.setD(0);
-    topPID.setTolerance(5);
+    topPID.setTolerance(DEFAULT_TOLERANCE);
   
     bottomPID.setP(4.7296E-07);
     bottomPID.setI(0.0000001);  
     bottomPID.setIZone(100);  
     bottomPID.setD(0);
-    bottomPID.setTolerance(5);
+    bottomPID.setTolerance(DEFAULT_TOLERANCE);
 
 
 
@@ -125,6 +127,17 @@ public class ShooterSubsystem extends GenericSubsystem {
     
     this.topMotor = top;
     this.botMotor = bottom;
+  }
+
+
+  public void setTolerance(double value) {
+    bottomPID.setTolerance(value);
+    topPID.setTolerance(value);
+  }
+
+  public void resetToleranceToDefaults() {
+    bottomPID.setTolerance(DEFAULT_TOLERANCE);
+    topPID.setTolerance(DEFAULT_TOLERANCE);
   }
 
   public double getTopFeedFwdVoltage(double velocity) {

@@ -89,6 +89,9 @@ public class PivotSubsystem extends GenericSubsystem {
   }
   private PivotState pivotState = PivotState.POSITION;
 
+  private final double DEFAULT_TOLERANCE = 0.5;
+  private final String TOLERANCE = "Pivot Tolerance";
+
   public final double HOME_LEVEL = MIN_PIVOT_POSITION;
   public final double AMP_LEVEL = 79;
   public final double TRAP_LEVEL = 75;
@@ -122,6 +125,8 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(vals.AT_TARGET.name(), false);
     values.declare(vals.LEFT_LIMIT_HIT.name(), false);
     values.declare(vals.RIGHT_LIMIT_HIT.name(), false);
+    values.declare(TOLERANCE, DEFAULT_TOLERANCE);
+    
 
     interpolationTree = new InterpolatingDoubleTreeMap();
 
@@ -195,7 +200,15 @@ public class PivotSubsystem extends GenericSubsystem {
   }
 
   public boolean isAtTarget() {
-    return Math.abs(getReference() - getPivotPosition()) < 0.5;
+    return Math.abs(getReference() - getPivotPosition()) < values.getDouble(TOLERANCE);
+  }
+
+  public void setTolerance(double value) {
+    values.set(TOLERANCE, value);
+  }
+
+  public void resetToleranceToDefaults() {
+    values.set(TOLERANCE, DEFAULT_TOLERANCE);
   }
 
   public void setInterpolatedShotAngle(double distance) {

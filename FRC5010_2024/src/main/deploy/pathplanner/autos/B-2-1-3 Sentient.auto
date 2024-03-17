@@ -99,7 +99,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Aim"
+                  "name": "Quick Auto Aim"
                 }
               }
             ]

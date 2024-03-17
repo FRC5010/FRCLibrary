@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7326298288960215,
+      "y": 6.679382086036901
+    },
+    "rotation": -119.6044507460048
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Blind Shot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C-4 Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 to Left Long Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Long Shot to 5 Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 to Left Long Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Long Shot to 6 Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note 6 - Left Long Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
