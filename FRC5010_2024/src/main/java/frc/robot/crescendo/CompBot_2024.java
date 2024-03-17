@@ -270,12 +270,12 @@ public class CompBot_2024 extends GenericMechanism {
 
 		autoaimButton.whileTrue(
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						() -> (JoystickToSwerve) drive.getDefaultCommand())
-						.alongWith(spinIntake.get()))
-				.onFalse(Commands.waitSeconds(0.05).andThen(
-						Commands.runOnce(() -> pivotSubsystem
-								.setReference(pivotSubsystem.HOME_LEVEL))
-								.unless(() -> autoaimButton.getAsBoolean())));
+						() -> (JoystickToSwerve) drive.getDefaultCommand()));
+						//.alongWith(spinIntake.get()))
+				//.onFalse(Commands.waitSeconds(0.05).andThen(
+						// Commands.runOnce(() -> pivotSubsystem
+						// 		.setReference(pivotSubsystem.HOME_LEVEL))
+						// 		.unless(() -> autoaimButton.getAsBoolean())));
 
 		driver.createYButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
 				() -> climbSubsystem.setOverride(false)));
@@ -468,6 +468,8 @@ public class CompBot_2024 extends GenericMechanism {
 				.onTrue(zeroClimb.get());
 
 		operator.createRightBumper().onTrue(runIntake.get());
+		operator.createLeftBumper().whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
+						() -> (JoystickToSwerve) drive.getDefaultCommand()));
 	}
 
 	@Override
