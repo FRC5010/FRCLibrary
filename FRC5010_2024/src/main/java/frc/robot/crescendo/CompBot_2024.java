@@ -198,9 +198,10 @@ public class CompBot_2024 extends GenericMechanism {
 		stopDrivetrain = () -> Commands.runOnce(() -> drive.getDrivetrain().drive(new ChassisSpeeds()),
 				drive.getDrivetrain());
 
-		autoIntake = () -> runIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).deadlineWith(
-				new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
-						visionSystem.getCamera("orange")))
+		autoIntake = () -> runIntake
+				.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).deadlineWith(
+						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
+								visionSystem.getCamera("orange")))
 				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
 
 		rumbleOperator = () -> Commands
@@ -253,7 +254,9 @@ public class CompBot_2024 extends GenericMechanism {
 						},
 								climbSubsystem));
 
-		quickAutoAim = () -> new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem, () -> (JoystickToSwerve) drive.getDefaultCommand()).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
+		quickAutoAim = () -> new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
+				() -> (JoystickToSwerve) drive.getDefaultCommand())
+				.until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
 				.alongWith(spinIntake.get())
 				.beforeStarting(() -> {
 					targetingSystem.setTolerance(0.05);
@@ -438,13 +441,13 @@ public class CompBot_2024 extends GenericMechanism {
 		intakeSubsystem.removeDefaultCommand();
 
 		drive.setupTestDefaultCommands(driver, operator);
-		driver.createYButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
-		driver.createXButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
+		// driver.createYButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
+		// driver.createXButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
 
-		driver.createStartButton().whileTrue(feederSubsystem.getFeederSysIdRoutineCommand());
-		// driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
-		driver.createLeftBumper().whileTrue(intakeSubsystem.getBottomSysIdRoutineCommand());
-		driver.createRightBumper().whileTrue(intakeSubsystem.getTopSysIdRoutineCommand());
+		// driver.createStartButton().whileTrue(feederSubsystem.getFeederSysIdRoutineCommand());
+		// // driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
+		// driver.createLeftBumper().whileTrue(intakeSubsystem.getBottomSysIdRoutineCommand());
+		// driver.createRightBumper().whileTrue(intakeSubsystem.getTopSysIdRoutineCommand());
 
 		pivotSubsystem.setDefaultCommand(new RunPivot(
 				() -> operator.getRightTrigger() - operator.getLeftTrigger(), pivotSubsystem));
@@ -463,6 +466,11 @@ public class CompBot_2024 extends GenericMechanism {
 		}, ledSubsystem)
 				.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
 		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
+
+		driver.createAButton().whileTrue(
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
+						() -> (JoystickToSwerve) drive.getDefaultCommand())
+						.alongWith(spinIntake.get()));
 
 		// Run Shooter motors
 		driver.createBackButton().whileTrue(runShooter.get()
@@ -498,7 +506,7 @@ public class CompBot_2024 extends GenericMechanism {
 							new Rotation3d(0, Units.degreesToRadians(28), 0).rotateBy(
 									new Rotation3d(0, 0,
 											Units.degreesToRadians(20)))),
-					PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
+					PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator()); // Used to be 28, 20
 			visionSystem.addPhotonCamera("Right Camera", 3,
 					new Transform3d(
 							new Translation3d(0.4,
