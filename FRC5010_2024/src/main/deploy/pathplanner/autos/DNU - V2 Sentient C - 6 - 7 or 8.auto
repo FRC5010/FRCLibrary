@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Shot - 7 or 8 Short"
+            "pathName": "Center Long Shot - 7 or 8 Short"
           }
         },
         {
@@ -63,6 +63,18 @@
           "type": "named",
           "data": {
             "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Long Shot - 8 Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
           }
         }
       ]

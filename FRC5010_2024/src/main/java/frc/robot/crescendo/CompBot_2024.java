@@ -190,7 +190,7 @@ public class CompBot_2024 extends GenericMechanism {
 				.deadline(
 						Commands.idle().until(() -> feederSubsystem.getNoteState() != NoteState.Empty)
 								.andThen(Commands.idle().withTimeout(1.5)
-										.until(() -> feederSubsystem.getNoteState() == NoteState.Loaded)),
+										.until(() -> feederSubsystem.getNoteState() == NoteState.Holding)),
 						new RunIntake(() -> -0.75, () -> 0.5, intakeSubsystem, feederSubsystem,
 								pivotSubsystem, shooterSubsystem,
 								null));
@@ -198,7 +198,7 @@ public class CompBot_2024 extends GenericMechanism {
 		stopDrivetrain = () -> Commands.runOnce(() -> drive.getDrivetrain().drive(new ChassisSpeeds()),
 				drive.getDrivetrain());
 
-		autoIntake = () -> runIntake.get().deadlineWith(
+		autoIntake = () -> runIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).deadlineWith(
 				new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
 						visionSystem.getCamera("orange")))
 				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
