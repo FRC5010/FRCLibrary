@@ -200,7 +200,7 @@ public class CompBot_2024 extends GenericMechanism {
 		autoIntake = () -> runIntake.get().deadlineWith(
 				new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
 						visionSystem.getCamera("orange")))
-				.andThen(stopDrivetrain.get());
+				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
 
 		rumbleOperator = () -> Commands
 				.deadline(Commands.waitSeconds(0.5), Commands.runOnce(() -> operator.setRumble(1)))
