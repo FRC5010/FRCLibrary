@@ -34,16 +34,16 @@ public class TalonFXPID implements PIDController5010 {
     private void sendControlRequest(double reference, double feedforward) {
         switch (controlType) {
             case POSITION:
-                motor.setControl(new PositionVoltage(reference).withFeedForward(feedforward));
+                motor.setControl(new PositionVoltage(reference).withFeedForward(feedforward).withEnableFOC(motor.isFOCEnabled()));
                 break;
             case VELOCITY:
-                motor.setControl(new VelocityVoltage(reference).withFeedForward(feedforward));
+                motor.setControl(new VelocityVoltage(reference).withFeedForward(feedforward).withEnableFOC(motor.isFOCEnabled()));
                 break;
             case DUTY_CYCLE:
-                motor.setControl(new DutyCycleOut(reference));
+                motor.setControl(new DutyCycleOut(reference).withEnableFOC(motor.isFOCEnabled()));
                 break;
             case VOLTAGE:
-                motor.setControl(new VoltageOut(reference));
+                motor.setControl(new VoltageOut(reference).withEnableFOC(motor.isFOCEnabled()));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported TalonFX control type");

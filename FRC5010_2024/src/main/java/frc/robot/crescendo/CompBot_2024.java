@@ -59,8 +59,8 @@ public class CompBot_2024 extends GenericMechanism {
 	private PivotSubsystem pivotSubsystem;
 	private ShooterSubsystem shooterSubsystem;
 	private FeederSubsystem feederSubsystem;
-	private MotorController5010 topShooterMotor;
-	private MotorController5010 bottomShooterMotor;
+	private KrakenX60 topShooterMotor;
+	private KrakenX60 bottomShooterMotor;
 	private MotorController5010 feederMotor;
 	private IntakeSubsystem intakeSubsystem;
 	private MotorController5010 innerIntakeMotor;
@@ -112,8 +112,10 @@ public class CompBot_2024 extends GenericMechanism {
 
 		values.declare("FeederSpeed", 1.0);
 
-		topShooterMotor = MotorFactory.KrakenX60(12).invert(true);
-		bottomShooterMotor = MotorFactory.KrakenX60(14).invert(true);
+		topShooterMotor = (KrakenX60)MotorFactory.KrakenX60(12).invert(true);
+		topShooterMotor.enableFOC(false);
+		bottomShooterMotor = (KrakenX60)MotorFactory.KrakenX60(14).invert(true);
+		bottomShooterMotor.enableFOC(false);
 
 		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
 
