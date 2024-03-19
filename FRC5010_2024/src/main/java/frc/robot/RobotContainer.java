@@ -130,7 +130,7 @@ public class RobotContainer extends GenericMechanism {
 	 */
 	protected void initRealOrSim() {
 		if (RobotBase.isReal()) {
-			WpiDataLogging.start(false);
+			WpiDataLogging.start(true);
 		} else {
 			WpiDataLogging.start(false);
 			// NetworkTableInstance instance = NetworkTableInstance.getDefault();

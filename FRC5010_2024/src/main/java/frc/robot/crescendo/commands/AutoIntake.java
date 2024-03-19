@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.FRC5010.Vision.VisionSystem;
@@ -25,14 +26,20 @@ public class AutoIntake extends GenericCommand {
   private final String Y_SPEED = "Y Speed";
   private final String ANGLE_SPEED = "Angle Speed";
 
+  private final double DEF_X = -0.025;
+  private final double DEF_Y = 0.005;
+  private final double DEF_ANGLE = -0.015;
+
+
   /** Creates a new AutoIntake. */
   public AutoIntake(SwerveDrivetrain drive, VisionSystem vision) {
     this.drive = drive;
     this.visionSystem = vision;
 
-    values.declare(X_SPEED, -0.03);
-    values.declare(Y_SPEED, 0.02);
-    values.declare(ANGLE_SPEED, 0.001);
+    SmartDashboard.putNumber(X_SPEED, DEF_X);
+    SmartDashboard.putNumber(Y_SPEED, DEF_Y);
+    SmartDashboard.putNumber(ANGLE_SPEED, DEF_ANGLE);
+
     
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
@@ -57,10 +64,11 @@ public class AutoIntake extends GenericCommand {
     } else {
       lastAngleY = currentAngleY;
     }
+    
 
-    double xSpeed = currentAngleY * values.getDouble(X_SPEED);
-    double ySpeed = currentAngleX * values.getDouble(Y_SPEED);
-    double turnSpeed = currentAngleX * values.getDouble(ANGLE_SPEED);
+    double xSpeed = currentAngleY * SmartDashboard.getNumber(X_SPEED, DEF_X);
+    double ySpeed = currentAngleX * SmartDashboard.getNumber(Y_SPEED, DEF_Y);
+    double turnSpeed = currentAngleX * SmartDashboard.getNumber(ANGLE_SPEED, DEF_ANGLE);
 
     // limit power
     xSpeed = xSpeed * drive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();

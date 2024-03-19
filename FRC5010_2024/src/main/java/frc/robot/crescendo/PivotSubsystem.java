@@ -65,7 +65,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
   private final double MIN_PIVOT_POSITION = -11; // Degrees
   private final double PIVOT_START_ANGLE = MIN_PIVOT_POSITION;
-  private final double PIVOT_END_ANGLE = 100;
+  private final double PIVOT_END_ANGLE = 90;
   private final String PIVOT_kS = "PivotkS";
   private final String PIVOT_kA = "PivotkA";
   private final double PIVOT_GEARING = (5.0 * 68.0 / 24.0) *  (80.0 / 24.0);
@@ -88,6 +88,9 @@ public class PivotSubsystem extends GenericSubsystem {
     JOYSTICK, POSITION
   }
   private PivotState pivotState = PivotState.POSITION;
+
+  private final double DEFAULT_TOLERANCE = 0.5;
+  private final String TOLERANCE = "Pivot Tolerance";
 
   public final double HOME_LEVEL = MIN_PIVOT_POSITION;
   public final double AMP_LEVEL = 79;
@@ -122,6 +125,8 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(vals.AT_TARGET.name(), false);
     values.declare(vals.LEFT_LIMIT_HIT.name(), false);
     values.declare(vals.RIGHT_LIMIT_HIT.name(), false);
+    values.declare(TOLERANCE, DEFAULT_TOLERANCE);
+    
 
     interpolationTree = new InterpolatingDoubleTreeMap();
 
@@ -195,7 +200,15 @@ public class PivotSubsystem extends GenericSubsystem {
   }
 
   public boolean isAtTarget() {
-    return Math.abs(getReference() - getPivotPosition()) < 0.5;
+    return Math.abs(getReference() - getPivotPosition()) < values.getDouble(TOLERANCE);
+  }
+
+  public void setTolerance(double value) {
+    values.set(TOLERANCE, value);
+  }
+
+  public void resetToleranceToDefaults() {
+    values.set(TOLERANCE, DEFAULT_TOLERANCE);
   }
 
   public void setInterpolatedShotAngle(double distance) {
@@ -303,8 +316,15 @@ public class PivotSubsystem extends GenericSubsystem {
     }
   }
 
+  private void pivotSoftLimit() {
+    if ((pivotMotor.get() > 0 && isAtMax()) || (pivotMotor.get() < 0 && isAtMin())) {
+      pivotMotor.set(0);
+    }
+  }
+
   @Override
   public void periodic() {
+    pivotSoftLimit();
 
     // This method will be called once per scheduler run
     values.set(PIVOT_ANGLE, getPivotPosition());
@@ -315,6 +335,8 @@ public class PivotSubsystem extends GenericSubsystem {
     values.set(vals.LEFT_LIMIT_HIT.name(), isLeftLimitHit());
     values.set(vals.RIGHT_LIMIT_HIT.name(), isRightLimitHit());
   }
+
+
 
   @Override
   public void simulationPeriodic() {

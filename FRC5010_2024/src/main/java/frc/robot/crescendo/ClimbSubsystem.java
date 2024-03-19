@@ -136,6 +136,9 @@ public class ClimbSubsystem extends GenericSubsystem {
 
   public void enableClimb(boolean enable) {
     values.set(ENABLE_CLIMB, enable);
+  }
+
+  public void enableAutoClimb(boolean enable) {
     values.set(AUTO_BALANCE, enable);
   }
 
@@ -233,8 +236,8 @@ public class ClimbSubsystem extends GenericSubsystem {
     double robotTilt = getHorizontalTilt();
     double rightSpeed = -Math.sin(Units.degreesToRadians(robotTilt)) + speed;
     double leftSpeed = Math.sin(Units.degreesToRadians(robotTilt)) + speed;
-    setLeftMotorSpeed(leftSpeed);
-    setRightMotorSpeed(rightSpeed);
+    setLeftMotorSpeed(speed != 0 ? leftSpeed : 0);
+    setRightMotorSpeed(speed != 0 ? rightSpeed : 0);
   }
 
   public boolean isAtZero() {
@@ -252,13 +255,13 @@ public class ClimbSubsystem extends GenericSubsystem {
   private void updateEncoderMinMax() {
     if (!values.getBoolean(ENABLE_CLIMB)) {
       if (leftCurrentSwitch.get() && leftMotor.get() < 0) {
-      leftEncoder.setPosition(0);
-    }
+        leftEncoder.setPosition(0);
+      }
 
-    if (rightCurrentSwitch.get() && rightMotor.get() < 0) {
-      rightEncoder.setPosition(0);
-    } 
-  }
+      if (rightCurrentSwitch.get() && rightMotor.get() < 0) {
+        rightEncoder.setPosition(0);
+      }
+    }
 
     values.set(LEFT_CURRENT, ((CANSparkMax) leftMotor).getOutputCurrent());
     values.set(RIGHT_CURRENT, ((CANSparkMax) rightMotor).getOutputCurrent());

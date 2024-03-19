@@ -32,10 +32,10 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 1.25,
+    "maxVelocity": 4.7,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 120.0
+    "maxAngularAcceleration": 130.0
   },
   "goalEndState": {
     "velocity": 0,

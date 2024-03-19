@@ -30,6 +30,7 @@ import frc.robot.FRC5010.sensors.encoder.TalonFXEncoder;
 public class GenericTalonFXMotor extends TalonFX implements MotorController5010 {
     protected int motorCurrentLimit;
     protected int controllerCurrentLimit;
+    protected boolean enableFOC = true;
 
     protected TalonFXConfiguration configuration = new TalonFXConfiguration();
     
@@ -127,10 +128,11 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
         super.getConfigurator().apply(new TalonFXConfiguration());
     }
     
+    public boolean isFOCEnabled() {
+        return enableFOC;
+    }
 
-
-
-
-    
-
+    public void enableFOC(boolean enableFOC) {
+        this.enableFOC = enableFOC;
+    }
 }

@@ -41,6 +41,7 @@ public class AutoAim extends Command {
   DoubleSupplier originalTurnSpeed;
   FeederSubsystem feederSubsystem;
   double cycleCounter = 0;
+  double timeoutCounter = 0;
   boolean useAutoDrive = false;
 
   /** Creates a new AutoAim. */
@@ -81,8 +82,9 @@ public class AutoAim extends Command {
       driveCommand.get().setTurnSpeedFunction(() -> targetingSystem.getTurnPower());
     } else if (useAutoDrive) {
       PPHolonomicDriveController.setRotationTargetOverride(() -> targetingSystem.getRotationTarget(1.0));
-    } 
+    }
     cycleCounter = 0;
+    timeoutCounter = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -91,29 +93,32 @@ public class AutoAim extends Command {
     Transform3d pivotOrigin = new Transform3d(
         robotPose.getCurrentPose3d().getTranslation().plus(Constants.Physical.PIVOT_ORIGIN_OFFSET.getTranslation()),
         new Rotation3d());
-    double pivotAngle = targetingSystem.getPivotAngle();
+    double pivotAngle = targetingSystem.getPivotAngle() - 0.0;
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
     pivotSubsystem.setReference(pivotAngle);
-    shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED, Constants.Physical.BOTTOM_SHOOTING_SPEED);
+    shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
+        Constants.Physical.BOTTOM_SHOOTING_SPEED);
     double turnSpeed = targetingSystem.getTurnPower();
     if (!useAutoDrive && driveCommand == null) {
 
-      drive.getDrivetrain().drive(new ChassisSpeeds(0, 0, turnSpeed * ((SwerveDrivetrain)drive.getDrivetrain()).getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond()));
+      drive.getDrivetrain().drive(new ChassisSpeeds(0, 0, turnSpeed * ((SwerveDrivetrain) drive.getDrivetrain())
+          .getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond()));
     }
     SmartDashboard.putBoolean("Pivot Target", pivotSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Shooter Target", shooterSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
     if (useAutoDrive || driveCommand == null) {
-      if (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw()) {
-        if (cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) {
+      if ((pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw())  || 100 < timeoutCounter) {
+        if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) || 70 < timeoutCounter) {
           feederSubsystem.feederStateMachine(-1.0);
-          
+
         }
         cycleCounter++;
 
       } else {
         cycleCounter = 0;
       }
+      timeoutCounter++;
     }
   }
 

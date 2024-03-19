@@ -58,6 +58,9 @@
         "open": true
       },
       "SmartDashboard": {
+        "ClimbSubsystem": {
+          "open": true
+        },
         "Robot Visual": {
           "Note Root": {
             "Note": {
