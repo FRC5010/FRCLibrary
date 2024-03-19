@@ -1,8 +1,8 @@
 package frc.robot.crescendo;
 
-import java.util.function.Supplier;
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -38,5 +38,9 @@ public final class Constants {
                                 new Rotation3d());
                 public static Pose3d BLUE_SHOT_POSE = SPEAKER_POSE_BLUE.plus(BLUE_SHOT_OFFSET);
                 public static Pose3d RED_SHOT_POSE = SPEAKER_POSE_RED.plus(RED_SHOT_OFFSET);
+
+
+                // Auto Shot Positions (Blue Alliance)
+                public static final Pose2d CENTER_STAGE_SHOT_LONG = new Pose2d(4.50, 4.70, new Rotation2d());
         }
 }

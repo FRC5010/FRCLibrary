@@ -46,11 +46,11 @@ import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.AutoIntake;
+import frc.robot.crescendo.commands.PredefinedAutoShot;
 import frc.robot.crescendo.commands.RunClimb;
 import frc.robot.crescendo.commands.RunIntake;
 import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
-import swervelib.SwerveDrive;
 
 /** Add your docs here. */
 public class CompBot_2024 extends GenericMechanism {
@@ -112,9 +112,9 @@ public class CompBot_2024 extends GenericMechanism {
 
 		values.declare("FeederSpeed", 1.0);
 
-		topShooterMotor = (KrakenX60)MotorFactory.KrakenX60(12).invert(true);
+		topShooterMotor = (KrakenX60) MotorFactory.KrakenX60(12).invert(true);
 		topShooterMotor.enableFOC(false);
-		bottomShooterMotor = (KrakenX60)MotorFactory.KrakenX60(14).invert(true);
+		bottomShooterMotor = (KrakenX60) MotorFactory.KrakenX60(14).invert(true);
 		bottomShooterMotor.enableFOC(false);
 
 		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
@@ -544,6 +544,8 @@ public class CompBot_2024 extends GenericMechanism {
 						true).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
 		NamedCommands.registerCommand("Blind Shot",
 				runShooter.get().withTimeout(0.75).andThen(blindShot.get()));
+			
+		NamedCommands.registerCommand("Just Shoot", blindShot.get());
 
 		NamedCommands.registerCommand("Quick Auto Aim",
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
@@ -559,6 +561,12 @@ public class CompBot_2024 extends GenericMechanism {
 							targetingSystem.resetToleranceToDefaults();
 							pivotSubsystem.resetToleranceToDefaults();
 						}));
+
+		NamedCommands.registerCommand("Aim Stage Shot Long",
+				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(RobotContainer.getAlliance()),
+						targetingSystem, pivotSubsystem, shooterSubsystem)
+						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
+								Constants.Physical.BOTTOM_SHOOTING_SPEED));
 
 		// NamedCommands.registerCommand("Pivot Shuttle",
 		// spinIntake.get().alongWith(Commands.runOnce(() -> {

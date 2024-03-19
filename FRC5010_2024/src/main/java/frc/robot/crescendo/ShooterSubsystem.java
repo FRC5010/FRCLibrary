@@ -29,34 +29,25 @@ public class ShooterSubsystem extends GenericSubsystem {
   private MechanismLigament2d topMotorSim;
   private MechanismLigament2d bottomMotorSim;
 
-
   private SimulatedEncoder topSimEncoder = new SimulatedEncoder(18, 19);
   private SimulatedEncoder bottomSimEncoder = new SimulatedEncoder(20, 21);
-
 
   private GenericEncoder topEncoder;
   private GenericEncoder bottomEncoder;
 
   private InterpolatingDoubleTreeMap interpolationTree;
 
-
-
   private double shooterPrevTime = 0.0;
   private double topShooterPrevError = 0.0;
   private double bottomShooterPrevError = 0.0;
 
-
- 
-
   private PIDController5010 topPID;
   private PIDController5010 bottomPID;
-
 
   private MotorController5010 topMotor;
   private MotorController5010 botMotor;
   private SimpleMotorFeedforward topFeedFwd;
   private SimpleMotorFeedforward bottomFeedFwd;
-
 
   private static enum ControlState {
     Joystick,
@@ -64,7 +55,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   }
 
   private ControlState shooterState = ControlState.Joystick;
-  
+
   private final String SHOOTER_REFERENCE_TOP = "Top Shooter Reference";
   private final String SHOOTER_REFERENCE_BOTTOM = "Bottom Shooter Reference";
   private final String MICRO_ADJUST = "Micro Adjust";
@@ -73,14 +64,13 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   private static enum vals {
     REFERENCE, JOYSTICK, BOTTOM_FF, TOP_FF, BOTTOM_VELOCITY, TOP_VELOCITY
-  }  
+  }
 
   /** Creates a new Shooter. */
   public ShooterSubsystem(Mechanism2d robotSim, MotorController5010 top, MotorController5010 bottom) {
-    
+
     topPID = top.getPIDController5010();
     bottomPID = bottom.getPIDController5010();
-
 
     interpolationTree = new InterpolatingDoubleTreeMap();
 
@@ -93,10 +83,10 @@ public class ShooterSubsystem extends GenericSubsystem {
     values.declare(vals.TOP_FF.name(), 0.0);
     values.declare(vals.BOTTOM_VELOCITY.name(), 0.0);
     values.declare(vals.TOP_VELOCITY.name(), 0.0);
-    
+
     topFeedFwd = new SimpleMotorFeedforward(0.35259, 0.0021013, 6.4338E-05);
     bottomFeedFwd = new SimpleMotorFeedforward(0.24259, 0.002123, 7.108E-05);
-    
+
     topEncoder = top.getMotorEncoder();
     bottomEncoder = bottom.getMotorEncoder();
 
@@ -104,31 +94,25 @@ public class ShooterSubsystem extends GenericSubsystem {
     bottomEncoder.setVelocityConversion(60);
 
     topPID.setP(1.8165E-07);
-    topPID.setI(0.0000001);    
+    topPID.setI(0.0000001);
     topPID.setIZone(100);
     topPID.setD(0);
     topPID.setTolerance(DEFAULT_TOLERANCE);
-  
+
     bottomPID.setP(4.7296E-07);
-    bottomPID.setI(0.0000001);  
-    bottomPID.setIZone(100);  
+    bottomPID.setI(0.0000001);
+    bottomPID.setIZone(100);
     bottomPID.setD(0);
     bottomPID.setTolerance(DEFAULT_TOLERANCE);
 
-
-
-
-    
-
     this.topMotorSim = robotSim.getRoot("Shooter Top", 0.80, 0.50)
-    .append(new MechanismLigament2d("Top Motor", 0.1, 180, 5, new Color8Bit(Color.kLimeGreen)));
+        .append(new MechanismLigament2d("Top Motor", 0.1, 180, 5, new Color8Bit(Color.kLimeGreen)));
     this.bottomMotorSim = robotSim.getRoot("Shooter Bottom", 0.80, 0.30)
-    .append(new MechanismLigament2d("Bottom Motor", 0.1, 180, 5, new Color8Bit(Color.kSpringGreen)));
-    
+        .append(new MechanismLigament2d("Bottom Motor", 0.1, 180, 5, new Color8Bit(Color.kSpringGreen)));
+
     this.topMotor = top;
     this.botMotor = bottom;
   }
-
 
   public void setTolerance(double value) {
     bottomPID.setTolerance(value);
@@ -153,19 +137,15 @@ public class ShooterSubsystem extends GenericSubsystem {
     setShooterReference(speed, speed);
   }
 
-
-
-
-
   public Command getBottomSysIdRoutineCommand() {
-    return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(botMotor, bottomEncoder, "Bottom Motor", this), 10, 3, 3);
+    return SystemIdentification.getSysIdFullCommand(
+        SystemIdentification.rpmSysIdRoutine(botMotor, bottomEncoder, "Bottom Motor", this), 10, 3, 3);
   }
 
   public Command getTopSysIdRoutineCommand() {
-    return SystemIdentification.getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(topMotor, topEncoder, "Top Motor", this), 10, 3, 3);
+    return SystemIdentification
+        .getSysIdFullCommand(SystemIdentification.rpmSysIdRoutine(topMotor, topEncoder, "Top Motor", this), 10, 3, 3);
   }
-
-
 
   public void shooterStateMachine(double shooter) {
     switch (shooterState) {
@@ -174,14 +154,14 @@ public class ShooterSubsystem extends GenericSubsystem {
         values.set(vals.JOYSTICK.name(), true);
         if (shooter == 0) {
           shooterState = ControlState.Velocity;
-          //setShooterReference(0, 0);
+          // setShooterReference(0, 0);
           runToReferenceShooter();
 
         } else {
           setShooterSpeed(shooter, shooter);
         }
         break;
-    
+
       case Velocity:
         values.set(vals.REFERENCE.name(), true);
         values.set(vals.JOYSTICK.name(), false);
@@ -195,15 +175,11 @@ public class ShooterSubsystem extends GenericSubsystem {
     }
   }
 
-  
-
   public void setShooterSpeed(double top, double bottom) {
     topMotor.set(top);
     botMotor.set(bottom);
 
   }
-
-
 
   public void stopMotors() {
     topMotor.set(0);
@@ -213,7 +189,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   }
 
   public void runToReferenceShooter() {
-    
+
     double topCurrentError = getTopReference() - getTopVelocity();
     double bottomCurrentError = getBottomReference() - getBottomVelocity();
 
@@ -229,15 +205,13 @@ public class ShooterSubsystem extends GenericSubsystem {
     values.set(vals.BOTTOM_FF.name(), bottomFeedForward);
     values.set(vals.TOP_FF.name(), topFeedForward);
 
-    
     if (!Robot.isReal()) {
-      topMotor.set(topFeedForward/ RobotController.getBatteryVoltage() + topVoltage);
-      botMotor.set(bottomFeedForward/ RobotController.getBatteryVoltage() + bottomVoltage);
+      topMotor.set(topFeedForward / RobotController.getBatteryVoltage() + topVoltage);
+      botMotor.set(bottomFeedForward / RobotController.getBatteryVoltage() + bottomVoltage);
     } else {
-      topPID.setReference(getTopReference()/60.0, PIDControlType.VELOCITY, topFeedForward);
-      bottomPID.setReference(getBottomReference()/60.0, PIDControlType.VELOCITY, bottomFeedForward);
+      topPID.setReference(getTopReference() / 60.0, PIDControlType.VELOCITY, topFeedForward);
+      bottomPID.setReference(getBottomReference() / 60.0, PIDControlType.VELOCITY, bottomFeedForward);
     }
-
 
     topShooterPrevError = topCurrentError;
     bottomShooterPrevError = bottomCurrentError;
@@ -245,20 +219,16 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   }
 
-
-
   public void setShooterReference(double top, double bottom) {
     values.set(SHOOTER_REFERENCE_TOP, top);
     values.set(SHOOTER_REFERENCE_BOTTOM, bottom);
     shooterState = ControlState.Velocity;
- 
+
   }
 
   public boolean isAtTarget() {
     return topPID.isAtTarget() && bottomPID.isAtTarget();
   }
-
-  
 
   public Double getTopReference() {
     return values.getDouble(SHOOTER_REFERENCE_TOP);
@@ -268,32 +238,30 @@ public class ShooterSubsystem extends GenericSubsystem {
     return values.getDouble(SHOOTER_REFERENCE_BOTTOM);
   }
 
-
-
   public Command adjustShooterReferenceUp() {
-    return Commands.runOnce(() -> setShooterReference(getTopReference()+values.getDouble(MICRO_ADJUST), getBottomReference()+values.getDouble(MICRO_ADJUST)), this);
+    return Commands.runOnce(() -> setShooterReference(getTopReference() + values.getDouble(MICRO_ADJUST),
+        getBottomReference() + values.getDouble(MICRO_ADJUST)), this);
   }
+
   public Command adjustShooterReferenceDown() {
-    return Commands.runOnce(() -> setShooterReference(getTopReference()-values.getDouble(MICRO_ADJUST), getBottomReference()-values.getDouble(MICRO_ADJUST)), this);
+    return Commands.runOnce(() -> setShooterReference(getTopReference() - values.getDouble(MICRO_ADJUST),
+        getBottomReference() - values.getDouble(MICRO_ADJUST)), this);
   }
-
-
-
 
   public double getTopVelocity() {
     return Robot.isReal() ? topEncoder.getVelocity() : topSimEncoder.getVelocity();
   }
+
   public double getBottomVelocity() {
     return Robot.isReal() ? bottomEncoder.getVelocity() : bottomSimEncoder.getVelocity();
   }
-
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     topMotorSim.setAngle(topMotor.get() * 180 - 90);
     bottomMotorSim.setAngle(botMotor.get() * 180 - 90);
-  
+
     values.set(vals.TOP_VELOCITY.name(), topEncoder.getVelocity());
     values.set(vals.BOTTOM_VELOCITY.name(), bottomEncoder.getVelocity());
     SmartDashboard.putBoolean("Shooter At Reference", isAtTarget());
@@ -302,6 +270,5 @@ public class ShooterSubsystem extends GenericSubsystem {
   @Override
   public void simulationPeriodic() {
 
-    
   }
 }
