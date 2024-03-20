@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.arch.GenericMechanism;
 import frc.robot.FRC5010.arch.Persisted;
 import frc.robot.FRC5010.arch.PersistedEnums;
@@ -286,7 +284,9 @@ public class RobotContainer extends GenericMechanism {
 	@Override
 	public void initAutoCommands() {
 		robot.initAutoCommands();
-		// This crashes 2024 right now
+
+		// TODO: Figure out Pathplanner Warmup Command
+		
 		command = AutoBuilder.buildAutoChooser();
 		if (null != command) {
 			shuffleTab.add("Auto Modes", command).withSize(2, 1);

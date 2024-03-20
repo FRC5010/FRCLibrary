@@ -39,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Auto Aim"
+            "name": "Quick Auto Aim"
           }
         },
         {
@@ -77,7 +77,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Just Shoot"
+            "name": "Quick Auto Aim"
           }
         },
         {
@@ -115,7 +115,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Just Shoot"
+            "name": "Quick Auto Aim"
           }
         },
         {
@@ -153,7 +153,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Just Shoot"
+            "name": "Quick Auto Aim"
           }
         }
       ]

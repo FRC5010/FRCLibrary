@@ -359,7 +359,7 @@ public class CompBot_2024 extends GenericMechanism {
 		operator.createYButton().whileTrue(Commands
 				.runOnce(() -> {
 					pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL);
-					shooterSubsystem.setShooterReference(2000, 2000);
+					shooterSubsystem.setShooterReference(1000, 1000);
 				}).alongWith(spinIntake.get())
 
 		).onFalse(Commands.runOnce(() -> {
@@ -378,7 +378,7 @@ public class CompBot_2024 extends GenericMechanism {
 				}));
 
 		// Run Shooter motors
-		operator.createRightBumper().whileTrue(runShooter.get().finallyDo(() -> {
+		operator.createRightBumper().whileTrue(Commands.run(() -> shooterSubsystem.setShooterReference(Constants.Physical.AMP_SHOOTING_SPEED, Constants.Physical.AMP_SHOOTING_SPEED)).finallyDo(() -> {
 			shooterSubsystem.setShooterReference(0, 0);
 			intakeSubsystem.setReference(0, 0);
 		}));
@@ -443,8 +443,8 @@ public class CompBot_2024 extends GenericMechanism {
 		intakeSubsystem.removeDefaultCommand();
 
 		drive.setupTestDefaultCommands(driver, operator);
-		// driver.createYButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
-		// driver.createXButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
+		driver.createYButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
+		driver.createXButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
 
 		// driver.createStartButton().whileTrue(feederSubsystem.getFeederSysIdRoutineCommand());
 		// // driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
@@ -508,7 +508,7 @@ public class CompBot_2024 extends GenericMechanism {
 							new Rotation3d(0, Units.degreesToRadians(28), 0).rotateBy(
 									new Rotation3d(0, 0,
 											Units.degreesToRadians(20)))),
-					PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator()); // Used to be 28, 20
+					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator()); // Used to be 28, 20
 			visionSystem.addPhotonCamera("Right Camera", 3,
 					new Transform3d(
 							new Translation3d(0.4,
@@ -517,7 +517,7 @@ public class CompBot_2024 extends GenericMechanism {
 							new Rotation3d(0, Units.degreesToRadians(28), 0).rotateBy(
 									new Rotation3d(0, 0,
 											Units.degreesToRadians(-20)))),
-					PoseStrategy.LOWEST_AMBIGUITY, drive.getDrivetrain().getPoseEstimator());
+					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
 			visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(14.264),
 					-10, 0, 1,
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),

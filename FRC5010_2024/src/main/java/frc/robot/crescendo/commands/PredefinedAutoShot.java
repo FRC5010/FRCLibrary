@@ -97,7 +97,7 @@ public class PredefinedAutoShot extends Command {
       calculateTargetingValues();
     }
 
-    pivotSubsystem.setReference(targetPivot + pivotOffset);
+    //pivotSubsystem.setReference(targetPivot + pivotOffset);
     shooterSubsystem.setShooterReference(targetShooterSpeedTop, targetShooterSpeedBottom);
     PPHolonomicDriveController
         .setRotationTargetOverride(() -> Optional.of(targetYaw.plus(Rotation2d.fromDegrees(yawOffset))));

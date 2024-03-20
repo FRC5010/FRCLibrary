@@ -69,67 +69,6 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        // pivotInterpolation.put(1.31, -9.13);
-        // pivotInterpolation.put(1.5048895591176392, -7.03);
-        // pivotInterpolation.put(2.03, 0.70);
-        // pivotInterpolation.put(2.51, 11.97);
-        // pivotInterpolation.put(3.0603081350196564, 16.15);
-        // pivotInterpolation.put(3.5087656150916264, 17.23);
-        // pivotInterpolation.put(4.0007891303420235, 20.0);
-        // pivotInterpolation.put(4.506227107522188, 22.48);
-        // pivotInterpolation.put(5.000167775843761, 22.0);
-
-        // pivotInterpolation.put(1.32, -9.13);
-        // pivotInterpolation.put(1.51, -7.03);
-        // pivotInterpolation.put(1.76, -2.80);
-        // pivotInterpolation.put(2.01, 3.52);
-        // pivotInterpolation.put(2.26, 5.29);
-        // pivotInterpolation.put(2.52, 8.79);
-        // pivotInterpolation.put(2.75, 11.24);
-        // pivotInterpolation.put(3.00, 11.96);
-        // pivotInterpolation.put(3.26, 14.0);
-        // pivotInterpolation.put(3.53, 15.80);
-        // pivotInterpolation.put(3.75, 16.87);
-        // pivotInterpolation.put(4.00, 18.26);
-        // pivotInterpolation.put(4.25, 19.33);
-        // pivotInterpolation.put(4.49, 20.37);
-        // pivotInterpolation.put(4.76, 20.40);
-
-        // pivotInterpolation.put(1.01, -11.0);
-        // pivotInterpolation.put(1.25, -2.5);
-        // pivotInterpolation.put(1.50, 2.46);
-        // pivotInterpolation.put(1.76, 5.46);
-        // pivotInterpolation.put(2.00, 7.46);
-        // pivotInterpolation.put(2.25, 9.46);
-        // pivotInterpolation.put(2.51, 12.46);
-        // pivotInterpolation.put(2.75, 14.46);
-        // pivotInterpolation.put(3.00, 16.96);
-        // pivotInterpolation.put(3.25, 16.96);
-        // pivotInterpolation.put(3.48, 18.46);
-        // pivotInterpolation.put(3.77, 19.73);
-        // pivotInterpolation.put(4.00, 18.26);
-        // pivotInterpolation.put(4.25, 19.33);
-        // pivotInterpolation.put(4.49, 20.37);
-        // pivotInterpolation.put(4.76, 20.40);
-
-
-        // pivotInterpolation.put(1.01, -11.0);
-        // pivotInterpolation.put(1.25, -2.5);
-        // pivotInterpolation.put(1.50, 2.46);
-        // pivotInterpolation.put(1.76, 5.46);
-        // pivotInterpolation.put(2.00, 7.46);
-        // pivotInterpolation.put(2.25, 9.46);
-        // pivotInterpolation.put(2.51, 12.46);
-        // pivotInterpolation.put(2.75, 14.46);
-        // pivotInterpolation.put(3.00, 16.96);
-        // pivotInterpolation.put(3.25, 16.96);
-        // pivotInterpolation.put(3.48, 18.46);
-        // pivotInterpolation.put(3.77, 19.73);
-        // pivotInterpolation.put(4.00, 18.26);
-        // pivotInterpolation.put(4.25, 19.33);
-        // pivotInterpolation.put(4.49, 20.37);
-        // pivotInterpolation.put(4.76, 20.40);
-
         pivotInterpolation.put(0.92794, -11.0); // -9.15
         pivotInterpolation.put(1.0791, -5.5); // -4.55
         pivotInterpolation.put(1.295, -3.0); // -2.09
@@ -138,9 +77,13 @@ public class TargetingSystem extends GenericSubsystem {
         pivotInterpolation.put(2.07, 13.373); // 13.713
         pivotInterpolation.put(2.5, 18.873); // 19.35 
         pivotInterpolation.put(3.0568, 23.873); // 24.25
-        pivotInterpolation.put(3.41, 25.873); // 26.01
-        pivotInterpolation.put(4.002, 27.873); // 28.11
-
+        pivotInterpolation.put(3.25, 24.25); // 26.01
+        pivotInterpolation.put(3.54, 26.0); // 28.11
+        pivotInterpolation.put(3.75, 27.25); // -4.55
+        pivotInterpolation.put(4.0, 28.25); // -2.09
+        pivotInterpolation.put(4.25, 29.25); // 3.885
+        pivotInterpolation.put(4.5, 29.5); // 8.799
+        pivotInterpolation.put(4.75, 30.5); // 13.713
     }
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
@@ -289,8 +232,10 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public static double interpolatePivotAngle(Pose3d target, Pose3d robot) {
+        double distance = target.getTranslation().toTranslation2d().getDistance(robot.getTranslation().toTranslation2d());
+        if (distance > 4.25) distance = 4.75;
         return pivotInterpolation
-                .get(target.getTranslation().toTranslation2d().getDistance(robot.getTranslation().toTranslation2d()));
+                .get(distance);
     }
 
     public double getTurnPower() {
