@@ -113,9 +113,9 @@ public class CompBot_2024 extends GenericMechanism {
 		values.declare("FeederSpeed", 1.0);
 
 		topShooterMotor = (KrakenX60)MotorFactory.KrakenX60(12).invert(true);
-		topShooterMotor.enableFOC(false);
+		topShooterMotor.enableFOC(true);
 		bottomShooterMotor = (KrakenX60)MotorFactory.KrakenX60(14).invert(true);
-		bottomShooterMotor.enableFOC(false);
+		bottomShooterMotor.enableFOC(true);
 
 		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
 

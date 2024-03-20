@@ -95,22 +95,52 @@ public class TargetingSystem extends GenericSubsystem {
         // pivotInterpolation.put(4.49, 20.37);
         // pivotInterpolation.put(4.76, 20.40);
 
-        pivotInterpolation.put(1.01, -11.0);
-        pivotInterpolation.put(1.25, -2.5);
-        pivotInterpolation.put(1.50, 2.46);
-        pivotInterpolation.put(1.76, 5.46);
-        pivotInterpolation.put(2.00, 7.46);
-        pivotInterpolation.put(2.25, 9.46);
-        pivotInterpolation.put(2.51, 12.46);
-        pivotInterpolation.put(2.75, 14.46);
-        pivotInterpolation.put(3.00, 16.96);
-        pivotInterpolation.put(3.25, 16.96);
-        pivotInterpolation.put(3.48, 18.46);
-        pivotInterpolation.put(3.77, 19.73);
-        pivotInterpolation.put(4.00, 18.26);
-        pivotInterpolation.put(4.25, 19.33);
-        pivotInterpolation.put(4.49, 20.37);
-        pivotInterpolation.put(4.76, 20.40);
+        // pivotInterpolation.put(1.01, -11.0);
+        // pivotInterpolation.put(1.25, -2.5);
+        // pivotInterpolation.put(1.50, 2.46);
+        // pivotInterpolation.put(1.76, 5.46);
+        // pivotInterpolation.put(2.00, 7.46);
+        // pivotInterpolation.put(2.25, 9.46);
+        // pivotInterpolation.put(2.51, 12.46);
+        // pivotInterpolation.put(2.75, 14.46);
+        // pivotInterpolation.put(3.00, 16.96);
+        // pivotInterpolation.put(3.25, 16.96);
+        // pivotInterpolation.put(3.48, 18.46);
+        // pivotInterpolation.put(3.77, 19.73);
+        // pivotInterpolation.put(4.00, 18.26);
+        // pivotInterpolation.put(4.25, 19.33);
+        // pivotInterpolation.put(4.49, 20.37);
+        // pivotInterpolation.put(4.76, 20.40);
+
+
+        // pivotInterpolation.put(1.01, -11.0);
+        // pivotInterpolation.put(1.25, -2.5);
+        // pivotInterpolation.put(1.50, 2.46);
+        // pivotInterpolation.put(1.76, 5.46);
+        // pivotInterpolation.put(2.00, 7.46);
+        // pivotInterpolation.put(2.25, 9.46);
+        // pivotInterpolation.put(2.51, 12.46);
+        // pivotInterpolation.put(2.75, 14.46);
+        // pivotInterpolation.put(3.00, 16.96);
+        // pivotInterpolation.put(3.25, 16.96);
+        // pivotInterpolation.put(3.48, 18.46);
+        // pivotInterpolation.put(3.77, 19.73);
+        // pivotInterpolation.put(4.00, 18.26);
+        // pivotInterpolation.put(4.25, 19.33);
+        // pivotInterpolation.put(4.49, 20.37);
+        // pivotInterpolation.put(4.76, 20.40);
+
+        pivotInterpolation.put(0.92794, -11.0); // -9.15
+        pivotInterpolation.put(1.0791, -5.5); // -4.55
+        pivotInterpolation.put(1.295, -3.0); // -2.09
+        pivotInterpolation.put(1.52, 3.167); // 3.885
+        pivotInterpolation.put(1.735, 8.167); // 8.799
+        pivotInterpolation.put(2.07, 13.373); // 13.713
+        pivotInterpolation.put(2.5, 18.873); // 19.35 
+        pivotInterpolation.put(3.0568, 23.873); // 24.25
+        pivotInterpolation.put(3.41, 25.873); // 26.01
+        pivotInterpolation.put(4.002, 27.873); // 28.11
+
     }
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
