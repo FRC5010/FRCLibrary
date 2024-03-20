@@ -14,6 +14,7 @@ public enum AutoShotDefinition {
 
     private final double x;
     private final double y;
+    private final double CRESCENDO_FIELD_WIDTH = 16.579;
 
     private AutoShotDefinition(double x, double y) {
         this.x = x;
@@ -21,7 +22,7 @@ public enum AutoShotDefinition {
     }
 
     public Pose2d getPose(Alliance alliance) {
-        return new Pose2d(alliance == Alliance.Blue ? x : -x, y, new Rotation2d());
+        return new Pose2d(alliance == Alliance.Blue ? x : CRESCENDO_FIELD_WIDTH-x, y, new Rotation2d());
     }
 
     public Pose2d getPose() {
