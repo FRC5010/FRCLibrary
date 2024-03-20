@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7242033568888566,
-      "y": 4.463445896757865
+      "x": 1.4,
+      "y": 5.559932574410603
     },
-    "rotation": 121.59072502516732
+    "rotation": 179.92392454309535
   },
   "command": {
     "type": "sequential",
@@ -18,32 +18,19 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "C - 8 - Stage Shot Long"
+                  "name": "Intake Note"
                 }
               },
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Aim Stage Shot Long"
-                      }
-                    }
-                  ]
+                  "pathName": "Note B-2"
                 }
               }
             ]
@@ -52,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Just Shoot"
+            "name": "Auto Aim"
           }
         },
         {
@@ -62,7 +49,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Stage Shot Long - 8 - Stage Shot Long"
+                  "pathName": "2 - 5 - Stage Shot Long"
                 }
               },
               {
@@ -101,6 +88,44 @@
                 "type": "path",
                 "data": {
                   "pathName": "State Shot Long - 6 - Stage Shot Long"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake Note"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Aim Stage Shot Long"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Just Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Stage Shot Long - 7 - Stage Shot Long"
                 }
               },
               {
