@@ -73,12 +73,14 @@ public class TargetingSystem extends GenericSubsystem {
 
         pivotInterpolation.put(0.92794, -11.0); // -9.15
         pivotInterpolation.put(1.0791, -5.5); // -4.55
-        pivotInterpolation.put(1.295, -3.0); // -2.09
-        pivotInterpolation.put(1.52, 3.167); // 3.885
-        pivotInterpolation.put(1.735, 8.167); // 8.799
-        pivotInterpolation.put(2.07, 13.373); // 13.713
-        pivotInterpolation.put(2.5, 18.873); // 19.35
-        pivotInterpolation.put(3.0568, 23.873); // 24.25
+        pivotInterpolation.put(1.25, 2.75); // -2.09
+        pivotInterpolation.put(1.52, 7.0); // 3.885
+        pivotInterpolation.put(1.735, 11.0); // 8.799
+        pivotInterpolation.put(2.07, 14.75); // 13.713
+        pivotInterpolation.put(2.25, 16.5); // 19.35
+        pivotInterpolation.put(2.5, 18.0); // 19.35
+        pivotInterpolation.put(2.75, 20.25); // 19.35
+        pivotInterpolation.put(3.0568, 21.75); // 24.25
         pivotInterpolation.put(3.25, 24.25); // 26.01
         pivotInterpolation.put(3.54, 26.0); // 28.11
         pivotInterpolation.put(3.75, 27.25); // -4.55
@@ -248,9 +250,8 @@ public class TargetingSystem extends GenericSubsystem {
         updateControllerValues();
         double output = 0;
         if (shooterCamera.isValidTarget()) {
-            double angle = -shooterCamera.getAngleX();
-            thetaController.setSetpoint(Units.degreesToRadians(0));
-            output = thetaController.calculate(angle);
+            double angle = shooterCamera.getAngleX();
+            output = angle * -0.002;
         } else {
             thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
             output = thetaController.calculate(robotPose.get().getRotation().getZ());

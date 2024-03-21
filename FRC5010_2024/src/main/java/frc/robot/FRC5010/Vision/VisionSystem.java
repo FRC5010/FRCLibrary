@@ -59,6 +59,10 @@ public abstract class VisionSystem extends SubsystemBase {
     visionLayout.addBoolean("Has Target", this::isValidTarget);
     visionLayout.addNumber("Distance", this::getDistance).withSize(1, 1);
     visionLayout.addNumber("Fiducial", () -> getRawValues().getFiducialId());
+    visionLayout.addNumber("Angle X",
+        () -> null != smoothedValues.getAngleX() ? smoothedValues.getAngleX() : -1);
+    visionLayout.addNumber("Angle Y",
+        () -> null != smoothedValues.getAngleY() ? smoothedValues.getAngleY() : -1);
     visionLayout.addNumber("Robot Pose X",
         () -> null != smoothedValues.getRobotPose() ? smoothedValues.getRobotPose().getX() : -1);
     visionLayout.addNumber("Robot Pose Y",

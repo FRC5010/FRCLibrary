@@ -157,16 +157,18 @@ public class CompBot_2024 extends GenericMechanism {
 
 		drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
 				"mk4i_L3_kraken_neo");
-		targetingSystem = new TargetingSystem(
-				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
-				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
-				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera);
+		
 
 		shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, bottomShooterMotor);
 		feederSubsystem = new FeederSubsystem(visual, feederMotor, ledSubsystem);
 		intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);
 
 		initRealOrSim();
+
+		targetingSystem = new TargetingSystem(
+				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
+				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
+				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera);
 	}
 
 	@Override
@@ -382,7 +384,7 @@ public class CompBot_2024 extends GenericMechanism {
 				}));
 
 		// Run Shooter motors
-		operator.createRightBumper().whileTrue(Commands.run(() -> shooterSubsystem.setShooterReference(Constants.Physical.AMP_SHOOTING_SPEED, Constants.Physical.AMP_SHOOTING_SPEED)).finallyDo(() -> {
+		operator.createRightBumper().whileTrue(Commands.run(() -> shooterSubsystem.setShooterReference(Constants.Physical.MANUAL_SHOOTING_SPEED, Constants.Physical.MANUAL_SHOOTING_SPEED)).finallyDo(() -> {
 			shooterSubsystem.setShooterReference(0, 0);
 			intakeSubsystem.setReference(0, 0);
 		}));
@@ -529,7 +531,8 @@ public class CompBot_2024 extends GenericMechanism {
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
 							new Rotation3d(0, 0, Units.degreesToRadians(180))));
-			shooterCamera = new VisionPhotonAprilTagTarget("ForwardCamera", 4, AprilTags.aprilTagFieldLayout);
+			shooterCamera = new VisionPhotonAprilTagTarget("FrontCamera", 4, AprilTags.aprilTagFieldLayout);
+			shooterCamera.setUpdateValues(true);
 		}
 	}
 

@@ -12,7 +12,6 @@ import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Timer;
 
 /** Add your docs here. */
@@ -40,7 +39,7 @@ public class VisionPhotonAprilTagTarget extends VisionSystem {
     public int getTargetTagId() {
         return targetTagId;
     }
-    
+
     @Override
     public void update() {
         rawValues.clearValues();
@@ -49,7 +48,6 @@ public class VisionPhotonAprilTagTarget extends VisionSystem {
 
     public void updateViaNetworkTable(PhotonCamera camera, String path) {
         var camResult = camera.getLatestResult();
-        Pose3d robotPoseEstInit = new Pose3d();
         List<PhotonTrackedTarget> targetInit = null;
         double deltaTimeInit = Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
         if (camResult.hasTargets()) {
@@ -67,7 +65,27 @@ public class VisionPhotonAprilTagTarget extends VisionSystem {
                         () -> target.get().getFiducialId(),
                         () -> fieldLayout.getTagPose(target.get().getFiducialId()).orElse(null),
                         () -> null);
+            } else {
+                updateValues(rawValues,
+                        () -> 0,
+                        () -> 0,
+                        () -> 0,
+                        () -> false,
+                        () -> 0,
+                        () -> 0,
+                        () -> null,
+                        () -> null);
             }
+        } else {
+            updateValues(rawValues,
+                    () -> 0,
+                    () -> 0,
+                    () -> 0,
+                    () -> false,
+                    () -> 0,
+                    () -> 0,
+                    () -> null,
+                    () -> null);
         }
     }
 
