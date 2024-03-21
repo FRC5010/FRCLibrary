@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3374413054104268,
+      "x": 1.4,
       "y": 5.559932574410603
     },
     "rotation": 179.92392454309535
@@ -18,22 +18,15 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake Note"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Note B-2"
-                }
-              }
-            ]
+            "pathName": "Note B-2 Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
           }
         },
         {
@@ -43,32 +36,31 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Note 2-5 Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "2 - 5 - Stage Shot Long"
+                  "pathName": "5 - Stage Shot Long"
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Aim Stage Shot Long"
-                      }
-                    }
-                  ]
+                  "name": "Aim Stage Shot Long"
                 }
               }
             ]
