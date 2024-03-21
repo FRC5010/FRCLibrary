@@ -169,7 +169,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
             // Max module speed, in m/s
             swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
             // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig()
+            new ReplanningConfig(false, false)
         // Default path replanning config. See the API for the options here
         ),
         () -> {
