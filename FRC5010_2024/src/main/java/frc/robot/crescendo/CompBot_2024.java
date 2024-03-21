@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +27,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.LogLevel;
 import frc.robot.FRC5010.Vision.AprilTags;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
+import frc.robot.FRC5010.Vision.VisionPhotonAprilTagTarget;
 import frc.robot.FRC5010.arch.GenericMechanism;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
@@ -40,6 +42,7 @@ import frc.robot.FRC5010.motors.hardware.NEO;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
+import frc.robot.FRC5010.subsystems.Color;
 import frc.robot.FRC5010.subsystems.LEDStripSegment;
 import frc.robot.FRC5010.subsystems.PowerDistribution5010;
 import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
@@ -67,6 +70,7 @@ public class CompBot_2024 extends GenericMechanism {
 	private MotorController5010 outerIntakeMotor;
 
 	private VisionMultiCam visionSystem;
+	private VisionPhotonAprilTagTarget shooterCamera;
 	private GenericGyro gyro;
 	private ClimbSubsystem climbSubsystem;
 	private MotorController5010 leftClimbMotor;
@@ -156,7 +160,7 @@ public class CompBot_2024 extends GenericMechanism {
 		targetingSystem = new TargetingSystem(
 				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
-				(SwerveDrivetrain) drive.getDrivetrain());
+				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera);
 
 		shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, bottomShooterMotor);
 		feederSubsystem = new FeederSubsystem(visual, feederMotor, ledSubsystem);
@@ -434,6 +438,8 @@ public class CompBot_2024 extends GenericMechanism {
 		}, ledSubsystem)
 				.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
 		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
+
+		shooterCamera.setTargetTagId(RobotContainer.chooseAllianceColor() == Color.BLUE ? 7 : 4);
 	}
 
 	@Override
@@ -523,6 +529,7 @@ public class CompBot_2024 extends GenericMechanism {
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
 							new Rotation3d(0, 0, Units.degreesToRadians(180))));
+			shooterCamera = new VisionPhotonAprilTagTarget("ForwardCamera", 4, AprilTags.aprilTagFieldLayout);
 		}
 	}
 
