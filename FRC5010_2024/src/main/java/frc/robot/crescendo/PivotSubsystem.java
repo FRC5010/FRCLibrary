@@ -76,6 +76,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String PIVOT_kV = "PivotkV";
   private final String PIVOT_kP = "PivotkP";
   private final String PIVOT_kD = "PivotkD";
+  private final String PIVOT_kI = "PivotkI";
   private final String MICRO_ADJUST = "Pivot Micro Adjustment";
   private final String SLOWDOWN = "Slowdown";
 
@@ -93,7 +94,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String TOLERANCE = "Pivot Tolerance";
 
   public final double HOME_LEVEL = MIN_PIVOT_POSITION;
-  public final double AMP_LEVEL = 79;
+  public final double AMP_LEVEL = 72;
   public final double TRAP_LEVEL = 75;
   public final double LOW_SHUTTLE_LEVEL = 60;
   public final double HIGH_SHUTTLE_LEVEL = 0;
@@ -113,6 +114,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kP, RobotBase.isReal() ? 0.015 : 0.01);
     values.declare(PIVOT_kD, RobotBase.isReal() ? 0.0000 : 0.003);
     values.declare(PIVOT_kS, RobotBase.isReal() ? 0.22 : 0.0);
+    values.declare(PIVOT_kI, 0.00002);
     values.declare(PIVOT_kA, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
     values.declare(SLOWDOWN, 0.1);
@@ -238,6 +240,8 @@ public class PivotSubsystem extends GenericSubsystem {
       previousTime = currentTime;
     } else {
       pivotPID.setP(values.getDouble(PIVOT_kP));
+      pivotPID.setD(values.getDouble(PIVOT_kD));
+      pivotPID.setI(values.getDouble(PIVOT_kI));
       pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
     }
     values.set(vals.RUN_REF.name(), true);

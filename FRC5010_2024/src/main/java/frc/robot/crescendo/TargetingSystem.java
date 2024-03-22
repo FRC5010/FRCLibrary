@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 
@@ -30,6 +31,7 @@ public class TargetingSystem extends GenericSubsystem {
 
     private Supplier<Pose3d> robotPose;
     private SwerveDrivetrain swerve;
+    private VisionSystem shooterCamera;
 
     private PIDController thetaController;
     // Input/Output Values
@@ -45,13 +47,14 @@ public class TargetingSystem extends GenericSubsystem {
     private final String HORIZONTAL_ANGLE = "Horizontal Angle";
     private final String PIVOT_ANGLE = "Pivot Angle";
 
-
     private final double DEFAULT_TOLERANCE = 0.01;
 
-    public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve) {
+    public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve,
+            VisionSystem shooter) {
         this.currentTarget = targetSupplier;
         this.robotPose = robotPose;
         this.swerve = swerve;
+        this.shooterCamera = shooter;
 
         // Declare Values
         values.declare(kP, 0.28);
@@ -62,55 +65,29 @@ public class TargetingSystem extends GenericSubsystem {
         values.declare(TURN_POWER, 0.0);
         values.declare(HORIZONTAL_ANGLE, 0.0);
         values.declare(PIVOT_ANGLE, 0.0);
-    
 
         // Initialize the PID controller
         thetaController = new PIDController(values.getDouble(kP), values.getDouble(kI), values.getDouble(kD));
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        // pivotInterpolation.put(1.31, -9.13);
-        // pivotInterpolation.put(1.5048895591176392, -7.03);
-        // pivotInterpolation.put(2.03, 0.70);
-        // pivotInterpolation.put(2.51, 11.97);
-        // pivotInterpolation.put(3.0603081350196564, 16.15);
-        // pivotInterpolation.put(3.5087656150916264, 17.23);
-        // pivotInterpolation.put(4.0007891303420235, 20.0);
-        // pivotInterpolation.put(4.506227107522188, 22.48);
-        // pivotInterpolation.put(5.000167775843761, 22.0);
-
-        // pivotInterpolation.put(1.32, -9.13);
-        // pivotInterpolation.put(1.51, -7.03);
-        // pivotInterpolation.put(1.76, -2.80);
-        // pivotInterpolation.put(2.01, 3.52);
-        // pivotInterpolation.put(2.26, 5.29);
-        // pivotInterpolation.put(2.52, 8.79);
-        // pivotInterpolation.put(2.75, 11.24);
-        // pivotInterpolation.put(3.00, 11.96);
-        // pivotInterpolation.put(3.26, 14.0);
-        // pivotInterpolation.put(3.53, 15.80);
-        // pivotInterpolation.put(3.75, 16.87);
-        // pivotInterpolation.put(4.00, 18.26);
-        // pivotInterpolation.put(4.25, 19.33);
-        // pivotInterpolation.put(4.49, 20.37);
-        // pivotInterpolation.put(4.76, 20.40);
-
-        pivotInterpolation.put(1.01, -11.0);
-        pivotInterpolation.put(1.25, -2.5);
-        pivotInterpolation.put(1.50, 2.46);
-        pivotInterpolation.put(1.76, 5.46);
-        pivotInterpolation.put(2.00, 7.46);
-        pivotInterpolation.put(2.25, 9.46);
-        pivotInterpolation.put(2.51, 12.46);
-        pivotInterpolation.put(2.75, 14.46);
-        pivotInterpolation.put(3.00, 16.96);
-        pivotInterpolation.put(3.25, 16.96);
-        pivotInterpolation.put(3.48, 18.46);
-        pivotInterpolation.put(3.77, 19.73);
-        pivotInterpolation.put(4.00, 18.26);
-        pivotInterpolation.put(4.25, 19.33);
-        pivotInterpolation.put(4.49, 20.37);
-        pivotInterpolation.put(4.76, 20.40);
+        pivotInterpolation.put(0.92794, -11.0); // -9.15
+        pivotInterpolation.put(1.0791, -5.5); // -4.55
+        pivotInterpolation.put(1.25, 2.75); // -2.09
+        pivotInterpolation.put(1.52, 7.0); // 3.885
+        pivotInterpolation.put(1.735, 11.0); // 8.799
+        pivotInterpolation.put(2.07, 14.75); // 13.713
+        pivotInterpolation.put(2.25, 16.5); // 19.35
+        pivotInterpolation.put(2.5, 18.0); // 19.35
+        pivotInterpolation.put(2.75, 20.25); // 19.35
+        pivotInterpolation.put(3.0568, 21.75); // 24.25
+        pivotInterpolation.put(3.25, 24.25); // 26.01
+        pivotInterpolation.put(3.54, 26.0); // 28.11
+        pivotInterpolation.put(3.75, 27.25); // -4.55
+        pivotInterpolation.put(4.0, 28.25); // -2.09
+        pivotInterpolation.put(4.25, 29.25); // 3.885
+        pivotInterpolation.put(4.5, 29.5); // 8.799
+        pivotInterpolation.put(4.75, 30.5); // 13.713
     }
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
@@ -127,11 +104,11 @@ public class TargetingSystem extends GenericSubsystem {
 
     public void setTolerance(double value) {
         values.set(TOLERANCE, value);
-      }
-    
-      public void resetToleranceToDefaults() {
+    }
+
+    public void resetToleranceToDefaults() {
         values.set(TOLERANCE, DEFAULT_TOLERANCE);
-      }
+    }
 
     public void init() {
         thetaController.reset();
@@ -228,7 +205,8 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public double getFlatDistanceToTarget() {
-        return currentTarget.get().getTranslation().toTranslation2d().getDistance(robotPose.get().getTranslation().toTranslation2d());
+        return currentTarget.get().getTranslation().toTranslation2d()
+                .getDistance(robotPose.get().getTranslation().toTranslation2d());
     }
 
     public double getHorizontalAngle(double launchVelocity) {
@@ -259,15 +237,25 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public static double interpolatePivotAngle(Pose3d target, Pose3d robot) {
+        double distance = target.getTranslation().toTranslation2d()
+                .getDistance(robot.getTranslation().toTranslation2d());
+        if (distance > 4.25)
+            distance = 4.75;
         return pivotInterpolation
-                .get(target.getTranslation().toTranslation2d().getDistance(robot.getTranslation().toTranslation2d()));
+                .get(distance);
     }
 
     public double getTurnPower() {
         double targetAngle = getHorizontalAngle();
         updateControllerValues();
-        thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
-        double output = thetaController.calculate(robotPose.get().getRotation().getZ());
+        double output = 0;
+        if (shooterCamera.isValidTarget()) {
+            double angle = shooterCamera.getAngleX();
+            output = angle * -0.002;
+        } else {
+            thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
+            output = thetaController.calculate(robotPose.get().getRotation().getZ());
+        }
         SmartDashboard.putBoolean("Theta Controller at Setpoint", thetaController.atSetpoint());
         return thetaController.atSetpoint() ? 0.0
                 : output

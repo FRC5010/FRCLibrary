@@ -169,7 +169,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
             // Max module speed, in m/s
             swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
             // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig()
+            new ReplanningConfig(false, false)
         // Default path replanning config. See the API for the options here
         ),
         () -> {
@@ -772,8 +772,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   private static Vector<N3> VISION_STDS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
 
   public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance) {
-    double calib = distance * 0.25;
-    VISION_STDS = VecBuilder.fill(calib, calib, Units.degreesToRadians(5));
+    double calib = distance * 0.15;
+    VISION_STDS = VecBuilder.fill(calib, calib, Units.degreesToRadians(5 * distance));
     swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime, VISION_STDS);
   }
 
