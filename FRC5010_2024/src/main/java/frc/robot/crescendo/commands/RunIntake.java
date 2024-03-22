@@ -38,6 +38,7 @@ public class RunIntake extends GenericCommand {
   Command holdingCommand;
   Command selectorCommand;
   Command loadedCommand;
+  Command shootingCommand;
 
   Supplier<Command> allowIntakeRunCommand;
 
@@ -112,10 +113,13 @@ public class RunIntake extends GenericCommand {
         () -> feederSubsystem.feederStateMachine(
             Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
         feederSubsystem).until(() -> 0 == speed.getAsDouble()).onlyIf(() -> DriverStation.isTeleop());
+
+  
     intakeCommands.put(NoteState.Empty, feederCommand);
     intakeCommands.put(NoteState.Holding, allowIntakeRunCommand.get());
 
     intakeCommands.put(NoteState.Loaded, allowIntakeRunCommand.get());
+    intakeCommands.put(NoteState.Shooting, allowIntakeRunCommand.get());
 
     selectorCommand = Commands.select(intakeCommands, () -> feederSubsystem.getNoteState());
   }

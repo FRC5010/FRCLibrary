@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.343662687325376,
-      "y": 5.560402215000434
+      "x": 1.3374413054104268,
+      "y": 5.559932574410603
     },
     "rotation": 179.92392454309535
   },
@@ -18,43 +18,19 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Auto Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Quick Auto Aim"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note 2-5 Short"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Auto Intake"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "5 - Stage Shot Long"
+                  "name": "Intake Note"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Aim Stage Shot Long"
+                  "pathName": "Note B-2"
                 }
               }
             ]
@@ -67,13 +43,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "State Shot Long - 6 - Stage Shot Long"
+                  "pathName": "2 - 6 - Left Long Shot"
                 }
               },
               {
@@ -83,13 +59,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake Note"
+                        "name": "Intake and Load Note"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Aim Stage Shot Long"
+                        "name": "Aim Left Shot Long"
                       }
                     }
                   ]
@@ -105,13 +81,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Stage Shot Long - 7 - Stage Shot Long"
+                  "pathName": "Left Long Shot - 5 - Left Long Shot"
                 }
               },
               {
@@ -121,7 +97,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake Note"
+                        "name": "Intake and Load Note"
                       }
                     },
                     {

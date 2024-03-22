@@ -66,7 +66,7 @@ public class AutoIntake extends GenericCommand {
     }
     
 
-    double xSpeed = currentAngleY * SmartDashboard.getNumber(X_SPEED, DEF_X);
+    double xSpeed = (currentAngleY) * SmartDashboard.getNumber(X_SPEED, DEF_X);
     double ySpeed = currentAngleX * SmartDashboard.getNumber(Y_SPEED, DEF_Y);
     double turnSpeed = currentAngleX * SmartDashboard.getNumber(ANGLE_SPEED, DEF_ANGLE);
 

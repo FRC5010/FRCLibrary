@@ -84,8 +84,8 @@ public class ShooterSubsystem extends GenericSubsystem {
     values.declare(vals.BOTTOM_VELOCITY.name(), 0.0);
     values.declare(vals.TOP_VELOCITY.name(), 0.0);
 
-    topFeedFwd = new SimpleMotorFeedforward(0.35259, 0.0021013, 6.4338E-05);
-    bottomFeedFwd = new SimpleMotorFeedforward(0.24259, 0.002123, 7.108E-05);
+    topFeedFwd = new SimpleMotorFeedforward(0.38986, 0.0021378, 0.00021335);
+    bottomFeedFwd = new SimpleMotorFeedforward(0.40179, 0.0022394, 0.00019292);
 
     topEncoder = top.getMotorEncoder();
     bottomEncoder = bottom.getMotorEncoder();
@@ -93,15 +93,15 @@ public class ShooterSubsystem extends GenericSubsystem {
     topEncoder.setVelocityConversion(60);
     bottomEncoder.setVelocityConversion(60);
 
-    topPID.setP(1.8165E-07);
+    topPID.setP(0.00158);
     topPID.setI(0.0000001);
-    topPID.setIZone(100);
+    //topPID.setIZone(100);
     topPID.setD(0);
     topPID.setTolerance(DEFAULT_TOLERANCE);
 
-    bottomPID.setP(4.7296E-07);
+    bottomPID.setP(0.00020144);
     bottomPID.setI(0.0000001);
-    bottomPID.setIZone(100);
+    //bottomPID.setIZone(100);
     bottomPID.setD(0);
     bottomPID.setTolerance(DEFAULT_TOLERANCE);
 

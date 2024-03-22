@@ -43,7 +43,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -59,7 +59,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake Note"
+                        "name": "Intake and Load Note"
                       }
                     },
                     {
@@ -81,7 +81,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -97,7 +97,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake Note"
+                        "name": "Intake and Load Note"
                       }
                     },
                     {
@@ -119,7 +119,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -135,7 +135,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake Note"
+                        "name": "Intake and Load Note"
                       }
                     },
                     {

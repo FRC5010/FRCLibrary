@@ -245,6 +245,15 @@ public class TargetingSystem extends GenericSubsystem {
                 .get(distance);
     }
 
+    public double getYawToTarget(Pose3d robot){
+        double x = currentTarget.get().getTranslation().getX() - robot.getTranslation().getX();
+        double y = currentTarget.get().getTranslation().getY() - robot.getTranslation().getY();
+        double static_angle = Math.atan2(y, x);
+
+        return Units.radiansToDegrees(static_angle);
+
+    }
+
     public double getTurnPower() {
         double targetAngle = getHorizontalAngle();
         updateControllerValues();

@@ -88,11 +88,16 @@ public class PredefinedAutoShot extends Command {
         robotPose,
         targetingSystem.getTarget());
 
+    this.targetYaw = Rotation2d.fromDegrees(targetingSystem.getYawToTarget(robotPose));
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    targetYaw = new Rotation2d();
+    targetPivot = 0;
+
     if (targetingSystem != null && targetingPose != null) {
       calculateTargetingValues();
     }

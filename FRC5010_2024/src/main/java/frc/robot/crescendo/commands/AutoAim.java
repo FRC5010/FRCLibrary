@@ -25,6 +25,7 @@ import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.ShooterSubsystem;
 import frc.robot.crescendo.TargetingSystem;
+import frc.robot.crescendo.FeederSubsystem.NoteState;
 
 public class AutoAim extends Command {
 
@@ -95,8 +96,10 @@ public class AutoAim extends Command {
     double pivotAngle = targetingSystem.getPivotAngle() - 0.0;
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
     pivotSubsystem.setReference(pivotAngle);
+    if (feederSubsystem.getNoteState() != NoteState.Holding) {
     shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
         Constants.Physical.BOTTOM_SHOOTING_SPEED);
+    }
     double turnSpeed = targetingSystem.getTurnPower();
     if (!useAutoDrive && driveCommand == null) {
 

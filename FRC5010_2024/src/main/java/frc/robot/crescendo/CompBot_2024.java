@@ -117,9 +117,9 @@ public class CompBot_2024 extends GenericMechanism {
 		values.declare("FeederSpeed", 1.0);
 
 		topShooterMotor = (KrakenX60)MotorFactory.KrakenX60(12).invert(true);
-		topShooterMotor.enableFOC(true);
+		topShooterMotor.enableFOC(false);
 		bottomShooterMotor = (KrakenX60)MotorFactory.KrakenX60(14).invert(true);
-		bottomShooterMotor.enableFOC(true);
+		bottomShooterMotor.enableFOC(false);
 
 		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
 
@@ -198,7 +198,7 @@ public class CompBot_2024 extends GenericMechanism {
 				.deadline(
 						Commands.idle().until(() -> feederSubsystem.getNoteState() != NoteState.Empty)
 								.andThen(Commands.idle().withTimeout(1.5)
-										.until(() -> feederSubsystem.getNoteState() == NoteState.Holding)),
+										.until(() -> feederSubsystem.getNoteState() == NoteState.Loaded)),
 						new RunIntake(() -> -0.75, () -> 0.5, intakeSubsystem, feederSubsystem,
 								pivotSubsystem, shooterSubsystem,
 								null));
@@ -540,7 +540,8 @@ public class CompBot_2024 extends GenericMechanism {
 	public void initAutoCommands() {
 		allLEDs.setColor(RobotContainer.chooseAllianceColor()).on();
 		drive.initAutoCommands();
-		NamedCommands.registerCommand("Intake Note", runIntake.get());
+		NamedCommands.registerCommand("Intake Note", runIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding));
+		NamedCommands.registerCommand("Intake and Load Note", runIntake.get());
 		NamedCommands.registerCommand("Auto Intake", autoIntake.get());
 
 		NamedCommands.registerCommand("Auto Aim",
@@ -556,6 +557,8 @@ public class CompBot_2024 extends GenericMechanism {
 				runShooter.get().withTimeout(0.75).andThen(blindShot.get()));
 			
 		NamedCommands.registerCommand("Just Shoot", blindShot.get());
+
+		NamedCommands.registerCommand("Spin Up Shooter", runShooter.get());
 
 		NamedCommands.registerCommand("Quick Auto Aim",
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
@@ -574,6 +577,12 @@ public class CompBot_2024 extends GenericMechanism {
 
 		NamedCommands.registerCommand("Aim Stage Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(RobotContainer.getAlliance()),
+						targetingSystem, pivotSubsystem, shooterSubsystem)
+						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
+								Constants.Physical.BOTTOM_SHOOTING_SPEED));
+
+								NamedCommands.registerCommand("Aim Left Shot Long",
+				new PredefinedAutoShot(AutoShotDefinition.LEFT_LONG_SHOT.getPose(RobotContainer.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem)
 						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
 								Constants.Physical.BOTTOM_SHOOTING_SPEED));
