@@ -96,10 +96,10 @@ public class AutoAim extends Command {
     double pivotAngle = targetingSystem.getPivotAngle() - 0.0;
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
     pivotSubsystem.setReference(pivotAngle);
-    if (feederSubsystem.getNoteState() != NoteState.Holding) {
+    
     shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
         Constants.Physical.BOTTOM_SHOOTING_SPEED);
-    }
+  
     double turnSpeed = targetingSystem.getTurnPower();
     if (!useAutoDrive && driveCommand == null) {
 
@@ -111,7 +111,7 @@ public class AutoAim extends Command {
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
     if (useAutoDrive || driveCommand == null) {
       if ((pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw())  || 100 < timeoutCounter) {
-        if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.05) || 70 < timeoutCounter) {
+        if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 70 < timeoutCounter) {
           feederSubsystem.feederStateMachine(-1.0);
 
         }

@@ -377,7 +377,7 @@ public class CompBot_2024 extends GenericMechanism {
 		operator.createBButton().onTrue(Commands.runOnce(
 				() -> {
 					pivotSubsystem.setReference(pivotSubsystem.HIGH_SHUTTLE_LEVEL);
-					shooterSubsystem.setShooterReference(6000, 6000);
+					shooterSubsystem.setShooterReference(Constants.Physical.SHUTTLE_SPEED, Constants.Physical.SHUTTLE_SPEED);
 				}, pivotSubsystem).alongWith(spinIntake.get())).onFalse(Commands.runOnce(() -> {
 					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 					shooterSubsystem.setShooterReference(0, 0);
@@ -531,6 +531,8 @@ public class CompBot_2024 extends GenericMechanism {
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
 							new Rotation3d(0, 0, Units.degreesToRadians(180))));
+			visionSystem.addPhotonCamera("Top Camera", 4, new Transform3d(
+				new Translation3d(10.682, -11.75, 24.394), new Rotation3d(0, Units.degreesToRadians(10), 0)), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
 			shooterCamera = new VisionPhotonAprilTagTarget("FrontCamera", 4, AprilTags.aprilTagFieldLayout);
 			shooterCamera.setUpdateValues(true);
 		}
@@ -577,15 +579,17 @@ public class CompBot_2024 extends GenericMechanism {
 
 		NamedCommands.registerCommand("Aim Stage Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(RobotContainer.getAlliance()),
-						targetingSystem, pivotSubsystem, shooterSubsystem)
+						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
-								Constants.Physical.BOTTOM_SHOOTING_SPEED));
+								Constants.Physical.BOTTOM_SHOOTING_SPEED)
+						);
 
 								NamedCommands.registerCommand("Aim Left Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.LEFT_LONG_SHOT.getPose(RobotContainer.getAlliance()),
-						targetingSystem, pivotSubsystem, shooterSubsystem)
+						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
-								Constants.Physical.BOTTOM_SHOOTING_SPEED));
+								Constants.Physical.BOTTOM_SHOOTING_SPEED)
+						.enablePivot());
 
 		// NamedCommands.registerCommand("Pivot Shuttle",
 		// spinIntake.get().alongWith(Commands.runOnce(() -> {

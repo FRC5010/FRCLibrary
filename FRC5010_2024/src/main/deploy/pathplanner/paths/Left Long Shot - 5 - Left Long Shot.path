@@ -12,20 +12,20 @@
         "y": 6.7
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Long Shot"
     },
     {
       "anchor": {
-        "x": 8.307571524233957,
-        "y": 5.774493730805644
+        "x": 8.082784627107717,
+        "y": 5.880697915241985
       },
       "prevControl": {
-        "x": 7.46324210405103,
-        "y": 6.310318170537119
+        "x": 7.133841797547054,
+        "y": 6.306140162556518
       },
       "nextControl": {
-        "x": 8.792666312605352,
-        "y": 5.4666451151084114
+        "x": 8.267975537756685,
+        "y": 5.797670745686154
       },
       "isLocked": false,
       "linkedName": null
@@ -41,21 +41,21 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Long Shot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.8,
       "rotationDegrees": 158.26274130886014,
-      "rotateFast": false
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.8,
-    "maxAcceleration": 2.5,
+    "maxAcceleration": 2.8,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 130.0
   },

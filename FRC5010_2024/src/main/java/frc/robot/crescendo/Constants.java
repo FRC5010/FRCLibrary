@@ -24,6 +24,8 @@ public final class Constants {
                 public static final double MANUAL_SHOOTING_SPEED = 4800;
                 public static final double AMP_SHOOTING_SPEED = 1000;
 
+                public static final double SHUTTLE_SPEED = 3333;
+
         }
 
         public static final class Field {

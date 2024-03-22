@@ -79,15 +79,20 @@ public class TargetingSystem extends GenericSubsystem {
         pivotInterpolation.put(2.07, 14.75); // 13.713
         pivotInterpolation.put(2.25, 16.5); // 19.35
         pivotInterpolation.put(2.5, 18.0); // 19.35
-        pivotInterpolation.put(2.75, 20.25); // 19.35
+        pivotInterpolation.put(2.93, 19.03);
         pivotInterpolation.put(3.0568, 21.75); // 24.25
-        pivotInterpolation.put(3.25, 24.25); // 26.01
-        pivotInterpolation.put(3.54, 26.0); // 28.11
-        pivotInterpolation.put(3.75, 27.25); // -4.55
-        pivotInterpolation.put(4.0, 28.25); // -2.09
-        pivotInterpolation.put(4.25, 29.25); // 3.885
-        pivotInterpolation.put(4.5, 29.5); // 8.799
-        pivotInterpolation.put(4.75, 30.5); // 13.713
+        pivotInterpolation.put(3.24, 21.556);
+        pivotInterpolation.put(3.87, 23.67);
+        pivotInterpolation.put(4.58, 26.40);
+        pivotInterpolation.put(5.00, 28.86);
+        
+        // pivotInterpolation.put(3.25, 24.25); // 26.01
+        // pivotInterpolation.put(3.54, 26.0); // 28.11
+        // pivotInterpolation.put(3.75, 27.25); // -4.55
+        // pivotInterpolation.put(4.0, 28.25); // -2.09
+        // pivotInterpolation.put(4.25, 29.25); // 3.885
+        // pivotInterpolation.put(4.5, 29.5); // 8.799
+        // pivotInterpolation.put(4.75, 30.5); // 13.713
     }
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
