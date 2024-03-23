@@ -73,15 +73,14 @@ public class TargetingSystem extends GenericSubsystem {
 
         pivotInterpolation.put(0.92794, -11.0); // -9.15
         pivotInterpolation.put(1.0791, -5.5); // -4.55
-        pivotInterpolation.put(1.25, 2.75); // -2.09
-        pivotInterpolation.put(1.52, 7.0); // 3.885
-        pivotInterpolation.put(1.735, 11.0); // 8.799
-        pivotInterpolation.put(2.07, 14.75); // 13.713
-        pivotInterpolation.put(2.25, 16.5); // 19.35
-        pivotInterpolation.put(2.5, 18.0); // 19.35
+        pivotInterpolation.put(1.80, -2.08);
+        pivotInterpolation.put(2.08, 5.62); // 13.713
+        pivotInterpolation.put(2.23, 8.91); // 13.713
+        pivotInterpolation.put(2.48, 10.567); // 19.35
         pivotInterpolation.put(2.93, 19.03);
-        pivotInterpolation.put(3.0568, 21.75); // 24.25
+        pivotInterpolation.put(3.05, 19.38);
         pivotInterpolation.put(3.24, 21.556);
+        pivotInterpolation.put(3.58, 21.28);
         pivotInterpolation.put(3.87, 23.67);
         pivotInterpolation.put(4.58, 26.40);
         pivotInterpolation.put(5.00, 28.86);
