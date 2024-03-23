@@ -352,10 +352,8 @@ public class CompBot_2024 extends GenericMechanism {
 		// Podium Pivot
 		operator.createXButton().onTrue(Commands.runOnce(
 				() -> {
-					pivotSubsystem.setReference(pivotSubsystem.PODIUM_SHOT);
-					shooterSubsystem.setShooterReference(6000, 6000);
+					shooterSubsystem.setShooterReference(Constants.Physical.MANUAL_SHOOTING_SPEED * 0.9, Constants.Physical.MANUAL_SHOOTING_SPEED);
 				}, pivotSubsystem).alongWith(spinIntake.get())).onFalse(Commands.runOnce(() -> {
-					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 					shooterSubsystem.setShooterReference(0, 0);
 					feederSubsystem.setFeederReference(0);
 				}));
@@ -364,7 +362,7 @@ public class CompBot_2024 extends GenericMechanism {
 		operator.createYButton().whileTrue(Commands
 				.runOnce(() -> {
 					pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL);
-					shooterSubsystem.setShooterReference(1000, 1000);
+					shooterSubsystem.setShooterReference(Constants.Physical.AMP_SHOOTING_SPEED, Constants.Physical.AMP_SHOOTING_SPEED);
 				}).alongWith(spinIntake.get())
 
 		).onFalse(Commands.runOnce(() -> {
@@ -373,13 +371,13 @@ public class CompBot_2024 extends GenericMechanism {
 		}));
 
 		// Trap Pivot
-		operator.createBButton().onTrue(Commands.runOnce(
+		operator.createBButton().onTrue(spinIntake.get().alongWith(Commands.runOnce(
 				() -> {
-					pivotSubsystem.setReference(pivotSubsystem.HIGH_SHUTTLE_LEVEL);
+					//pivotSubsystem.setReference(pivotSubsystem.HIGH_SHUTTLE_LEVEL);
 					shooterSubsystem.setShooterReference(Constants.Physical.SHUTTLE_SPEED,
 							Constants.Physical.SHUTTLE_SPEED);
-				}, pivotSubsystem).alongWith(spinIntake.get())).onFalse(Commands.runOnce(() -> {
-					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+				}, pivotSubsystem))).onFalse(Commands.runOnce(() -> {
+					//pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 					shooterSubsystem.setShooterReference(0, 0);
 				}));
 
@@ -524,8 +522,8 @@ public class CompBot_2024 extends GenericMechanism {
 			// 28, 20
 			visionSystem.addPhotonCamera("Right Camera", 3,
 					new Transform3d(
-							new Translation3d(0.4,
-									-.12,
+							new Translation3d(Units.inchesToMeters(11.59),
+									Units.inchesToMeters(-4.682), // -.12
 									Units.inchesToMeters(8.256)),
 							new Rotation3d(0, Units.degreesToRadians(28), 0).rotateBy(
 									new Rotation3d(0, 0,
