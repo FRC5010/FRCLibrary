@@ -94,7 +94,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String TOLERANCE = "Pivot Tolerance";
 
   public final double HOME_LEVEL = MIN_PIVOT_POSITION;
-  public final double AMP_LEVEL = 72;
+  public final double AMP_LEVEL = 75;
   public final double TRAP_LEVEL = 75;
   public final double LOW_SHUTTLE_LEVEL = 60;
   public final double HIGH_SHUTTLE_LEVEL = 0;

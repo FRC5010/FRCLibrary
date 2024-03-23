@@ -110,7 +110,7 @@ public class VisionMultiCam extends VisionSystem {
                 smoothedValues.storeValues(rawValues, 5);
             }
         } else {
-            smoothedValues.deprecateValues();
+            //smoothedValues.deprecateValues();
         }
     }
 

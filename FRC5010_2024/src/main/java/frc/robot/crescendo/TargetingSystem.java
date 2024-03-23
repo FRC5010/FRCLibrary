@@ -262,13 +262,13 @@ public class TargetingSystem extends GenericSubsystem {
         double targetAngle = getHorizontalAngle();
         updateControllerValues();
         double output = 0;
-        if (shooterCamera.isValidTarget()) {
-            double angle = shooterCamera.getAngleX();
-            output = angle * -0.002;
-        } else {
+        // if (shooterCamera.isValidTarget()) {
+        //     double angle = shooterCamera.getAngleX();
+        //     output = angle * -0.002;
+        // } else {
             thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
             output = thetaController.calculate(robotPose.get().getRotation().getZ());
-        }
+        // }
         SmartDashboard.putBoolean("Theta Controller at Setpoint", thetaController.atSetpoint());
         return thetaController.atSetpoint() ? 0.0
                 : output

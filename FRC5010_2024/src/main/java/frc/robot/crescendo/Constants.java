@@ -21,10 +21,10 @@ public final class Constants {
                 public static final double BOTTOM_SHOOTING_SPEED = 4800;
                 public static final double TOP_SHOOTING_SPEED = 4800;
 
-                public static final double MANUAL_SHOOTING_SPEED = 4800;
-                public static final double AMP_SHOOTING_SPEED = 2500;
+                public static final double MANUAL_SHOOTING_SPEED = 4800 * 0.8;
+                public static final double AMP_SHOOTING_SPEED = 4500;
 
-                public static final double SHUTTLE_SPEED = 3333;
+                public static final double SHUTTLE_SPEED = 1500;
 
         }
 

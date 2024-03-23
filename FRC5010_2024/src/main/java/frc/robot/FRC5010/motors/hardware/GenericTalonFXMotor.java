@@ -52,7 +52,7 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
         CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
         currentLimits.StatorCurrentLimitEnable = true;
         currentLimits.StatorCurrentLimit = limit;
-        currentLimits.SupplyCurrentLimit = 40;
+        currentLimits.SupplyCurrentLimit = 60;
         currentLimits.SupplyCurrentLimitEnable = true;
         
         TalonFXConfigurator cfg = super.getConfigurator();
