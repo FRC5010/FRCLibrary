@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 /** Add your docs here. */
 public enum AutoShotDefinition {
     STAGE_SHOT_LONG(4.50, 4.70),
-    LEFT_LONG_SHOT(5.0, 6.7);
+    LEFT_LONG_SHOT(5.0, 6.7),
+    CENTER_SHOT_LONG(4.0, 5.59);
     
 
     private final double x;

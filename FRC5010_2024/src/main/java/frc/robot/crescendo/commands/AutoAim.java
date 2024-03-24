@@ -93,9 +93,9 @@ public class AutoAim extends Command {
     Transform3d pivotOrigin = new Transform3d(
         robotPose.getCurrentPose3d().getTranslation().plus(Constants.Physical.PIVOT_ORIGIN_OFFSET.getTranslation()),
         new Rotation3d());
-    double pivotAngle = targetingSystem.getPivotAngle() - 0.0;
+    double pivotAngle = targetingSystem.getPivotAngle();
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
-    pivotSubsystem.setReference(pivotAngle);
+    pivotSubsystem.setReference(pivotAngle + 1.25); // @TODO: REMOVE CONSTANT
     
     shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
         Constants.Physical.BOTTOM_SHOOTING_SPEED);

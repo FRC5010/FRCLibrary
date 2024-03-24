@@ -151,7 +151,7 @@ public class CompBot_2024 extends GenericMechanism {
 		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
 		swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
-		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(2);
+		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(3);
 		swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
 		swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
 
@@ -525,23 +525,32 @@ public class CompBot_2024 extends GenericMechanism {
 							new Translation3d(Units.inchesToMeters(11.59),
 									Units.inchesToMeters(-4.682), // -.12
 									Units.inchesToMeters(8.256)),
-							new Rotation3d(0, Units.degreesToRadians(28), 0).rotateBy(
+							new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
 									new Rotation3d(0, 0,
-											Units.degreesToRadians(-20)))),
+											Units.degreesToRadians(-25)))), // -20
+					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
+			visionSystem.addPhotonCamera("Left Camera", 2,
+					new Transform3d(
+							new Translation3d(Units.inchesToMeters(11.59),
+									Units.inchesToMeters(4.682), // -.12
+									Units.inchesToMeters(8.256)),
+							new Rotation3d(0, Units.degreesToRadians(-25), 0).rotateBy( // -28
+									new Rotation3d(0, 0,
+											Units.degreesToRadians(30)))), // 20
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
 			visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(14.264),
 					-10, 0, 1,
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
 							new Rotation3d(0, 0, Units.degreesToRadians(180))));
-			visionSystem.addPhotonCamera("Left Camera", 4, new Transform3d(
+			visionSystem.addPhotonCamera("Top Camera", 4, new Transform3d(
 					new Translation3d(Units.inchesToMeters(10.168), Units.inchesToMeters(11.75),
 							Units.inchesToMeters(23.831)),
-					new Rotation3d(0, Units.degreesToRadians(20), 0)),
+					new Rotation3d(0, Units.degreesToRadians(-20), 0)),
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
-			// shooterCamera = new VisionPhotonAprilTagTarget("FrontCamera", 4,
-			// AprilTags.aprilTagFieldLayout);
-			// shooterCamera.setUpdateValues(true);
+			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera", 4,
+			AprilTags.aprilTagFieldLayout);
+			shooterCamera.setUpdateValues(true);
 		}
 	}
 
@@ -597,6 +606,13 @@ public class CompBot_2024 extends GenericMechanism {
 						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
 								Constants.Physical.BOTTOM_SHOOTING_SPEED)
 						.enablePivot());
+
+		NamedCommands.registerCommand("Aim Center Shot Long",
+				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_LONG.getPose(RobotContainer.getAlliance()),
+						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
+								Constants.Physical.BOTTOM_SHOOTING_SPEED)
+						);
 
 		// NamedCommands.registerCommand("Pivot Shuttle",
 		// spinIntake.get().alongWith(Commands.runOnce(() -> {

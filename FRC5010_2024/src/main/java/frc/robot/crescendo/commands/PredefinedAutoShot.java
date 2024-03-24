@@ -72,7 +72,7 @@ public class PredefinedAutoShot extends Command {
 
   public PredefinedAutoShot withVelocity(double velocity) {
     this.velocity = velocity;
-    return enableSpinup();
+    return this;
   }
 
   public PredefinedAutoShot withYawOffset(double offset) {
@@ -104,7 +104,7 @@ public class PredefinedAutoShot extends Command {
   public PredefinedAutoShot withShooterVelocity(double top, double bottom) {
     this.targetShooterSpeedTop = top;
     this.targetShooterSpeedBottom = bottom;
-    return this;
+    return enableSpinup();
   }
 
   private void calculateTargetingValues() {
