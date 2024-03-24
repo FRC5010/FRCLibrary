@@ -71,19 +71,35 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        pivotInterpolation.put(0.92794, -11.0); // -9.15
-        pivotInterpolation.put(1.0791, -5.5); // -4.55
-        pivotInterpolation.put(1.80, -2.08);
-        pivotInterpolation.put(2.08, 5.62); // 13.713
-        pivotInterpolation.put(2.23, 8.91); // 13.713
-        pivotInterpolation.put(2.48, 10.567); // 19.35
-        pivotInterpolation.put(2.93, 19.03);
-        pivotInterpolation.put(3.05, 19.38);
-        pivotInterpolation.put(3.24, 21.556);
-        pivotInterpolation.put(3.58, 21.28);
-        pivotInterpolation.put(3.87, 23.67);
-        pivotInterpolation.put(4.58, 26.40);
-        pivotInterpolation.put(5.00, 28.86);
+        // pivotInterpolation.put(0.92794, -11.0); // -9.15
+        // pivotInterpolation.put(1.0791, -5.5); // -4.55
+        // pivotInterpolation.put(1.80, -2.08);
+        // pivotInterpolation.put(2.08, 5.62); // 13.713
+        // pivotInterpolation.put(2.23, 8.91); // 13.713
+        // pivotInterpolation.put(2.48, 10.567); // 19.35
+        // pivotInterpolation.put(2.93, 19.03);
+        // pivotInterpolation.put(3.05, 19.38);
+        // pivotInterpolation.put(3.24, 21.556);
+        // pivotInterpolation.put(3.58, 21.28);
+        // pivotInterpolation.put(3.87, 23.67);
+        // pivotInterpolation.put(4.58, 26.40);
+        // pivotInterpolation.put(5.00, 28.86);
+
+        pivotInterpolation.put(1.09, -11.0);
+        pivotInterpolation.put(1.25, -7.0);
+        pivotInterpolation.put(1.57, -1.38);
+        pivotInterpolation.put(1.74, 2.81);
+        pivotInterpolation.put(2.03, 6.68);
+        pivotInterpolation.put(2.25, 14.43);
+        pivotInterpolation.put(2.50, 14.43);
+        pivotInterpolation.put(2.75, 18.28);
+        pivotInterpolation.put(3.00, 19.27);
+        pivotInterpolation.put(3.25, 20.77);
+        pivotInterpolation.put(3.55, 21.77);
+        pivotInterpolation.put(3.80, 24.77);
+        pivotInterpolation.put(3.97, 26.75);
+        pivotInterpolation.put(4.25, 26.70);
+        pivotInterpolation.put(4.75, 29.70);
         
         // pivotInterpolation.put(3.25, 24.25); // 26.01
         // pivotInterpolation.put(3.54, 26.0); // 28.11
@@ -216,8 +232,13 @@ public class TargetingSystem extends GenericSubsystem {
     public double getHorizontalAngle() {
         double x = currentTarget.get().getTranslation().getX() - robotPose.get().getTranslation().getX();
         double y = currentTarget.get().getTranslation().getY() - robotPose.get().getTranslation().getY();
+
+        SmartDashboard.putNumber("Horizontal Targeting Difference X:", x);
+        SmartDashboard.putNumber("Horizontal Targeting Difference Y:", y);
         double static_angle = Math.atan2(y, x);
+        SmartDashboard.putNumber("Horizontal Targeting Static Angle Radians:", static_angle);
         values.set(HORIZONTAL_ANGLE, Units.radiansToDegrees(static_angle));
+        SmartDashboard.putNumber("Horizontal Targeting Static Angle Degrees", Units.radiansToDegrees(static_angle));
         return Units.radiansToDegrees(static_angle);
     }
 
@@ -291,6 +312,10 @@ public class TargetingSystem extends GenericSubsystem {
 
     public void periodic() {
         ranExtrapolation = false;
+        SmartDashboard.putNumber("Targeting Pose X", currentTarget.get().getX());
+        SmartDashboard.putNumber("Targeting Pose Y", currentTarget.get().getY());
+        SmartDashboard.putNumber("Robot Targeting Pose X", currentTarget.get().getX());
+        SmartDashboard.putNumber("Robot Targeting Pose Y", robotPose.get().getY());
     }
 
 }

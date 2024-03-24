@@ -92,6 +92,7 @@ public class PivotSubsystem extends GenericSubsystem {
 
   private final double DEFAULT_TOLERANCE = 0.5;
   private final String TOLERANCE = "Pivot Tolerance";
+  private final String I_ZONE = "kI ZONE";
 
   public final double HOME_LEVEL = MIN_PIVOT_POSITION;
   public final double AMP_LEVEL = 79;
@@ -114,6 +115,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kP, RobotBase.isReal() ? 0.015 : 0.01);
     values.declare(PIVOT_kD, RobotBase.isReal() ? 0.0000 : 0.003);
     values.declare(PIVOT_kS, RobotBase.isReal() ? 0.22 : 0.0);
+    values.declare(I_ZONE, 10.0);
     values.declare(PIVOT_kI, 0.00002);
     values.declare(PIVOT_kA, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
@@ -128,6 +130,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(vals.LEFT_LIMIT_HIT.name(), false);
     values.declare(vals.RIGHT_LIMIT_HIT.name(), false);
     values.declare(TOLERANCE, DEFAULT_TOLERANCE);
+
     
 
     interpolationTree = new InterpolatingDoubleTreeMap();
@@ -242,6 +245,7 @@ public class PivotSubsystem extends GenericSubsystem {
       pivotPID.setP(values.getDouble(PIVOT_kP));
       pivotPID.setD(values.getDouble(PIVOT_kD));
       pivotPID.setI(values.getDouble(PIVOT_kI));
+      pivotPID.setIZone(values.getDouble(I_ZONE));
       pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
     }
     values.set(vals.RUN_REF.name(), true);
