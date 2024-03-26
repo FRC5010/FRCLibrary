@@ -1,7 +1,10 @@
 {
   "download": {
-    "localDir": "C:\\Users\\robot\\Downloads\\Plainfield Logs",
+    "localDir": "D:\\Test Logs",
     "remoteDir": "/u/logs",
     "serverTeam": "5010"
+  },
+  "output": {
+    "outputFolder": "C:\\Dev\\FRCLibrary\\Logs\\Test Logs"
   }
 }

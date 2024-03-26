@@ -489,7 +489,7 @@ public class SwerveDrive
     }
 
     // Display commanded speed for testing
-    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.INFO)
+    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
     {
       SmartDashboard.putString("RobotVelocity", velocity.toString());
     }

@@ -42,7 +42,7 @@ public class MK4iSwerveModule extends GenericSwerveModule {
         );
         public static final SwerveModuleConstants MK4I_L3_KRAKEN_NEO = new SwerveModuleConstants(
                 0.1116923252,
-                (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0),
+                (16.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0),
                 true,
                 (14.0 / 50.0) * (10.0 / 60.0),
                 false,
