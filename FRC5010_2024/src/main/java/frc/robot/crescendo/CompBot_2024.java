@@ -17,7 +17,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -168,6 +167,7 @@ public class CompBot_2024 extends GenericMechanism {
 				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
 				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera);
+		targetingSystem.useShooterCamera(false);
 	}
 
 	@Override
@@ -445,9 +445,6 @@ public class CompBot_2024 extends GenericMechanism {
 		}, ledSubsystem)
 				.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
 		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
-
-		// shooterCamera.setTargetTagId(RobotContainer.chooseAllianceColor() ==
-		// Color.BLUE ? 7 : 4);
 	}
 
 	@Override
@@ -502,6 +499,15 @@ public class CompBot_2024 extends GenericMechanism {
 		driver.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
 		driver.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
 
+		driver.createRightBumper().whileTrue(
+				Commands.run(() -> shooterSubsystem.setShooterReference(Constants.Physical.MANUAL_SHOOTING_SPEED,
+						Constants.Physical.MANUAL_SHOOTING_SPEED)).finallyDo(() -> {
+							shooterSubsystem.setShooterReference(0, 0);
+							intakeSubsystem.setReference(0, 0);
+						}));
+		// Feed Note into Shooter
+		driver.createLeftBumper().whileTrue(runFeeder.get());
+
 		driver.createDownPovButton()
 				.onTrue(zeroClimb.get());
 
@@ -543,8 +549,8 @@ public class CompBot_2024 extends GenericMechanism {
 									new Rotation3d(0, 0,
 											Units.degreesToRadians(30)))), // 20
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
-			visionSystem.addLimeLightTargetCam("orange", Units.inchesToMeters(14.264),
-					-10, 0, 1,
+			visionSystem.addLimeLightTargetCam("orange", () -> Units.inchesToMeters(14.264),
+					() -> -10, 0, 1,
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
 							new Rotation3d(0, 0, Units.degreesToRadians(180))));
@@ -553,9 +559,23 @@ public class CompBot_2024 extends GenericMechanism {
 							Units.inchesToMeters(23.831)),
 					new Rotation3d(0, Units.degreesToRadians(-20), 0)),
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
-			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera", 4,
-			AprilTags.aprilTagFieldLayout);
+
+			shooterCamera = new VisionPhotonAprilTagTarget("FrontCamera",
+					() -> {
+						return Math.sin(pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET)
+								* Constants.Physical.SHOOTER_CAM_LENS_TO_SPLINE + Constants.Physical.SPLINE_HEIGHT;
+					},
+					() -> {
+						return pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET;
+					},
+					() -> {
+						return Math.cos(pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET)
+								* Constants.Physical.SHOOTER_CAM_LENS_TO_SPLINE + Constants.Physical.SPLINE_X;
+					},
+					AprilTags.aprilTagFieldLayout.getTagPose(4).get().getZ(), 4, AprilTags.aprilTagFieldLayout,
+					"Vision");
 			shooterCamera.setUpdateValues(true);
+			shooterCamera.setTargetTagId(RobotContainer.chooseAllianceColor() == Color.BLUE ? 7 : 4);
 		}
 	}
 

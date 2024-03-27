@@ -43,6 +43,7 @@ public class AutoAim extends Command {
   double cycleCounter = 0;
   double timeoutCounter = 0;
   boolean useAutoDrive = false;
+  boolean useShooterCamera = false;
 
   /** Creates a new AutoAim. */
 
@@ -85,6 +86,7 @@ public class AutoAim extends Command {
     }
     cycleCounter = 0;
     timeoutCounter = 0;
+	useShooterCamera = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -93,9 +95,19 @@ public class AutoAim extends Command {
     Transform3d pivotOrigin = new Transform3d(
         robotPose.getCurrentPose3d().getTranslation().plus(Constants.Physical.PIVOT_ORIGIN_OFFSET.getTranslation()),
         new Rotation3d());
-    double pivotAngle = targetingSystem.getPivotAngle();
+    double pivotAngle = pivotSubsystem.HOME_LEVEL;
+	if (!useShooterCamera) {	
+		pivotAngle = targetingSystem.getPivotAngle();
+	}
+	if (pivotSubsystem.isAtTarget() || useShooterCamera) {
+		Optional<Double> shootCamAngle = targetingSystem.getShooterCamAngle();
+		if (shootCamAngle.isPresent()) {
+			useShooterCamera = true;
+			pivotAngle = shootCamAngle.get();
+		}
+	}
+    pivotSubsystem.setReference(pivotAngle);
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
-    pivotSubsystem.setReference(pivotAngle); 
     
     shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
         Constants.Physical.BOTTOM_SHOOTING_SPEED);

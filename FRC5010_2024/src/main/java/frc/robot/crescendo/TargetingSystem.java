@@ -32,6 +32,7 @@ public class TargetingSystem extends GenericSubsystem {
     private Supplier<Pose3d> robotPose;
     private SwerveDrivetrain swerve;
     private VisionSystem shooterCamera;
+	private boolean useShooterCamera = false;
 
     private PIDController thetaController;
     // Input/Output Values
@@ -144,6 +145,9 @@ public class TargetingSystem extends GenericSubsystem {
         values.set(TOLERANCE, DEFAULT_TOLERANCE);
     }
 
+	public void useShooterCamera(boolean use) {
+		useShooterCamera = use;
+	}
     public void init() {
         thetaController.reset();
     }
@@ -179,9 +183,17 @@ public class TargetingSystem extends GenericSubsystem {
         ChassisSpeeds speeds = swerve.getChassisSpeeds();
         extrapolateTargetPosition(launchVelocity, speeds, extrapolatedTarget);
         double angle = interpolatePivotAngle(extrapolatedTarget, robotPose.get());
+
         values.set(PIVOT_ANGLE, angle);
         return angle;
     }
+
+	public Optional<Double> getShooterCamAngle() {
+		if (useShooterCamera && shooterCamera.isValidTarget()) {
+			return Optional.of(interpolatePivotAngle(shooterCamera.getDistance()));
+		}
+		return Optional.empty();
+	}
 
     public static double getShooterAngle(double pivotAngle) {
         return Constants.Physical.SHOOTER_ANGLE_OFFSET - pivotAngle;
@@ -270,7 +282,7 @@ public class TargetingSystem extends GenericSubsystem {
         return Units.radiansToDegrees(angle);
     }
 
-    public static double interpolatePivotAngle(double distance) {
+    public double interpolatePivotAngle(double distance) {
         return pivotInterpolation.get(distance);
     }
 
