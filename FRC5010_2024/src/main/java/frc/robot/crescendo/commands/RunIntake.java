@@ -86,7 +86,7 @@ public class RunIntake extends GenericCommand {
 
     Map<NoteState, Command> intakeCommands = new HashMap<>();
     feederCommand = Commands
-        .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()),
+        .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble() * (feederSubsystem.isDetectBeamBroken() ? 1 : 0  * 0.7)),
             feederSubsystem)
         .until(() -> feederSubsystem.getNoteState() == NoteState.Holding || 0 == speed.getAsDouble())
         .finallyDo(() -> {
