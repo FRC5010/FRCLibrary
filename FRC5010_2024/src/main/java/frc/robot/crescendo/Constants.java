@@ -15,6 +15,10 @@ public final class Constants {
                 public static final Transform3d PIVOT_ORIGIN_OFFSET = new Transform3d(new Translation3d(0.0, 0.0, 0.65),
                                 new Rotation3d());
                 public static final double SHOOTER_ANGLE_OFFSET = 52.071; // TODO: Measure this accurately on real robot
+                public static final double SHOOTER_CAM_ANGLE_OFFSET = 64 + 5.630592; // TODO: Measure this accurately on real robot
+				public static final double SHOOTER_CAM_LENS_TO_SPLINE = 4.752489;
+				public static final double SPLINE_HEIGHT = 20.528445;
+				public static final double SPLINE_X = 11.4375;
                 public static final double PIVOT_EXIT_POINT_ANGLE_OFFSET = 145.112; // TODO: Measure this accurately
                 public static final double PIVOT_SHOOTER_RADIUS = 0.245; // Meters
 

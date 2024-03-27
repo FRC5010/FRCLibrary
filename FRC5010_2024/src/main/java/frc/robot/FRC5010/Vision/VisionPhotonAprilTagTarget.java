@@ -6,6 +6,7 @@ package frc.robot.FRC5010.Vision;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.DoubleSupplier;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
@@ -13,112 +14,121 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 /** Add your docs here. */
 public class VisionPhotonAprilTagTarget extends VisionSystem {
-    protected PhotonCamera camera;
-    protected AprilTagFieldLayout fieldLayout;
-    protected int targetTagId = 0;
+	protected PhotonCamera camera;
+	protected int targetTagId = 0;
 
-    /**
-     * Creates a new LimeLightVision.
-     */
+	/**
+	 * Creates a new LimeLightVision.
+	 */
 
-    // makes a new limelight that is vertical, portrait
-    public VisionPhotonAprilTagTarget(String name, int colIndex,
-            AprilTagFieldLayout fieldLayout) {
-        super(name, colIndex, fieldLayout);
-        this.fieldLayout = fieldLayout;
-        camera = new PhotonCamera(name);
-    }
+	// makes a new limelight that is vertical, portrait
+	public VisionPhotonAprilTagTarget(String name, DoubleSupplier camHeight, DoubleSupplier camAngle,
+			DoubleSupplier cameraDistance,
+			double targetHeight,
+			int colIndex,
+			AprilTagFieldLayout fieldLayout, String driverTabName) {
+		super(name, camHeight, camAngle, cameraDistance, targetHeight, colIndex, fieldLayout, driverTabName);
+		this.fieldLayout = fieldLayout;
+		camera = new PhotonCamera(name);
 
-    public void setTargetTagId(int targetTagId) {
-        this.targetTagId = targetTagId;
-    }
+		visionLayout.addNumber(name + " Height", () -> camHeight.getAsDouble()).withSize(1, 1);
+		visionLayout.addNumber(name + " Angle", () -> camAngle.getAsDouble()).withSize(1, 1);
+		visionLayout.addNumber(name + " XPos", () -> cameraDistance.getAsDouble()).withSize(1, 1);
+	}
 
-    public int getTargetTagId() {
-        return targetTagId;
-    }
+	public void setTargetTagId(int targetTagId) {
+		this.targetTagId = targetTagId;
+	}
 
-    @Override
-    public void update() {
-        rawValues.clearValues();
-        updateViaNetworkTable(camera, name);
-    }
+	public int getTargetTagId() {
+		return targetTagId;
+	}
 
-    public void updateViaNetworkTable(PhotonCamera camera, String path) {
-        var camResult = camera.getLatestResult();
-        List<PhotonTrackedTarget> targetInit = null;
-        double deltaTimeInit = Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
-        if (camResult.hasTargets()) {
-            targetInit = camResult.getTargets();
-            Optional<PhotonTrackedTarget> target = targetInit.stream().filter(it -> it.getFiducialId() == targetTagId)
-                    .findFirst();
-            double deltaTime = deltaTimeInit;
-            if (target.isPresent()) {
-                updateValues(rawValues,
-                        () -> target.get().getYaw(),
-                        () -> target.get().getPitch(),
-                        () -> target.get().getArea(),
-                        () -> camResult.hasTargets(),
-                        () -> deltaTime,
-                        () -> target.get().getFiducialId(),
-                        () -> fieldLayout.getTagPose(target.get().getFiducialId()).orElse(null),
-                        () -> null);
-            } else {
-                updateValues(rawValues,
-                        () -> 0,
-                        () -> 0,
-                        () -> 0,
-                        () -> false,
-                        () -> 0,
-                        () -> 0,
-                        () -> null,
-                        () -> null);
-            }
-        } else {
-            updateValues(rawValues,
-                    () -> 0,
-                    () -> 0,
-                    () -> 0,
-                    () -> false,
-                    () -> 0,
-                    () -> 0,
-                    () -> null,
-                    () -> null);
-        }
-    }
+	@Override
+	public void update() {
+		rawValues.clearValues();
+		updateViaNetworkTable(camera, name);
+	}
 
-    // name is assigned in the constructor, and will give you the correct limelight
-    // table
-    // aka use name whenever you use getTable()
+	public void updateViaNetworkTable(PhotonCamera camera, String path) {
+		var camResult = camera.getLatestResult();
+		List<PhotonTrackedTarget> targetInit = null;
+		double deltaTimeInit = Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
+		if (camResult.hasTargets()) {
+			targetInit = camResult.getTargets();
+			Optional<PhotonTrackedTarget> target = targetInit.stream().filter(it -> it.getFiducialId() == targetTagId)
+					.findFirst();
+			double deltaTime = deltaTimeInit;
+			if (target.isPresent()) {
+				updateValues(rawValues,
+						() -> target.get().getYaw(),
+						() -> target.get().getPitch(),
+						() -> target.get().getArea(),
+						() -> camResult.hasTargets(),
+						() -> deltaTime,
+						() -> target.get().getFiducialId(),
+						() -> fieldLayout.getTagPose(target.get().getFiducialId()).orElse(null),
+						() -> null);
+			} else {
+				updateValues(rawValues,
+						() -> 0,
+						() -> 0,
+						() -> 0,
+						() -> false,
+						() -> 0,
+						() -> 0,
+						() -> null,
+						() -> null);
+			}
+		} else {
+			updateValues(rawValues,
+					() -> 0,
+					() -> 0,
+					() -> 0,
+					() -> false,
+					() -> 0,
+					() -> 0,
+					() -> null,
+					() -> null);
+		}
+	}
 
-    public int getTargetFiducial() {
-        return rawValues.getFiducialId();
-    }
+	// name is assigned in the constructor, and will give you the correct limelight
+	// table
+	// aka use name whenever you use getTable()
 
-    public void setLight(boolean on) {
-        camera.setLED(on ? VisionLEDMode.kOn : VisionLEDMode.kOff);
-    }
+	public int getTargetFiducial() {
+		return rawValues.getFiducialId();
+	}
 
-    public void flashLight() {
-        camera.setLED(VisionLEDMode.kBlink);
-    }
+	public void setLight(boolean on) {
+		camera.setLED(on ? VisionLEDMode.kOn : VisionLEDMode.kOff);
+	}
 
-    public boolean isLightOn() {
-        return camera.getLEDMode().compareTo(VisionLEDMode.kOn) == 0;
-    }
+	public void flashLight() {
+		camera.setLED(VisionLEDMode.kBlink);
+	}
 
-    public void toggleLight() {
-        camera.setLED(camera.getLEDMode() == VisionLEDMode.kOff ? VisionLEDMode.kOn : VisionLEDMode.kOff);
-    }
+	public boolean isLightOn() {
+		return camera.getLEDMode().compareTo(VisionLEDMode.kOn) == 0;
+	}
 
-    public void setPipeline(int pipeline) {
-        camera.setPipelineIndex(pipeline);
-    }
+	public void toggleLight() {
+		camera.setLED(camera.getLEDMode() == VisionLEDMode.kOff ? VisionLEDMode.kOn : VisionLEDMode.kOff);
+	}
 
-    public void setSnapshotMode(int snapVal) {
-        camera.takeInputSnapshot();
-    }
+	public void setPipeline(int pipeline) {
+		camera.setPipelineIndex(pipeline);
+	}
+
+	public void setSnapshotMode(int snapVal) {
+		camera.takeInputSnapshot();
+	}
 
 }

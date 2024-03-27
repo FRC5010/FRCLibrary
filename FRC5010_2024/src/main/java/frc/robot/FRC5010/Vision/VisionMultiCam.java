@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -50,8 +51,8 @@ public class VisionMultiCam extends VisionSystem {
         updateValues = true;
     }
 
-    public void addLimeLightTargetCam(String name, double cameraHeight, double cameraAngle, double targetHeight, int colIndex, Transform3d cameraTransform3d) {
-        cameras.put(name, new VisionLimeLightLib(name, cameraHeight, cameraAngle, targetHeight, colIndex, fieldLayout, "Vision", cameraTransform3d));
+    public void addLimeLightTargetCam(String name, DoubleSupplier cameraHeight, DoubleSupplier cameraAngle, double targetHeight, int colIndex, Transform3d cameraTransform3d) {
+        cameras.put(name, new VisionLimeLightLib(name, cameraHeight, cameraAngle, () -> 0, targetHeight, colIndex, fieldLayout, "Vision", cameraTransform3d));
         names.add(name);
         updateValues = true;
         this.cameraToRobot = cameraTransform3d;
