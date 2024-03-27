@@ -560,18 +560,10 @@ public class CompBot_2024 extends GenericMechanism {
 					new Rotation3d(0, Units.degreesToRadians(-20), 0)),
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
 
-			shooterCamera = new VisionPhotonAprilTagTarget("FrontCamera",
-					() -> {
-						return Math.sin(pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET)
-								* Constants.Physical.SHOOTER_CAM_LENS_TO_SPLINE + Constants.Physical.SPLINE_HEIGHT;
-					},
-					() -> {
-						return pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET;
-					},
-					() -> {
-						return Math.cos(pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET)
-								* Constants.Physical.SHOOTER_CAM_LENS_TO_SPLINE + Constants.Physical.SPLINE_X;
-					},
+			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
+					() -> 0,
+					() -> 0,
+					() -> 0,
 					AprilTags.aprilTagFieldLayout.getTagPose(4).get().getZ(), 4, AprilTags.aprilTagFieldLayout,
 					"Vision");
 			shooterCamera.setUpdateValues(true);
