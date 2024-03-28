@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -32,7 +33,7 @@ public class TargetingSystem extends GenericSubsystem {
     private Supplier<Pose3d> robotPose;
     private SwerveDrivetrain swerve;
     private VisionSystem shooterCamera;
-	private boolean useShooterCamera = false;
+    private boolean useShooterCamera = false;
 
     private PIDController thetaController;
     // Input/Output Values
@@ -42,6 +43,7 @@ public class TargetingSystem extends GenericSubsystem {
     private final String TOLERANCE = "Targeting Tolerance";
 
     private static InterpolatingDoubleTreeMap pivotInterpolation = new InterpolatingDoubleTreeMap();
+    private static InterpolatingDoubleTreeMap shooterInterpolation = new InterpolatingDoubleTreeMap();
 
     // Output Values
     private final String TURN_POWER = "Turn Power";
@@ -72,20 +74,6 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        // pivotInterpolation.put(0.92794, -11.0); // -9.15
-        // pivotInterpolation.put(1.0791, -5.5); // -4.55
-        // pivotInterpolation.put(1.80, -2.08);
-        // pivotInterpolation.put(2.08, 5.62); // 13.713
-        // pivotInterpolation.put(2.23, 8.91); // 13.713
-        // pivotInterpolation.put(2.48, 10.567); // 19.35
-        // pivotInterpolation.put(2.93, 19.03);
-        // pivotInterpolation.put(3.05, 19.38);
-        // pivotInterpolation.put(3.24, 21.556);
-        // pivotInterpolation.put(3.58, 21.28);
-        // pivotInterpolation.put(3.87, 23.67);
-        // pivotInterpolation.put(4.58, 26.40);
-        // pivotInterpolation.put(5.00, 28.86);
-
         pivotInterpolation.put(1.09, -11.0);
         pivotInterpolation.put(1.25, -7.0);
         pivotInterpolation.put(1.57, -1.38);
@@ -101,32 +89,24 @@ public class TargetingSystem extends GenericSubsystem {
         pivotInterpolation.put(3.97, 26.75);
         pivotInterpolation.put(4.25, 26.70);
         pivotInterpolation.put(4.75, 29.70);
-        
-        // pivotInterpolation.put(3.25, 24.25); // 26.01
-        // pivotInterpolation.put(3.54, 26.0); // 28.11
-        // pivotInterpolation.put(3.75, 27.25); // -4.55
-        // pivotInterpolation.put(4.0, 28.25); // -2.09
-        // pivotInterpolation.put(4.25, 29.25); // 3.885
-        // pivotInterpolation.put(4.5, 29.5); // 8.799
-        // pivotInterpolation.put(4.75, 30.5); // 13.713
+        pivotInterpolation.put(5.0, 29.8);
 
-        // pivotInterpolation.put(0.92794, -11.0); // -9.15
-        // pivotInterpolation.put(1.0791, -5.5); // -4.55
-        // pivotInterpolation.put(1.80, -2.08);
-        // pivotInterpolation.put(2.08, 5.62); // 13.713
-        // pivotInterpolation.put(2.23, 8.91); // 13.713
-        // pivotInterpolation.put(2.48, 10.567); // 19.35
-        // pivotInterpolation.put(2.93, 19.03);
-        // pivotInterpolation.put(3.05, 19.38);
-        // pivotInterpolation.put(3.24, 21.556);
-        // pivotInterpolation.put(3.58, 21.28);
-        // pivotInterpolation.put(3.87, 23.67);
-        // pivotInterpolation.put(4.58, 26.40);
-        // pivotInterpolation.put(5.00, 28.86);
+        // Shuttle Pivot Values
+        pivotInterpolation.put(5.1, -10.0);
+        pivotInterpolation.put(15.0, -10.0);
+
+        shooterInterpolation.put(1.0, Constants.Physical.SUBWOOFER_SHOT);
+        shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
+        shooterInterpolation.put(5.1, Constants.Physical.SHUTTLE_SPEED);
+        shooterInterpolation.put(15.0, Constants.Physical.TOP_SHOOTING_SPEED);
     }
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
         return alliance == Alliance.Blue ? Constants.Field.BLUE_SHOT_POSE : Constants.Field.RED_SHOT_POSE;
+    }
+
+    public static Pose3d getDefaultTarget() {
+        return getSpeakerTarget(Alliance.Blue);
     }
 
     public void setTarget(Pose3d target) {
@@ -145,9 +125,10 @@ public class TargetingSystem extends GenericSubsystem {
         values.set(TOLERANCE, DEFAULT_TOLERANCE);
     }
 
-	public void useShooterCamera(boolean use) {
-		useShooterCamera = use;
-	}
+    public void useShooterCamera(boolean use) {
+        useShooterCamera = use;
+    }
+
     public void init() {
         thetaController.reset();
     }
@@ -188,12 +169,32 @@ public class TargetingSystem extends GenericSubsystem {
         return angle;
     }
 
-	public Optional<Double> getShooterCamAngle() {
-		if (useShooterCamera && shooterCamera.isValidTarget()) {
-			return Optional.of(interpolatePivotAngle(shooterCamera.getDistance()));
-		}
-		return Optional.empty();
-	}
+    public double getShooterSpeed() {
+        return shooterInterpolation.get(getFlatDistanceToTarget());
+    }
+
+    public double getShooterSpeed(double distance) {
+        return shooterInterpolation.get(distance);
+    }
+
+    public static double interpolateShooterSpeed(double distance) {
+        return shooterInterpolation.get(distance);
+    }
+
+    public Optional<Double> getShooterCamAngle() {
+        if (useShooterCamera && shooterCamera.isValidTarget()) {
+            return Optional.of(interpolatePivotAngle(shooterCamera.getDistance()));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Double> getShooterYawPower() {
+        double turnFactor = -0.002;
+        if (useShooterCamera && shooterCamera.isValidTarget()) {
+            return Optional.of(shooterCamera.getAngleX() * turnFactor);
+        }
+        return Optional.empty();
+    }
 
     public static double getShooterAngle(double pivotAngle) {
         return Constants.Physical.SHOOTER_ANGLE_OFFSET - pivotAngle;
@@ -259,6 +260,11 @@ public class TargetingSystem extends GenericSubsystem {
                 .getDistance(robotPose.get().getTranslation().toTranslation2d());
     }
 
+    public double getFlatDistanceToTarget(Pose2d pose) {
+        return currentTarget.get().getTranslation().toTranslation2d()
+                .getDistance(pose.getTranslation());
+    }
+
     public double getHorizontalAngle(double launchVelocity) {
         ChassisSpeeds speeds = swerve.getChassisSpeeds();
         // Extrapolate target position based on robot velocity
@@ -282,7 +288,7 @@ public class TargetingSystem extends GenericSubsystem {
         return Units.radiansToDegrees(angle);
     }
 
-    public double interpolatePivotAngle(double distance) {
+    public static double interpolatePivotAngle(double distance) {
         return pivotInterpolation.get(distance);
     }
 
@@ -295,7 +301,7 @@ public class TargetingSystem extends GenericSubsystem {
                 .get(distance);
     }
 
-    public double getYawToTarget(Pose3d robot){
+    public double getYawToTarget(Pose3d robot) {
         double x = currentTarget.get().getTranslation().getX() - robot.getTranslation().getX();
         double y = currentTarget.get().getTranslation().getY() - robot.getTranslation().getY();
         double static_angle = Math.atan2(y, x);
@@ -308,13 +314,10 @@ public class TargetingSystem extends GenericSubsystem {
         double targetAngle = getHorizontalAngle();
         updateControllerValues();
         double output = 0;
-        // if (shooterCamera.isValidTarget()) {
-        //     double angle = shooterCamera.getAngleX();
-        //     output = angle * -0.002;
-        // } else {
-            thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
-            output = thetaController.calculate(robotPose.get().getRotation().getZ());
-        // }
+
+        thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
+        output = thetaController.calculate(robotPose.get().getRotation().getZ());
+
         SmartDashboard.putBoolean("Theta Controller at Setpoint", thetaController.atSetpoint());
         return thetaController.atSetpoint() ? 0.0
                 : output

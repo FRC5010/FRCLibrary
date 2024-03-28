@@ -99,7 +99,7 @@ public class PivotSubsystem extends GenericSubsystem {
   public final double TRAP_LEVEL = 75;
   public final double LOW_SHUTTLE_LEVEL = 60;
   public final double HIGH_SHUTTLE_LEVEL = 0;
-  public final double INTAKE_LEVEL = HOME_LEVEL; // TODO: Make accurate
+  public final double INTAKE_LEVEL = 0; // TODO: Make accurate
   public final double PODIUM_SHOT = 12.3;
   
   private double referencePosition = HOME_LEVEL;

@@ -35,10 +35,7 @@ public class RunIntake extends GenericCommand {
   Controller rumbleController;
 
   Command feederCommand;
-  Command holdingCommand;
   Command selectorCommand;
-  Command loadedCommand;
-  Command shootingCommand;
 
   Supplier<Command> allowIntakeRunCommand;
 
@@ -105,15 +102,6 @@ public class RunIntake extends GenericCommand {
                 Commands.waitSeconds(1)).finallyDo(() -> rumbleController.setRumble(0)))
                 .onlyIf(() -> null != rumbleController && feederSubsystem.getNoteState() == NoteState.Holding));
 
-    holdingCommand = Commands.run(
-        () -> feederSubsystem.feederStateMachine(
-            Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
-        feederSubsystem).until(() -> 0 == speed.getAsDouble()).onlyIf(() -> DriverStation.isTeleop());
-    loadedCommand = Commands.run(
-        () -> feederSubsystem.feederStateMachine(
-            Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
-        feederSubsystem).until(() -> 0 == speed.getAsDouble()).onlyIf(() -> DriverStation.isTeleop());
-
   
     intakeCommands.put(NoteState.Empty, feederCommand);
     intakeCommands.put(NoteState.Holding, allowIntakeRunCommand.get());
@@ -134,7 +122,7 @@ public class RunIntake extends GenericCommand {
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
       if (velocity < 0) {
-        // pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
+        pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
       }
       // feederStopFlag = true;
       // if (feederSubsystem.isBeamBroken()) {

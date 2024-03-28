@@ -300,7 +300,7 @@ public class CompBot_2024 extends GenericMechanism {
 						.alongWith(spinIntake.get()))
 				.onFalse(Commands.waitSeconds(0.05).andThen(
 						Commands.runOnce(() -> pivotSubsystem
-								.setReference(pivotSubsystem.HOME_LEVEL))
+								.setReference(pivotSubsystem.INTAKE_LEVEL))
 								.unless(() -> autoaimButton.getAsBoolean())));
 
 		driver.createYButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
@@ -354,10 +354,12 @@ public class CompBot_2024 extends GenericMechanism {
 		// Podium Pivot
 		operator.createXButton().onTrue(Commands.runOnce(
 				() -> {
+					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 					shooterSubsystem.setShooterReference(Constants.Physical.SUBWOOFER_SHOT, Constants.Physical.SUBWOOFER_SHOT);
 				}, pivotSubsystem)).onFalse(Commands.runOnce(() -> {
 					shooterSubsystem.setShooterReference(0, 0);
 					feederSubsystem.setFeederReference(0);
+					pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
 				}));
 
 
@@ -586,6 +588,13 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Intake Note",
 				runIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding));
 		NamedCommands.registerCommand("Intake and Load Note", runIntake.get());
+		NamedCommands.registerCommand("Intake And Shoot", Commands.run(() -> {
+			intakeSubsystem.setReference(2000, 2000);
+			feederSubsystem.setFeederSpeed(1);
+		}).until(() -> !feederSubsystem.isEmptied()).andThen(Commands.idle(intakeSubsystem).until(() -> feederSubsystem.isEmptied()).finallyDo(() -> {
+			intakeSubsystem.setReference(0, 0);
+			feederSubsystem.setFeederSpeed(0);
+		})));
 		NamedCommands.registerCommand("Auto Intake", autoIntake.get());
 
 		NamedCommands.registerCommand("Auto Aim",
@@ -598,7 +607,7 @@ public class CompBot_2024 extends GenericMechanism {
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
 						true).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
 		NamedCommands.registerCommand("Blind Shot",
-				runShooter.get().until(()->shooterSubsystem.isAtTarget()).withTimeout(0.70).andThen(blindShot.get()));
+				runShooter.get().until(()->shooterSubsystem.isAtTarget() && shooterSubsystem.getTopReference() != 0).withTimeout(0.70).andThen(blindShot.get()));
 
 		NamedCommands.registerCommand("Just Shoot", blindShot.get());
 
@@ -618,6 +627,8 @@ public class CompBot_2024 extends GenericMechanism {
 							targetingSystem.resetToleranceToDefaults();
 							pivotSubsystem.resetToleranceToDefaults();
 						}));
+
+		
 
 		NamedCommands.registerCommand("Aim Stage Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(RobotContainer.getAlliance()),
@@ -657,8 +668,15 @@ public class CompBot_2024 extends GenericMechanism {
 					Constants.Physical.BOTTOM_SHOOTING_SPEED);
 		}).andThen(spinIntake.get()).alongWith(blindShot.get()).andThen(() -> {
 			pivotSubsystem.setReference(
-					pivotSubsystem.HOME_LEVEL);
+					pivotSubsystem.INTAKE_LEVEL);
 		}));
+
+		NamedCommands.registerCommand("Predefined Note 2", Commands.runOnce(() -> {
+			pivotSubsystem.setReference(AutoShotDefinition.B2_SHOT.getPivotAngle());
+			shooterSubsystem.setShooterReference(AutoShotDefinition.B2_SHOT.getShooterSpeed(), AutoShotDefinition.B2_SHOT.getShooterSpeed());
+		}));
+
+
 	}
 
 	public void disabledBehavior() {
