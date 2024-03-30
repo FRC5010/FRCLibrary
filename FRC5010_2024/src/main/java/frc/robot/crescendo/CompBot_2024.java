@@ -10,11 +10,14 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -25,8 +28,10 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.LogLevel;
 import frc.robot.FRC5010.Vision.AprilTags;
+import frc.robot.FRC5010.Vision.VisionLimeLight;
 import frc.robot.FRC5010.Vision.VisionMultiCam;
 import frc.robot.FRC5010.Vision.VisionPhotonAprilTagTarget;
+import frc.robot.FRC5010.Vision.VisionSystem.Rotation;
 import frc.robot.FRC5010.arch.GenericMechanism;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
@@ -70,6 +75,7 @@ public class CompBot_2024 extends GenericMechanism {
 
 	private VisionMultiCam visionSystem;
 	private VisionPhotonAprilTagTarget shooterCamera;
+	private VisionLimeLight noteCamera;
 	private GenericGyro gyro;
 	private ClimbSubsystem climbSubsystem;
 	private MotorController5010 leftClimbMotor;
@@ -94,7 +100,7 @@ public class CompBot_2024 extends GenericMechanism {
 	public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
 		super(visual, displayTab);
 
-		RobotContainer.setLoggingLevel(LogLevel.DEBUG);
+		RobotContainer.setLoggingLevel(LogLevel.COMPETITION);
 
 		ledSubsystem = new SegmentedLedSystem(0, 34, visual);
 		ledSubsystem.setWholeStripState((Integer i) -> RobotContainer.chooseAllianceColor().getColor8Bit());
@@ -117,8 +123,10 @@ public class CompBot_2024 extends GenericMechanism {
 
 		topShooterMotor = (KrakenX60) MotorFactory.KrakenX60(12).invert(true);
 		topShooterMotor.enableFOC(false);
+		topShooterMotor.setCurrentLimit(100);
 		bottomShooterMotor = (KrakenX60) MotorFactory.KrakenX60(14).invert(true);
 		bottomShooterMotor.enableFOC(false);
+		bottomShooterMotor.setCurrentLimit(100);
 
 		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
 
@@ -167,7 +175,7 @@ public class CompBot_2024 extends GenericMechanism {
 				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
 				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera);
-		targetingSystem.useShooterCamera(false);
+		targetingSystem.useShooterCamera(true);
 	}
 
 	@Override
@@ -208,7 +216,7 @@ public class CompBot_2024 extends GenericMechanism {
 		autoIntake = () -> runIntake
 				.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).deadlineWith(
 						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
-								visionSystem.getCamera("orange")))
+								noteCamera))
 				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
 
 		rumbleOperator = () -> Commands
@@ -221,8 +229,6 @@ public class CompBot_2024 extends GenericMechanism {
 							Constants.Physical.SUBWOOFER_SHOT);
 
 				});
-
-
 
 		runFeeder = () -> Commands
 				.run(() -> {
@@ -298,9 +304,9 @@ public class CompBot_2024 extends GenericMechanism {
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
 						() -> (JoystickToSwerve) drive.getDefaultCommand())
 						.alongWith(spinIntake.get()))
-				.onFalse(Commands.waitSeconds(0.05).andThen(
+				.onFalse(Commands.waitSeconds(0.05).beforeStarting(() -> feederSubsystem.setShotReadyness(false)).andThen(
 						Commands.runOnce(() -> pivotSubsystem
-								.setReference(pivotSubsystem.INTAKE_LEVEL))
+								.setReference(pivotSubsystem.HOME_LEVEL))
 								.unless(() -> autoaimButton.getAsBoolean())));
 
 		driver.createYButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
@@ -355,21 +361,20 @@ public class CompBot_2024 extends GenericMechanism {
 		operator.createXButton().onTrue(Commands.runOnce(
 				() -> {
 					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
-					shooterSubsystem.setShooterReference(Constants.Physical.SUBWOOFER_SHOT, Constants.Physical.SUBWOOFER_SHOT);
+					shooterSubsystem.setShooterReference(Constants.Physical.SUBWOOFER_SHOT,
+							Constants.Physical.SUBWOOFER_SHOT);
 				}, pivotSubsystem)).onFalse(Commands.runOnce(() -> {
 					shooterSubsystem.setShooterReference(0, 0);
 					feederSubsystem.setFeederReference(0);
-					pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
+					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 				}));
-
-
-				
 
 		// Amp Pivot
 		operator.createYButton().whileTrue(Commands
 				.runOnce(() -> {
 					pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL);
-					shooterSubsystem.setShooterReference(Constants.Physical.AMP_SHOOTING_SPEED, Constants.Physical.AMP_SHOOTING_SPEED);
+					shooterSubsystem.setShooterReference(Constants.Physical.AMP_SHOOTING_SPEED,
+							Constants.Physical.AMP_SHOOTING_SPEED);
 				}).alongWith(spinIntake.get())
 
 		).onFalse(Commands.runOnce(() -> {
@@ -380,11 +385,11 @@ public class CompBot_2024 extends GenericMechanism {
 		// Trap Pivot
 		operator.createBButton().onTrue(spinIntake.get().alongWith(Commands.runOnce(
 				() -> {
-					//pivotSubsystem.setReference(pivotSubsystem.HIGH_SHUTTLE_LEVEL);
+					// pivotSubsystem.setReference(pivotSubsystem.HIGH_SHUTTLE_LEVEL);
 					shooterSubsystem.setShooterReference(Constants.Physical.SHUTTLE_SPEED,
 							Constants.Physical.SHUTTLE_SPEED);
 				}, pivotSubsystem))).onFalse(Commands.runOnce(() -> {
-					//pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+					// pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 					shooterSubsystem.setShooterReference(0, 0);
 				}));
 
@@ -551,31 +556,25 @@ public class CompBot_2024 extends GenericMechanism {
 									new Rotation3d(0, 0,
 											Units.degreesToRadians(30)))), // 20
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
-			visionSystem.addLimeLightTargetCam("orange", () -> Units.inchesToMeters(14.264),
-					() -> -10, 0, 1,
+			noteCamera = new VisionLimeLight("orange", 1,
+					AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo),
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
 							new Rotation3d(0, 0, Units.degreesToRadians(180))));
+			noteCamera.setUpdateValues(true);
 			visionSystem.addPhotonCamera("Top Camera", 4, new Transform3d(
 					new Translation3d(Units.inchesToMeters(10.168), Units.inchesToMeters(11.75),
 							Units.inchesToMeters(23.831)),
 					new Rotation3d(0, Units.degreesToRadians(-20), 0)),
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
 
-			shooterCamera = new VisionPhotonAprilTagTarget("FrontCamera",
-					() -> {
-						return Math.sin(pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET)
-								* Constants.Physical.SHOOTER_CAM_LENS_TO_SPLINE + Constants.Physical.SPLINE_HEIGHT;
-					},
-					() -> {
-						return pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET;
-					},
-					() -> {
-						return Math.cos(pivotSubsystem.getPivotPosition() + Constants.Physical.SHOOTER_CAM_ANGLE_OFFSET)
-								* Constants.Physical.SHOOTER_CAM_LENS_TO_SPLINE + Constants.Physical.SPLINE_X;
-					},
+			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
+					() -> Units.inchesToMeters(15.448),
+					() -> 25,
+					() -> Units.inchesToMeters(10.454),
 					AprilTags.aprilTagFieldLayout.getTagPose(4).get().getZ(), 4, AprilTags.aprilTagFieldLayout,
 					"Vision");
+			shooterCamera.cameraRotation(Rotation.DOWN);
 			shooterCamera.setUpdateValues(true);
 			shooterCamera.setTargetTagId(RobotContainer.chooseAllianceColor() == Color.BLUE ? 7 : 4);
 		}
@@ -591,10 +590,11 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Intake And Shoot", Commands.run(() -> {
 			intakeSubsystem.setReference(2000, 2000);
 			feederSubsystem.setFeederSpeed(1);
-		}).until(() -> !feederSubsystem.isEmptied()).andThen(Commands.idle(intakeSubsystem).until(() -> feederSubsystem.isEmptied()).finallyDo(() -> {
-			intakeSubsystem.setReference(0, 0);
-			feederSubsystem.setFeederSpeed(0);
-		})));
+		}).until(() -> !feederSubsystem.isEmptied())
+				.andThen(Commands.idle(intakeSubsystem).until(() -> feederSubsystem.isEmptied()).finallyDo(() -> {
+					intakeSubsystem.setReference(0, 0);
+					feederSubsystem.setFeederSpeed(0);
+				})));
 		NamedCommands.registerCommand("Auto Intake", autoIntake.get());
 
 		NamedCommands.registerCommand("Auto Aim",
@@ -607,7 +607,9 @@ public class CompBot_2024 extends GenericMechanism {
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
 						true).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
 		NamedCommands.registerCommand("Blind Shot",
-				runShooter.get().until(()->shooterSubsystem.isAtTarget() && shooterSubsystem.getTopReference() != 0).withTimeout(0.70).andThen(blindShot.get()));
+				runShooter.get()
+						.until(() -> shooterSubsystem.isAtTarget() && shooterSubsystem.getPIDReferenceTop() != 0)
+						.withTimeout(0.70).andThen(blindShot.get()));
 
 		NamedCommands.registerCommand("Just Shoot", blindShot.get());
 
@@ -628,8 +630,6 @@ public class CompBot_2024 extends GenericMechanism {
 							pivotSubsystem.resetToleranceToDefaults();
 						}));
 
-		
-
 		NamedCommands.registerCommand("Aim Stage Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(RobotContainer.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
@@ -647,8 +647,7 @@ public class CompBot_2024 extends GenericMechanism {
 				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_LONG.getPose(RobotContainer.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
-								Constants.Physical.BOTTOM_SHOOTING_SPEED)
-						);
+								Constants.Physical.BOTTOM_SHOOTING_SPEED));
 
 		// NamedCommands.registerCommand("Pivot Shuttle",
 		// spinIntake.get().alongWith(Commands.runOnce(() -> {
@@ -668,14 +667,14 @@ public class CompBot_2024 extends GenericMechanism {
 					Constants.Physical.BOTTOM_SHOOTING_SPEED);
 		}).andThen(spinIntake.get()).alongWith(blindShot.get()).andThen(() -> {
 			pivotSubsystem.setReference(
-					pivotSubsystem.INTAKE_LEVEL);
+					pivotSubsystem.HOME_LEVEL);
 		}));
 
 		NamedCommands.registerCommand("Predefined Note 2", Commands.runOnce(() -> {
 			pivotSubsystem.setReference(AutoShotDefinition.B2_SHOT.getPivotAngle());
-			shooterSubsystem.setShooterReference(AutoShotDefinition.B2_SHOT.getShooterSpeed(), AutoShotDefinition.B2_SHOT.getShooterSpeed());
+			shooterSubsystem.setShooterReference(AutoShotDefinition.B2_SHOT.getShooterSpeed(),
+					AutoShotDefinition.B2_SHOT.getShooterSpeed());
 		}));
-
 
 	}
 

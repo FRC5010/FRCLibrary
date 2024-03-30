@@ -86,7 +86,7 @@ public class AutoAim extends Command {
     }
     cycleCounter = 0;
     timeoutCounter = 0;
-    useShooterCamera = false;
+    useShooterCamera = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -126,9 +126,12 @@ public class AutoAim extends Command {
     SmartDashboard.putBoolean("Pivot Target", pivotSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Shooter Target", shooterSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
+    boolean ready = (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw());
+    feederSubsystem.getNoteState();
+    feederSubsystem.setShotReadyness(ready);
     if (useAutoDrive || driveCommand == null) {
-      if ((pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw())
-          || 100 < timeoutCounter) {
+      if (
+         ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {
           feederSubsystem.feederStateMachine(-1.0);
 

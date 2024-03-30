@@ -74,31 +74,40 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        pivotInterpolation.put(1.09, -11.0);
-        pivotInterpolation.put(1.25, -7.0);
-        pivotInterpolation.put(1.57, -1.38);
-        pivotInterpolation.put(1.74, 2.81);
-        pivotInterpolation.put(2.03, 6.68);
-        pivotInterpolation.put(2.25, 14.43);
-        pivotInterpolation.put(2.50, 14.43);
-        pivotInterpolation.put(2.75, 18.28);
-        pivotInterpolation.put(3.00, 19.27);
-        pivotInterpolation.put(3.25, 20.77);
-        pivotInterpolation.put(3.55, 21.77);
-        pivotInterpolation.put(3.80, 24.77);
-        pivotInterpolation.put(3.97, 26.75);
-        pivotInterpolation.put(4.25, 26.70);
-        pivotInterpolation.put(4.75, 29.70);
-        pivotInterpolation.put(5.0, 29.8);
+        // Rechecked
+        pivotInterpolation.put(0.5, -11.0);
+        pivotInterpolation.put(1.0, -11.0);
+        pivotInterpolation.put(1.32, -11.0);
+        pivotInterpolation.put(1.50, -4.5);
+        pivotInterpolation.put(1.75, 1.0);
+        pivotInterpolation.put(2.04, 6.75);
+        pivotInterpolation.put(2.20, 7.32);
+        pivotInterpolation.put(2.26, 9.25);
+        pivotInterpolation.put(2.40, 12.25);
+        pivotInterpolation.put(2.50, 12.50);
+        pivotInterpolation.put(2.76, 16.00);
+        pivotInterpolation.put(3.01, 17.87);
+        pivotInterpolation.put(3.26, 19.25);
+        pivotInterpolation.put(3.50, 22.56);
+        pivotInterpolation.put(3.70, 25.25);
+        pivotInterpolation.put(4.10, 26.56);
+        pivotInterpolation.put(4.60, 27.50);
+        pivotInterpolation.put(5.00, 27.25);
+        pivotInterpolation.put(5.36, 29.32);
+        // Unchecked
+        pivotInterpolation.put(4.2, 26.75);
+        pivotInterpolation.put(4.48, 26.70);
+        pivotInterpolation.put(4.98, 29.70);
+        pivotInterpolation.put(5.23, 29.8);
 
         // Shuttle Pivot Values
-        pivotInterpolation.put(5.1, -10.0);
+        pivotInterpolation.put(5.3, -10.0);
         pivotInterpolation.put(15.0, -10.0);
 
         shooterInterpolation.put(1.0, Constants.Physical.SUBWOOFER_SHOT);
         shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
         shooterInterpolation.put(5.1, Constants.Physical.SHUTTLE_SPEED);
-        shooterInterpolation.put(15.0, Constants.Physical.TOP_SHOOTING_SPEED);
+        shooterInterpolation.put(15.0, Constants.Physical.SHUTTLE_SPEED_HIGH);
     }
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
@@ -295,7 +304,7 @@ public class TargetingSystem extends GenericSubsystem {
     public static double interpolatePivotAngle(Pose3d target, Pose3d robot) {
         double distance = target.getTranslation().toTranslation2d()
                 .getDistance(robot.getTranslation().toTranslation2d());
-        if (distance > 4.25)
+        if (distance > 4.25 && distance < 5.1)
             distance = 4.75;
         return pivotInterpolation
                 .get(distance);

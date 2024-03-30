@@ -13,12 +13,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.LogLevel;
 import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.FRC5010.sensors.Controller;
-import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.IntakeSubsystem;
+import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.ShooterSubsystem;
 
 public class RunIntake extends GenericCommand {
@@ -83,7 +85,7 @@ public class RunIntake extends GenericCommand {
 
     Map<NoteState, Command> intakeCommands = new HashMap<>();
     feederCommand = Commands
-        .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble() * (feederSubsystem.isDetectBeamBroken() ? 1 : 0  * 0.7)),
+        .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble() * (feederSubsystem.isDetectBeamBroken() ? 0.7 : 1 ) ),
             feederSubsystem)
         .until(() -> feederSubsystem.getNoteState() == NoteState.Holding || 0 == speed.getAsDouble())
         .finallyDo(() -> {
@@ -121,8 +123,8 @@ public class RunIntake extends GenericCommand {
 
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
-      if (velocity < 0) {
-        pivotSubsystem.setReference(pivotSubsystem.INTAKE_LEVEL);
+      if (velocity < 0 &&  RobotContainer.getLoggingLevel() == LogLevel.COMPETITION) {
+        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
       }
       // feederStopFlag = true;
       // if (feederSubsystem.isBeamBroken()) {

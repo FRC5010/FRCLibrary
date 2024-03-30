@@ -84,8 +84,8 @@ public class ShooterSubsystem extends GenericSubsystem {
     values.declare(vals.BOTTOM_VELOCITY.name(), 0.0);
     values.declare(vals.TOP_VELOCITY.name(), 0.0);
 
-    topFeedFwd = new SimpleMotorFeedforward(0.38986, 0.0021378, 0.00021335);
-    bottomFeedFwd = new SimpleMotorFeedforward(0.40179, 0.0022394, 0.00019292);
+    topFeedFwd = new SimpleMotorFeedforward(0.35651, 0.0021391, 0.00020613);
+    bottomFeedFwd = new SimpleMotorFeedforward(0.27969, 0.002174, 0.00020114);
 
     topEncoder = top.getMotorEncoder();
     bottomEncoder = bottom.getMotorEncoder();
@@ -93,13 +93,13 @@ public class ShooterSubsystem extends GenericSubsystem {
     topEncoder.setVelocityConversion(60);
     bottomEncoder.setVelocityConversion(60);
 
-    topPID.setP(0.00158);
+    topPID.setP(0.0032955);
     topPID.setI(0.0000001);
     //topPID.setIZone(100);
     topPID.setD(0);
-    topPID.setTolerance(DEFAULT_TOLERANCE);
+    topPID.setTolerance(DEFAULT_TOLERANCE); 
 
-    bottomPID.setP(0.00020144);
+    bottomPID.setP(0.0019272);
     bottomPID.setI(0.0000001);
     //bottomPID.setIZone(100);
     bottomPID.setD(0);
@@ -228,6 +228,10 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   public boolean isAtTarget() {
     return topPID.isAtTarget() && bottomPID.isAtTarget();
+  }
+
+  public Double getPIDReferenceTop() {
+    return topPID.getReference();
   }
 
   public Double getTopReference() {

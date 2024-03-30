@@ -44,6 +44,19 @@ public abstract class VisionSystem extends SubsystemBase {
 	protected double areaDistanceWeight = 0.0;
 	protected Transform3d cameraToRobot = new Transform3d();
 
+	public static enum Rotation {
+		NORMAL(1, 1), RIGHT(1, 1), LEFT(-1, -1), DOWN(-1, -1);
+
+		private Rotation(double x, double y) {
+			xInversion = x;
+			yInversion = y;
+		}
+
+		double xInversion = 1;
+		double yInversion = 1;
+	}
+
+	private Rotation rotation = Rotation.NORMAL;
 	// variables needed to process new variables, plus the new variables
 	// angles
 
@@ -147,8 +160,12 @@ public abstract class VisionSystem extends SubsystemBase {
 		boolean valid = validSup.getAsBoolean();
 		if (valid) {
 			// calculating distance
-			double angleX = angleXSup.getAsDouble();
-			double angleY = angleYSup.getAsDouble();
+			double angleX = rotation.xInversion
+					* (rotation == Rotation.NORMAL || rotation == Rotation.DOWN ? angleXSup.getAsDouble()
+							: angleYSup.getAsDouble());
+			double angleY = rotation.xInversion
+					* (rotation == Rotation.NORMAL || rotation == Rotation.DOWN ? angleYSup.getAsDouble()
+							: angleXSup.getAsDouble());
 			double distance = -1;
 			double poseDistance = -1;
 			if (null != cameraPoseSupplier.get() && null != robotPoseSupplier.get()) {
@@ -190,6 +207,10 @@ public abstract class VisionSystem extends SubsystemBase {
 		} else {
 			smoothedValues.deprecateValues();
 		}
+	}
+
+	public void cameraRotation(Rotation rot) {
+		rotation = rot;
 	}
 
 	public double getCamAngle() {
