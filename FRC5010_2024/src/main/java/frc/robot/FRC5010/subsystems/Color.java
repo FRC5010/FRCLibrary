@@ -16,7 +16,7 @@ public enum Color {
     RED(255, 0, 0),
     GREEN(0, 255, 0),
     BLUE(0, 0, 255),
-    ORANGE(255, 165, 30),
+    ORANGE(255, 125, 00), // A500
     PURPLE(100, 0, 255),
     FIFTY_TEN_ORANGE(255, 80, 16),
     YELLOW(210, 255, 0);

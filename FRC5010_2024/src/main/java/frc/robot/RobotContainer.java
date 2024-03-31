@@ -61,7 +61,7 @@ public class RobotContainer extends GenericMechanism {
 
 	public enum LogLevel {
 		DEBUG,
-		PRODUCTION
+		COMPETITION
 	}
 
 	public static LogLevel logLevel = LogLevel.DEBUG;

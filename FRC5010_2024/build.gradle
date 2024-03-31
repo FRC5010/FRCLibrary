@@ -34,6 +34,8 @@ deploy {
                 // jvmArgs.add("-Dcom.sun.management.jmxremote.ssl=false")
                 // jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
                 // jvmArgs.add("-Djava.rmi.server.hostname=10.50.10.2") // Replace XX.XX with team number
+
+                // jvmArgs.add("-XX:HeapDumpPath=/u/frc-usercode.hprof")
                 }
 
                 // Static files artifact

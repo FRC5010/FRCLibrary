@@ -86,7 +86,7 @@ public class AutoAim extends Command {
     }
     cycleCounter = 0;
     timeoutCounter = 0;
-	useShooterCamera = false;
+    useShooterCamera = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -96,23 +96,28 @@ public class AutoAim extends Command {
         robotPose.getCurrentPose3d().getTranslation().plus(Constants.Physical.PIVOT_ORIGIN_OFFSET.getTranslation()),
         new Rotation3d());
     double pivotAngle = pivotSubsystem.HOME_LEVEL;
-	if (!useShooterCamera) {	
-		pivotAngle = targetingSystem.getPivotAngle();
-	}
-	if (pivotSubsystem.isAtTarget() || useShooterCamera) {
-		Optional<Double> shootCamAngle = targetingSystem.getShooterCamAngle();
-		if (shootCamAngle.isPresent()) {
-			useShooterCamera = true;
-			pivotAngle = shootCamAngle.get();
-		}
-	}
+
+    Optional<Double> shootCamAngle = targetingSystem.getShooterCamAngle();
+    if (shootCamAngle.isPresent()) {
+      pivotAngle = shootCamAngle.get();
+    } else {
+      pivotAngle = targetingSystem.getPivotAngle();
+    }
+
+    double turnSpeed;
+    Optional<Double> yawCamAngle = targetingSystem.getShooterYawPower();
+    if (yawCamAngle.isPresent()) {
+      turnSpeed = yawCamAngle.get();
+    } else {
+      turnSpeed = targetingSystem.getTurnPower();
+    }
+
     pivotSubsystem.setReference(pivotAngle);
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
-    
-    shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
-        Constants.Physical.BOTTOM_SHOOTING_SPEED);
-  
-    double turnSpeed = targetingSystem.getTurnPower();
+
+    double shootingSpeed = targetingSystem.getShooterSpeed();
+    shooterSubsystem.setShooterReference(shootingSpeed, shootingSpeed);
+
     if (!useAutoDrive && driveCommand == null) {
 
       drive.getDrivetrain().drive(new ChassisSpeeds(0, 0, turnSpeed * ((SwerveDrivetrain) drive.getDrivetrain())
@@ -121,8 +126,12 @@ public class AutoAim extends Command {
     SmartDashboard.putBoolean("Pivot Target", pivotSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Shooter Target", shooterSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
+    boolean ready = (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw());
+    feederSubsystem.getNoteState();
+    feederSubsystem.setShotReadyness(ready);
     if (useAutoDrive || driveCommand == null) {
-      if ((pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw())  || 100 < timeoutCounter) {
+      if (
+         ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {
           feederSubsystem.feederStateMachine(-1.0);
 

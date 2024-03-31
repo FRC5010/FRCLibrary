@@ -9,6 +9,6 @@ public class MotorConstants {
     public static class CurrentLimits {
         public static final int Neo = 40;
         public static final int Neo550 = 20;
-        public static final int KrakenX60 = 80;
+        public static final int KrakenX60 = 60;
     }
 }
