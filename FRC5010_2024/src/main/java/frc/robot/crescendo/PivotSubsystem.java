@@ -113,6 +113,7 @@ public class PivotSubsystem extends GenericSubsystem {
   public final double HIGH_SHUTTLE_LEVEL = 0;
   public final double INTAKE_LEVEL = 0; // TODO: Make accurate
   public final double PODIUM_SHOT = 12.3;
+  public final double MAX_INTAKE_ANGLE = 16.0;
   
   private double referencePosition = HOME_LEVEL;
   private double last_reference = -11;

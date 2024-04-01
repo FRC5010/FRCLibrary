@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7242033568888566,
-      "y": 4.463445896757865
+      "x": 1.3374413054104268,
+      "y": 5.559932574410603
     },
-    "rotation": 121.59072502516732
+    "rotation": 179.92392454309535
   },
   "command": {
     "type": "sequential",
@@ -18,13 +18,50 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "C - 8 - Stage Shot Long"
+                  "pathName": "Note 2 - 6 Short"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Long Shot - 5 - Left Long Shot"
                 }
               },
               {
@@ -52,17 +89,17 @@
         {
           "type": "named",
           "data": {
-            "name": "Just Shoot"
+            "name": "Quick Auto Aim"
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Stage Shot Long - 7 - Stage Shot Long"
+                  "pathName": "Left Long Shot - 4 - Left Long Shot"
                 }
               },
               {
@@ -78,7 +115,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Aim Stage Shot Long"
+                        "name": "Aim Left Shot Long"
                       }
                     }
                   ]
@@ -90,45 +127,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Just Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "State Shot Long - 6 - Stage Shot Long"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Aim Stage Shot Long"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Just Shoot"
+            "name": "Quick Auto Aim"
           }
         }
       ]

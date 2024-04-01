@@ -25,8 +25,7 @@ public class PredefinedAutoShot extends Command {
 
   Rotation2d targetYaw;
   double targetPivot;
-  double targetShooterSpeedTop;
-  double targetShooterSpeedBottom;
+  Optional<Double> targetShooterSpeed = Optional.empty();
 
   boolean pivotEnabled = false;
   boolean yawEnabled = false;
@@ -35,6 +34,8 @@ public class PredefinedAutoShot extends Command {
   double velocity = 0;
   double yawOffset = 0;
   double pivotOffset = 0;
+
+  
 
   PivotSubsystem pivotSubsystem;
   ShooterSubsystem shooterSubsystem;
@@ -52,16 +53,14 @@ public class PredefinedAutoShot extends Command {
     this.targetPivot = pivotAngle;
     this.pivotSubsystem = pivotSubsystem;
     this.shooterSubsystem = shooterSubsystem;
-    this.targetShooterSpeedTop = shooterSpeed;
-    this.targetShooterSpeedBottom = shooterSpeed;
+    this.targetShooterSpeed = Optional.empty();
     this.noteStateSupplier = noteState;
 
   }
 
   public PredefinedAutoShot(Pose2d expectedPose, TargetingSystem targetingSystem, PivotSubsystem pivotSubsystem,
       ShooterSubsystem shooterSubsystem, Supplier<NoteState> noteState) {
-    this.targetShooterSpeedTop = Constants.Physical.TOP_SHOOTING_SPEED;
-    this.targetShooterSpeedBottom = Constants.Physical.BOTTOM_SHOOTING_SPEED;
+    this.targetShooterSpeed = Optional.empty();
     this.pivotSubsystem = pivotSubsystem;
     this.shooterSubsystem = shooterSubsystem;
     this.targetingSystem = targetingSystem;
@@ -101,9 +100,8 @@ public class PredefinedAutoShot extends Command {
     return this;
   }
 
-  public PredefinedAutoShot withShooterVelocity(double top, double bottom) {
-    this.targetShooterSpeedTop = top;
-    this.targetShooterSpeedBottom = bottom;
+  public PredefinedAutoShot withShooterVelocity(double speed) {
+    this.targetShooterSpeed = Optional.of(speed);
     return enableSpinup();
   }
 
@@ -114,6 +112,10 @@ public class PredefinedAutoShot extends Command {
     this.targetPivot = TargetingSystem.interpolatePivotAngle(
         robotPose,
         targetingSystem.getTarget());
+
+    if (spinupEnabled) {
+      this.targetShooterSpeed = Optional.of(TargetingSystem.interpolateShooterSpeed( robotPose.getTranslation().toTranslation2d().getDistance(targetingSystem.getTarget().getTranslation().toTranslation2d()) ));
+    }
 
     this.targetYaw = Rotation2d.fromDegrees(targetingSystem.getYawToTarget(robotPose));
 
@@ -142,9 +144,9 @@ public class PredefinedAutoShot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (spinupEnabled && noteStateSupplier != null && noteStateSupplier.get() == NoteState.Loaded
-        || noteStateSupplier.get() == NoteState.Shooting) {
-      shooterSubsystem.setShooterReference(targetShooterSpeedTop, targetShooterSpeedBottom);
+    if (targetShooterSpeed.isPresent() && (noteStateSupplier == null || noteStateSupplier.get() == NoteState.Loaded
+        || noteStateSupplier.get() == NoteState.Shooting)) {
+      shooterSubsystem.setShooterReference(targetShooterSpeed.get(), targetShooterSpeed.get());
     }
   }
 

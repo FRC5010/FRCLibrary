@@ -12,9 +12,28 @@
     "data": {
       "commands": [
         {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "B - Center Shot Short"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim Center Shot Short"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Blind Shot"
+            "name": "Just Shoot"
           }
         },
         {
@@ -24,13 +43,51 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake Note"
+                  "name": "Intake And Fire"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note B-2"
+                  "pathName": "Center Shot Short - 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Predefined Note 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "2 - 6 - Left Long Shot"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake Note"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Aim Left Shot Long"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -49,7 +106,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "2 - 5 - Stage Shot Long"
+                  "pathName": "Left Long Shot - 5 - Left Long Shot"
                 }
               },
               {
@@ -59,7 +116,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake and Load Note"
+                        "name": "Intake Note"
                       }
                     },
                     {
@@ -87,7 +144,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "State Shot Long - 6 - Stage Shot Long"
+                  "pathName": "Left Long Shot - 4 - Left Long Shot"
                 }
               },
               {
@@ -97,51 +154,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake and Load Note"
+                        "name": "Intake Note"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Aim Stage Shot Long"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Quick Auto Aim"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Stage Shot Long - 7 - Stage Shot Long"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake and Load Note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Aim Stage Shot Long"
+                        "name": "Aim Left Shot Long"
                       }
                     }
                   ]

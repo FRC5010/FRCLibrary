@@ -95,6 +95,7 @@ public class CompBot_2024 extends GenericMechanism {
 	Supplier<Command> spinIntake;
 	Supplier<Command> blindShot;
 	Supplier<Command> zeroClimb;
+	Supplier<Command> stopShooter;
 	Supplier<Command> quickAutoAim;
 
 	public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
@@ -250,8 +251,11 @@ public class CompBot_2024 extends GenericMechanism {
 				.until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
 				.finallyDo(() -> {
 					feederSubsystem.feederStateMachine(0.0);
-					shooterSubsystem.setShooterReference(0, 0);
 				});
+
+		stopShooter = () -> Commands.runOnce(() -> {
+			shooterSubsystem.setShooterReference(0, 0);
+		});
 
 		zeroClimb = () -> (Commands.run(() -> {
 			climbSubsystem.setOverride(true);
@@ -304,10 +308,11 @@ public class CompBot_2024 extends GenericMechanism {
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
 						() -> (JoystickToSwerve) drive.getDefaultCommand())
 						.alongWith(spinIntake.get()))
-				.onFalse(Commands.waitSeconds(0.05).beforeStarting(() -> feederSubsystem.setShotReadyness(false)).andThen(
-						Commands.runOnce(() -> pivotSubsystem
-								.setReference(pivotSubsystem.HOME_LEVEL))
-								.unless(() -> autoaimButton.getAsBoolean())));
+				.onFalse(Commands.waitSeconds(0.05).beforeStarting(() -> feederSubsystem.setShotReadyness(false))
+						.andThen(
+								Commands.runOnce(() -> pivotSubsystem
+										.setReference(pivotSubsystem.HOME_LEVEL))
+										.unless(() -> autoaimButton.getAsBoolean())));
 
 		driver.createYButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
 				() -> climbSubsystem.setOverride(false)));
@@ -587,14 +592,16 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Intake Note",
 				runIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding));
 		NamedCommands.registerCommand("Intake and Load Note", runIntake.get());
-		NamedCommands.registerCommand("Intake And Shoot", Commands.run(() -> {
-			intakeSubsystem.setReference(2000, 2000);
-			feederSubsystem.setFeederSpeed(1);
+
+		NamedCommands.registerCommand("Intake And Fire", Commands.run(() -> {
+			intakeSubsystem.stateMachine(1);
+			feederSubsystem.feederStateMachine(-1);
 		}).until(() -> !feederSubsystem.isEmptied())
 				.andThen(Commands.idle(intakeSubsystem).until(() -> feederSubsystem.isEmptied()).finallyDo(() -> {
-					intakeSubsystem.setReference(0, 0);
-					feederSubsystem.setFeederSpeed(0);
+					intakeSubsystem.stateMachine(0);
+					feederSubsystem.feederStateMachine(0);
 				})));
+
 		NamedCommands.registerCommand("Auto Intake", autoIntake.get());
 
 		NamedCommands.registerCommand("Auto Aim",
@@ -615,6 +622,8 @@ public class CompBot_2024 extends GenericMechanism {
 
 		NamedCommands.registerCommand("Spin Up Shooter", runShooter.get());
 
+		NamedCommands.registerCommand("Stop Shooter", stopShooter.get());
+
 		NamedCommands.registerCommand("Quick Auto Aim",
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
 						false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
@@ -633,21 +642,25 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Aim Stage Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(RobotContainer.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
-						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
-								Constants.Physical.BOTTOM_SHOOTING_SPEED));
+						.enableSpinup());
 
 		NamedCommands.registerCommand("Aim Left Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.LEFT_LONG_SHOT.getPose(RobotContainer.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
-						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
-								Constants.Physical.BOTTOM_SHOOTING_SPEED)
+						.enableSpinup()
 						.enablePivot());
 
 		NamedCommands.registerCommand("Aim Center Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_LONG.getPose(RobotContainer.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
-						.withShooterVelocity(Constants.Physical.TOP_SHOOTING_SPEED,
-								Constants.Physical.BOTTOM_SHOOTING_SPEED));
+						.enableSpinup());
+		
+		NamedCommands.registerCommand("Aim Center Shot Short", new PredefinedAutoShot(
+				AutoShotDefinition.CENTER_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+						.enableSpinup()
+						.enablePivot());
+
 
 		// NamedCommands.registerCommand("Pivot Shuttle",
 		// spinIntake.get().alongWith(Commands.runOnce(() -> {

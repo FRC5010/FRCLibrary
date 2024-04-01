@@ -17,7 +17,8 @@ public enum AutoShotDefinition {
     STAGE_SHOT_LONG(4.50, 4.70),
     LEFT_LONG_SHOT(5.0, 6.7),
     CENTER_SHOT_LONG(4.0, 5.59),
-    B2_SHOT(2.89, 5.56, 180, 19.5,0);
+    B2_SHOT(2.9, 5.55, 180, 19.5,0),
+    CENTER_SHOT_SHORT(2.15, 5.55, 0);
     
 
     private final double x;
@@ -35,12 +36,30 @@ public enum AutoShotDefinition {
         this.shooterVelocity = Optional.empty();
     }
 
+    private AutoShotDefinition(double x, double y, double theta) {
+        this.x = x;
+        this.y = y;
+        this.heading = theta;
+        this.pivot = Optional.empty();
+        this.shooterVelocity = Optional.empty();
+    }
+
     private AutoShotDefinition(double x, double y, double theta, double pivot, double shooterVelocity) {
         this.x = x;
         this.y = y;
         this.heading = theta;
         this.pivot = Optional.of(pivot);
         this.shooterVelocity = Optional.of(shooterVelocity);
+    }
+
+    public AutoShotDefinition withCalculatedTargetValues(TargetingSystem targetingSystem) {
+        if (pivot.isEmpty()) {
+            pivot = Optional.of(TargetingSystem.interpolatePivotAngle(getPose().getTranslation().getDistance(targetingSystem.getTarget().getTranslation().toTranslation2d())));
+        }
+        if (shooterVelocity.isEmpty()) {
+            shooterVelocity = Optional.of(TargetingSystem.interpolateShooterSpeed(getPose().getTranslation().getDistance(targetingSystem.getTarget().getTranslation().toTranslation2d())));
+        }
+        return this;
     }
 
     public Pose2d getPose(Alliance alliance) {
