@@ -1,6 +1,6 @@
 {
   "download": {
-    "localDir": "D:\\Test Logs",
+    "localDir": "C:\\Dev\\FRCLibrary\\Logs\\Test Logs",
     "remoteDir": "/u/logs",
     "serverTeam": "5010"
   },

@@ -35,6 +35,7 @@ public class RunIntake extends GenericCommand {
 
   boolean feederStopFlag = false;
   Controller rumbleController;
+  double intakeAngle;
 
   Command feederCommand;
   Command selectorCommand;
@@ -51,12 +52,28 @@ public class RunIntake extends GenericCommand {
     this.pivotSubsystem = pivotSubsystem;
     this.rumbleController = rumbleController;
     this.shooterSubsystem = shooterSubsystem;
-
-
+    this.intakeAngle = pivotSubsystem.HOME_LEVEL;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
   }
+
+  public RunIntake(DoubleSupplier joystick, DoubleSupplier feederSpeed, IntakeSubsystem intakeSubsystem,
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Controller rumbleController, double intakeAngle) {
+    this.speed = joystick;
+    this.intakeSubsystem = intakeSubsystem;
+    this.feederSpeed = feederSpeed;
+    this.feederSubsystem = feederSubsystem;
+    this.pivotSubsystem = pivotSubsystem;
+    this.rumbleController = rumbleController;
+    this.shooterSubsystem = shooterSubsystem;
+    this.intakeAngle = intakeAngle;
+  
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(intakeSubsystem);
+  }
+
 
   public RunIntake(DoubleSupplier joystick, IntakeSubsystem intakeSubsystem,
       FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Controller rumbleController) {
@@ -67,6 +84,7 @@ public class RunIntake extends GenericCommand {
     this.pivotSubsystem = pivotSubsystem;
     this.rumbleController = rumbleController;
     this.shooterSubsystem = shooterSubsystem;
+    this.intakeAngle = pivotSubsystem.HOME_LEVEL;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
@@ -90,7 +108,6 @@ public class RunIntake extends GenericCommand {
         .until(() -> feederSubsystem.getNoteState() == NoteState.Holding || 0 == speed.getAsDouble())
         .finallyDo(() -> {
           feederSubsystem.feederStateMachine(0);
-
         })
         .andThen(
             Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.25))
@@ -124,7 +141,7 @@ public class RunIntake extends GenericCommand {
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
       if (velocity < 0 &&  RobotContainer.getLoggingLevel() == LogLevel.COMPETITION) {
-        pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+        pivotSubsystem.setReference(intakeAngle);
       }
       // feederStopFlag = true;
       // if (feederSubsystem.isBeamBroken()) {

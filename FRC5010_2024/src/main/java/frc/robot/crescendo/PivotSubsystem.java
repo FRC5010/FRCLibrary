@@ -65,7 +65,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_LENGTH = Units.inchesToMeters(19);
   private final double PIVOT_MASS = Units.lbsToKilograms(22);
 
-  private final double MIN_PIVOT_POSITION = -11; // Degrees
+  private final static double MIN_PIVOT_POSITION = -11; // Degrees
   private final double PIVOT_START_ANGLE = MIN_PIVOT_POSITION;
   private final double PIVOT_END_ANGLE = 90;
   private final String PIVOT_kS = "PivotkS";
@@ -106,14 +106,14 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String TOLERANCE = "Pivot Tolerance";
   private final String I_ZONE = "kI ZONE";
 
-  public final double HOME_LEVEL = MIN_PIVOT_POSITION;
-  public final double AMP_LEVEL = 79;
-  public final double TRAP_LEVEL = 75;
-  public final double LOW_SHUTTLE_LEVEL = 60;
-  public final double HIGH_SHUTTLE_LEVEL = 0;
-  public final double INTAKE_LEVEL = 0; // TODO: Make accurate
-  public final double PODIUM_SHOT = 12.3;
-  public final double MAX_INTAKE_ANGLE = 16.0;
+  public final static double HOME_LEVEL = MIN_PIVOT_POSITION;
+  public final static double AMP_LEVEL = 79;
+  public final static double TRAP_LEVEL = 75;
+  public final static double LOW_SHUTTLE_LEVEL = 60;
+  public final static double HIGH_SHUTTLE_LEVEL = -11;
+  public final static double INTAKE_LEVEL = 0; // TODO: Make accurate
+  public final static double PODIUM_SHOT = 12.3;
+  public final static double MAX_INTAKE_ANGLE = 12.45;
   
   private double referencePosition = HOME_LEVEL;
   private double last_reference = -11;

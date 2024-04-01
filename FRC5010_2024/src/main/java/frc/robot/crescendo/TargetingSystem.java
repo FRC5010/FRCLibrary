@@ -43,7 +43,10 @@ public class TargetingSystem extends GenericSubsystem {
     private final String TOLERANCE = "Targeting Tolerance";
 
     private static InterpolatingDoubleTreeMap pivotInterpolation = new InterpolatingDoubleTreeMap();
+    private static InterpolatingDoubleTreeMap shuttleShooterInterpolation = new InterpolatingDoubleTreeMap();
     private static InterpolatingDoubleTreeMap shooterInterpolation = new InterpolatingDoubleTreeMap();
+
+    private final static double SHUTTLE_X_DISTANCE = 5.5;
 
     // Output Values
     private final String TURN_POWER = "Turn Power";
@@ -51,6 +54,7 @@ public class TargetingSystem extends GenericSubsystem {
     private final String PIVOT_ANGLE = "Pivot Angle";
 
     private final double DEFAULT_TOLERANCE = 0.01;
+
 
     public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve,
             VisionSystem shooter) {
@@ -98,16 +102,12 @@ public class TargetingSystem extends GenericSubsystem {
         pivotInterpolation.put(4.2, 26.75);
         pivotInterpolation.put(4.48, 26.70);
         pivotInterpolation.put(4.98, 29.70);
-        pivotInterpolation.put(5.23, 29.8);
-
-        // Shuttle Pivot Values
-        pivotInterpolation.put(5.3, -10.0);
-        pivotInterpolation.put(15.0, -10.0);
+        pivotInterpolation.put(5.3, 29.8);
 
         shooterInterpolation.put(1.0, Constants.Physical.SUBWOOFER_SHOT);
         shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
-        shooterInterpolation.put(5.1, Constants.Physical.SHUTTLE_SPEED);
-        shooterInterpolation.put(15.0, Constants.Physical.SHUTTLE_SPEED_HIGH);
+        shuttleShooterInterpolation.put(5.1, Constants.Physical.SHUTTLE_SPEED); // Delete
+        shuttleShooterInterpolation.put(15.0, Constants.Physical.SHUTTLE_SPEED_HIGH); // Delete
     }
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
@@ -177,9 +177,14 @@ public class TargetingSystem extends GenericSubsystem {
         values.set(PIVOT_ANGLE, angle);
         return angle;
     }
+    
 
     public double getShooterSpeed() {
-        return shooterInterpolation.get(getFlatDistanceToTarget());
+        double flatDistance = getFlatDistanceToTarget();
+        if (Math.abs(robotPose.get().getX() - currentTarget.get().getX()) > SHUTTLE_X_DISTANCE) {
+            return shuttleShooterInterpolation.get(flatDistance);
+        }
+        return shooterInterpolation.get(flatDistance);
     }
 
     public double getShooterSpeed(double distance) {
@@ -304,8 +309,10 @@ public class TargetingSystem extends GenericSubsystem {
     public static double interpolatePivotAngle(Pose3d target, Pose3d robot) {
         double distance = target.getTranslation().toTranslation2d()
                 .getDistance(robot.getTranslation().toTranslation2d());
-        if (distance > 4.25 && distance < 5.1)
-            distance = 4.75;
+
+        if (Math.abs(robot.getX() - target.getX()) > SHUTTLE_X_DISTANCE) { // Shuttling
+            return PivotSubsystem.HIGH_SHUTTLE_LEVEL;
+        }
         return pivotInterpolation
                 .get(distance);
     }

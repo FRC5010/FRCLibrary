@@ -64,7 +64,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Quick Auto Aim"
+            "name": "Auto Aim"
           }
         },
         {
@@ -93,16 +93,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Quick Auto Aim"
-                }
-              }
-            ]
+            "name": "Quick Auto Aim"
           }
         }
       ]
