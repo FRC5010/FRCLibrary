@@ -43,35 +43,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "2 - 6 - Left Long Shot"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Aim Left Shot Long"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "2 - 6 - Left Long Shot"
           }
         },
         {

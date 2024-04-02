@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.78,
-        "y": 6.94
+        "x": 5.0,
+        "y": 6.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7701330571891902,
-        "y": 6.94
+        "x": 7.461138893534928,
+        "y": 6.354109485584082
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Long Shot"
     },
     {
       "anchor": {
-        "x": 1.68,
-        "y": 6.31
+        "x": 8.161720169594187,
+        "y": 2.6640745589183488
       },
       "prevControl": {
-        "x": 1.6799999999993713,
-        "y": 6.309999999996467
+        "x": 7.8361110568375,
+        "y": 3.542232469080322
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Intake Note",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Note"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.8,
     "maxAcceleration": 3.5,
@@ -39,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -154.5366549381283,
+    "rotation": 113.62937773065663,
     "rotateFast": true
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -152.7527815281695,
+    "rotation": -168.86,
     "velocity": 0
   },
   "useDefaultConstraints": true

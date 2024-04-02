@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7397235627866235,
+      "y": 6.644874363829658
+    },
+    "rotation": -115.40771810894849
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A - 4 - Left Long Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Long Shot - 5 - Left Long Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Long Shot - 6 - Left Long Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Long Shot - 7"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

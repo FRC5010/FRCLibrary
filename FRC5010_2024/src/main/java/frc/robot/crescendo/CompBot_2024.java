@@ -613,7 +613,7 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Auto Aim",
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
 						false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
-						.alongWith(spinIntake.get())
+						.deadlineWith(spinIntake.get())
 						.finallyDo(() -> pivotSubsystem
 								.setReference(pivotSubsystem.HOME_LEVEL)));
 		NamedCommands.registerCommand("Auto Aim With Drive",
@@ -656,7 +656,8 @@ public class CompBot_2024 extends GenericMechanism {
 				new PredefinedAutoShot(AutoShotDefinition.LEFT_LONG_SHOT.getPose(RobotContainer.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.enableSpinup()
-						.enablePivot());
+						.enablePivot()
+						.enableYaw());
 
 		NamedCommands.registerCommand("Aim Center Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_LONG.getPose(RobotContainer.getAlliance()),
@@ -704,8 +705,11 @@ public class CompBot_2024 extends GenericMechanism {
 					AutoShotDefinition.B2_SHOT.getShooterSpeed());
 		}).finallyDo(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL)));
 
-
-
+		NamedCommands.registerCommand("Aim Left Shot Short", new PredefinedAutoShot(
+				AutoShotDefinition.LEFT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+						.enableSpinup()
+						.enablePivot());
 	}
 
 	public void disabledBehavior() {
