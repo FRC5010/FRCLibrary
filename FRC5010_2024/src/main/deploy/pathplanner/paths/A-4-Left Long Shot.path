@@ -1,0 +1,95 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7397235627866235,
+        "y": 6.644874363829658
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4627283652777099,
+        "y": 7.344541105755734
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7916319767886364,
+        "y": 7.647342049320585
+      },
+      "prevControl": {
+        "x": 2.1130788563239937,
+        "y": 7.649233266936559
+      },
+      "nextControl": {
+        "x": 4.325708614386334,
+        "y": 7.643066374102568
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.986517982301388,
+        "y": 7.504166313895039
+      },
+      "prevControl": {
+        "x": 7.265175942395087,
+        "y": 7.52661360878963
+      },
+      "nextControl": {
+        "x": 8.707860022207687,
+        "y": 7.481719019000449
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.0,
+        "y": 6.7
+      },
+      "prevControl": {
+        "x": 7.6755037676742015,
+        "y": 6.792283323455536
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Left Long Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": -179.1786964749293,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 2,
+      "rotationDegrees": 170.6554523748599,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.8,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 130.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -171.76231853628522,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -119.25901944793485,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
