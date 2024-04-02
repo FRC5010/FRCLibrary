@@ -443,7 +443,7 @@ public class CompBot_2024 extends GenericMechanism {
 
 		intakeSubsystem.setDefaultCommand(
 				new RunIntake(() -> driver.getRightTrigger() - driver.getLeftTrigger(),
-						() -> 0.5,
+						() -> 1.0,
 						intakeSubsystem,
 						feederSubsystem,
 						pivotSubsystem, shooterSubsystem, driver));
@@ -613,7 +613,7 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Auto Aim",
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
 						false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
-						.deadlineWith(spinIntake.get())
+						.alongWith(spinIntake.get())
 						.finallyDo(() -> pivotSubsystem
 								.setReference(pivotSubsystem.HOME_LEVEL)));
 		NamedCommands.registerCommand("Auto Aim With Drive",
