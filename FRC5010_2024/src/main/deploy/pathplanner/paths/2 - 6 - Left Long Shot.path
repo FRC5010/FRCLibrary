@@ -54,29 +54,22 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake and Shoot Left Long Shot",
-      "waypointRelativePos": 0.6,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.55,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
-              "type": "sequential",
+              "type": "named",
               "data": {
-                "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "Intake Note"
-                    }
-                  },
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "Aim Left Shot Long"
-                    }
-                  }
-                ]
+                "name": "Intake Note"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Left Shot Long"
               }
             }
           ]
