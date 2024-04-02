@@ -710,6 +710,13 @@ public class CompBot_2024 extends GenericMechanism {
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.enableSpinup()
 						.enablePivot());
+
+		NamedCommands.registerCommand("Aim Right Shot Long", new PredefinedAutoShot(
+				AutoShotDefinition.LEFT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+						.enableSpinup()
+						.enablePivot()
+						.enableYaw());
 	}
 
 	public void disabledBehavior() {
