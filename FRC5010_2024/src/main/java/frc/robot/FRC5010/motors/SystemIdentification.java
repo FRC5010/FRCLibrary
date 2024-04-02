@@ -9,11 +9,13 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Per;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
@@ -35,7 +37,7 @@ public class SystemIdentification {
 
     public static SysIdRoutine rpmSysIdRoutine(MotorController5010 motor, GenericEncoder encoder, String motorName, SubsystemBase subsystemBase) {
 
-        return new SysIdRoutine(new Config(), new SysIdRoutine.Mechanism(
+        return new SysIdRoutine(new Config(Volts.of(1).per(Seconds.of(1)), Volts.of(10), Seconds.of(12)), new SysIdRoutine.Mechanism(
             (Measure<Voltage> voltage) -> motor.set(voltage.in(Volts) / RobotController.getBatteryVoltage()),
             log -> {
             log.motor(motorName)

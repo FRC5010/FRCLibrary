@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7516461186768542,
-      "y": 4.420390379242297
+      "x": 0.6630583307462913,
+      "y": 4.416772500211668
     },
     "rotation": 120.5297058999341
   },
@@ -15,6 +15,18 @@
           "type": "path",
           "data": {
             "pathName": "C - 8 - Right Long Shot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Long Shot - 7 - Right Long Shot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Long Shot - 6 - Left Long Shot"
           }
         }
       ]
