@@ -62,35 +62,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "2 - 6 - Left Long Shot"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Aim Left Shot Long"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "2 - 6 - Left Long Shot"
           }
         },
         {
@@ -100,35 +74,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left Long Shot - 5 - Left Long Shot"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake Note"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Aim Stage Shot Long"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "Left Long Shot - 5 - Left Long Shot"
           }
         },
         {

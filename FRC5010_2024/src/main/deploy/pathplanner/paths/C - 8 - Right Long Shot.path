@@ -70,12 +70,6 @@
               "data": {
                 "name": "Intake Note"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": null
-              }
             }
           ]
         }

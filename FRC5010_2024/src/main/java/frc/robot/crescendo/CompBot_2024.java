@@ -705,7 +705,7 @@ public class CompBot_2024 extends GenericMechanism {
 					AutoShotDefinition.B2_SHOT.getShooterSpeed());
 		}).finallyDo(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL)));
 
-		NamedCommands.registerCommand("Aim Left Shot Short", new PredefinedAutoShot(
+		NamedCommands.registerCommand("Aim Left Shot Short ", new PredefinedAutoShot(
 				AutoShotDefinition.LEFT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.enableSpinup()
