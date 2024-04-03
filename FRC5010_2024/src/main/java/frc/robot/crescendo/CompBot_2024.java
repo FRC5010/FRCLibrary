@@ -99,6 +99,8 @@ public class CompBot_2024 extends GenericMechanism {
 	Supplier<Command> stopShooter;
 	Supplier<Command> justShoot;
 
+	private boolean terminatePath = false;
+
 	public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
 		super(visual, displayTab);
 
@@ -717,6 +719,12 @@ public class CompBot_2024 extends GenericMechanism {
 						.enableSpinup()
 						.enablePivot()
 						.enableYaw());
+
+		NamedCommands.registerCommand("Terminate if Empty", Commands.runOnce(() -> terminatePath = true).onlyIf(() -> feederSubsystem.getNoteState() == NoteState.Empty));
+		NamedCommands.registerCommand("Terminate if No Note", Commands.runOnce(() -> terminatePath = true).onlyIf(() -> !noteCamera.isValidTarget()));
+
+		NamedCommands.registerCommand("Terminate Path Trigger", Commands.idle().until(() -> terminatePath).finallyDo(() -> terminatePath = false));
+
 	}
 
 	public void disabledBehavior() {

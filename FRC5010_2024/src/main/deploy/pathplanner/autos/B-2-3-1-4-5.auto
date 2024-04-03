@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4,
+      "x": 1.3374413054104268,
       "y": 5.559932574410603
     },
     "rotation": 180.0
@@ -39,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Auto Aim"
+            "name": "Quick Auto Aim"
           }
         },
         {
@@ -70,7 +70,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Auto Aim"
+            "name": "Quick Auto Aim"
           }
         },
         {
@@ -80,7 +80,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake Note"
+                  "name": "Intake Note at Max"
                 }
               },
               {
@@ -93,16 +93,40 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Aim"
+                  "name": "Quick Auto Aim"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 - 4 - Left Long Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Long Shot - 5 - Left Long Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Left Shot Long"
           }
         }
       ]
