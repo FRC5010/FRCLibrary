@@ -37,7 +37,7 @@ public class SystemIdentification {
 
     public static SysIdRoutine rpmSysIdRoutine(MotorController5010 motor, GenericEncoder encoder, String motorName, SubsystemBase subsystemBase) {
 
-        return new SysIdRoutine(new Config(Volts.of(1).per(Seconds.of(1)), Volts.of(10), Seconds.of(12)), new SysIdRoutine.Mechanism(
+        return new SysIdRoutine(new Config(Volts.of(1).per(Seconds.of(1)), Volts.of(12), Seconds.of(12.5)), new SysIdRoutine.Mechanism(
             (Measure<Voltage> voltage) -> motor.set(voltage.in(Volts) / RobotController.getBatteryVoltage()),
             log -> {
             log.motor(motorName)

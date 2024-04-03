@@ -110,7 +110,9 @@ public class PivotSubsystem extends GenericSubsystem {
   public final static double AMP_LEVEL = 79;
   public final static double TRAP_LEVEL = 75;
   public final static double LOW_SHUTTLE_LEVEL = 60;
-  public final static double HIGH_SHUTTLE_LEVEL = -11;
+  public final static double HIGH_SHUTTLE_LEVEL = -11
+  
+  ;
   public final static double INTAKE_LEVEL = 0; // TODO: Make accurate
   public final static double PODIUM_SHOT = 12.3;
   public final static double MAX_INTAKE_ANGLE = 12.45;
@@ -130,7 +132,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kD, RobotBase.isReal() ? 0.0000 : 0.003);
     values.declare(PIVOT_kS, RobotBase.isReal() ? 0.22 : 0.0);
     values.declare(I_ZONE, 10.0);
-    values.declare(PIVOT_kI, 0.00002);
+    values.declare(PIVOT_kI, 0.1); // 0.00002
     values.declare(PIVOT_kA, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
     values.declare(SLOWDOWN, 0.1);

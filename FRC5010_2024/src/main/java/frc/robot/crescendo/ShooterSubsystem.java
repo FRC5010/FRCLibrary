@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.PIDController5010;
@@ -22,9 +23,9 @@ import frc.robot.FRC5010.motors.PIDController5010.PIDControlType;
 import frc.robot.FRC5010.motors.SystemIdentification;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
+import frc.robot.RobotContainer.LogLevel;
 
 public class ShooterSubsystem extends GenericSubsystem {
-
 
   private MechanismLigament2d topMotorSim;
   private MechanismLigament2d bottomMotorSim;
@@ -59,11 +60,22 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final String SHOOTER_REFERENCE_TOP = "Top Shooter Reference";
   private final String SHOOTER_REFERENCE_BOTTOM = "Bottom Shooter Reference";
   private final String MICRO_ADJUST = "Micro Adjust";
+  private final String TOP_SHOOTER_KP = "Top Shooter Kp";
+  private final String TOP_SHOOTER_KA = "Top Shooter Ka";
+  private final String TOP_SHOOTER_KD = "Top Shooter Kd";
+  private final String TOP_SHOOTER_KI = "Top Shooter Ki";
+  private final String BOTTOM_SHOOTER_KP = "Bottom Shooter Kp";
+  private final String BOTTOM_SHOOTER_KA = "Bottom Shooter Ka";
+  private final String BOTTOM_SHOOTER_KD = "Bottom Shooter Kd";
+  private final String BOTTOM_SHOOTER_KI = "Bottom Shooter Ki";
 
   private final double DEFAULT_TOLERANCE = 5;
 
   private static enum vals {
-    REFERENCE, JOYSTICK, BOTTOM_FF, TOP_FF, BOTTOM_VELOCITY, TOP_VELOCITY
+    REFERENCE, JOYSTICK, BOTTOM_FF, TOP_FF, BOTTOM_VELOCITY, TOP_VELOCITY, TOP_SHOOTER_KP, TOP_SHOOTER_KV,
+    TOP_SHOOTER_KS, TOP_SHOOTER_KA,
+    TOP_SHOOTER_KD, TOP_SHOOTER_KI, BOTTOM_SHOOTER_KP, BOTTOM_SHOOTER_KV, BOTTOM_SHOOTER_KS, BOTTOM_SHOOTER_KA,
+    BOTTOM_SHOOTER_KD, BOTTOM_SHOOTER_KI
   }
 
   /** Creates a new Shooter. */
@@ -83,9 +95,23 @@ public class ShooterSubsystem extends GenericSubsystem {
     values.declare(vals.TOP_FF.name(), 0.0);
     values.declare(vals.BOTTOM_VELOCITY.name(), 0.0);
     values.declare(vals.TOP_VELOCITY.name(), 0.0);
+    values.declare(vals.TOP_SHOOTER_KP.name(), 0.0);
+    values.declare(vals.TOP_SHOOTER_KV.name(), 0.002);
+    values.declare(vals.TOP_SHOOTER_KS.name(), 0.3);
+    values.declare(vals.TOP_SHOOTER_KA.name(), 0.0002);
+    values.declare(vals.TOP_SHOOTER_KD.name(), 0.0);
+    values.declare(vals.TOP_SHOOTER_KI.name(), 0.000001);
+    values.declare(vals.BOTTOM_SHOOTER_KP.name(), 0.0);
+    values.declare(vals.BOTTOM_SHOOTER_KV.name(), 0.002);
+    values.declare(vals.BOTTOM_SHOOTER_KS.name(), 0.3);
+    values.declare(vals.BOTTOM_SHOOTER_KA.name(), 0.0001);
+    values.declare(vals.BOTTOM_SHOOTER_KD.name(), 0.0);
+    values.declare(vals.BOTTOM_SHOOTER_KI.name(), 0.000001);
 
-    topFeedFwd = new SimpleMotorFeedforward(0.35651, 0.0021391, 0.00020613);
-    bottomFeedFwd = new SimpleMotorFeedforward(0.27969, 0.002174, 0.00020114);
+    topFeedFwd = new SimpleMotorFeedforward(values.getDouble(vals.TOP_SHOOTER_KS.name()),
+        values.getDouble(vals.TOP_SHOOTER_KV.name()), values.getDouble(vals.TOP_SHOOTER_KA.name()));
+    bottomFeedFwd = new SimpleMotorFeedforward(values.getDouble(vals.BOTTOM_SHOOTER_KS.name()),
+        values.getDouble(vals.BOTTOM_SHOOTER_KV.name()), values.getDouble(vals.BOTTOM_SHOOTER_KA.name()));
 
     topEncoder = top.getMotorEncoder();
     bottomEncoder = bottom.getMotorEncoder();
@@ -93,16 +119,16 @@ public class ShooterSubsystem extends GenericSubsystem {
     topEncoder.setVelocityConversion(60);
     bottomEncoder.setVelocityConversion(60);
 
-    topPID.setP(0.0032955);
-    topPID.setI(0.0000001);
-    //topPID.setIZone(100);
-    topPID.setD(0);
-    topPID.setTolerance(DEFAULT_TOLERANCE); 
+    topPID.setP(values.getDouble(vals.TOP_SHOOTER_KP.name()));
+    topPID.setI(values.getDouble(vals.TOP_SHOOTER_KI.name()));
+    topPID.setIZone(100);
+    topPID.setD(values.getDouble(vals.TOP_SHOOTER_KD.name()));
+    topPID.setTolerance(DEFAULT_TOLERANCE);
 
-    bottomPID.setP(0.0019272);
-    bottomPID.setI(0.0000001);
-    //bottomPID.setIZone(100);
-    bottomPID.setD(0);
+    bottomPID.setP(values.getDouble(vals.BOTTOM_SHOOTER_KP.name()));
+    bottomPID.setI(values.getDouble(vals.BOTTOM_SHOOTER_KI.name()));
+    bottomPID.setIZone(100);
+    bottomPID.setD(values.getDouble(vals.BOTTOM_SHOOTER_KD.name()));
     bottomPID.setTolerance(DEFAULT_TOLERANCE);
 
     this.topMotorSim = robotSim.getRoot("Shooter Top", 0.80, 0.50)
@@ -209,6 +235,20 @@ public class ShooterSubsystem extends GenericSubsystem {
       topMotor.set(topFeedForward / RobotController.getBatteryVoltage() + topVoltage);
       botMotor.set(bottomFeedForward / RobotController.getBatteryVoltage() + bottomVoltage);
     } else {
+
+      if (LogLevel.DEBUG == RobotContainer.getLoggingLevel()) {
+        topPID.setP(values.getDouble(vals.TOP_SHOOTER_KP.name()));
+        topPID.setI(values.getDouble(vals.TOP_SHOOTER_KI.name()));
+        topPID.setIZone(100);
+        topPID.setD(values.getDouble(vals.TOP_SHOOTER_KD.name()));
+        topPID.setTolerance(DEFAULT_TOLERANCE);
+
+        bottomPID.setP(values.getDouble(vals.BOTTOM_SHOOTER_KP.name()));
+        bottomPID.setI(values.getDouble(vals.BOTTOM_SHOOTER_KI.name()));
+        bottomPID.setIZone(100);
+        bottomPID.setD(values.getDouble(vals.BOTTOM_SHOOTER_KD.name()));
+      }
+
       topPID.setReference(getTopReference() / 60.0, PIDControlType.VELOCITY, topFeedForward);
       bottomPID.setReference(getBottomReference() / 60.0, PIDControlType.VELOCITY, bottomFeedForward);
     }
