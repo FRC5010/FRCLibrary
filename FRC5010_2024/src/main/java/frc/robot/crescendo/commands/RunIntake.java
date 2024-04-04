@@ -110,7 +110,7 @@ public class RunIntake extends GenericCommand {
           feederSubsystem.feederStateMachine(0);
         })
         .andThen(
-            Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.25))
+            Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.2))
                 .onlyIf(() -> feederSubsystem.isStopBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
                 .until(() -> !feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
                 .finallyDo(() -> {

@@ -116,7 +116,7 @@ public class AutoAim extends Command {
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
 
     double shootingSpeed = targetingSystem.getShooterSpeed();
-    // shooterSubsystem.setShooterReference(shootingSpeed, shootingSpeed);
+    shooterSubsystem.setShooterReference(shootingSpeed, shootingSpeed);
 
     if (!useAutoDrive && driveCommand == null) {
 
@@ -129,7 +129,7 @@ public class AutoAim extends Command {
     boolean ready = (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw());
     feederSubsystem.getNoteState();
     feederSubsystem.setShotReadyness(ready);
-    if (useAutoDrive || driveCommand == null) {
+    if (useAutoDrive || driveCommand == null || true) {
       if (
          ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {

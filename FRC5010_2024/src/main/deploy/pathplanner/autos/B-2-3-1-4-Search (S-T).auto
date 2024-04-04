@@ -67,7 +67,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -83,7 +83,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "1 - 4 - Left Long Shot (Practice)"
+                        "pathName": "1 - 4 - Left Long Shot"
                       }
                     },
                     {
@@ -99,7 +99,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -136,7 +136,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {

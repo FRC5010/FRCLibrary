@@ -65,7 +65,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_LENGTH = Units.inchesToMeters(19);
   private final double PIVOT_MASS = Units.lbsToKilograms(22);
 
-  private final static double MIN_PIVOT_POSITION = -11; // Degrees
+  private final static double MIN_PIVOT_POSITION = -9.8; // Degrees
   private final double PIVOT_START_ANGLE = MIN_PIVOT_POSITION;
   private final double PIVOT_END_ANGLE = 90;
   private final String PIVOT_kS = "PivotkS";
@@ -115,7 +115,7 @@ public class PivotSubsystem extends GenericSubsystem {
   ;
   public final static double INTAKE_LEVEL = 0; // TODO: Make accurate
   public final static double PODIUM_SHOT = 12.3;
-  public final static double MAX_INTAKE_ANGLE = 10.0;
+  public final static double MAX_INTAKE_ANGLE = 7.0;
   
   private double referencePosition = HOME_LEVEL;
   private double last_reference = -11;
@@ -126,13 +126,13 @@ public class PivotSubsystem extends GenericSubsystem {
   /** Creates a new Pivot. */
   public PivotSubsystem(MotorController5010 pivot, Mechanism2d mechSim) {
 
-    values.declare(PIVOT_kG, RobotBase.isReal() ? 0.57 : 6.05 ); 
+    values.declare(PIVOT_kG, RobotBase.isReal() ? 0.35 : 6.05 ); 
     values.declare(PIVOT_kV, RobotBase.isReal() ? 0.0 : 0.01);
-    values.declare(PIVOT_kP, RobotBase.isReal() ? 0.015 : 0.01);
-    values.declare(PIVOT_kD, RobotBase.isReal() ? 0.0000 : 0.003);
+    values.declare(PIVOT_kP, RobotBase.isReal() ? 0.025 : 0.01);
+    values.declare(PIVOT_kD, RobotBase.isReal() ? 0.2 : 0.003);
     values.declare(PIVOT_kS, RobotBase.isReal() ? 0.22 : 0.0);
-    values.declare(I_ZONE, 10.0);
-    values.declare(PIVOT_kI, 0.00002);
+    values.declare(I_ZONE, 3.0);
+    values.declare(PIVOT_kI, 0.00003);
     values.declare(PIVOT_kA, 0.0);
     values.declare(MICRO_ADJUST, 10.0);
     values.declare(SLOWDOWN, 0.1);
@@ -264,12 +264,17 @@ public class PivotSubsystem extends GenericSubsystem {
       if (RobotContainer.getLoggingLevel() == LogLevel.DEBUG) {
         // if (last_kP != values.getDouble(PIVOT_kP))
         //   pivotPID.setP(values.getDouble(PIVOT_kP));
+        //   last_kP = values.getDouble(PIVOT_kP);
         // if (last_kD != values.getDouble(PIVOT_kD))
         //   pivotPID.setD(values.getDouble(PIVOT_kD));
+        //   last_kD = values.getDouble(PIVOT_kD);
         // if (last_kI != values.getDouble(PIVOT_kI))
         //   pivotPID.setI(values.getDouble(PIVOT_kI));
+        //   last_kI = values.getDouble(PIVOT_kI);
         // if (last_IZONE != values.getDouble(I_ZONE))
         //   pivotPID.setIZone(values.getDouble(I_ZONE));
+        //   last_IZONE = values.getDouble(I_ZONE);
+      
       }
       if (last_reference != referencePosition) {
         pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);

@@ -70,7 +70,7 @@ public class VisionPhoton extends VisionSystem {
             targetInit = camResult.getBestTarget();
             Optional<EstimatedRobotPose> result = poseEstimator.update();
 
-            if (result.isPresent() && result.get().estimatedPose != null) {
+            if (result.isPresent() && result.get().estimatedPose != null && targetInit.getPoseAmbiguity() < 0.2) {
                 robotPoseEstInit = result.get().estimatedPose;
                 deltaTimeInit = result.get().timestampSeconds;
                 referencePose = robotPoseEstInit.toPose2d();

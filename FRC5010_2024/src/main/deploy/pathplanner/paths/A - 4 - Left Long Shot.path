@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.7916319767886364,
-        "y": 7.647342049320585
+        "x": 2.8409264091255455,
+        "y": 7.621585424989032
       },
       "prevControl": {
-        "x": 2.1130788563239937,
-        "y": 7.649233266936559
+        "x": 2.1683948558905635,
+        "y": 7.711803072374212
       },
       "nextControl": {
-        "x": 4.325708614386334,
-        "y": 7.643066374102568
+        "x": 4.370840741681484,
+        "y": 7.416353014524211
       },
       "isLocked": false,
       "linkedName": null
@@ -70,49 +70,10 @@
       "waypointRelativePos": 2,
       "rotationDegrees": 170.6554523748599,
       "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.4,
-      "rotationDegrees": -130.0,
-      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
-    {
-      "name": "Aim Left Shot Short",
-      "waypointRelativePos": 0.0,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Aim Left Shot Short "
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Just Shoot",
-      "waypointRelativePos": 0.25,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Just Shoot"
-              }
-            }
-          ]
-        }
-      }
-    },
     {
       "name": "Intake and Aim Left Shot Long",
       "waypointRelativePos": 1.35,
@@ -138,10 +99,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.8,
+    "maxVelocity": 5.0,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 180.0
+    "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
     "velocity": 0,

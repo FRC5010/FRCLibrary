@@ -169,7 +169,7 @@ public class DrivetrainPoseEstimator {
 
           if (vision.getRawValues().getFiducialIds().get(camera) > 0 && (RobotState.isDisabled()
               || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
-              || 3.0 > poseDistance)) {
+              || 3.0 > poseDistance) && 3.5 > poseDistance ) {
             visionUpdated = true;
             SmartDashboard.putBoolean(camera, true);
             poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime, poseDistance);

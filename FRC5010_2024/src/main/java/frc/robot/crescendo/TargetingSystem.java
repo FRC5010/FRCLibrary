@@ -37,10 +37,13 @@ public class TargetingSystem extends GenericSubsystem {
     private boolean useShooterCamera = false;
 
     private PIDController thetaController;
+    private PIDController thetaCameraController;
+
     // Input/Output Values
     private final String kP = "Targeting kP";
     private final String kI = "Targeting kI";
     private final String kD = "Targeting kD";
+    private final String KI_ZONE = "Targeting KI Zone";
     private final String TOLERANCE = "Targeting Tolerance";
 
     private static InterpolatingDoubleTreeMap pivotInterpolation = new InterpolatingDoubleTreeMap();
@@ -54,7 +57,7 @@ public class TargetingSystem extends GenericSubsystem {
     private final String HORIZONTAL_ANGLE = "Horizontal Angle";
     private final String PIVOT_ANGLE = "Pivot Angle";
 
-    private final double DEFAULT_TOLERANCE = 0.01;
+    private final double DEFAULT_TOLERANCE = 0.02;
 
     public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve,
             VisionSystem shooter) {
@@ -64,9 +67,10 @@ public class TargetingSystem extends GenericSubsystem {
         this.shooterCamera = shooter;
 
         // Declare Values
-        values.declare(kP, 0.4); // 0.28
+        values.declare(kP, 0.11);
         values.declare(kI, 0.0);
-        values.declare(kD, 0.04);
+        values.declare(KI_ZONE, 0.00);
+        values.declare(kD, 0.0015);
         values.declare(TOLERANCE, DEFAULT_TOLERANCE);
 
         values.declare(TURN_POWER, 0.0);
@@ -75,34 +79,62 @@ public class TargetingSystem extends GenericSubsystem {
 
         // Initialize the PID controller
         thetaController = new PIDController(values.getDouble(kP), values.getDouble(kI), values.getDouble(kD));
+        thetaController.setIZone(values.getDouble(KI_ZONE));
         thetaController.setTolerance(values.getDouble(TOLERANCE));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
+        thetaCameraController = new PIDController(values.getDouble(kP), values.getDouble(kI), values.getDouble(kD));
+        thetaCameraController.setIZone(values.getDouble(KI_ZONE));
+        thetaCameraController.setTolerance(values.getDouble(TOLERANCE));
+        thetaCameraController.enableContinuousInput(-Math.PI, Math.PI);
+        thetaCameraController.setSetpoint(0.0);
+
         // Rechecked
+        // pivotInterpolation.put(0.5, -11.0);
+        // pivotInterpolation.put(1.0, -11.0);
+        // pivotInterpolation.put(1.32, -11.0);
+        // pivotInterpolation.put(1.50, -4.5);
+        // pivotInterpolation.put(1.75, 1.0);
+        // pivotInterpolation.put(2.04, 6.75);
+        // pivotInterpolation.put(2.20, 7.32);
+        // pivotInterpolation.put(2.26, 9.25);
+        // pivotInterpolation.put(2.40, 12.25);
+        // pivotInterpolation.put(2.50, 12.50);
+        // pivotInterpolation.put(2.76, 16.00);
+        // pivotInterpolation.put(3.01, 17.87);
+        // pivotInterpolation.put(3.26, 19.25);
+        // pivotInterpolation.put(3.50, 22.56);
+        // pivotInterpolation.put(3.70, 25.25);
+        // pivotInterpolation.put(4.10, 26.56);
+        // pivotInterpolation.put(4.60, 27.50);
+        // pivotInterpolation.put(5.00, 27.25);
+        // pivotInterpolation.put(5.36, 29.32);
+        // // Unchecked
+        // pivotInterpolation.put(4.2, 26.75);
+        // pivotInterpolation.put(4.48, 26.70);
+        // pivotInterpolation.put(4.98, 29.70);
+        // pivotInterpolation.put(5.3, 29.8);
+
+
+
         pivotInterpolation.put(0.5, -11.0);
-        pivotInterpolation.put(1.0, -11.0);
-        pivotInterpolation.put(1.32, -11.0);
-        pivotInterpolation.put(1.50, -4.5);
-        pivotInterpolation.put(1.75, 1.0);
-        pivotInterpolation.put(2.04, 6.75);
-        pivotInterpolation.put(2.20, 7.32);
-        pivotInterpolation.put(2.26, 9.25);
-        pivotInterpolation.put(2.40, 12.25);
-        pivotInterpolation.put(2.50, 12.50);
-        pivotInterpolation.put(2.76, 16.00);
-        pivotInterpolation.put(3.01, 17.87);
-        pivotInterpolation.put(3.26, 19.25);
+        pivotInterpolation.put(1.25, -10.51);
+        pivotInterpolation.put(1.50, -4.59);
+        pivotInterpolation.put(1.75, 1.11);
+        pivotInterpolation.put(2.06, 7.19);
+        pivotInterpolation.put(2.25, 7.43);
+        pivotInterpolation.put(2.50, 11.44);
+        pivotInterpolation.put(2.75, 14.94);
+        pivotInterpolation.put(3.03, 17.44);
+        pivotInterpolation.put(3.25, 17.69);
         pivotInterpolation.put(3.50, 22.56);
         pivotInterpolation.put(3.70, 25.25);
-        pivotInterpolation.put(4.10, 26.56);
-        pivotInterpolation.put(4.60, 27.50);
-        pivotInterpolation.put(5.00, 27.25);
-        pivotInterpolation.put(5.36, 29.32);
-        // Unchecked
-        pivotInterpolation.put(4.2, 26.75);
-        pivotInterpolation.put(4.48, 26.70);
-        pivotInterpolation.put(4.98, 29.70);
-        pivotInterpolation.put(5.3, 29.8);
+        pivotInterpolation.put(4.06, 25.91);
+        pivotInterpolation.put(4.26, 26.41);
+        pivotInterpolation.put(4.50, 27.31);
+        pivotInterpolation.put(4.75, 28.31);
+        pivotInterpolation.put(4.94, 28.81);
+        
 
         shooterInterpolation.put(1.0, Constants.Physical.SUBWOOFER_SHOT);
         shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
@@ -150,7 +182,14 @@ public class TargetingSystem extends GenericSubsystem {
         thetaController.setP(values.getDouble(kP));
         thetaController.setI(values.getDouble(kI));
         thetaController.setD(values.getDouble(kD));
+        thetaController.setI(values.getDouble(KI_ZONE));
         thetaController.setTolerance(values.getDouble(TOLERANCE));
+
+        thetaCameraController.setP(values.getDouble(kP));
+        thetaCameraController.setI(values.getDouble(kI));
+        thetaCameraController.setD(values.getDouble(kD));
+        thetaCameraController.setI(values.getDouble(KI_ZONE));
+        thetaCameraController.setTolerance(values.getDouble(TOLERANCE));
     }
 
     public boolean isAtTargetYaw() {
@@ -202,9 +241,9 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public Optional<Double> getShooterYawPower() {
-        double turnFactor = -0.002;
+        // double turnFactor = -0.002;
         if (useShooterCamera && shooterCamera.isValidTarget()) {
-            return Optional.of(shooterCamera.getAngleX() * turnFactor);
+            return Optional.of(thetaCameraController.calculate(Units.degreesToRadians(shooterCamera.getAngleX())));
         }
         return Optional.empty();
     }

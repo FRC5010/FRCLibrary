@@ -19,6 +19,7 @@ public enum AutoShotDefinition {
     CENTER_SHOT_LONG(4.0, 5.59),
     B2_SHOT(2.9, 5.55, 180, 13.0, 3000),
     C8_SHOT(1.52, 3.63),
+    A1_SHOT(1.64, 7.02),
     CENTER_SHOT_SHORT(2.15, 5.55, 0),
     RIGHT_SHOT_SHORT(1.61, 4.53),
     LEFT_SHOT_SHORT(1.6, 7.3),
