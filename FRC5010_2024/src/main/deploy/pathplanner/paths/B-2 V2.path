@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Aim Center Shot Short",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "sequential",
         "data": {

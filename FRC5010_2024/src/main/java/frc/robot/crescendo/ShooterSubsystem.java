@@ -216,46 +216,50 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   public void runToReferenceShooter() {
 
-    double topCurrentError = getTopReference() - getTopVelocity();
-    double bottomCurrentError = getBottomReference() - getBottomVelocity();
-
-    double currentTime = RobotController.getFPGATime() / 1E6;
-    double topErrorRate = (topCurrentError - topShooterPrevError) / (currentTime - shooterPrevTime);
-    double bottomErrorRate = (bottomCurrentError - bottomShooterPrevError) / (currentTime - shooterPrevTime);
-
-    double topVoltage = topCurrentError * topPID.getP() + (topErrorRate * topPID.getD());
-    double bottomVoltage = bottomCurrentError * bottomPID.getP() + (bottomErrorRate * bottomPID.getD());
     double topFeedForward = getTopFeedFwdVoltage(getTopReference());
     double bottomFeedForward = getBottomFeedFwdVoltage(getBottomReference());
 
     values.set(vals.BOTTOM_FF.name(), bottomFeedForward);
     values.set(vals.TOP_FF.name(), topFeedForward);
 
-    if (!Robot.isReal()) {
+    if (Robot.isSimulation()) {
+      double topCurrentError = getTopReference() - getTopVelocity();
+      double bottomCurrentError = getBottomReference() - getBottomVelocity();
+
+      double currentTime = RobotController.getFPGATime() / 1E6;
+      double topErrorRate = (topCurrentError - topShooterPrevError) / (currentTime - shooterPrevTime);
+      double bottomErrorRate = (bottomCurrentError - bottomShooterPrevError) / (currentTime - shooterPrevTime);
+
+      double topVoltage = topCurrentError * topPID.getP() + (topErrorRate * topPID.getD());
+      double bottomVoltage = bottomCurrentError * bottomPID.getP() + (bottomErrorRate * bottomPID.getD());
+
       topMotor.set(topFeedForward / RobotController.getBatteryVoltage() + topVoltage);
       botMotor.set(bottomFeedForward / RobotController.getBatteryVoltage() + bottomVoltage);
+
+      topShooterPrevError = topCurrentError;
+      bottomShooterPrevError = bottomCurrentError;
+      shooterPrevTime = currentTime;
     } else {
 
       if (LogLevel.DEBUG == RobotContainer.getLoggingLevel()) {
         topPID.setP(values.getDouble(vals.TOP_SHOOTER_KP.name()));
         topPID.setI(values.getDouble(vals.TOP_SHOOTER_KI.name()));
-        topPID.setIZone(100);
         topPID.setD(values.getDouble(vals.TOP_SHOOTER_KD.name()));
         topPID.setTolerance(DEFAULT_TOLERANCE);
 
         bottomPID.setP(values.getDouble(vals.BOTTOM_SHOOTER_KP.name()));
         bottomPID.setI(values.getDouble(vals.BOTTOM_SHOOTER_KI.name()));
-        bottomPID.setIZone(100);
         bottomPID.setD(values.getDouble(vals.BOTTOM_SHOOTER_KD.name()));
+
+        topFeedFwd = new SimpleMotorFeedforward(values.getDouble(vals.TOP_SHOOTER_KS.name()),
+            values.getDouble(vals.TOP_SHOOTER_KV.name()), values.getDouble(vals.TOP_SHOOTER_KA.name()));
+        bottomFeedFwd = new SimpleMotorFeedforward(values.getDouble(vals.BOTTOM_SHOOTER_KS.name()),
+            values.getDouble(vals.BOTTOM_SHOOTER_KV.name()), values.getDouble(vals.BOTTOM_SHOOTER_KA.name()));
       }
 
       topPID.setReference(getTopReference() / 60.0, PIDControlType.VELOCITY, topFeedForward);
       bottomPID.setReference(getBottomReference() / 60.0, PIDControlType.VELOCITY, bottomFeedForward);
     }
-
-    topShooterPrevError = topCurrentError;
-    bottomShooterPrevError = bottomCurrentError;
-    shooterPrevTime = currentTime;
 
   }
 

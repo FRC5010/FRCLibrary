@@ -97,6 +97,38 @@
           "data": {
             "name": "Quick Auto Aim"
           }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Terminate Path Trigger"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Right Shot Short - 6 - Left Long Shot (S-T)"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Quick Auto Aim"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
         }
       ]
     }

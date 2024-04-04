@@ -7,6 +7,7 @@ package frc.robot.crescendo;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -55,7 +56,6 @@ public class TargetingSystem extends GenericSubsystem {
 
     private final double DEFAULT_TOLERANCE = 0.01;
 
-
     public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve,
             VisionSystem shooter) {
         this.currentTarget = targetSupplier;
@@ -64,7 +64,7 @@ public class TargetingSystem extends GenericSubsystem {
         this.shooterCamera = shooter;
 
         // Declare Values
-        values.declare(kP, 0.28);
+        values.declare(kP, 0.4); // 0.28
         values.declare(kI, 0.0);
         values.declare(kD, 0.04);
         values.declare(TOLERANCE, DEFAULT_TOLERANCE);
@@ -177,7 +177,6 @@ public class TargetingSystem extends GenericSubsystem {
         values.set(PIVOT_ANGLE, angle);
         return angle;
     }
-    
 
     public double getShooterSpeed() {
         double flatDistance = getFlatDistanceToTarget();
@@ -333,11 +332,10 @@ public class TargetingSystem extends GenericSubsystem {
 
         thetaController.setSetpoint(Units.degreesToRadians(targetAngle));
         output = thetaController.calculate(robotPose.get().getRotation().getZ());
+        output = MathUtil.clamp(output, -0.50, 0.50);
 
         SmartDashboard.putBoolean("Theta Controller at Setpoint", thetaController.atSetpoint());
-        return thetaController.atSetpoint() ? 0.0
-                : output
-                        * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
+        return output * swerve.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
         // Stops rotating robot once at setpoint within tolerance.
     }
 

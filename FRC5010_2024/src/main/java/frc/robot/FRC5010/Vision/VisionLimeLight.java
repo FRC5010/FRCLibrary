@@ -48,6 +48,8 @@ public class VisionLimeLight extends VisionSystem {
                     () -> Double.valueOf(LimelightHelpers.getFiducialID(name)).intValue(),
                     () -> null,
                     () -> null);
+        } else {
+            smoothedValues.valid = false;
         }
     }
 

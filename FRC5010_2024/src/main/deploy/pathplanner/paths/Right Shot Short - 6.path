@@ -30,7 +30,37 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Terminate if No Note",
+      "waypointRelativePos": 0.75,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate Path Trigger"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate if No Note"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Note"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.8,
     "maxAcceleration": 3.5,

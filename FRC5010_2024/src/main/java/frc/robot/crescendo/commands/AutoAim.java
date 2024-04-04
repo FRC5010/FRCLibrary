@@ -116,7 +116,7 @@ public class AutoAim extends Command {
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);
 
     double shootingSpeed = targetingSystem.getShooterSpeed();
-    shooterSubsystem.setShooterReference(shootingSpeed, shootingSpeed);
+    // shooterSubsystem.setShooterReference(shootingSpeed, shootingSpeed);
 
     if (!useAutoDrive && driveCommand == null) {
 

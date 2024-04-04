@@ -4,6 +4,9 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,10 +49,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.AutonConstants;
+import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.LogLevel;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
@@ -58,7 +61,6 @@ import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.RobotContainer.LogLevel;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -295,7 +297,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public Command sysIdDriveMotorCommand() {
     return SwerveDriveTest.generateSysIdCommand(
         SwerveDriveTest.setDriveSysIdRoutine(
-            new Config(),
+          new Config(Volts.of(1).per(Seconds.of(1)), Volts.of(12), Seconds.of(10)),
             this, swerveDrive, 12),
         3.0, 5.0, 3.0);
   }

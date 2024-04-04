@@ -36,7 +36,7 @@
         "y": 6.7
       },
       "prevControl": {
-        "x": 6.451829274028918,
+        "x": 6.451829274028917,
         "y": 6.629807665170887
       },
       "nextControl": null,
@@ -52,7 +52,31 @@
     }
   ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Intake and Aim Left Long Shot",
+      "waypointRelativePos": 0.7,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Note"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Left Shot Long"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.8,
     "maxAcceleration": 3.5,

@@ -36,7 +36,7 @@
         "y": 6.7
       },
       "prevControl": {
-        "x": 7.277656006204869,
+        "x": 7.277656006204868,
         "y": 7.01104715111216
       },
       "nextControl": null,
@@ -54,8 +54,50 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.35,
+      "name": "Intake and Potentially Terminate",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate Event Marker Trigger"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate if No Note"
+              }
+            },
+            {
+              "type": "sequential",
+              "data": {
+                "commands": [
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "Intake Note"
+                    }
+                  },
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "Aim Left Shot Long"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Terminate if Empty",
+      "waypointRelativePos": 1.7,
       "command": {
         "type": "sequential",
         "data": {
@@ -63,13 +105,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Intake Note"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "Aim Left Shot Long"
+                "name": "Terminate if Empty"
               }
             }
           ]

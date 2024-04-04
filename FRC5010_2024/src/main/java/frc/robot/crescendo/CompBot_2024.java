@@ -38,6 +38,7 @@ import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
 import frc.robot.FRC5010.constants.SwerveConstants;
 import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
+import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.MotorFactory;
@@ -104,7 +105,7 @@ public class CompBot_2024 extends GenericMechanism {
 	public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
 		super(visual, displayTab);
 
-		RobotContainer.setLoggingLevel(LogLevel.COMPETITION);
+		RobotContainer.setLoggingLevel(LogLevel.DEBUG);
 
 		ledSubsystem = new SegmentedLedSystem(0, 34, visual);
 		ledSubsystem.setWholeStripState((Integer i) -> RobotContainer.chooseAllianceColor().getColor8Bit());
@@ -149,7 +150,7 @@ public class CompBot_2024 extends GenericMechanism {
 
 		swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3_KRAKEN_NEO);
 		swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
-		swerveConstants.getSwerveModuleConstants().setkWheelDiameterMeters(0.115573139);
+		swerveConstants.getSwerveModuleConstants().setkWheelDiameterMeters(0.103386904);
 		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft",
 				new MotorFeedFwdConstants(0.17204, 2.0698, 0.29611)); // FL
 		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright",
@@ -290,7 +291,6 @@ public class CompBot_2024 extends GenericMechanism {
 							climbSubsystem.setRightMotorSpeed(0);
 						},
 								climbSubsystem));
-
 
 		if (DriverStation.isTest()) {
 			return;
@@ -470,8 +470,8 @@ public class CompBot_2024 extends GenericMechanism {
 		intakeSubsystem.removeDefaultCommand();
 
 		drive.setupTestDefaultCommands(driver, operator);
-		driver.createYButton().whileTrue(shooterSubsystem.getTopSysIdRoutineCommand());
-		driver.createXButton().whileTrue(shooterSubsystem.getBottomSysIdRoutineCommand());
+		driver.createYButton().whileTrue(((YAGSLSwerveDrivetrain)drive.getDrivetrain()).sysIdDriveMotorCommand());
+		driver.createXButton().whileTrue(((YAGSLSwerveDrivetrain)drive.getDrivetrain()).sysIdAngleMotorCommand());
 
 		// driver.createStartButton().whileTrue(feederSubsystem.getFeederSysIdRoutineCommand());
 		// // driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
@@ -621,6 +621,7 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Auto Aim With Drive",
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
 						true).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
+
 		NamedCommands.registerCommand("Blind Shot",
 				runShooter.get()
 						.until(() -> shooterSubsystem.isAtTarget() && shooterSubsystem.getPIDReferenceTop() != 0)
@@ -647,7 +648,8 @@ public class CompBot_2024 extends GenericMechanism {
 							pivotSubsystem.resetToleranceToDefaults();
 						}));
 
-		NamedCommands.registerCommand("Pivot Home", Commands.runOnce(() -> pivotSubsystem.setReference(PivotSubsystem.HOME_LEVEL)));
+		NamedCommands.registerCommand("Pivot Home",
+				Commands.runOnce(() -> pivotSubsystem.setReference(PivotSubsystem.HOME_LEVEL)));
 
 		NamedCommands.registerCommand("Aim Stage Shot Long",
 				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(RobotContainer.getAlliance()),
@@ -665,20 +667,19 @@ public class CompBot_2024 extends GenericMechanism {
 				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_LONG.getPose(RobotContainer.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.enableSpinup());
-		
+
 		NamedCommands.registerCommand("Aim Center Shot Short", new PredefinedAutoShot(
 				AutoShotDefinition.CENTER_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
-						.enableSpinup()
-						.enablePivot());
+				.enableSpinup()
+				.enablePivot());
 
 		NamedCommands.registerCommand("Aim Right Shot Short", new PredefinedAutoShot(
 				AutoShotDefinition.RIGHT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
-						.enableSpinup()
-						.enablePivot()
-						.enableYaw());
-
+				.enableSpinup()
+				.enablePivot()
+				.enableYaw());
 
 		// NamedCommands.registerCommand("Pivot Shuttle",
 		// spinIntake.get().alongWith(Commands.runOnce(() -> {
@@ -696,7 +697,7 @@ public class CompBot_2024 extends GenericMechanism {
 			pivotSubsystem.setReference(pivotSubsystem.LOW_SHUTTLE_LEVEL);
 			shooterSubsystem.setShooterReference(Constants.Physical.TOP_SHOOTING_SPEED,
 					Constants.Physical.BOTTOM_SHOOTING_SPEED);
-		}).andThen(spinIntake.get()).alongWith(blindShot.get()).andThen(() -> {
+		}).andThen(spinIntake.get()).alongWith(justShoot.get()).andThen(() -> {
 			pivotSubsystem.setReference(
 					pivotSubsystem.HOME_LEVEL);
 		}));
@@ -710,20 +711,42 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Aim Left Shot Short ", new PredefinedAutoShot(
 				AutoShotDefinition.LEFT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
-						.enableSpinup()
-						.enablePivot());
+				.enableSpinup()
+				.enablePivot());
 
 		NamedCommands.registerCommand("Aim Right Shot Long", new PredefinedAutoShot(
-				AutoShotDefinition.LEFT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.RIGHT_SHOT_LONG.getPose(RobotContainer.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
-						.enableSpinup()
-						.enablePivot()
-						.enableYaw());
+				.enableSpinup()
+				.enablePivot()
+				.enableYaw());
 
-		NamedCommands.registerCommand("Terminate if Empty", Commands.runOnce(() -> terminatePath = true).onlyIf(() -> feederSubsystem.getNoteState() == NoteState.Empty));
-		NamedCommands.registerCommand("Terminate if No Note", Commands.runOnce(() -> terminatePath = true).onlyIf(() -> !noteCamera.isValidTarget()));
+		NamedCommands.registerCommand("Aim Note 2", new PredefinedAutoShot(
+				AutoShotDefinition.NOTE_2.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+				.enableSpinup()
+				.enableYaw());
 
-		NamedCommands.registerCommand("Terminate Path Trigger", Commands.idle().until(() -> terminatePath).finallyDo(() -> terminatePath = false));
+		NamedCommands.registerCommand("Aim C8 Shot Until Empty", new PredefinedAutoShot(
+				AutoShotDefinition.C8_SHOT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+				.enableSpinup()
+				.enablePivot()
+				.enableYaw().until(() -> feederSubsystem.isEmptied()));
+
+		NamedCommands.registerCommand("Terminate if Empty", Commands.runOnce(() -> terminatePath = true)
+				.onlyIf(() -> feederSubsystem.getNoteState() == NoteState.Empty));
+
+		NamedCommands.registerCommand("Terminate if No Note",
+				Commands.runOnce(() -> terminatePath = true).onlyIf(() -> !noteCamera.isValidTarget()));
+
+		NamedCommands.registerCommand("Terminate Once Note",
+				Commands.idle().until(() -> noteCamera.isValidTarget()).finallyDo(() ->
+					terminatePath = noteCamera.isValidTarget()));
+
+		NamedCommands.registerCommand("Terminate Path Trigger",
+				Commands.idle().until(() -> terminatePath).finallyDo(() -> terminatePath = false));
+		NamedCommands.registerCommand("Terminate Event Marker Trigger", Commands.idle().until(() -> terminatePath));
 
 	}
 

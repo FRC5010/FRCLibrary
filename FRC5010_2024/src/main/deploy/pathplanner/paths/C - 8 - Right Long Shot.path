@@ -60,7 +60,7 @@
   "eventMarkers": [
     {
       "name": "Intake and Aim Right Shot Long",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "sequential",
         "data": {
@@ -69,6 +69,12 @@
               "type": "named",
               "data": {
                 "name": "Intake Note"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Right Shot Long"
               }
             }
           ]
