@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Alternate Blind Shot"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -28,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "C - 8 - Right Long Shot (S-T)"
+                        "pathName": "C - 8 - Right Long Shot (S-T) Without Shot"
                       }
                     },
                     {

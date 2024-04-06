@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 
 /** Add your docs here. */
@@ -70,13 +71,14 @@ public class VisionPhoton extends VisionSystem {
             targetInit = camResult.getBestTarget();
             Optional<EstimatedRobotPose> result = poseEstimator.update();
 
-            if (result.isPresent() && result.get().estimatedPose != null && targetInit.getPoseAmbiguity() < 0.2) {
+            if (result.isPresent() && result.get().estimatedPose != null && targetInit.getPoseAmbiguity() < 0.5) {
                 robotPoseEstInit = result.get().estimatedPose;
                 deltaTimeInit = result.get().timestampSeconds;
                 referencePose = robotPoseEstInit.toPose2d();
             } else {
                 robotPoseEstInit = null;
             }
+            SmartDashboard.putNumber(camera.getName() + " ambiguity", targetInit.getPoseAmbiguity());
         }
         Pose2d robotPoseEst = null == robotPoseEstInit ? null : robotPoseEstInit.toPose2d();
         double deltaTime = deltaTimeInit;

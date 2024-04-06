@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Blind Shot"
+            "name": "Alternate Blind Shot"
           }
         },
         {
@@ -39,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Auto Aim"
+            "name": "Quick Auto Aim"
           }
         },
         {

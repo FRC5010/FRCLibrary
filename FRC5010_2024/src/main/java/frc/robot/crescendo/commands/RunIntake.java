@@ -32,7 +32,6 @@ public class RunIntake extends GenericCommand {
   FeederSubsystem feederSubsystem;
   PivotSubsystem pivotSubsystem;
 
-
   boolean feederStopFlag = false;
   Controller rumbleController;
   double intakeAngle;
@@ -44,7 +43,8 @@ public class RunIntake extends GenericCommand {
 
   /** Creates a new RunIntake. */
   public RunIntake(DoubleSupplier joystick, DoubleSupplier feederSpeed, IntakeSubsystem intakeSubsystem,
-      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Controller rumbleController) {
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem,
+      Controller rumbleController) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
     this.feederSpeed = feederSpeed;
@@ -59,7 +59,8 @@ public class RunIntake extends GenericCommand {
   }
 
   public RunIntake(DoubleSupplier joystick, DoubleSupplier feederSpeed, IntakeSubsystem intakeSubsystem,
-      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Controller rumbleController, double intakeAngle) {
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem,
+      Controller rumbleController, double intakeAngle) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
     this.feederSpeed = feederSpeed;
@@ -68,15 +69,14 @@ public class RunIntake extends GenericCommand {
     this.rumbleController = rumbleController;
     this.shooterSubsystem = shooterSubsystem;
     this.intakeAngle = intakeAngle;
-  
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);
   }
 
-
   public RunIntake(DoubleSupplier joystick, IntakeSubsystem intakeSubsystem,
-      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, Controller rumbleController) {
+      FeederSubsystem feederSubsystem, PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem,
+      Controller rumbleController) {
     this.speed = joystick;
     this.intakeSubsystem = intakeSubsystem;
     this.feederSpeed = () -> Math.abs(speed.getAsDouble()) * feederSubsystem.getSpeedFactor();
@@ -98,16 +98,19 @@ public class RunIntake extends GenericCommand {
         () -> feederSubsystem.feederStateMachine(
             Math.signum(speed.getAsDouble() > 0 ? speed.getAsDouble() : 0) * feederSpeed.getAsDouble()),
         feederSubsystem).until(() -> 0 == speed.getAsDouble()).onlyIf(() -> DriverStation.isTeleop()));
-    
-    
 
     Map<NoteState, Command> intakeCommands = new HashMap<>();
     feederCommand = Commands
-        .run(() -> feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble() * (feederSubsystem.isDetectBeamBroken() ? 0.7 : 1 ) ),
+        .run(() -> {
+          feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()
+              * (feederSubsystem.isDetectBeamBroken() ? 0.4 : 1));
+          shooterSubsystem.setShooterReference(-250.0, -250.0);
+        },
             feederSubsystem)
         .until(() -> feederSubsystem.getNoteState() == NoteState.Holding || 0 == speed.getAsDouble())
         .finallyDo(() -> {
           feederSubsystem.feederStateMachine(0);
+          shooterSubsystem.setShooterReference(0.0, 0.0);
         })
         .andThen(
             Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.2))
@@ -121,7 +124,6 @@ public class RunIntake extends GenericCommand {
                 Commands.waitSeconds(1)).finallyDo(() -> rumbleController.setRumble(0)))
                 .onlyIf(() -> null != rumbleController && feederSubsystem.getNoteState() == NoteState.Holding));
 
-  
     intakeCommands.put(NoteState.Empty, feederCommand);
     intakeCommands.put(NoteState.Holding, allowIntakeRunCommand.get());
 
@@ -140,7 +142,7 @@ public class RunIntake extends GenericCommand {
 
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {
-      if (velocity < 0 &&  RobotContainer.getLoggingLevel() == LogLevel.COMPETITION) {
+      if (velocity < 0 && RobotContainer.getLoggingLevel() == LogLevel.COMPETITION) {
         pivotSubsystem.setReference(intakeAngle);
       }
       // feederStopFlag = true;

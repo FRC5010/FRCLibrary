@@ -212,7 +212,7 @@ public class CompBot_2024 extends GenericMechanism {
 						Commands.idle().until(() -> feederSubsystem.getNoteState() != NoteState.Empty)
 								.andThen(Commands.idle().withTimeout(1.5)
 										.until(() -> feederSubsystem.getNoteState() == NoteState.Loaded)),
-						new RunIntake(() -> -0.75, () -> 1.0, intakeSubsystem, feederSubsystem,
+						new RunIntake(() -> -0.75, () -> 0.5, intakeSubsystem, feederSubsystem,
 								pivotSubsystem, shooterSubsystem,
 								null));
 
@@ -628,8 +628,8 @@ public class CompBot_2024 extends GenericMechanism {
 						.until(() -> shooterSubsystem.isAtTarget() && shooterSubsystem.getPIDReferenceTop() != 0)
 						.withTimeout(0.70).andThen(blindShot.get()));
 
-		NamedCommands.registerCommand("Alternate Blind Shot", runShooter.get().withTimeout(0.25).andThen(justShoot.get())
-				.finallyDo(() -> shooterSubsystem.setShooterReference(0.0, 0.0)));
+		NamedCommands.registerCommand("Alternate Blind Shot", runShooter.get().withTimeout(0.5).andThen(justShoot.get())
+				.finallyDo(() -> shooterSubsystem.setShooterReference(-250.0, -250.0)));
 
 		NamedCommands.registerCommand("Just Shoot", justShoot.get());
 

@@ -167,9 +167,7 @@ public class DrivetrainPoseEstimator {
         if (null != robotPose) {
           double imageCaptureTime = vision.getRawValues().getLatency(camera);
 
-          if (vision.getRawValues().getFiducialIds().get(camera) > 0 && (RobotState.isDisabled()
-              || 0.5 > robotPose.getTranslation().getDistance(poseTracker.getCurrentPose().getTranslation())
-              || 3.0 > poseDistance) && 3.5 > poseDistance ) {
+          if (vision.getRawValues().getFiducialIds().get(camera) > 0) {
             visionUpdated = true;
             SmartDashboard.putBoolean(camera, true);
             poseTracker.updateVisionMeasurements(robotPose, imageCaptureTime, poseDistance);
@@ -180,6 +178,7 @@ public class DrivetrainPoseEstimator {
     }
     field2d.setRobotPose(getCurrentPose());
 
+    
     SmartDashboard.putNumber("Distance to Speaker", getCurrentPose().getTranslation().getDistance(
         TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()).getTranslation().toTranslation2d()));
   }

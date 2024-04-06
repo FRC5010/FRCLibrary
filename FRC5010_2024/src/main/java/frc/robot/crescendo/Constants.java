@@ -54,7 +54,7 @@ public final class Constants {
                                 new Rotation3d());
                 // Old forward projected aiming position Units.inchesToMeters(652.73 - 9.055)
                 public static Pose3d RED_SHOT_POSE = new Pose3d(
-                                new Translation3d(0, Units.inchesToMeters(218.42), 0.0),
+                                new Translation3d(Units.inchesToMeters(652.73), Units.inchesToMeters(218.42), 0.0),
                                 new Rotation3d(0, 0, 180));
 
 

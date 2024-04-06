@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.FRC5010.Vision.VisionSystem.Rotation;
 
 /** Add your docs here. */
 public enum AutoShotDefinition {
@@ -70,7 +71,17 @@ public enum AutoShotDefinition {
     }
 
     public Pose2d getPose(Alliance alliance) {
-        return new Pose2d(alliance == Alliance.Blue ? x : CRESCENDO_FIELD_WIDTH-x, y, alliance == Alliance.Blue ? Rotation2d.fromDegrees(heading) : Rotation2d.fromDegrees(180 - heading));
+        double red_heading = 180 - heading;
+        Rotation2d rotation_red_heading;
+        if (red_heading > 180) {
+            rotation_red_heading = Rotation2d.fromDegrees(red_heading-360);
+        } else if (red_heading < -180) {
+            rotation_red_heading = Rotation2d.fromDegrees(red_heading+360);
+        } else {
+            rotation_red_heading = Rotation2d.fromDegrees(red_heading);
+        }
+        
+        return new Pose2d(alliance == Alliance.Blue ? x : CRESCENDO_FIELD_WIDTH-x, y, alliance == Alliance.Blue ? Rotation2d.fromDegrees(heading) : rotation_red_heading );
     }
 
     public Pose2d getPose() {

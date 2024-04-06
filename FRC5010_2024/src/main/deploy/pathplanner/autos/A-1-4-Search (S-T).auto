@@ -12,9 +12,15 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Alternate Blind Shot"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "A - 1 With Shot"
+            "pathName": "A - 1"
           }
         },
         {
