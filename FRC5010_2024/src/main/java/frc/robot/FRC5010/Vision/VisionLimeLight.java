@@ -49,7 +49,15 @@ public class VisionLimeLight extends VisionSystem {
                     () -> null,
                     () -> null);
         } else {
-            smoothedValues.valid = false;
+            updateValues(rawValues, 
+            () -> 0.0,
+            () -> 0.0,
+            () -> 0.0,
+            () -> false,
+            () -> 0.0,
+            () -> 0,
+            () -> null,
+            () -> null);
         }
     }
 
