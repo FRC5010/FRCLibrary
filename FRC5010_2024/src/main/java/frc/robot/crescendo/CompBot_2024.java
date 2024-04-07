@@ -557,15 +557,15 @@ public class CompBot_2024 extends GenericMechanism {
 									new Rotation3d(0, 0,
 											Units.degreesToRadians(-25)))), // -20
 					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
-			visionSystem.addPhotonCamera("Left Camera", 2,
-					new Transform3d(
-							new Translation3d(Units.inchesToMeters(11.59),
-									Units.inchesToMeters(4.682), // -.12
-									Units.inchesToMeters(8.256)),
-							new Rotation3d(0, Units.degreesToRadians(-25), 0).rotateBy( // -28
-									new Rotation3d(0, 0,
-											Units.degreesToRadians(30)))), // 20
-					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
+			// visionSystem.addPhotonCamera("Left Camera", 2,
+			// 		new Transform3d(
+			// 				new Translation3d(Units.inchesToMeters(11.59),
+			// 						Units.inchesToMeters(4.682), // -.12
+			// 						Units.inchesToMeters(8.256)),
+			// 				new Rotation3d(0, Units.degreesToRadians(-25), 0).rotateBy( // -28
+			// 						new Rotation3d(0, 0,
+			// 								Units.degreesToRadians(30)))), // 20
+			// 		PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
 			noteCamera = new VisionLimeLight("orange", 1,
 					AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo),
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
