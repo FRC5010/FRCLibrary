@@ -35,6 +35,7 @@ public class TargetingSystem extends GenericSubsystem {
     private SwerveDrivetrain swerve;
     private VisionSystem shooterCamera;
     private boolean useShooterCamera = false;
+    private FeederSubsystem feeder;
 
     private PIDController thetaController;
     private PIDController thetaCameraController;
@@ -60,11 +61,12 @@ public class TargetingSystem extends GenericSubsystem {
     private final double DEFAULT_TOLERANCE = 0.02;
 
     public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve,
-            VisionSystem shooter) {
+            VisionSystem shooter, FeederSubsystem feeder) {
         this.currentTarget = targetSupplier;
         this.robotPose = robotPose;
         this.swerve = swerve;
         this.shooterCamera = shooter;
+        this.feeder = feeder;
 
         // Declare Values
         values.declare(kP, 0.11);
@@ -379,6 +381,7 @@ public class TargetingSystem extends GenericSubsystem {
     }
 
     public void periodic() {
+        feeder.setShooterHasTarget(shooterCamera.isValidTarget());
         ranExtrapolation = false;
         SmartDashboard.putNumber("Targeting Pose X", currentTarget.get().getX());
         SmartDashboard.putNumber("Targeting Pose Y", currentTarget.get().getY());

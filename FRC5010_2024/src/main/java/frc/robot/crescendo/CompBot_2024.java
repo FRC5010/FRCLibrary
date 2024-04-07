@@ -180,7 +180,7 @@ public class CompBot_2024 extends GenericMechanism {
 		targetingSystem = new TargetingSystem(
 				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
-				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera);
+				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera, feederSubsystem);
 		targetingSystem.useShooterCamera(true);
 	}
 
@@ -548,15 +548,15 @@ public class CompBot_2024 extends GenericMechanism {
 			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 			// drive.getDrivetrain().getPoseEstimator()); // Used to be
 			// 28, 20
-			visionSystem.addPhotonCamera("Right Camera", 3,
-					new Transform3d(
-							new Translation3d(Units.inchesToMeters(11.59),
-									Units.inchesToMeters(-4.682), // -.12
-									Units.inchesToMeters(8.256)),
-							new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
-									new Rotation3d(0, 0,
-											Units.degreesToRadians(-25)))), // -20
-					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
+			// visionSystem.addPhotonCamera("Right Camera", 3,
+			// 		new Transform3d(
+			// 				new Translation3d(Units.inchesToMeters(11.59),
+			// 						Units.inchesToMeters(-4.682), // -.12
+			// 						Units.inchesToMeters(8.256)),
+			// 				new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
+			// 						new Rotation3d(0, 0,
+			// 								Units.degreesToRadians(-25)))), // -20
+			// 		PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
 			// visionSystem.addPhotonCamera("Left Camera", 2,
 			// 		new Transform3d(
 			// 				new Translation3d(Units.inchesToMeters(11.59),

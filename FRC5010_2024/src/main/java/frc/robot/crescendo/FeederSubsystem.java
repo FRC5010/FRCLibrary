@@ -44,6 +44,7 @@ public class FeederSubsystem extends GenericSubsystem {
   private final String SIM_STOP_BEAMBREAK = "Simulated Stop Beambreak";
   private final String SIM_DETECT_BEAMBREAK = "Simulated Detect Beambreak";
   private boolean ReadyToShoot = false;
+  private boolean shooterHasTarget = false;
 
   private static enum ControlState {
     Joystick,
@@ -136,6 +137,10 @@ public class FeederSubsystem extends GenericSubsystem {
     ReadyToShoot = value;
   }
 
+  public void setShooterHasTarget(boolean value) {
+    shooterHasTarget = value;
+  }
+
   public boolean getShotReadyness() {
     return ReadyToShoot;
   }
@@ -192,6 +197,8 @@ public class FeederSubsystem extends GenericSubsystem {
     }
     if (ReadyToShoot) {
       ledSubsystem.setWholeStripState((Integer i) -> Color.PURPLE.getColor8Bit());
+    } else if (shooterHasTarget) {
+      ledSubsystem.setWholeStripState((Integer i) -> Color.FIFTY_TEN_ORANGE.getColor8Bit());
     } else {
       switch (noteState) {
         case Empty:
