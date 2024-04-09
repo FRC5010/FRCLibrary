@@ -13,11 +13,15 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -259,5 +263,10 @@ public abstract class VisionSystem extends SubsystemBase {
 
 	public Transform3d getCameraToRobot() {
 		return cameraToRobot;
+	}
+
+	public Vector<N3> getStdVector(double distance) {
+		double calib = distance * 0.15;
+      	return VecBuilder.fill(calib, calib, Units.degreesToRadians(5 * distance));
 	}
 }

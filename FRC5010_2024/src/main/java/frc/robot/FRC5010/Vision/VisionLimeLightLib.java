@@ -7,8 +7,11 @@ package frc.robot.FRC5010.Vision;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.RobotContainer;
@@ -64,6 +67,11 @@ public class VisionLimeLightLib extends VisionSystem {
                     },
                     () -> robotPose2d);
         }
+    }
+
+    @Override
+    public Vector<N3> getStdVector(double distance) {
+        return VecBuilder.fill(.7,.7,9999999);
     }
 
     @Override

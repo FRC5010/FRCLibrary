@@ -5,27 +5,46 @@
 package frc.robot.FRC5010.Vision;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.FRC5010.Vision.LimelightHelpers.PoseEstimate;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class VisionLimeLight extends VisionSystem {
 
-    public VisionLimeLight(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot) {
+    Supplier<PoseEstimate> robotPoseEstimateSupplier;
+    Supplier<GenericGyro> gyroSupplier;
+
+    public VisionLimeLight(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot,
+            Supplier<GenericGyro> gyroSupplier) {
         super("limelight-" + name, colIndex, fieldLayout);
         this.cameraToRobot = cameraToRobot;
+        this.gyroSupplier = gyroSupplier;
         init();
     }
 
-    public VisionLimeLight(String name, DoubleSupplier camHeight, DoubleSupplier camAngle, DoubleSupplier cameraDistance, double targetHeight, int colIndex,
-           AprilTagFieldLayout fieldLayout, String driverTabeName, Transform3d cameraToRobot) {
-        super("limelight-" + name, camHeight, camAngle, cameraDistance, targetHeight, colIndex, fieldLayout, driverTabeName);
+    public VisionLimeLight(String name, DoubleSupplier camHeight, DoubleSupplier camAngle,
+            DoubleSupplier cameraDistance, double targetHeight, int colIndex,
+            AprilTagFieldLayout fieldLayout, String driverTabeName, Transform3d cameraToRobot) {
+        super("limelight-" + name, camHeight, camAngle, cameraDistance, targetHeight, colIndex, fieldLayout,
+                driverTabeName);
         this.cameraToRobot = cameraToRobot;
     }
 
     protected void init() {
+    }
+
+    public PoseEstimate getRobotPoseEstimateM1() {
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+    }
+
+    public PoseEstimate getRobotPoseEstimateM2() {
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
     }
 
     public void update() {
@@ -37,27 +56,43 @@ public class VisionLimeLight extends VisionSystem {
         boolean valid = LimelightHelpers.getLimelightNTTableEntry(name, "tv").getDouble(0) == 1;
         rawValues.clearValues();
         if (valid) {
+            if (null != gyroSupplier) {
+                LimelightHelpers.SetRobotOrientation(name, gyroSupplier.get().getAngleZ(), 0, 0, 0, 0, 0);
+            }
+
+            PoseEstimate poseEstimate = robotPoseEstimateSupplier.get();
+            Pose2d pose;
+
+            pose = poseEstimate.pose;
+
+            if (poseEstimate.tagCount == 0) {
+                pose = null;
+            }
+            if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 720) {
+                pose = null;
+            }
+
+            final Pose2d poseFinal = pose;
+
             updateValues(rawValues,
                     () -> LimelightHelpers.getLimelightNTDouble(name, "tx"),
                     () -> LimelightHelpers.getLimelightNTDouble(name, "ty"),
                     () -> LimelightHelpers.getLimelightNTDouble(name, "ta"),
                     () -> valid,
-                    () -> Timer.getFPGATimestamp() -
-                            ((LimelightHelpers.getLatency_Pipeline(name) +
-                                    LimelightHelpers.getLatency_Capture(name)) * 0.001),
+                    () -> poseEstimate.timestampSeconds,
                     () -> Double.valueOf(LimelightHelpers.getFiducialID(name)).intValue(),
                     () -> null,
-                    () -> null);
+                    () -> poseFinal);
         } else {
-            updateValues(rawValues, 
-            () -> 0.0,
-            () -> 0.0,
-            () -> 0.0,
-            () -> false,
-            () -> 0.0,
-            () -> 0,
-            () -> null,
-            () -> null);
+            updateValues(rawValues,
+                    () -> 0.0,
+                    () -> 0.0,
+                    () -> 0.0,
+                    () -> false,
+                    () -> 0.0,
+                    () -> 0,
+                    () -> null,
+                    () -> null);
         }
     }
 

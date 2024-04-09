@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 4.0,
-        "y": 5.594556573728532
+        "y": 5.59
       },
       "prevControl": null,
       "nextControl": {
         "x": 5.182441637610548,
-        "y": 3.675525896506339
+        "y": 3.6709693227778066
       },
       "isLocked": false,
       "linkedName": "Center Shot Long"
@@ -33,11 +33,11 @@
     {
       "anchor": {
         "x": 4.0,
-        "y": 5.594556573728532
+        "y": 5.59
       },
       "prevControl": {
         "x": 4.82794929226222,
-        "y": 3.6382109127854623
+        "y": 3.63365433905693
       },
       "nextControl": null,
       "isLocked": false,

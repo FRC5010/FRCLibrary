@@ -570,13 +570,10 @@ public class CompBot_2024 extends GenericMechanism {
 					AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo),
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
-							new Rotation3d(0, 0, Units.degreesToRadians(180))));
+							new Rotation3d(0, 0, Units.degreesToRadians(180))), null);
+			
 			noteCamera.setUpdateValues(true);
-			visionSystem.addPhotonCamera("Top Camera", 4, new Transform3d(
-					new Translation3d(Units.inchesToMeters(10.168), Units.inchesToMeters(11.75),
-							Units.inchesToMeters(23.831)),
-					new Rotation3d(0, Units.degreesToRadians(-20), 0)),
-					PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
+			visionSystem.addLimeLightCamera("top", 5, () -> gyro);
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
 					() -> Units.inchesToMeters(15.448),

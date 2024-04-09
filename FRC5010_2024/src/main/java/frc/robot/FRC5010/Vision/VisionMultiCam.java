@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -17,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class VisionMultiCam extends VisionSystem {
@@ -45,8 +47,8 @@ public class VisionMultiCam extends VisionSystem {
         updateValues = true;
     }
 
-    public void addLimeLightCamera(String name, int colIndex) {
-        cameras.put(name, new VisionLimeLightLib(name, colIndex, fieldLayout, cameraToRobot));
+    public void addLimeLightCamera(String name, int colIndex, Supplier<GenericGyro> gyro) {
+        cameras.put(name, new VisionLimeLight(name, colIndex, fieldLayout, cameraToRobot, gyro));
         names.add(name);
         updateValues = true;
     }
