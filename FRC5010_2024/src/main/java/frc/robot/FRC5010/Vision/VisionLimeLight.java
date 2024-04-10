@@ -11,13 +11,14 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.Vision.LimelightHelpers.PoseEstimate;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class VisionLimeLight extends VisionSystem {
 
-    Supplier<PoseEstimate> robotPoseEstimateSupplier;
+    Supplier<PoseEstimate> robotPoseEstimateSupplier = this::getRobotPoseEstimateM2;
     Supplier<GenericGyro> gyroSupplier;
 
     public VisionLimeLight(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot,
@@ -40,11 +41,37 @@ public class VisionLimeLight extends VisionSystem {
     }
 
     public PoseEstimate getRobotPoseEstimateM1() {
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+        PoseEstimate poseEstimate = processPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
+        if (null != poseEstimate.pose) {
+            gyroSupplier.get().setAngle(poseEstimate.pose.getRotation().getDegrees());
+        }
+        return poseEstimate;
     }
 
     public PoseEstimate getRobotPoseEstimateM2() {
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+        return processPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
+    }
+
+    private PoseEstimate processPoseEstimate(PoseEstimate poseEstimate) {
+            Pose2d pose = poseEstimate.pose;
+
+            SmartDashboard.putNumber(name + " Tag Amount", poseEstimate.tagCount);
+            SmartDashboard.putNumber(name + " Pose X", poseEstimate.pose.getX());
+            SmartDashboard.putNumber(name + " Pose Y", poseEstimate.pose.getY());
+
+            if (poseEstimate.tagCount == 0) {
+                pose = null;
+            }
+            if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 720) {
+                pose = null;
+            }
+
+            poseEstimate.pose = pose;
+            return poseEstimate;
+    }
+
+    public void setPoseEstimationSupplier(Supplier<PoseEstimate> supplier) {
+        robotPoseEstimateSupplier = supplier;
     }
 
     public void update() {
@@ -55,24 +82,13 @@ public class VisionLimeLight extends VisionSystem {
 
         boolean valid = LimelightHelpers.getLimelightNTTableEntry(name, "tv").getDouble(0) == 1;
         rawValues.clearValues();
+        if (null != gyroSupplier) {
+            LimelightHelpers.SetRobotOrientation(name, gyroSupplier.get().getAngleZ(), 0, 0, 0, 0, 0);
+        }
         if (valid) {
-            if (null != gyroSupplier) {
-                LimelightHelpers.SetRobotOrientation(name, gyroSupplier.get().getAngleZ(), 0, 0, 0, 0, 0);
-            }
-
             PoseEstimate poseEstimate = robotPoseEstimateSupplier.get();
-            Pose2d pose;
 
-            pose = poseEstimate.pose;
-
-            if (poseEstimate.tagCount == 0) {
-                pose = null;
-            }
-            if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 720) {
-                pose = null;
-            }
-
-            final Pose2d poseFinal = pose;
+            final Pose2d poseFinal = poseEstimate.pose;
 
             updateValues(rawValues,
                     () -> LimelightHelpers.getLimelightNTDouble(name, "tx"),

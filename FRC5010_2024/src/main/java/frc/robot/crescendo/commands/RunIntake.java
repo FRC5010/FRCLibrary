@@ -52,7 +52,7 @@ public class RunIntake extends GenericCommand {
     this.pivotSubsystem = pivotSubsystem;
     this.rumbleController = rumbleController;
     this.shooterSubsystem = shooterSubsystem;
-    this.intakeAngle = pivotSubsystem.HOME_LEVEL;
+    this.intakeAngle = PivotSubsystem.INTAKE_LEVEL;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem);

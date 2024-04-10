@@ -21,6 +21,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -117,8 +119,8 @@ public class CompBot_2024 extends GenericMechanism {
 		powerDistribution5010 = new PowerDistribution5010();
 
 		// Motor Setup
-		innerIntakeMotor = MotorFactory.KrakenX60(1);
-		outerIntakeMotor = MotorFactory.KrakenX60(5);
+		innerIntakeMotor = MotorFactory.KrakenX60(1); // 1
+		outerIntakeMotor = MotorFactory.KrakenX60(5); // 5
 		leftClimbMotor = MotorFactory.NEO(7); // TODO: Add correct port
 		rightClimbMotor = MotorFactory.NEO(8).invert(true); // TODO: Add correct port
 		pivotMotor = MotorFactory.NEO(9).invert(true);
@@ -549,31 +551,37 @@ public class CompBot_2024 extends GenericMechanism {
 			// drive.getDrivetrain().getPoseEstimator()); // Used to be
 			// 28, 20
 			// visionSystem.addPhotonCamera("Right Camera", 3,
-			// 		new Transform3d(
-			// 				new Translation3d(Units.inchesToMeters(11.59),
-			// 						Units.inchesToMeters(-4.682), // -.12
-			// 						Units.inchesToMeters(8.256)),
-			// 				new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
-			// 						new Rotation3d(0, 0,
-			// 								Units.degreesToRadians(-25)))), // -20
-			// 		PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
+			// new Transform3d(
+			// new Translation3d(Units.inchesToMeters(11.59),
+			// Units.inchesToMeters(-4.682), // -.12
+			// Units.inchesToMeters(8.256)),
+			// new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
+			// new Rotation3d(0, 0,
+			// Units.degreesToRadians(-25)))), // -20
+			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+			// drive.getDrivetrain().getPoseEstimator());
 			// visionSystem.addPhotonCamera("Left Camera", 2,
-			// 		new Transform3d(
-			// 				new Translation3d(Units.inchesToMeters(11.59),
-			// 						Units.inchesToMeters(4.682), // -.12
-			// 						Units.inchesToMeters(8.256)),
-			// 				new Rotation3d(0, Units.degreesToRadians(-25), 0).rotateBy( // -28
-			// 						new Rotation3d(0, 0,
-			// 								Units.degreesToRadians(30)))), // 20
-			// 		PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
+			// new Transform3d(
+			// new Translation3d(Units.inchesToMeters(11.59),
+			// Units.inchesToMeters(4.682), // -.12
+			// Units.inchesToMeters(8.256)),
+			// new Rotation3d(0, Units.degreesToRadians(-25), 0).rotateBy( // -28
+			// new Rotation3d(0, 0,
+			// Units.degreesToRadians(30)))), // 20
+			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+			// drive.getDrivetrain().getPoseEstimator());
 			noteCamera = new VisionLimeLight("orange", 1,
 					AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo),
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
-							new Rotation3d(0, 0, Units.degreesToRadians(180))), null);
-			
+							new Rotation3d(0, 0, Units.degreesToRadians(180))),
+					null);
+
 			noteCamera.setUpdateValues(true);
 			visionSystem.addLimeLightCamera("top", 5, () -> gyro);
+			VisionLimeLight topLimeLight = ((VisionLimeLight) visionSystem.getCamera("top"));
+			topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() ? topLimeLight.getRobotPoseEstimateM1()
+					: topLimeLight.getRobotPoseEstimateM2());
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
 					() -> Units.inchesToMeters(15.448),

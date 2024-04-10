@@ -13,6 +13,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
@@ -28,6 +29,10 @@ import frc.robot.crescendo.TargetingSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 
 public class AutoAim extends Command {
+
+  // Test Mode
+  private String PIVOT_ANGLE_OVERRIDE = "Pivot Angle Override";
+  private String SHOOTER_SPEED_OVERRIDE = "Shooter Speed Override";
 
   DrivetrainPoseEstimator robotPose;
   ShooterSubsystem shooterSubsystem;
@@ -77,6 +82,10 @@ public class AutoAim extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+      SmartDashboard.putNumber(PIVOT_ANGLE_OVERRIDE, 0.0);
+      SmartDashboard.putNumber(SHOOTER_SPEED_OVERRIDE, 0.0);
+    
+
     robotPose.setDisableVisionUpdate(true);
     if (driveCommand != null) {
       originalTurnSpeed = driveCommand.get().getTurnSpeedFunction();
@@ -98,6 +107,7 @@ public class AutoAim extends Command {
     double pivotAngle = pivotSubsystem.HOME_LEVEL;
 
     Optional<Double> shootCamAngle = targetingSystem.getShooterCamAngle();
+
     if (shootCamAngle.isPresent()) {
       pivotAngle = shootCamAngle.get();
     } else {
