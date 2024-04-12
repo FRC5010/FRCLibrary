@@ -21,6 +21,7 @@ import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.RobotContainer.LogLevel;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.PivotSubsystem;
@@ -139,7 +140,7 @@ public class AutoAim extends Command {
     boolean ready = (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw());
     feederSubsystem.getNoteState();
     feederSubsystem.setShotReadyness(ready);
-    if (useAutoDrive || driveCommand == null) {
+    if (useAutoDrive || driveCommand == null || true) {
       if (
          ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {

@@ -41,28 +41,36 @@ public class VisionLimeLight extends VisionSystem {
     }
 
     public PoseEstimate getRobotPoseEstimateM1() {
+
         PoseEstimate poseEstimate = processPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
         if (null != poseEstimate.pose) {
+            SmartDashboard.putNumber("MT1 Angle", poseEstimate.pose.getRotation().getDegrees());
             gyroSupplier.get().setAngle(poseEstimate.pose.getRotation().getDegrees());
         }
+        
         return poseEstimate;
     }
 
     public PoseEstimate getRobotPoseEstimateM2() {
-        return processPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
+        PoseEstimate poseEstimate = processPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name));
+        if (poseEstimate.avgTagDist < 3) {
+            getRobotPoseEstimateM1();
+        }
+        return poseEstimate;
     }
 
     private PoseEstimate processPoseEstimate(PoseEstimate poseEstimate) {
             Pose2d pose = poseEstimate.pose;
 
-            SmartDashboard.putNumber(name + " Tag Amount", poseEstimate.tagCount);
-            SmartDashboard.putNumber(name + " Pose X", poseEstimate.pose.getX());
-            SmartDashboard.putNumber(name + " Pose Y", poseEstimate.pose.getY());
-
             if (poseEstimate.tagCount == 0) {
                 pose = null;
             }
-            if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 720) {
+
+            if (null != gyroSupplier) {
+                SmartDashboard.putNumber("GYRO RATE", gyroSupplier.get().getRate());
+            }
+            
+            if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 180) {
                 pose = null;
             }
 

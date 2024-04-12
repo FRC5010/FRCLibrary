@@ -121,6 +121,7 @@ public class CompBot_2024 extends GenericMechanism {
 		// Motor Setup
 		innerIntakeMotor = MotorFactory.KrakenX60(1); // 1
 		outerIntakeMotor = MotorFactory.KrakenX60(5); // 5
+
 		leftClimbMotor = MotorFactory.NEO(7); // TODO: Add correct port
 		rightClimbMotor = MotorFactory.NEO(8).invert(true); // TODO: Add correct port
 		pivotMotor = MotorFactory.NEO(9).invert(true);
