@@ -23,6 +23,7 @@ import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.RobotContainer.LogLevel;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.PivotSubsystem;
