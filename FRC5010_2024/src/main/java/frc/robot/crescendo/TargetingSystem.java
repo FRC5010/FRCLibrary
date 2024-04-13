@@ -48,6 +48,7 @@ public class TargetingSystem extends GenericSubsystem {
     private final String TOLERANCE = "Targeting Tolerance";
 
     private static InterpolatingDoubleTreeMap pivotInterpolation = new InterpolatingDoubleTreeMap();
+    private static InterpolatingDoubleTreeMap shuttlePivotInterpolation = new InterpolatingDoubleTreeMap();
     private static InterpolatingDoubleTreeMap shuttleShooterInterpolation = new InterpolatingDoubleTreeMap();
     private static InterpolatingDoubleTreeMap shooterInterpolation = new InterpolatingDoubleTreeMap();
 
@@ -91,8 +92,6 @@ public class TargetingSystem extends GenericSubsystem {
         thetaCameraController.enableContinuousInput(-Math.PI, Math.PI);
         thetaCameraController.setSetpoint(0.0);
 
-
-
         // pivotInterpolation.put(0.5, -11.0);
         // pivotInterpolation.put(1.25, -10.51);
         // pivotInterpolation.put(1.50, -4.59);
@@ -110,54 +109,27 @@ public class TargetingSystem extends GenericSubsystem {
         // pivotInterpolation.put(4.50, 27.31);
         // pivotInterpolation.put(4.75, 28.31);
         // pivotInterpolation.put(4.94, 28.81);
-        
-        pivotInterpolation.put(1.36, -9.8);
-        pivotInterpolation.put(1.498285686, 8.036407471
-        );
-        pivotInterpolation.put(1.766461413
-        , -0.198120117
-        );
-        pivotInterpolation.put(2.006095159
-        , 4.50677371
-        );
-        pivotInterpolation.put(2.253810077
-        , 6.185724354
-        );
-        pivotInterpolation.put(2.498182415
-        , 10.58572435
-        );
-        
-        pivotInterpolation.put(2.739574022
-        , 13.66646194
-        );
-        pivotInterpolation.put(3.000037528
-        , 15.20387955
-        );
-        pivotInterpolation.put(3.249798442
-        , 18.77407951
-        );
-        pivotInterpolation.put(3.504684604
-        , 20.67407951
-        );
-        pivotInterpolation.put(3.765572428
-        , 23.18393135
-        );
-        pivotInterpolation.put(3.991071211
-        , 24.24553108
-        );
-        pivotInterpolation.put(4.241035167
-        , 25.89009056
-        );// 25.91
-        pivotInterpolation.put(4.494075064
-        , 27.17321701
-        );
-        pivotInterpolation.put(4.752376138
-        , 28.12282753
-        );
-        pivotInterpolation.put(5.00374855
-        , 28.88491821
-        );
 
+        pivotInterpolation.put(1.36, -9.8);
+        pivotInterpolation.put(1.498285686, 8.036407471);
+        pivotInterpolation.put(1.766461413, -0.198120117);
+        pivotInterpolation.put(2.006095159, 4.50677371);
+        pivotInterpolation.put(2.253810077, 6.185724354);
+        pivotInterpolation.put(2.498182415, 10.58572435);
+
+        pivotInterpolation.put(2.739574022, 13.66646194);
+        pivotInterpolation.put(3.000037528, 15.20387955);
+        pivotInterpolation.put(3.249798442, 18.77407951);
+        pivotInterpolation.put(3.504684604, 20.67407951);
+        pivotInterpolation.put(3.765572428, 23.18393135);
+        pivotInterpolation.put(3.991071211, 24.24553108);
+        pivotInterpolation.put(4.241035167, 25.89009056);// 25.91
+        pivotInterpolation.put(4.494075064, 27.17321701);
+        pivotInterpolation.put(4.752376138, 28.12282753);
+        pivotInterpolation.put(5.00374855, 28.88491821);
+
+        shuttlePivotInterpolation.put(5.1, -10.0);
+        shuttlePivotInterpolation.put(15.0, 0.0);
 
         shooterInterpolation.put(1.0, Constants.Physical.SUBWOOFER_SHOT);
         shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
@@ -217,6 +189,10 @@ public class TargetingSystem extends GenericSubsystem {
 
     public boolean isAtTargetYaw() {
         return thetaController.atSetpoint();
+    }
+
+    public boolean isAtTargetCameraYaw() {
+        return thetaCameraController.atSetpoint();
     }
 
     public double getStraightLinePivotAngle() {
@@ -372,7 +348,7 @@ public class TargetingSystem extends GenericSubsystem {
                 .getDistance(robot.getTranslation().toTranslation2d());
 
         if (Math.abs(robot.getX() - target.getX()) > SHUTTLE_X_DISTANCE) { // Shuttling
-            return PivotSubsystem.HIGH_SHUTTLE_LEVEL;
+            return shuttlePivotInterpolation.get(distance);
         }
         return pivotInterpolation
                 .get(distance);
@@ -408,6 +384,7 @@ public class TargetingSystem extends GenericSubsystem {
         SmartDashboard.putNumber("Targeting Pose Y", currentTarget.get().getY());
         SmartDashboard.putNumber("Robot Targeting Pose X", currentTarget.get().getX());
         SmartDashboard.putNumber("Robot Targeting Pose Y", robotPose.get().getY());
+        
     }
 
 }

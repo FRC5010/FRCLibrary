@@ -110,18 +110,23 @@ public class AutoAim extends Command {
 
     Optional<Double> shootCamAngle = targetingSystem.getShooterCamAngle();
 
-    if (shootCamAngle.isPresent()) {
-      pivotAngle = shootCamAngle.get();
-    } else {
+    // if (shootCamAngle.isPresent()) {
+    //   pivotAngle = shootCamAngle.get();
+    // } else {
+    //   pivotAngle = targetingSystem.getPivotAngle();
+    // }
       pivotAngle = targetingSystem.getPivotAngle();
-    }
+
 
     double turnSpeed;
     Optional<Double> yawCamAngle = targetingSystem.getShooterYawPower();
+    boolean atTargetYaw = false;
     if (yawCamAngle.isPresent()) {
       turnSpeed = yawCamAngle.get();
+      atTargetYaw = targetingSystem.isAtTargetYaw();
     } else {
       turnSpeed = targetingSystem.getTurnPower();
+      atTargetYaw = targetingSystem.isAtTargetCameraYaw();
     }
 
     pivotSubsystem.setReference(pivotAngle);
@@ -137,11 +142,12 @@ public class AutoAim extends Command {
     }
     SmartDashboard.putBoolean("Pivot Target", pivotSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Shooter Target", shooterSubsystem.isAtTarget());
-    SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
-    boolean ready = (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw());
+    SmartDashboard.putBoolean("Rotation Target", atTargetYaw);
+    boolean ready = (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && atTargetYaw);
+    SmartDashboard.putBoolean("Ready To Shoot", ready);
     feederSubsystem.getNoteState();
     feederSubsystem.setShotReadyness(ready);
-    if (useAutoDrive || driveCommand == null || true) {
+    if (useAutoDrive || driveCommand == null) {
       if (
          ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {

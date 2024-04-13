@@ -130,7 +130,7 @@ public class CompBot_2024 extends GenericMechanism {
 
 		values.declare("FeederSpeed", 1.0);
 
-		topShooterMotor = (KrakenX60) MotorFactory.KrakenX60(12).invert(true);
+		topShooterMotor = (KrakenX60) MotorFactory.KrakenX60(12).invert(true); // OLD RIGHT: -0.29845
 		topShooterMotor.enableFOC(false);
 		topShooterMotor.setCurrentLimit(100);
 		bottomShooterMotor = (KrakenX60) MotorFactory.KrakenX60(14).invert(true);
@@ -723,6 +723,13 @@ public class CompBot_2024 extends GenericMechanism {
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot());
+
+		NamedCommands.registerCommand("Aim Left Speaker Shot", new PredefinedAutoShot(
+				AutoShotDefinition.LEFT_SPEAKER_SHOT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+				.enableSpinup()
+				.enablePivot()
+				.enableYaw());
 
 		NamedCommands.registerCommand("Aim Right Shot Long", new PredefinedAutoShot(
 				AutoShotDefinition.RIGHT_SHOT_LONG.getPose(RobotContainer.getAlliance()), targetingSystem,

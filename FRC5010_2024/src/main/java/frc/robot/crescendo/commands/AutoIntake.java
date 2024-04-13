@@ -4,6 +4,8 @@
 
 package frc.robot.crescendo.commands;
 
+import edu.wpi.first.math.MathUsageId;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -60,6 +62,7 @@ public class AutoIntake extends GenericCommand {
   public void execute() {
     double currentAngleY = visionSystem.getAngleY();
     double currentAngleX = visionSystem.getAngleX();
+    
 
     if (!visionSystem.isValidTarget()) {
       noNoteCounter++;
@@ -73,11 +76,14 @@ public class AutoIntake extends GenericCommand {
     } else {
       lastAngleY = currentAngleY;
     }
+
+    double distanceFactor = Math.abs(currentAngleY / 20.0 + 0.0001);
+    distanceFactor = Math.min(distanceFactor, 1.0);
     
 
     double xSpeed = currentAngleY * SmartDashboard.getNumber(X_SPEED, DEF_X);
-    double ySpeed = currentAngleX * SmartDashboard.getNumber(Y_SPEED, DEF_Y);
-    double turnSpeed = currentAngleX * SmartDashboard.getNumber(ANGLE_SPEED, DEF_ANGLE);
+    double ySpeed = currentAngleX * SmartDashboard.getNumber(Y_SPEED, DEF_Y) / distanceFactor;
+    double turnSpeed = currentAngleX * SmartDashboard.getNumber(ANGLE_SPEED, DEF_ANGLE) * distanceFactor;
 
     // limit power
     xSpeed = xSpeed * drive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
