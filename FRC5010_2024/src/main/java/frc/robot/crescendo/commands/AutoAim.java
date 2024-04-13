@@ -20,12 +20,12 @@ import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.mechanisms.Drive;
 import frc.robot.FRC5010.sensors.Controller;
+import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.FeederSubsystem;
 import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.ShooterSubsystem;
 import frc.robot.crescendo.TargetingSystem;
-import frc.robot.crescendo.FeederSubsystem.NoteState;
 
 public class AutoAim extends Command {
 
@@ -37,6 +37,7 @@ public class AutoAim extends Command {
   Transform3d targetPose;
   TargetingSystem targetingSystem;
   Controller driverXboxController;
+  GenericGyro gyro;
   Supplier<JoystickToSwerve> driveCommand;
   DoubleSupplier originalTurnSpeed;
   FeederSubsystem feederSubsystem;
@@ -44,12 +45,17 @@ public class AutoAim extends Command {
   double timeoutCounter = 0;
   boolean useAutoDrive = false;
   boolean useShooterCamera = false;
+  private double startTime, endTime, startAngle;
+  private boolean accountForMovement = false;
+  private boolean interpolatingYaw = false;
+  private double turnSpeed;
 
   /** Creates a new AutoAim. */
 
   public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem,
       Drive drive,
-      TargetingSystem targetSystem, Supplier<JoystickToSwerve> driveCommand) {
+      TargetingSystem targetSystem, GenericGyro gyro, Supplier<JoystickToSwerve> driveCommand,
+      boolean accountForMovement, boolean interpolatingYaw) {
 
     drivetrain = (SwerveDrivetrain) drive.getDrivetrain();
     this.robotPose = drivetrain.getPoseEstimator();
@@ -59,11 +65,15 @@ public class AutoAim extends Command {
     this.targetingSystem = targetSystem;
     this.driveCommand = driveCommand;
     this.feederSubsystem = feederSubsystem;
+    this.gyro = gyro;
+    this.accountForMovement = accountForMovement;
+    this.interpolatingYaw = interpolatingYaw;
   }
 
   public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem,
       Drive drive,
-      TargetingSystem targetSystem, boolean useAutoDrive) {
+      TargetingSystem targetSystem, GenericGyro gyro, boolean useAutoDrive, boolean accountForMovement,
+      boolean interpolatingYaw) {
     this.useAutoDrive = useAutoDrive;
     drivetrain = (SwerveDrivetrain) drive.getDrivetrain();
     this.robotPose = drivetrain.getPoseEstimator();
@@ -72,26 +82,41 @@ public class AutoAim extends Command {
     this.drive = drive;
     this.targetingSystem = targetSystem;
     this.feederSubsystem = feederSubsystem;
+    this.gyro = gyro;
+    this.accountForMovement = accountForMovement;
+    this.interpolatingYaw = interpolatingYaw;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    targetingSystem.setAccountForMovement(accountForMovement);
     robotPose.setDisableVisionUpdate(true);
     if (driveCommand != null) {
       originalTurnSpeed = driveCommand.get().getTurnSpeedFunction();
       driveCommand.get().setTurnSpeedFunction(() -> targetingSystem.getTurnPower());
+      turnSpeed = targetingSystem.getInitialStationaryTurnPower();
+      startTime = System.nanoTime();
+      startAngle = gyro.getAngle();
     } else if (useAutoDrive) {
       PPHolonomicDriveController.setRotationTargetOverride(() -> targetingSystem.getRotationTarget(1.0));
     }
     cycleCounter = 0;
     timeoutCounter = 0;
     useShooterCamera = true;
+    targetingSystem.setInterpolatingYaw(interpolatingYaw);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    if (targetingSystem.isAtTargetYaw() && endTime == 0.0) {
+      endTime = System.nanoTime();
+      SmartDashboard.putNumber("Yaw Interpolation Time", (System.nanoTime() - startTime) / 1_000_000_000.0);
+      SmartDashboard.putNumber("Yaw Interpolation Angle Rotated", Math.abs(gyro.getAngle() - startAngle));
+    }
+
     Transform3d pivotOrigin = new Transform3d(
         robotPose.getCurrentPose3d().getTranslation().plus(Constants.Physical.PIVOT_ORIGIN_OFFSET.getTranslation()),
         new Rotation3d());
@@ -104,9 +129,10 @@ public class AutoAim extends Command {
       pivotAngle = targetingSystem.getPivotAngle();
     }
 
-    double turnSpeed;
     Optional<Double> yawCamAngle = targetingSystem.getShooterYawPower();
-    if (yawCamAngle.isPresent()) {
+    if (accountForMovement || interpolatingYaw) {
+      turnSpeed = targetingSystem.getTurnPower();
+    } else if (yawCamAngle.isPresent()) {
       turnSpeed = yawCamAngle.get();
     } else {
       turnSpeed = targetingSystem.getTurnPower();
@@ -119,22 +145,22 @@ public class AutoAim extends Command {
     shooterSubsystem.setShooterReference(shootingSpeed, shootingSpeed);
 
     if (!useAutoDrive && driveCommand == null) {
-
       drive.getDrivetrain().drive(new ChassisSpeeds(0, 0, turnSpeed * ((SwerveDrivetrain) drive.getDrivetrain())
           .getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond()));
     }
+
     SmartDashboard.putBoolean("Pivot Target", pivotSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Shooter Target", shooterSubsystem.isAtTarget());
     SmartDashboard.putBoolean("Rotation Target", targetingSystem.isAtTargetYaw());
+
     boolean ready = (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw());
     feederSubsystem.getNoteState();
     feederSubsystem.setShotReadyness(ready);
+
     if (useAutoDrive || driveCommand == null) {
-      if (
-         ready || 100 < timeoutCounter) {
+      if (ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {
           feederSubsystem.feederStateMachine(-1.0);
-
         }
         cycleCounter++;
 
@@ -156,6 +182,8 @@ public class AutoAim extends Command {
     robotPose.setDisableVisionUpdate(false);
     feederSubsystem.feederStateMachine(0);
     shooterSubsystem.setShooterReference(0, 0);
+    targetingSystem.setAccountForMovement(false);
+    targetingSystem.setInterpolatingYaw(false);
   }
 
   // Returns true when the command should end.

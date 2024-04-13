@@ -180,7 +180,7 @@ public class CompBot_2024 extends GenericMechanism {
 		targetingSystem = new TargetingSystem(
 				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
-				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera, feederSubsystem);
+				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera, feederSubsystem, gyro);
 		targetingSystem.useShooterCamera(true);
 	}
 
@@ -311,13 +311,15 @@ public class CompBot_2024 extends GenericMechanism {
 
 		autoaimButton.whileTrue(
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						() -> (JoystickToSwerve) drive.getDefaultCommand())
+						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), true, false)
 						.alongWith(spinIntake.get()))
 				.onFalse(Commands.waitSeconds(0.05).beforeStarting(() -> feederSubsystem.setShotReadyness(false))
 						.andThen(
 								Commands.runOnce(() -> pivotSubsystem
 										.setReference(pivotSubsystem.HOME_LEVEL))
 										.unless(() -> autoaimButton.getAsBoolean())));
+
+		
 
 		driver.createYButton().whileTrue(Commands.startEnd(() -> climbSubsystem.setOverride(true),
 				() -> climbSubsystem.setOverride(false)));
@@ -499,8 +501,12 @@ public class CompBot_2024 extends GenericMechanism {
 
 		driver.createAButton().whileTrue(
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						() -> (JoystickToSwerve) drive.getDefaultCommand())
+						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), true, false)
 						.alongWith(spinIntake.get()));
+
+		driver.createBButton().whileTrue(
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
+						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), true, true));
 
 		// Run Shooter motors
 		driver.createBackButton().whileTrue(runShooter.get()
@@ -531,7 +537,7 @@ public class CompBot_2024 extends GenericMechanism {
 		operator.createRightBumper().onTrue(runIntake.get());
 		operator.createLeftBumper()
 				.whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						() -> (JoystickToSwerve) drive.getDefaultCommand()));
+						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), true, false));
 	}
 
 	@Override
@@ -549,29 +555,32 @@ public class CompBot_2024 extends GenericMechanism {
 			// drive.getDrivetrain().getPoseEstimator()); // Used to be
 			// 28, 20
 			// visionSystem.addPhotonCamera("Right Camera", 3,
-			// 		new Transform3d(
-			// 				new Translation3d(Units.inchesToMeters(11.59),
-			// 						Units.inchesToMeters(-4.682), // -.12
-			// 						Units.inchesToMeters(8.256)),
-			// 				new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
-			// 						new Rotation3d(0, 0,
-			// 								Units.degreesToRadians(-25)))), // -20
-			// 		PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
+			// new Transform3d(
+			// new Translation3d(Units.inchesToMeters(11.59),
+			// Units.inchesToMeters(-4.682), // -.12
+			// Units.inchesToMeters(8.256)),
+			// new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
+			// new Rotation3d(0, 0,
+			// Units.degreesToRadians(-25)))), // -20
+			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+			// drive.getDrivetrain().getPoseEstimator());
 			// visionSystem.addPhotonCamera("Left Camera", 2,
-			// 		new Transform3d(
-			// 				new Translation3d(Units.inchesToMeters(11.59),
-			// 						Units.inchesToMeters(4.682), // -.12
-			// 						Units.inchesToMeters(8.256)),
-			// 				new Rotation3d(0, Units.degreesToRadians(-25), 0).rotateBy( // -28
-			// 						new Rotation3d(0, 0,
-			// 								Units.degreesToRadians(30)))), // 20
-			// 		PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, drive.getDrivetrain().getPoseEstimator());
+			// new Transform3d(
+			// new Translation3d(Units.inchesToMeters(11.59),
+			// Units.inchesToMeters(4.682), // -.12
+			// Units.inchesToMeters(8.256)),
+			// new Rotation3d(0, Units.degreesToRadians(-25), 0).rotateBy( // -28
+			// new Rotation3d(0, 0,
+			// Units.degreesToRadians(30)))), // 20
+			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+			// drive.getDrivetrain().getPoseEstimator());
 			noteCamera = new VisionLimeLight("orange", 1,
 					AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo),
 					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
 							Units.inchesToMeters(14.264),
-							new Rotation3d(0, 0, Units.degreesToRadians(180))), null);
-			
+							new Rotation3d(0, 0, Units.degreesToRadians(180))),
+					null);
+
 			noteCamera.setUpdateValues(true);
 			visionSystem.addLimeLightCamera("top", 5, () -> gyro);
 
@@ -611,14 +620,14 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Auto Intake", autoIntake.get());
 
 		NamedCommands.registerCommand("Auto Aim",
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem, gyro,
+						false, true, false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
 						.alongWith(spinIntake.get())
 						.finallyDo(() -> pivotSubsystem
 								.setReference(pivotSubsystem.HOME_LEVEL)));
 		NamedCommands.registerCommand("Auto Aim With Drive",
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						true).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem, gyro,
+						true, true, false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty));
 
 		NamedCommands.registerCommand("Blind Shot",
 				runShooter.get()
@@ -635,8 +644,8 @@ public class CompBot_2024 extends GenericMechanism {
 		NamedCommands.registerCommand("Stop Shooter", stopShooter.get());
 
 		NamedCommands.registerCommand("Quick Auto Aim",
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem, gyro,
+						false, true, false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
 						.deadlineWith(spinIntake.get())
 						.beforeStarting(() -> {
 							targetingSystem.setTolerance(0.05);
