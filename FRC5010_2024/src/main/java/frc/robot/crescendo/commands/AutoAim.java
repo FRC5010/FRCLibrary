@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
@@ -145,6 +146,12 @@ public class AutoAim extends Command {
          ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {
           feederSubsystem.feederStateMachine(-1.0);
+          if (LogLevel.DEBUG == RobotContainer.getLoggingLevel()) {
+            SmartDashboard.putNumber("Shot Angle", pivotSubsystem.getPivotPosition());
+            SmartDashboard.putNumber("Shot Reference", pivotSubsystem.getReference());
+            SmartDashboard.putNumber("Shot Speed", shooterSubsystem.getTopVelocity());
+            SmartDashboard.putNumber("Shot Distance to Speaker", targetingSystem.getFlatDistanceToTarget());
+          }
 
         }
         cycleCounter++;

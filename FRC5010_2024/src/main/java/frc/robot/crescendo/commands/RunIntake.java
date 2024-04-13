@@ -103,7 +103,7 @@ public class RunIntake extends GenericCommand {
     feederCommand = Commands
         .run(() -> {
           feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()
-              * (feederSubsystem.isDetectBeamBroken() ? 0.4 : 1));
+              * (feederSubsystem.isDetectBeamBroken() ? 0.3 : 1));
           shooterSubsystem.setShooterReference(-250.0, -250.0);
         },
             feederSubsystem)
@@ -113,7 +113,7 @@ public class RunIntake extends GenericCommand {
           shooterSubsystem.setShooterReference(0.0, 0.0);
         })
         .andThen(
-            Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.3))
+            Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.15))
                 .onlyIf(() -> feederSubsystem.isStopBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
                 .until(() -> !feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
                 .finallyDo(() -> {
@@ -137,7 +137,8 @@ public class RunIntake extends GenericCommand {
   @Override
   public void execute() {
     double velocity = speed.getAsDouble();
-    //intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity : feederSubsystem.getNoteState() == NoteState.Holding ? -velocity * 0.25 : 0);
+    intakeSubsystem.stateMachine(feederSubsystem.getNoteState() == NoteState.Empty ? velocity
+        : feederSubsystem.getNoteState() == NoteState.Holding ? -velocity * 0.25 : 0);
 
     // intakeSubsystem.setIntakeSpeed(velocity, velocity);
     if (velocity != 0) {

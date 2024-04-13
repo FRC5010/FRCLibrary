@@ -442,7 +442,7 @@ public class CompBot_2024 extends GenericMechanism {
 		drive.setupDefaultCommands(driver, operator);
 
 		pivotSubsystem.setDefaultCommand(new RunPivot(
-				() -> operator.getRightTrigger() - operator.getLeftTrigger(), pivotSubsystem));
+				() -> (operator.getRightTrigger() - operator.getLeftTrigger()) * 0.5, pivotSubsystem));
 
 		shooterSubsystem.setDefaultCommand(
 				new RunShooter(() -> 0.0, shooterSubsystem));

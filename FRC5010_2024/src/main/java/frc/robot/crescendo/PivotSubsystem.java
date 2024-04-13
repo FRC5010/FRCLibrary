@@ -113,7 +113,7 @@ public class PivotSubsystem extends GenericSubsystem {
   public final static double HIGH_SHUTTLE_LEVEL = -11
   
   ;
-  public final static double INTAKE_LEVEL = 20; // TODO: Make accurate -10
+  public final static double INTAKE_LEVEL = -10; // TODO: Make accurate -10
   public final static double PODIUM_SHOT = 12.3;
   public final static double MAX_INTAKE_ANGLE = 7.0;
   
@@ -134,7 +134,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(I_ZONE, 3.0);
     values.declare(PIVOT_kI, 0.000025);
     values.declare(PIVOT_kA, 0.0);
-    values.declare(MICRO_ADJUST, 10.0);
+    values.declare(MICRO_ADJUST, 0.1);
     values.declare(SLOWDOWN, 0.1);
     values.declare(vals.FF_VOLTAGE.name(), 0.0);
     values.declare(vals.RUN_REF.name(), false);

@@ -91,53 +91,73 @@ public class TargetingSystem extends GenericSubsystem {
         thetaCameraController.enableContinuousInput(-Math.PI, Math.PI);
         thetaCameraController.setSetpoint(0.0);
 
-        // Rechecked
+
+
         // pivotInterpolation.put(0.5, -11.0);
-        // pivotInterpolation.put(1.0, -11.0);
-        // pivotInterpolation.put(1.32, -11.0);
-        // pivotInterpolation.put(1.50, -4.5);
-        // pivotInterpolation.put(1.75, 1.0);
-        // pivotInterpolation.put(2.04, 6.75);
-        // pivotInterpolation.put(2.20, 7.32);
-        // pivotInterpolation.put(2.26, 9.25);
-        // pivotInterpolation.put(2.40, 12.25);
-        // pivotInterpolation.put(2.50, 12.50);
-        // pivotInterpolation.put(2.76, 16.00);
-        // pivotInterpolation.put(3.01, 17.87);
-        // pivotInterpolation.put(3.26, 19.25);
+        // pivotInterpolation.put(1.25, -10.51);
+        // pivotInterpolation.put(1.50, -4.59);
+        // pivotInterpolation.put(1.75, 1.11);
+        // pivotInterpolation.put(2.06, 7.19);
+        // pivotInterpolation.put(2.25, 7.43);
+        // pivotInterpolation.put(2.50, 11.44);
+        // pivotInterpolation.put(2.75, 14.94);
+        // pivotInterpolation.put(3.03, 17.44);
+        // pivotInterpolation.put(3.25, 17.69);
         // pivotInterpolation.put(3.50, 22.56);
         // pivotInterpolation.put(3.70, 25.25);
-        // pivotInterpolation.put(4.10, 26.56);
-        // pivotInterpolation.put(4.60, 27.50);
-        // pivotInterpolation.put(5.00, 27.25);
-        // pivotInterpolation.put(5.36, 29.32);
-        // // Unchecked
-        // pivotInterpolation.put(4.2, 26.75);
-        // pivotInterpolation.put(4.48, 26.70);
-        // pivotInterpolation.put(4.98, 29.70);
-        // pivotInterpolation.put(5.3, 29.8);
-
-
-
-        pivotInterpolation.put(0.5, -11.0);
-        pivotInterpolation.put(1.25, -10.51);
-        pivotInterpolation.put(1.50, -4.59);
-        pivotInterpolation.put(1.75, 1.11);
-        pivotInterpolation.put(2.06, 7.19);
-        pivotInterpolation.put(2.25, 7.43);
-        pivotInterpolation.put(2.50, 11.44);
-        pivotInterpolation.put(2.75, 14.94);
-        pivotInterpolation.put(3.03, 17.44);
-        pivotInterpolation.put(3.25, 17.69);
-        pivotInterpolation.put(3.50, 22.56);
-        pivotInterpolation.put(3.70, 25.25);
-        pivotInterpolation.put(4.06, 26.14);// 25.91
-        pivotInterpolation.put(4.26, 26.41);
-        pivotInterpolation.put(4.50, 27.31);
+        // pivotInterpolation.put(4.06, 26.14);// 25.91
+        // pivotInterpolation.put(4.26, 26.41);
+        // pivotInterpolation.put(4.50, 27.31);
+        // pivotInterpolation.put(4.75, 28.31);
+        // pivotInterpolation.put(4.94, 28.81);
         
-        pivotInterpolation.put(4.75, 28.31);
-        pivotInterpolation.put(4.94, 28.81);
+        pivotInterpolation.put(1.36, -9.8);
+        pivotInterpolation.put(1.498285686, 8.036407471
+        );
+        pivotInterpolation.put(1.766461413
+        , -0.198120117
+        );
+        pivotInterpolation.put(2.006095159
+        , 4.50677371
+        );
+        pivotInterpolation.put(2.253810077
+        , 6.185724354
+        );
+        pivotInterpolation.put(2.498182415
+        , 10.58572435
+        );
         
+        pivotInterpolation.put(2.739574022
+        , 13.66646194
+        );
+        pivotInterpolation.put(3.000037528
+        , 15.20387955
+        );
+        pivotInterpolation.put(3.249798442
+        , 18.77407951
+        );
+        pivotInterpolation.put(3.504684604
+        , 20.67407951
+        );
+        pivotInterpolation.put(3.765572428
+        , 23.18393135
+        );
+        pivotInterpolation.put(3.991071211
+        , 24.24553108
+        );
+        pivotInterpolation.put(4.241035167
+        , 25.89009056
+        );// 25.91
+        pivotInterpolation.put(4.494075064
+        , 27.17321701
+        );
+        pivotInterpolation.put(4.752376138
+        , 28.12282753
+        );
+        pivotInterpolation.put(5.00374855
+        , 28.88491821
+        );
+
 
         shooterInterpolation.put(1.0, Constants.Physical.SUBWOOFER_SHOT);
         shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
