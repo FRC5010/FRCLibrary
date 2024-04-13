@@ -60,6 +60,7 @@ public class TargetingSystem extends GenericSubsystem {
     private final String PIVOT_ANGLE = "Pivot Angle";
 
     private final double DEFAULT_TOLERANCE = 0.02;
+    private final double SHOOTER_ANGLE_OFFSET = 4.0;
 
     public TargetingSystem(Supplier<Pose3d> targetSupplier, Supplier<Pose3d> robotPose, SwerveDrivetrain swerve,
             VisionSystem shooter, FeederSubsystem feeder) {
@@ -242,7 +243,8 @@ public class TargetingSystem extends GenericSubsystem {
     public Optional<Double> getShooterYawPower() {
         // double turnFactor = -0.002;
         if (useShooterCamera && shooterCamera.isValidTarget()) {
-            return Optional.of(thetaCameraController.calculate(Units.degreesToRadians(shooterCamera.getAngleX())));
+            double angle = Units.degreesToRadians(shooterCamera.getAngleX() + SHOOTER_ANGLE_OFFSET);
+            return Optional.of(thetaCameraController.calculate(angle));
         }
         return Optional.empty();
     }

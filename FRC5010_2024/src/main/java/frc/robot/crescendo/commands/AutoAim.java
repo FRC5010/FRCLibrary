@@ -123,11 +123,13 @@ public class AutoAim extends Command {
     boolean atTargetYaw = false;
     if (yawCamAngle.isPresent()) {
       turnSpeed = yawCamAngle.get();
-      atTargetYaw = targetingSystem.isAtTargetYaw();
+      atTargetYaw = targetingSystem.isAtTargetCameraYaw();
     } else {
       turnSpeed = targetingSystem.getTurnPower();
-      atTargetYaw = targetingSystem.isAtTargetCameraYaw();
+      atTargetYaw = targetingSystem.isAtTargetYaw();
     }
+
+    SmartDashboard.putNumber("Turn Speed", turnSpeed);
 
     pivotSubsystem.setReference(pivotAngle);
     SmartDashboard.putNumber("Shooting Pivot Angle", pivotAngle);

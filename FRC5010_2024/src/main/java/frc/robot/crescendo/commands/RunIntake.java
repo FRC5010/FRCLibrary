@@ -103,7 +103,7 @@ public class RunIntake extends GenericCommand {
     feederCommand = Commands
         .run(() -> {
           feederSubsystem.feederStateMachine(Math.signum(speed.getAsDouble()) * feederSpeed.getAsDouble()
-              * (feederSubsystem.isDetectBeamBroken() ? 0.3 : 1));
+              * (feederSubsystem.isDetectBeamBroken() ? 0.2 : 1));
           shooterSubsystem.setShooterReference(-250.0, -250.0);
         },
             feederSubsystem)
@@ -113,7 +113,7 @@ public class RunIntake extends GenericCommand {
           shooterSubsystem.setShooterReference(0.0, 0.0);
         })
         .andThen(
-            Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.15))
+            Commands.run(() -> feederSubsystem.feederStateMachine(feederSpeed.getAsDouble() * 0.3))
                 .onlyIf(() -> feederSubsystem.isStopBeamBroken() || NoteState.Holding == feederSubsystem.getNoteState())
                 .until(() -> !feederSubsystem.isStopBeamBroken() || feederSubsystem.getNoteState() == NoteState.Loaded)
                 .finallyDo(() -> {

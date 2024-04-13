@@ -65,7 +65,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_LENGTH = Units.inchesToMeters(19);
   private final double PIVOT_MASS = Units.lbsToKilograms(22);
 
-  private final static double MIN_PIVOT_POSITION = -9.8; // Degrees
+  private final static double MIN_PIVOT_POSITION = -9.83; // Degrees
   private final double PIVOT_START_ANGLE = MIN_PIVOT_POSITION;
   private final double PIVOT_END_ANGLE = 90;
   private final String PIVOT_kS = "PivotkS";
@@ -110,10 +110,9 @@ public class PivotSubsystem extends GenericSubsystem {
   public final static double AMP_LEVEL = 79;
   public final static double TRAP_LEVEL = 75;
   public final static double LOW_SHUTTLE_LEVEL = 60;
-  public final static double HIGH_SHUTTLE_LEVEL = -11
+  public final static double HIGH_SHUTTLE_LEVEL = MIN_PIVOT_POSITION;
   
-  ;
-  public final static double INTAKE_LEVEL = -10; // TODO: Make accurate -10
+  public final static double INTAKE_LEVEL = MIN_PIVOT_POSITION; // TODO: Make accurate -10
   public final static double PODIUM_SHOT = 12.3;
   public final static double MAX_INTAKE_ANGLE = 7.0;
   
@@ -129,7 +128,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(PIVOT_kG, RobotBase.isReal() ? 0.33 : 6.05 ); 
     values.declare(PIVOT_kV, RobotBase.isReal() ? 0.0 : 0.01);
     values.declare(PIVOT_kP, RobotBase.isReal() ? 0.03 : 0.01);
-    values.declare(PIVOT_kD, RobotBase.isReal() ? 0.3 : 0.003);
+    values.declare(PIVOT_kD, RobotBase.isReal() ? 0.1 : 0.003);
     values.declare(PIVOT_kS, RobotBase.isReal() ? 0.22 : 0.0);
     values.declare(I_ZONE, 3.0);
     values.declare(PIVOT_kI, 0.000025);
@@ -262,19 +261,18 @@ public class PivotSubsystem extends GenericSubsystem {
       previousTime = currentTime;
     } else {
       if (RobotContainer.getLoggingLevel() == LogLevel.DEBUG) {
-        // if (last_kP != values.getDouble(PIVOT_kP))
-        //   pivotPID.setP(values.getDouble(PIVOT_kP));
-        //   last_kP = values.getDouble(PIVOT_kP);
-        // if (last_kD != values.getDouble(PIVOT_kD))
-        //   pivotPID.setD(values.getDouble(PIVOT_kD));
-        //   last_kD = values.getDouble(PIVOT_kD);
-        // if (last_kI != values.getDouble(PIVOT_kI))
-        //   pivotPID.setI(values.getDouble(PIVOT_kI));
-        //   last_kI = values.getDouble(PIVOT_kI);
-        // if (last_IZONE != values.getDouble(I_ZONE))
-        //   pivotPID.setIZone(values.getDouble(I_ZONE));
-        //   last_IZONE = values.getDouble(I_ZONE);
-      
+        if (last_kP != values.getDouble(PIVOT_kP))
+          pivotPID.setP(values.getDouble(PIVOT_kP));
+          last_kP = values.getDouble(PIVOT_kP);
+        if (last_kD != values.getDouble(PIVOT_kD))
+          pivotPID.setD(values.getDouble(PIVOT_kD));
+          last_kD = values.getDouble(PIVOT_kD);
+        if (last_kI != values.getDouble(PIVOT_kI))
+          pivotPID.setI(values.getDouble(PIVOT_kI));
+          last_kI = values.getDouble(PIVOT_kI);
+        if (last_IZONE != values.getDouble(I_ZONE))
+          pivotPID.setIZone(values.getDouble(I_ZONE));
+          last_IZONE = values.getDouble(I_ZONE);
       }
       if (last_reference != referencePosition) {
         pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
