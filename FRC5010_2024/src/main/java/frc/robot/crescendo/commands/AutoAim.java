@@ -142,11 +142,13 @@ public class AutoAim extends Command {
 
 
     Optional<Double> yawCamAngle = targetingSystem.getShooterYawPower();
+    
+
+    boolean atTargetYaw = false;
     if (accountForMovement || interpolatingYaw) {
       turnSpeed = targetingSystem.getTurnPower();
+      atTargetYaw = targetingSystem.isAtTargetYaw();
     } else if (yawCamAngle.isPresent()) {
-    boolean atTargetYaw = false;
-    if (yawCamAngle.isPresent()) {
       turnSpeed = yawCamAngle.get();
       atTargetYaw = targetingSystem.isAtTargetCameraYaw();
     } else {
@@ -175,8 +177,7 @@ public class AutoAim extends Command {
     feederSubsystem.getNoteState();
     feederSubsystem.setShotReadyness(ready);
     if (useAutoDrive || driveCommand == null) {
-      if (
-         ready || 100 < timeoutCounter) {
+      if (ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {
           feederSubsystem.feederStateMachine(-1.0);
           if (LogLevel.DEBUG == RobotContainer.getLoggingLevel()) {

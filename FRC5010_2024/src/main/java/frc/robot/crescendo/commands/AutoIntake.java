@@ -84,10 +84,9 @@ public class AutoIntake extends GenericCommand {
     double xSpeed = currentAngleY * SmartDashboard.getNumber(X_SPEED, DEF_X);
     double ySpeed = currentAngleX * SmartDashboard.getNumber(Y_SPEED, DEF_Y) / distanceFactor;
     double turnSpeed = currentAngleX * SmartDashboard.getNumber(ANGLE_SPEED, DEF_ANGLE) * distanceFactor;
-    double xSpeedCoefficient = 1.00;
-    xSpeed = xSpeedCoefficient * Math.sin(-Units.degreesToRadians(currentAngleY));
-    ySpeed = 0.5 * Math.sin(Units.degreesToRadians(currentAngleX));
-    turnSpeed = xSpeedCoefficient / 3 * Math.sin(-Units.degreesToRadians(currentAngleX));
+    xSpeed = 1.00 * Math.sin(-Units.degreesToRadians(currentAngleY));
+    ySpeed = 0.35 * Math.sin(Units.degreesToRadians(currentAngleX));
+    turnSpeed = 0.18 * Math.sin(-Units.degreesToRadians(currentAngleX));
 
     // limit power
     xSpeed = xSpeed * drive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();

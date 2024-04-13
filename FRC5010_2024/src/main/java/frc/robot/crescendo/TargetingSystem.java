@@ -25,6 +25,7 @@ import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 
 /** Add your docs here. */
 public class TargetingSystem extends GenericSubsystem {
@@ -440,13 +441,13 @@ public class TargetingSystem extends GenericSubsystem {
         double robotX, robotY, x, y;
         while (Math.abs(time - yawDeficitInterpolation.get(angle)) > 0.05 || angle == 360) {
             robotX = robotPose.get().getX() + swerve.getChassisSpeeds().vxMetersPerSecond * time
-                    + 0.5 * ((Pigeon2) gyro).getAccelerationX().getValueAsDouble() * time * time;
+                    + 0.5 * ((Pigeon2)((PigeonGyro) gyro).getGyro()).getAccelerationX().getValueAsDouble() * time * time;
             robotY = robotPose.get().getY() + swerve.getChassisSpeeds().vyMetersPerSecond * time
-                    + 0.5 * ((Pigeon2) gyro).getAccelerationY().getValueAsDouble() * time * time;
+                    + 0.5 * ((Pigeon2)((PigeonGyro) gyro).getGyro()).getAccelerationY().getValueAsDouble() * time * time;
             x = currentTarget.get().getTranslation().getX() - robotX;
             y = currentTarget.get().getTranslation().getY() - robotY;
             angle = Units.radiansToDegrees(Math.atan2(x, y));
-            time = yawDeficitInterpolation.get(angle);
+            time = yawDeficitInterpolation.get(Math.abs(gyro.getAngle() - angle));
             SmartDashboard.putNumber("Horizontal Targeting Difference X:", x);
             SmartDashboard.putNumber("Horizontal Targeting Difference Y:", y);
         }
