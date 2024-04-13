@@ -69,7 +69,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final String BOTTOM_SHOOTER_KD = "Bottom Shooter Kd";
   private final String BOTTOM_SHOOTER_KI = "Bottom Shooter Ki";
 
-  private final double DEFAULT_TOLERANCE = 5;
+  private final double DEFAULT_TOLERANCE = 1;
 
   private static enum vals {
     REFERENCE, JOYSTICK, BOTTOM_FF, TOP_FF, BOTTOM_VELOCITY, TOP_VELOCITY, TOP_SHOOTER_KP, TOP_SHOOTER_KV,

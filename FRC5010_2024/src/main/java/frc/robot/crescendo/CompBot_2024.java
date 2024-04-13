@@ -21,6 +21,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -117,8 +119,9 @@ public class CompBot_2024 extends GenericMechanism {
 		powerDistribution5010 = new PowerDistribution5010();
 
 		// Motor Setup
-		innerIntakeMotor = MotorFactory.KrakenX60(1);
-		outerIntakeMotor = MotorFactory.KrakenX60(5);
+		innerIntakeMotor = MotorFactory.KrakenX60(1); // 1
+		outerIntakeMotor = MotorFactory.KrakenX60(5); // 5
+
 		leftClimbMotor = MotorFactory.NEO(7); // TODO: Add correct port
 		rightClimbMotor = MotorFactory.NEO(8).invert(true); // TODO: Add correct port
 		pivotMotor = MotorFactory.NEO(9).invert(true);
@@ -441,7 +444,7 @@ public class CompBot_2024 extends GenericMechanism {
 		drive.setupDefaultCommands(driver, operator);
 
 		pivotSubsystem.setDefaultCommand(new RunPivot(
-				() -> operator.getRightTrigger() - operator.getLeftTrigger(), pivotSubsystem));
+				() -> (operator.getRightTrigger() - operator.getLeftTrigger()) * 0.5, pivotSubsystem));
 
 		shooterSubsystem.setDefaultCommand(
 				new RunShooter(() -> 0.0, shooterSubsystem));
@@ -583,6 +586,9 @@ public class CompBot_2024 extends GenericMechanism {
 
 			noteCamera.setUpdateValues(true);
 			visionSystem.addLimeLightCamera("top", 5, () -> gyro);
+			VisionLimeLight topLimeLight = ((VisionLimeLight) visionSystem.getCamera("top"));
+			topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() ? topLimeLight.getRobotPoseEstimateM1()
+					: topLimeLight.getRobotPoseEstimateM2());
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
 					() -> Units.inchesToMeters(15.448),

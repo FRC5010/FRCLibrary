@@ -13,8 +13,10 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
@@ -28,6 +30,10 @@ import frc.robot.crescendo.ShooterSubsystem;
 import frc.robot.crescendo.TargetingSystem;
 
 public class AutoAim extends Command {
+
+  // Test Mode
+  private String PIVOT_ANGLE_OVERRIDE = "Pivot Angle Override";
+  private String SHOOTER_SPEED_OVERRIDE = "Shooter Speed Override";
 
   DrivetrainPoseEstimator robotPose;
   ShooterSubsystem shooterSubsystem;
@@ -90,6 +96,8 @@ public class AutoAim extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    SmartDashboard.putNumber(PIVOT_ANGLE_OVERRIDE, 0.0);
+    SmartDashboard.putNumber(SHOOTER_SPEED_OVERRIDE, 0.0);
     targetingSystem.setAccountForMovement(accountForMovement);
     robotPose.setDisableVisionUpdate(true);
     if (driveCommand != null) {
@@ -123,6 +131,7 @@ public class AutoAim extends Command {
     double pivotAngle = pivotSubsystem.HOME_LEVEL;
 
     Optional<Double> shootCamAngle = targetingSystem.getShooterCamAngle();
+
     if (shootCamAngle.isPresent()) {
       pivotAngle = shootCamAngle.get();
     } else {
@@ -156,11 +165,17 @@ public class AutoAim extends Command {
     boolean ready = (pivotSubsystem.isAtTarget() && shooterSubsystem.isAtTarget() && targetingSystem.isAtTargetYaw());
     feederSubsystem.getNoteState();
     feederSubsystem.setShotReadyness(ready);
-
     if (useAutoDrive || driveCommand == null) {
       if (ready || 100 < timeoutCounter) {
         if ((cycleCounter > 2 && Math.abs(turnSpeed) < 0.2) || 60 < timeoutCounter) {
           feederSubsystem.feederStateMachine(-1.0);
+          if (LogLevel.DEBUG == RobotContainer.getLoggingLevel()) {
+            SmartDashboard.putNumber("Shot Angle", pivotSubsystem.getPivotPosition());
+            SmartDashboard.putNumber("Shot Reference", pivotSubsystem.getReference());
+            SmartDashboard.putNumber("Shot Speed", shooterSubsystem.getTopVelocity());
+            SmartDashboard.putNumber("Shot Distance to Speaker", targetingSystem.getFlatDistanceToTarget());
+          }
+
         }
         cycleCounter++;
 
