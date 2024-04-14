@@ -22,8 +22,8 @@ public final class Constants {
                 public static final double PIVOT_EXIT_POINT_ANGLE_OFFSET = 145.112; // TODO: Measure this accurately
                 public static final double PIVOT_SHOOTER_RADIUS = 0.245; // Meters
 
-                public static final double BOTTOM_SHOOTING_SPEED = 4500;
-                public static final double TOP_SHOOTING_SPEED = 4500;
+                public static final double BOTTOM_SHOOTING_SPEED = 4250;
+                public static final double TOP_SHOOTING_SPEED = 4250;
 
                 public static final double MANUAL_SHOOTING_SPEED = 4800;
                 public static final double AMP_SHOOTING_SPEED = 2000;
@@ -56,6 +56,13 @@ public final class Constants {
                 public static Pose3d RED_SHOT_POSE = new Pose3d(
                                 new Translation3d(Units.inchesToMeters(652.73), Units.inchesToMeters(218.42), 0.0),
                                 new Rotation3d(0, 0, 180));
+                public static Pose3d BLUE_SHUTTLE_POSE = new Pose3d(
+                                new Translation3d(0, Units.inchesToMeters(295.0), 0.0),
+                                new Rotation3d());
+                public static Pose3d RED_SHUTTLE_POSE = new Pose3d(
+                                new Translation3d(Units.inchesToMeters(652.73), Units.inchesToMeters(295.0), 0.0),
+                                new Rotation3d(0, 0, 180));
+                
 
 
                 // Auto Shot Positions (Blue Alliance)

@@ -18,22 +18,21 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake Note at Max"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Note B-2"
-                }
-              }
-            ]
+            "pathName": "Note B-2 With Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake at Max"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Note"
           }
         },
         {
@@ -70,6 +69,42 @@
           "type": "named",
           "data": {
             "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pivot Home"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 - 6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pivot Home"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "6 - Center Shot Mid"
           }
         },
         {

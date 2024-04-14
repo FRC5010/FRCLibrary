@@ -127,7 +127,7 @@ public class TargetingSystem extends GenericSubsystem {
         // pivotInterpolation.put(4.94, 28.81);
 
         pivotInterpolation.put(1.36, -9.8);
-        pivotInterpolation.put(1.498285686, 8.036407471);
+        pivotInterpolation.put(1.498285686, -8.036407471);
         pivotInterpolation.put(1.766461413, -0.198120117);
         pivotInterpolation.put(2.006095159, 4.50677371);
         pivotInterpolation.put(2.253810077, 6.185724354);
@@ -150,12 +150,12 @@ public class TargetingSystem extends GenericSubsystem {
         shooterInterpolation.put(1.0, Constants.Physical.SUBWOOFER_SHOT);
         shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
         shuttleShooterInterpolation.put(5.1, Constants.Physical.SHUTTLE_SPEED); // Delete
-        shuttleShooterInterpolation.put(15.0, Constants.Physical.SHUTTLE_SPEED_HIGH); // Delete
+        shuttleShooterInterpolation.put(12.0, Constants.Physical.SHUTTLE_SPEED_HIGH); // Delete
 
         // Interpolate yaw deficit here
-        yawDeficitInterpolation.put(0.0, 0.0);
-        yawDeficitInterpolation.put(0.0, 0.0);
-        yawDeficitInterpolation.put(0.0, 0.0);
+        yawDeficitInterpolation.put(3.29315185546875, 0.289209397);
+        yawDeficitInterpolation.put(54.68994140625, 2.077867226);
+        yawDeficitInterpolation.put(9.89044189453125, 0.524646528);
         yawDeficitInterpolation.put(0.0, 0.0);
         yawDeficitInterpolation.put(0.0, 0.0);
         yawDeficitInterpolation.put(0.0, 0.0);
@@ -171,6 +171,10 @@ public class TargetingSystem extends GenericSubsystem {
 
     public static Pose3d getSpeakerTarget(Alliance alliance) {
         return alliance == Alliance.Blue ? Constants.Field.BLUE_SHOT_POSE : Constants.Field.RED_SHOT_POSE;
+    }
+
+    public static Pose3d getShuttleTarget(Alliance alliance) {
+        return alliance == Alliance.Blue ? Constants.Field.BLUE_SHUTTLE_POSE : Constants.Field.RED_SHUTTLE_POSE;
     }
 
     public static Pose3d getDefaultTarget() {
@@ -441,9 +445,11 @@ public class TargetingSystem extends GenericSubsystem {
         double robotX, robotY, x, y;
         while (Math.abs(time - yawDeficitInterpolation.get(angle)) > 0.05 || angle == 360) {
             robotX = robotPose.get().getX() + swerve.getChassisSpeeds().vxMetersPerSecond * time
-                    + 0.5 * ((Pigeon2)((PigeonGyro) gyro).getGyro()).getAccelerationX().getValueAsDouble() * time * time;
+                    + 0.5 * ((Pigeon2) ((PigeonGyro) gyro).getGyro()).getAccelerationX().getValueAsDouble() * time
+                            * time;
             robotY = robotPose.get().getY() + swerve.getChassisSpeeds().vyMetersPerSecond * time
-                    + 0.5 * ((Pigeon2)((PigeonGyro) gyro).getGyro()).getAccelerationY().getValueAsDouble() * time * time;
+                    + 0.5 * ((Pigeon2) ((PigeonGyro) gyro).getGyro()).getAccelerationY().getValueAsDouble() * time
+                            * time;
             x = currentTarget.get().getTranslation().getX() - robotX;
             y = currentTarget.get().getTranslation().getY() - robotY;
             angle = Units.radiansToDegrees(Math.atan2(x, y));
@@ -470,6 +476,9 @@ public class TargetingSystem extends GenericSubsystem {
         this.interpolatingYaw = bool;
     }
 
+    public Pose3d getCurrentTarget() {
+        return currentTarget.get();
+    }
     public void periodic() {
         feeder.setShooterHasTarget(shooterCamera.isValidTarget());
         ranExtrapolation = false;
@@ -477,7 +486,7 @@ public class TargetingSystem extends GenericSubsystem {
         SmartDashboard.putNumber("Targeting Pose Y", currentTarget.get().getY());
         SmartDashboard.putNumber("Robot Targeting Pose X", currentTarget.get().getX());
         SmartDashboard.putNumber("Robot Targeting Pose Y", robotPose.get().getY());
-        
+
     }
 
 }

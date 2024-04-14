@@ -3,45 +3,51 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.875578828080734,
-        "y": 4.114515152107228
+        "x": 7.8361110568375,
+        "y": 4.153982923350462
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.62247709110803,
-        "y": 3.7494382681073057
+        "x": 5.813387780621717,
+        "y": 2.9403489576209925
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.813837166135872,
-        "y": 5.555088802485298
+        "x": 2.15,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 3.0879818682714313,
-        "y": 3.65076883999922
+        "x": 4.560286043649012,
+        "y": 5.61429045935015
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center Shot Long"
+      "linkedName": "Center Shot Short"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 146.6367345161629,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Aim Center Shot Long",
+      "name": "Aim Center Shot Short With No Pivot",
       "waypointRelativePos": 0,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "Aim Center Shot Long"
+                "name": "Aim Center Shot Short NO PIVOT"
               }
             }
           ]

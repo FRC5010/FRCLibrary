@@ -3,29 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.813837166135872,
-        "y": 5.555088802485298
+        "x": 7.875578828080734,
+        "y": 4.114515152107228
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.854164631406189,
-        "y": 3.394228326918194
-      },
-      "isLocked": false,
-      "linkedName": "Center Shot Long"
-    },
-    {
-      "anchor": {
-        "x": 8.059773637365257,
-        "y": 2.6004145367665736
-      },
-      "prevControl": {
-        "x": 6.99742091791876,
-        "y": 3.127820871026358
-      },
-      "nextControl": {
-        "x": 8.687086425388483,
-        "y": 2.2889843197497695
+        "x": 6.62247709110803,
+        "y": 3.7494382681073057
       },
       "isLocked": false,
       "linkedName": null
@@ -36,23 +20,35 @@
         "y": 5.555088802485298
       },
       "prevControl": {
-        "x": 3.8280025790820837,
-        "y": 3.9369101815126717
+        "x": 4.64908852894629,
+        "y": 4.469725093296342
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Center Shot Long"
     }
   ],
-  "rotationTargets": [
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
     {
-      "waypointRelativePos": 0.85,
-      "rotationDegrees": 149.02686031635818,
-      "rotateFast": false
+      "name": "Aim Center Shot Long",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Center Shot Mid"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
-  "constraintZones": [],
-  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 5.0,
@@ -61,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.67443154014177,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,

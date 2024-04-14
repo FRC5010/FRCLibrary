@@ -18,6 +18,7 @@ public enum AutoShotDefinition {
     STAGE_SHOT_LONG(4.50, 4.70),
     LEFT_LONG_SHOT(5.0, 6.7),
     CENTER_SHOT_LONG(4.0, 5.59),
+    CENTER_SHOT_MID(2.81, 5.56),
     B2_SHOT(2.9, 5.55, 180, 13.0, 3000),
     C8_SHOT(1.52, 3.63),
     A1_SHOT(1.64, 7.02),

@@ -4,6 +4,7 @@
 
 package frc.robot.crescendo.commands;
 
+import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
@@ -30,7 +32,7 @@ import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.ShooterSubsystem;
 import frc.robot.crescendo.TargetingSystem;
 
-public class AutoAim extends Command {
+public class AutoAim extends GenericCommand {
 
   // Test Mode
   private String PIVOT_ANGLE_OVERRIDE = "Pivot Angle Override";
@@ -96,15 +98,15 @@ public class AutoAim extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void init() {
     SmartDashboard.putNumber(PIVOT_ANGLE_OVERRIDE, 0.0);
     SmartDashboard.putNumber(SHOOTER_SPEED_OVERRIDE, 0.0);
     targetingSystem.setAccountForMovement(accountForMovement);
     robotPose.setDisableVisionUpdate(true);
     if (driveCommand != null) {
       originalTurnSpeed = driveCommand.get().getTurnSpeedFunction();
-      driveCommand.get().setTurnSpeedFunction(() -> targetingSystem.getTurnPower());
       turnSpeed = targetingSystem.getInitialStationaryTurnPower();
+      driveCommand.get().setTurnSpeedFunction(() -> targetingSystem.getTurnPower());
       startTime = System.nanoTime();
       startAngle = gyro.getAngle();
     } else if (useAutoDrive) {
@@ -119,6 +121,10 @@ public class AutoAim extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    if (robotPose.getCurrentPose().getX() - 0.0 > 5.0) {
+      targetingSystem.setTarget(TargetingSystem.getShuttleTarget(RobotContainer.getAlliance()));
+    }
 
     if (targetingSystem.isAtTargetYaw() && endTime == 0.0) {
       endTime = System.nanoTime();
@@ -199,7 +205,7 @@ public class AutoAim extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void stop(boolean interrupted) {
     if (driveCommand != null) {
       driveCommand.get().setTurnSpeedFunction(originalTurnSpeed);
     } else {
@@ -210,6 +216,8 @@ public class AutoAim extends Command {
     shooterSubsystem.setShooterReference(0, 0);
     targetingSystem.setAccountForMovement(false);
     targetingSystem.setInterpolatingYaw(false);
+    targetingSystem.setTarget(TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()));
+    endTime = 0.0;
   }
 
   // Returns true when the command should end.

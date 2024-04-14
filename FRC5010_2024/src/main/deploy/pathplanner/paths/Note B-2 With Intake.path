@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 2.9026396514331507,
+        "x": 2.8912278962769307,
         "y": 5.559932574410603
       },
       "prevControl": {
-        "x": 2.5947910357359194,
+        "x": 2.5833792805796993,
         "y": 5.531946336619947
       },
       "nextControl": null,
@@ -32,35 +32,12 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Aim Center Shot Short",
-      "waypointRelativePos": 0.0,
+      "name": "Intake Note at Max",
+      "waypointRelativePos": 0,
       "command": {
         "type": "sequential",
         "data": {
           "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Aim Center Shot Short"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Shoot Center Shot Short and Intake Note at Max",
-      "waypointRelativePos": 0.35,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Just Shoot"
-              }
-            },
             {
               "type": "named",
               "data": {
@@ -74,9 +51,9 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 180.0
+    "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -89,5 +66,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
