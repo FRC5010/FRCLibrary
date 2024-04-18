@@ -122,7 +122,7 @@ public class AutoAim extends GenericCommand {
   @Override
   public void execute() {
 
-    if (robotPose.getCurrentPose().getX() - 0.0 > 5.0) {
+    if (Math.abs(robotPose.getCurrentPose().getX() - targetingSystem.getCurrentTarget().getX()) > 5.0) {
       targetingSystem.setTarget(TargetingSystem.getShuttleTarget(RobotContainer.getAlliance()));
     }
 

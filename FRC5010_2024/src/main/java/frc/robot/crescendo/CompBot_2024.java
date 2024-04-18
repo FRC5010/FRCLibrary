@@ -185,7 +185,7 @@ public class CompBot_2024 extends GenericMechanism {
 				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
 				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera, feederSubsystem, gyro);
-		targetingSystem.useShooterCamera(true);
+		targetingSystem.useShooterCamera(false);
 	}
 
 	@Override

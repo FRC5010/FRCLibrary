@@ -9,7 +9,10 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.FRC5010.Vision.LimelightHelpers.PoseEstimate;
@@ -73,8 +76,11 @@ public class VisionLimeLight extends VisionSystem {
             if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 180) {
                 pose = null;
             }
-
-    
+            
+            if (null != pose) {
+                final double Y_OFFSET = 0.1;
+                pose = pose.plus(new Transform2d(new Translation2d(0, Y_OFFSET), new Rotation2d()));
+            }
             poseEstimate.pose = pose;
             return poseEstimate;
     }
