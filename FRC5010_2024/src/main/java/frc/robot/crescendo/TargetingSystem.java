@@ -68,7 +68,7 @@ public class TargetingSystem extends GenericSubsystem {
     private final String PIVOT_ANGLE = "Pivot Angle";
 
     private final double DEFAULT_TOLERANCE = 0.02;
-    private final double SHOOTER_ANGLE_OFFSET = 4.0;
+    private final double SHOOTER_ANGLE_OFFSET = 0.0;
     private final double DEFAULT_MOVING_TOLERANCE = 0.04;
     private final double INITIAL_TIME_GUESS = 0.5;
     private final double MINIMUM_VELOCITY_THRESHOLD = 0.1;

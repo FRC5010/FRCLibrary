@@ -108,7 +108,7 @@ public class AutoAim extends GenericCommand {
       turnSpeed = targetingSystem.getInitialStationaryTurnPower();
       driveCommand.get().setTurnSpeedFunction(() -> targetingSystem.getTurnPower());
       startTime = System.nanoTime();
-      startAngle = gyro.getAngle();
+      startAngle = gyro.getAngleZ();
     } else if (useAutoDrive) {
       PPHolonomicDriveController.setRotationTargetOverride(() -> targetingSystem.getRotationTarget(1.0));
     }
@@ -129,7 +129,7 @@ public class AutoAim extends GenericCommand {
     if (targetingSystem.isAtTargetYaw() && endTime == 0.0) {
       endTime = System.nanoTime();
       SmartDashboard.putNumber("Yaw Interpolation Time", (System.nanoTime() - startTime) / 1_000_000_000.0);
-      SmartDashboard.putNumber("Yaw Interpolation Angle Rotated", Math.abs(gyro.getAngle() - startAngle));
+      SmartDashboard.putNumber("Yaw Interpolation Angle Rotated", Math.abs(gyro.getAngleZ() - startAngle));
     }
 
     Transform3d pivotOrigin = new Transform3d(

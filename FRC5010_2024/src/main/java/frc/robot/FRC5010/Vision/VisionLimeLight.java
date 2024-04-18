@@ -53,9 +53,9 @@ public class VisionLimeLight extends VisionSystem {
 
     public PoseEstimate getRobotPoseEstimateM2() {
         PoseEstimate poseEstimate = processPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name));
-        if (poseEstimate.avgTagDist < 3) {
-            getRobotPoseEstimateM1();
-        }
+        // if (poseEstimate.avgTagDist < 1.5) {
+        //    getRobotPoseEstimateM1();
+        // }
         return poseEstimate;
     }
 
@@ -74,6 +74,7 @@ public class VisionLimeLight extends VisionSystem {
                 pose = null;
             }
 
+    
             poseEstimate.pose = pose;
             return poseEstimate;
     }
