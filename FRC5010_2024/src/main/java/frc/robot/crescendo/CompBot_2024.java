@@ -275,7 +275,7 @@ public class CompBot_2024 extends GenericMechanism {
 				});
 
 		spinIntake = () -> Commands.startEnd(
-				() -> intakeSubsystem.setReference(-1000, -1000),
+				() -> intakeSubsystem.setReference(-500, -500),
 				() -> intakeSubsystem.setReference(0, 0)).withTimeout(1.5);
 
 		blindShot = () -> Commands.run(() -> feederSubsystem.feederStateMachine(-1.0))
@@ -379,17 +379,19 @@ public class CompBot_2024 extends GenericMechanism {
 						&& climbSubsystem.rightIsAtMin(-0.1))
 
 		));
+		JoystickButton subwooferButton = operator.createXButton();
+
 		// Podium Pivot
-		operator.createXButton().onTrue(Commands.runOnce(
+		subwooferButton.onTrue(Commands.runOnce(
 				() -> {
 					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 					shooterSubsystem.setShooterReference(Constants.Physical.SUBWOOFER_SHOT,
 							Constants.Physical.SUBWOOFER_SHOT);
-				}, pivotSubsystem)).onFalse(Commands.runOnce(() -> {
+				}, pivotSubsystem)).onFalse(Commands.waitSeconds(0.5).andThen(Commands.runOnce(() -> {
 					shooterSubsystem.setShooterReference(0, 0);
 					feederSubsystem.setFeederReference(0);
 					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
-				}));
+				}).onlyIf(() -> !subwooferButton.getAsBoolean())));
 
 		// Amp Pivot
 		operator.createYButton().whileTrue(Commands

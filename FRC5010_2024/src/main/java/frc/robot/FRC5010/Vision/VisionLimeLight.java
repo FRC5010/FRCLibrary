@@ -14,7 +14,9 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.Vision.LimelightHelpers.PoseEstimate;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
@@ -23,6 +25,7 @@ public class VisionLimeLight extends VisionSystem {
 
     Supplier<PoseEstimate> robotPoseEstimateSupplier = this::getRobotPoseEstimateM2;
     Supplier<GenericGyro> gyroSupplier;
+    double Y_OFFSET;
 
     public VisionLimeLight(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot,
             Supplier<GenericGyro> gyroSupplier) {
@@ -41,6 +44,7 @@ public class VisionLimeLight extends VisionSystem {
     }
 
     protected void init() {
+       
     }
 
     public PoseEstimate getRobotPoseEstimateM1() {
@@ -76,10 +80,12 @@ public class VisionLimeLight extends VisionSystem {
             if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 180) {
                 pose = null;
             }
-            
+    
             if (null != pose) {
-                final double Y_OFFSET = 0.1;
-                pose = pose.plus(new Transform2d(new Translation2d(0, Y_OFFSET), new Rotation2d()));
+                Y_OFFSET = 0.1;
+
+
+                pose = new Pose2d(pose.getX(), pose.getY() + Y_OFFSET, pose.getRotation());// pose.plus(new Transform2d(new Translation2d(0, Y_OFFSET), new Rotation2d()));
             }
             poseEstimate.pose = pose;
             return poseEstimate;
