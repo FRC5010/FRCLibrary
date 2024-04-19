@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.253961430999786,
-        "y": 5.8313632011879415
+        "x": 7.549969715324047,
+        "y": 6.117504542701393
       },
       "isLocked": false,
       "linkedName": null
@@ -20,17 +20,35 @@
         "y": 6.7
       },
       "prevControl": {
-        "x": 5.724585295324437,
-        "y": 6.660186397295872
+        "x": 5.704851409702821,
+        "y": 6.9364607959985145
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Long Shot"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Left Shot Long"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 5.0,
@@ -45,7 +63,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -177.75425743410503,
+    "rotation": 129.41739424346886,
     "velocity": 0
   },
   "useDefaultConstraints": true

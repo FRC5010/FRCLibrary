@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -384,10 +385,11 @@ public class CompBot_2024 extends GenericMechanism {
 		// Podium Pivot
 		subwooferButton.onTrue(Commands.runOnce(
 				() -> {
+					SmartDashboard.putBoolean("X Button", true);
 					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 					shooterSubsystem.setShooterReference(Constants.Physical.SUBWOOFER_SHOT,
 							Constants.Physical.SUBWOOFER_SHOT);
-				}, pivotSubsystem)).onFalse(Commands.waitSeconds(0.5).andThen(Commands.runOnce(() -> {
+				}, pivotSubsystem)).onFalse(Commands.waitSeconds(0.5).beforeStarting(() -> SmartDashboard.putBoolean("X Button", false)).andThen(Commands.runOnce(() -> {
 					shooterSubsystem.setShooterReference(0, 0);
 					feederSubsystem.setFeederReference(0);
 					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
@@ -425,7 +427,7 @@ public class CompBot_2024 extends GenericMechanism {
 							intakeSubsystem.setReference(0, 0);
 						}));
 		// Feed Note into Shooter
-		operator.createLeftBumper().whileTrue(runFeeder.get());
+		operator.createLeftBumper().whileTrue(runFeeder.get().beforeStarting(Commands.runOnce(() -> SmartDashboard.putBoolean("Left Bumper", true)))).onFalse(Commands.runOnce(() -> SmartDashboard.putBoolean("Left Bumper", false)));
 
 		// Shooter micro adjust
 		operator.createUpPovButton().onTrue(spinIntake.get());
