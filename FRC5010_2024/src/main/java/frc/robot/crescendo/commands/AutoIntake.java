@@ -64,17 +64,15 @@ public class AutoIntake extends GenericCommand {
     double currentAngleX = visionSystem.getAngleX();
     
 
-    if (!visionSystem.isValidTarget()) {
-      noNoteCounter++;
-    } else {
-      noNoteCounter = 0;
-    }
+
 
     if (currentAngleY > lastAngleY + 5 || !visionSystem.isValidTarget()) {
       currentAngleX = 0;
       currentAngleY = 0;
+      noNoteCounter++;
     } else {
       lastAngleY = currentAngleY;
+      noNoteCounter = 0;
     }
 
     double distanceFactor = Math.abs(currentAngleY / 10.0 + 0.0001);
