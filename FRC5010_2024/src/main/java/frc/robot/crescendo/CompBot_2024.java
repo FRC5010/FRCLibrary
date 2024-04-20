@@ -549,10 +549,21 @@ public class CompBot_2024 extends GenericMechanism {
 		driver.createDownPovButton()
 				.onTrue(zeroClimb.get());
 
-		operator.createRightBumper().onTrue(runIntake.get());
-		operator.createLeftBumper()
-				.whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), false, false).alongWith(spinIntake.get().withTimeout(0.25)));
+
+		operator.createXButton().onTrue(autoIntake.get());		
+		operator.createBButton().onTrue(new PredefinedAutoShot(
+				AutoShotDefinition.RIGHT_SHOT_MID.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+				.enablePivot()
+				);
+		operator.createRightBumper().whileTrue(
+				Commands.run(() -> shooterSubsystem.setShooterReference(Constants.Physical.MANUAL_SHOOTING_SPEED,
+						Constants.Physical.MANUAL_SHOOTING_SPEED)).finallyDo(() -> {
+							shooterSubsystem.setShooterReference(0, 0);
+							intakeSubsystem.setReference(0, 0);
+						}));
+		// Feed Note into Shooter
+		operator.createLeftBumper().whileTrue(runFeeder.get().beforeStarting(Commands.runOnce(() -> SmartDashboard.putBoolean("Left Bumper", true)))).onFalse(Commands.runOnce(() -> SmartDashboard.putBoolean("Left Bumper", false)));
 	}
 
 	@Override
@@ -718,6 +729,13 @@ public class CompBot_2024 extends GenericMechanism {
 
 		NamedCommands.registerCommand("Aim Right Shot Short", new PredefinedAutoShot(
 				AutoShotDefinition.RIGHT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+				.enableSpinup()
+				.enablePivot()
+				.enableYaw());
+
+		NamedCommands.registerCommand("Aim Right Shot Mid", new PredefinedAutoShot(
+				AutoShotDefinition.RIGHT_SHOT_MID.getPose(RobotContainer.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot()

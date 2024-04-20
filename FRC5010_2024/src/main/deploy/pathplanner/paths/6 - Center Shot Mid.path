@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Aim Center Shot Long",
+      "name": "Aim Center Shot Mid",
       "waypointRelativePos": 0,
       "command": {
         "type": "sequential",

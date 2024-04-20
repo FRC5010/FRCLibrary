@@ -15,13 +15,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FRC5010.arch.GenericCommand;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.PivotSubsystem;
 import frc.robot.crescendo.ShooterSubsystem;
 import frc.robot.crescendo.TargetingSystem;
 
-public class PredefinedAutoShot extends Command {
+public class PredefinedAutoShot extends GenericCommand {
 
   Rotation2d targetYaw;
   double targetPivot;
@@ -123,7 +124,7 @@ public class PredefinedAutoShot extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void init() {
     targetYaw = new Rotation2d();
     targetPivot = 0;
 
@@ -152,13 +153,16 @@ public class PredefinedAutoShot extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void stop(boolean interrupted) {
     PPHolonomicDriveController.setRotationTargetOverride(null);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (null != noteStateSupplier) {
+      return noteStateSupplier.get() == NoteState.Empty;
+    }
     return false;
   }
 }

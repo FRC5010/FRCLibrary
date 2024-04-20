@@ -75,6 +75,8 @@ public class AutoIntake extends GenericCommand {
       noNoteCounter = 0;
     }
 
+    SmartDashboard.putNumber("No Note Counter", noNoteCounter);
+
     double distanceFactor = Math.abs(currentAngleY / 10.0 + 0.0001);
     distanceFactor = Math.min(distanceFactor, 1.0);
     
@@ -103,8 +105,9 @@ public class AutoIntake extends GenericCommand {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void stop(boolean interrupted) {}
-
+  public void stop(boolean interrupted) {
+    SmartDashboard.putNumber("No Note Counter", 0.0);
+  }
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
