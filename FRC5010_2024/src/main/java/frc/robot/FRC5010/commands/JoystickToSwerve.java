@@ -8,6 +8,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
@@ -53,14 +54,20 @@ public class JoystickToSwerve extends Command {
   public void execute() {
     // get values on sticks and deadzone them
 
-    double xSpeed = (xSpdFunction.getAsDouble());
-    double ySpeed = (ySpdFunction.getAsDouble());
+    double xInput = (xSpdFunction.getAsDouble());
+    double yInput = (ySpdFunction.getAsDouble());
+
+    Translation2d inputTranslation = new Translation2d(xInput, yInput);
+    double magnitude = inputTranslation.getNorm();
+    Rotation2d angle = inputTranslation.getAngle();
+
+    double curvedMagnitude = Math.pow(magnitude, 3);
 
     double turnSpeed = (turnSpdFunction.getAsDouble());
 
     // limit power
-    xSpeed = xSpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
-    ySpeed = ySpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
+    double xSpeed = curvedMagnitude * angle.getCos() * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
+    double ySpeed = curvedMagnitude * angle.getSin() * swerveDrive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
     turnSpeed = turnSpeed * swerveDrive.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
 
     // convert to chassis speed class

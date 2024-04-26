@@ -15,14 +15,23 @@ public final class Constants {
                 public static final Transform3d PIVOT_ORIGIN_OFFSET = new Transform3d(new Translation3d(0.0, 0.0, 0.65),
                                 new Rotation3d());
                 public static final double SHOOTER_ANGLE_OFFSET = 52.071; // TODO: Measure this accurately on real robot
+                public static final double SHOOTER_CAM_ANGLE_OFFSET = 64 + 5.630592; // TODO: Measure this accurately on real robot
+				public static final double SHOOTER_CAM_LENS_TO_SPLINE = 4.752489;
+				public static final double SPLINE_HEIGHT = 20.528445;
+				public static final double SPLINE_X = 11.4375;
                 public static final double PIVOT_EXIT_POINT_ANGLE_OFFSET = 145.112; // TODO: Measure this accurately
                 public static final double PIVOT_SHOOTER_RADIUS = 0.245; // Meters
 
-                public static final double BOTTOM_SHOOTING_SPEED = 5000;
-                public static final double TOP_SHOOTING_SPEED = 5000;
+                public static final double BOTTOM_SHOOTING_SPEED = 4250;
+                public static final double TOP_SHOOTING_SPEED = 4250;
 
-                public static final double MANUAL_SHOOTING_SPEED = 5000;
-                public static final double AMP_SHOOTING_SPEED = 1000;
+                public static final double MANUAL_SHOOTING_SPEED = 4800;
+                public static final double AMP_SHOOTING_SPEED = 2000;
+
+                public static final double SHUTTLE_SPEED = 2000;
+                public static final double SHUTTLE_SPEED_HIGH = 3000;
+
+                public static final double SUBWOOFER_SHOT = 2500;
 
         }
 
@@ -37,10 +46,23 @@ public final class Constants {
                                 new Translation3d(Units.inchesToMeters(9.055), 0.0, Units.inchesToMeters(80.515)),
                                 new Rotation3d());
                 private static final Transform3d RED_SHOT_OFFSET = new Transform3d(
-                                new Translation3d(Units.inchesToMeters(-9.055), 0.0, Units.inchesToMeters(80.515)),
+                                new Translation3d(Units.inchesToMeters(-9.055), 0.0, Units.inchesToMeters(80.515)), // TEMP COMP UPDATE
                                 new Rotation3d());
-                public static Pose3d BLUE_SHOT_POSE = SPEAKER_POSE_BLUE.plus(BLUE_SHOT_OFFSET);
-                public static Pose3d RED_SHOT_POSE = SPEAKER_POSE_RED.plus(RED_SHOT_OFFSET);
+                // Old forward projected aiming position Units.inchesToMeters(9.055)                
+                public static Pose3d BLUE_SHOT_POSE = new Pose3d(
+                                new Translation3d(0, Units.inchesToMeters(218.42), 0.0),
+                                new Rotation3d());
+                // Old forward projected aiming position Units.inchesToMeters(652.73 - 9.055)
+                public static Pose3d RED_SHOT_POSE = new Pose3d(
+                                new Translation3d(Units.inchesToMeters(652.73), Units.inchesToMeters(218.42), 0.0),
+                                new Rotation3d(0, 0, 180));
+                public static Pose3d BLUE_SHUTTLE_POSE = new Pose3d(
+                                new Translation3d(0, Units.inchesToMeters(295.0), 0.0),
+                                new Rotation3d());
+                public static Pose3d RED_SHUTTLE_POSE = new Pose3d(
+                                new Translation3d(Units.inchesToMeters(652.73), Units.inchesToMeters(295.0), 0.0),
+                                new Rotation3d(0, 0, 180));
+                
 
 
                 // Auto Shot Positions (Blue Alliance)

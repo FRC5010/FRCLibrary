@@ -43,6 +43,8 @@ public class FeederSubsystem extends GenericSubsystem {
   private DigitalInput detectBeamBreak;
   private final String SIM_STOP_BEAMBREAK = "Simulated Stop Beambreak";
   private final String SIM_DETECT_BEAMBREAK = "Simulated Detect Beambreak";
+  private boolean ReadyToShoot = false;
+  private boolean shooterHasTarget = false;
 
   private static enum ControlState {
     Joystick,
@@ -61,7 +63,7 @@ public class FeederSubsystem extends GenericSubsystem {
     Locked,
     Loaded,
     Shooting,
-    
+
   }
 
   private ControlState feederState = ControlState.Joystick;
@@ -131,6 +133,18 @@ public class FeederSubsystem extends GenericSubsystem {
     return reference;
   }
 
+  public void setShotReadyness(boolean value) {
+    ReadyToShoot = value;
+  }
+
+  public void setShooterHasTarget(boolean value) {
+    shooterHasTarget = value;
+  }
+
+  public boolean getShotReadyness() {
+    return ReadyToShoot;
+  }
+
   public Command loadNote() {
     return Commands.runEnd(() -> setFeederSpeed(-0.1), () -> {
       stop();
@@ -181,20 +195,25 @@ public class FeederSubsystem extends GenericSubsystem {
           noteState = NoteState.Empty;
         }
     }
-
-    switch (noteState) {
-      case Empty:
-        ledSubsystem.setWholeStripState((Integer i) -> Color.RED.getColor8Bit());
-        break;
-      case Holding:
-        ledSubsystem.setWholeStripState((Integer i) -> Color.BLUE.getColor8Bit());
-        break;
-      case Loaded:
-        ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
-        break;
-      case Shooting:
-        ledSubsystem.setWholeStripState((Integer i) -> Color.ORANGE.getColor8Bit());
-        break;
+    if (ReadyToShoot) {
+      ledSubsystem.setWholeStripState((Integer i) -> Color.PURPLE.getColor8Bit());
+    } else if (shooterHasTarget) {
+      ledSubsystem.setWholeStripState((Integer i) -> Color.FIFTY_TEN_ORANGE.getColor8Bit());
+    } else {
+      switch (noteState) {
+        case Empty:
+          ledSubsystem.setWholeStripState((Integer i) -> Color.RED.getColor8Bit());
+          break;
+        case Holding:
+          ledSubsystem.setWholeStripState((Integer i) -> Color.BLUE.getColor8Bit());
+          break;
+        case Loaded:
+          ledSubsystem.setWholeStripState((Integer i) -> Color.GREEN.getColor8Bit());
+          break;
+        case Shooting:
+          ledSubsystem.setWholeStripState((Integer i) -> Color.ORANGE.getColor8Bit());
+          break;
+      }
     }
   }
 
@@ -250,11 +269,11 @@ public class FeederSubsystem extends GenericSubsystem {
   }
 
   public boolean isEmptied() {
-	return NoteState.Empty == getNoteState();
+    return NoteState.Empty == getNoteState();
   }
 
   public boolean isHolding() {
-	return NoteState.Holding == getNoteState();
+    return NoteState.Holding == getNoteState();
   }
 
   public void holding() {
@@ -262,7 +281,7 @@ public class FeederSubsystem extends GenericSubsystem {
   }
 
   public boolean isLoaded() {
-	return NoteState.Loaded == getNoteState();
+    return NoteState.Loaded == getNoteState();
   }
 
   public void loaded() {

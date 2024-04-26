@@ -6,6 +6,7 @@ package frc.robot.FRC5010.drive.pose;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -80,7 +81,7 @@ public abstract class GenericPose {
     gyro.reset();
   };
 
-  public abstract void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance);
+  public abstract void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, Vector<N3> stdVector);
   public abstract void updateLocalMeasurements();
   public abstract Pose2d getCurrentPose();
   public abstract void resetToPose(Pose2d pose);

@@ -64,9 +64,8 @@ public class VisionValues {
     }
 
     public void storeValues(VisionValues rawValues, int maxCount) {
-        count++;
-        count = Math.min(count, maxCount);
-        valid = count >= maxCount;
+        count = rawValues.getValid() ? 5 : count;
+        valid = rawValues.getValid();
         angleX = rawValues.getAngleX();
         angleY = rawValues.getAngleY();
         distance = rawValues.getDistance();

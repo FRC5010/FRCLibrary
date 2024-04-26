@@ -1,0 +1,98 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.0,
+        "y": 6.7
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.0,
+        "y": 6.7
+      },
+      "isLocked": false,
+      "linkedName": "Left Long Shot"
+    },
+    {
+      "anchor": {
+        "x": 8.299857368945508,
+        "y": 5.782028487133897
+      },
+      "prevControl": {
+        "x": 7.350914539384845,
+        "y": 6.20747073444843
+      },
+      "nextControl": {
+        "x": 8.485048279594476,
+        "y": 5.699001317578066
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.0,
+        "y": 6.7
+      },
+      "prevControl": {
+        "x": 6.945574618421965,
+        "y": 6.744683307548434
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Left Long Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": 158.26274130886014,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake and Aim Left Long Shot",
+      "waypointRelativePos": 0.3,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Note"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Left Shot Long"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 270.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -166.52684188726894,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -164.02144068289527,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

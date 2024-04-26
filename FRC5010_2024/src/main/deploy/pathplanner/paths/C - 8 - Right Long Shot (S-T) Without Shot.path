@@ -1,0 +1,139 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.6630583307462913,
+        "y": 4.416772500211668
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.108236554436072,
+        "y": 2.663745660824655
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.156891762857601,
+        "y": 0.8145161290322586
+      },
+      "prevControl": {
+        "x": 6.920033119559683,
+        "y": 0.9643388944865785
+      },
+      "nextControl": {
+        "x": 9.006979134328638,
+        "y": 0.7115436175316803
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.100371358150124,
+        "y": 2.853953823648389
+      },
+      "prevControl": {
+        "x": 5.566714210351499,
+        "y": 1.8747191340536533
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Right Long Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9,
+      "rotationDegrees": 168.19747047591338,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": 162.38385117861634,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake, Aim Right Shot Long, and Potentially Terminate",
+      "waypointRelativePos": 0.75,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate Event Marker Trigger"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate if No Note"
+              }
+            },
+            {
+              "type": "sequential",
+              "data": {
+                "commands": [
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "Intake Note"
+                    }
+                  },
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "Aim Right Shot Long"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Terminate if Empty",
+      "waypointRelativePos": 1.55,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate if Empty"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 270.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 139.8828116280445,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 120.84473633364846,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

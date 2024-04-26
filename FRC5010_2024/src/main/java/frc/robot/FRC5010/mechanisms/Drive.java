@@ -187,8 +187,8 @@ public class Drive extends GenericMechanism {
         }
         // Put commands that can be both real and simulation afterwards
 
-        driver.setLeftXAxis(driver.createLeftXAxis().negate().deadzone(0.08).cubed());
-        driver.setLeftYAxis(driver.createLeftYAxis().negate().deadzone(0.08).cubed());
+        driver.setLeftXAxis(driver.createLeftXAxis().negate().deadzone(0.08));
+        driver.setLeftYAxis(driver.createLeftYAxis().negate().deadzone(0.08));
         driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.08));
     }
 

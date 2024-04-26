@@ -61,7 +61,7 @@ public class RobotContainer extends GenericMechanism {
 
 	public enum LogLevel {
 		DEBUG,
-		PRODUCTION
+		COMPETITION
 	}
 
 	public static LogLevel logLevel = LogLevel.DEBUG;
@@ -179,8 +179,8 @@ public class RobotContainer extends GenericMechanism {
 		} else {
 			switch (whichRobot) {
 				case Robots.KIT_BOT_2024: {
-					robot = new KitBot2024(mechVisual, shuffleTab);
-					// robot = new CompBot_2024(mechVisual, shuffleTab);
+					//robot = new KitBot2024(mechVisual, shuffleTab);
+					robot = new CompBot_2024(mechVisual, shuffleTab);
 					break;
 				}
 				case Robots.COMP_BOT_2023: {

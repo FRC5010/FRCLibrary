@@ -4,6 +4,8 @@
 
 package frc.robot.crescendo.commands;
 
+import edu.wpi.first.math.MathUsageId;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -21,6 +23,8 @@ public class AutoIntake extends GenericCommand {
   SwerveDrivetrain drive;
   VisionSystem visionSystem;
   double lastAngleY;
+  double noNoteCounter = 0;
+  private final double NO_NOTE_THRESHOLD = 60;
 
   private final String X_SPEED = "X Speed";
   private final String Y_SPEED = "Y Speed";
@@ -50,6 +54,7 @@ public class AutoIntake extends GenericCommand {
   @Override
   public void init() {
     lastAngleY = visionSystem.getAngleY();
+    noNoteCounter = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -57,6 +62,13 @@ public class AutoIntake extends GenericCommand {
   public void execute() {
     double currentAngleY = visionSystem.getAngleY();
     double currentAngleX = visionSystem.getAngleX();
+    
+
+    if (!visionSystem.isValidTarget()) {
+      noNoteCounter++;
+    } else {
+      noNoteCounter = 0;
+    }
 
     if (currentAngleY > lastAngleY + 5 || !visionSystem.isValidTarget()) {
       currentAngleX = 0;
@@ -64,11 +76,17 @@ public class AutoIntake extends GenericCommand {
     } else {
       lastAngleY = currentAngleY;
     }
+
+    double distanceFactor = Math.abs(currentAngleY / 10.0 + 0.0001);
+    distanceFactor = Math.min(distanceFactor, 1.0);
     
 
     double xSpeed = currentAngleY * SmartDashboard.getNumber(X_SPEED, DEF_X);
-    double ySpeed = currentAngleX * SmartDashboard.getNumber(Y_SPEED, DEF_Y);
-    double turnSpeed = currentAngleX * SmartDashboard.getNumber(ANGLE_SPEED, DEF_ANGLE);
+    double ySpeed = currentAngleX * SmartDashboard.getNumber(Y_SPEED, DEF_Y) / distanceFactor;
+    double turnSpeed = currentAngleX * SmartDashboard.getNumber(ANGLE_SPEED, DEF_ANGLE) * distanceFactor;
+    xSpeed = 1.00 * Math.sin(-Units.degreesToRadians(currentAngleY));
+    ySpeed = 0.35 * Math.sin(Units.degreesToRadians(currentAngleX));
+    turnSpeed = 0.18 * Math.sin(-Units.degreesToRadians(currentAngleX));
 
     // limit power
     xSpeed = xSpeed * drive.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
@@ -92,6 +110,6 @@ public class AutoIntake extends GenericCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return noNoteCounter > NO_NOTE_THRESHOLD;
   }
 }

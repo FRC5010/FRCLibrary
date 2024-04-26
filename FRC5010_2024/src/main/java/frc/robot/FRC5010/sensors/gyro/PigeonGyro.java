@@ -14,6 +14,10 @@ public class PigeonGyro implements GenericGyro {
         pigeon2 = new Pigeon2(valueCAN);
     }
 
+    public Pigeon2 getGyro() {
+        return pigeon2;
+    }
+
     @Override
     public void reset() {
         pigeon2.setYaw(0.0);

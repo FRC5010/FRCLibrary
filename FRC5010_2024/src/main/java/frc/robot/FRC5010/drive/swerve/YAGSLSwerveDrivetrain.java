@@ -4,6 +4,9 @@
 
 package frc.robot.FRC5010.drive.swerve;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,10 +49,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.AutonConstants;
+import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.LogLevel;
 import frc.robot.FRC5010.Vision.VisionSystem;
 import frc.robot.FRC5010.commands.JoystickToSwerve;
 import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
@@ -58,7 +61,6 @@ import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.RobotContainer.LogLevel;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -295,7 +297,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public Command sysIdDriveMotorCommand() {
     return SwerveDriveTest.generateSysIdCommand(
         SwerveDriveTest.setDriveSysIdRoutine(
-            new Config(),
+          new Config(Volts.of(1).per(Seconds.of(1)), Volts.of(12), Seconds.of(10)),
             this, swerveDrive, 12),
         3.0, 5.0, 3.0);
   }
@@ -621,8 +623,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
-    driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
-    driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());
+    // driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
+    // driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());
     //return Commands.run(() -> SwerveDriveTest.centerModules(swerveDrive), this);
     return new JoystickToSwerve(this, leftY, leftX, rightX, isFieldOriented);
   }
@@ -769,12 +771,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 	 * trust global measurements from vision less. This matrix is in the form
 	 * [x, y, theta]ᵀ, with units in meters and radians.
   */
-  private static Vector<N3> VISION_STDS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
-
-  public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance) {
-    double calib = distance * 0.15;
-    VISION_STDS = VecBuilder.fill(calib, calib, Units.degreesToRadians(5 * distance));
-    swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime, VISION_STDS);
+  public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, Vector<N3> stdVector) { 
+    swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime, stdVector);
   }
 
   public Field2d getField2d() {

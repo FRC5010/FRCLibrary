@@ -1,0 +1,134 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.893902768832323,
+        "y": 6.991470997450923
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.905238675432708,
+        "y": 7.256104941897384
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.086334375793752,
+        "y": 7.434992453690264
+      },
+      "prevControl": {
+        "x": 7.0863343757937525,
+        "y": 7.434992453690264
+      },
+      "nextControl": {
+        "x": 9.086334375793752,
+        "y": 7.434992453690264
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.0,
+        "y": 6.7
+      },
+      "prevControl": {
+        "x": 7.277656006204868,
+        "y": 7.01104715111216
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Left Long Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 179.85419185986757,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake and Potentially Terminate",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate Event Marker Trigger"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate if No Note"
+              }
+            },
+            {
+              "type": "sequential",
+              "data": {
+                "commands": [
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "Intake Note"
+                    }
+                  },
+                  {
+                    "type": "named",
+                    "data": {
+                      "name": "Aim Left Shot Long"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Terminate if Empty",
+      "waypointRelativePos": 1.7,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Terminate if Empty"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 270.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -157.65032886805085,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -146.87929701093958,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

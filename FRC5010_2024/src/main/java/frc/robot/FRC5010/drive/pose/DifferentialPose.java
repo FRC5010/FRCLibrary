@@ -4,10 +4,12 @@
 
 package frc.robot.FRC5010.drive.pose;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
@@ -39,7 +41,7 @@ public class DifferentialPose extends GenericPose {
         rightEncoder.reset();
     }
 
-    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance) {
+    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, Vector<N3> stdVector) {
         //poseEstimator.resetPosition(robotPose, robotPose.getRotation());
         // m_poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
     }

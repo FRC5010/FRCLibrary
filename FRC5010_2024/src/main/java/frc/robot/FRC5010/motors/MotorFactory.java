@@ -15,6 +15,7 @@ public class MotorFactory {
     public static MotorController5010 NEO(int port){
         return new NEO(port);
     }
+
     public static MotorController5010 NEO(int port, int currentLimit){
         return new NEO(port, currentLimit);
     }

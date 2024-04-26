@@ -33,10 +33,12 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.FRC5010.arch.GenericSubsystem;
 import frc.robot.FRC5010.motors.MotorController5010;
 import frc.robot.FRC5010.motors.SystemIdentification;
 import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
+import frc.robot.RobotContainer.LogLevel;
 
 public class PivotSubsystem extends GenericSubsystem {
   MotorController5010 pivotMotor;
@@ -63,7 +65,7 @@ public class PivotSubsystem extends GenericSubsystem {
   private final double PIVOT_LENGTH = Units.inchesToMeters(19);
   private final double PIVOT_MASS = Units.lbsToKilograms(22);
 
-  private final double MIN_PIVOT_POSITION = -11; // Degrees
+  private final static double MIN_PIVOT_POSITION = -9.83; // Degrees
   private final double PIVOT_START_ANGLE = MIN_PIVOT_POSITION;
   private final double PIVOT_END_ANGLE = 90;
   private final String PIVOT_kS = "PivotkS";
@@ -80,6 +82,16 @@ public class PivotSubsystem extends GenericSubsystem {
   private final String MICRO_ADJUST = "Pivot Micro Adjustment";
   private final String SLOWDOWN = "Slowdown";
 
+  private double last_kP = 0.0;
+  private double last_kI = 0.0;
+  private double last_kD = 0.0;
+  private double last_kG = 0.0;
+  private double last_kV = 0.0;
+  private double last_kA = 0.0;
+  private double last_IZONE = 0.0;
+  
+  
+
   private static enum vals {
     REFERENCE, MOTOR_SPEED, RUN_SPEED, RUN_REF, FF_VOLTAGE , ENCODER, AT_TARGET, 
     LEFT_LIMIT_HIT, RIGHT_LIMIT_HIT
@@ -92,16 +104,20 @@ public class PivotSubsystem extends GenericSubsystem {
 
   private final double DEFAULT_TOLERANCE = 0.5;
   private final String TOLERANCE = "Pivot Tolerance";
+  private final String I_ZONE = "kI ZONE";
 
-  public final double HOME_LEVEL = MIN_PIVOT_POSITION;
-  public final double AMP_LEVEL = 72;
-  public final double TRAP_LEVEL = 75;
-  public final double LOW_SHUTTLE_LEVEL = 60;
-  public final double HIGH_SHUTTLE_LEVEL = 0;
-  public final double INTAKE_LEVEL = HOME_LEVEL; // TODO: Make accurate
-  public final double PODIUM_SHOT = 12.3;
+  public final static double HOME_LEVEL = MIN_PIVOT_POSITION;
+  public final static double AMP_LEVEL = 79;
+  public final static double TRAP_LEVEL = 75;
+  public final static double LOW_SHUTTLE_LEVEL = 60;
+  public final static double HIGH_SHUTTLE_LEVEL = MIN_PIVOT_POSITION;
+  
+  public final static double INTAKE_LEVEL = MIN_PIVOT_POSITION; // TODO: Make accurate -10
+  public final static double PODIUM_SHOT = 12.3;
+  public final static double MAX_INTAKE_ANGLE = 7.0;
   
   private double referencePosition = HOME_LEVEL;
+  private double last_reference = -11;
 
   private double previousError = 0;
   private double previousTime = 0;
@@ -109,14 +125,15 @@ public class PivotSubsystem extends GenericSubsystem {
   /** Creates a new Pivot. */
   public PivotSubsystem(MotorController5010 pivot, Mechanism2d mechSim) {
 
-    values.declare(PIVOT_kG, RobotBase.isReal() ? 0.57 : 6.05 ); 
+    values.declare(PIVOT_kG, RobotBase.isReal() ? 0.33 : 6.05 ); 
     values.declare(PIVOT_kV, RobotBase.isReal() ? 0.0 : 0.01);
-    values.declare(PIVOT_kP, RobotBase.isReal() ? 0.015 : 0.01);
-    values.declare(PIVOT_kD, RobotBase.isReal() ? 0.0000 : 0.003);
+    values.declare(PIVOT_kP, RobotBase.isReal() ? 0.03 : 0.01);
+    values.declare(PIVOT_kD, RobotBase.isReal() ? 0.1 : 0.003);
     values.declare(PIVOT_kS, RobotBase.isReal() ? 0.22 : 0.0);
-    values.declare(PIVOT_kI, 0.00002);
+    values.declare(I_ZONE, 3.0);
+    values.declare(PIVOT_kI, 0.000025);
     values.declare(PIVOT_kA, 0.0);
-    values.declare(MICRO_ADJUST, 10.0);
+    values.declare(MICRO_ADJUST, 0.1);
     values.declare(SLOWDOWN, 0.1);
     values.declare(vals.FF_VOLTAGE.name(), 0.0);
     values.declare(vals.RUN_REF.name(), false);
@@ -128,6 +145,7 @@ public class PivotSubsystem extends GenericSubsystem {
     values.declare(vals.LEFT_LIMIT_HIT.name(), false);
     values.declare(vals.RIGHT_LIMIT_HIT.name(), false);
     values.declare(TOLERANCE, DEFAULT_TOLERANCE);
+
     
 
     interpolationTree = new InterpolatingDoubleTreeMap();
@@ -146,9 +164,12 @@ public class PivotSubsystem extends GenericSubsystem {
     pivotPID.setPositionPIDWrappingMaxInput(360);
     
 
-    pivotPID.setP(0.0);
-    pivotPID.setI(0);
-    pivotPID.setD(0);
+    pivotPID.setP(values.getDouble(PIVOT_kP));
+    pivotPID.setD(values.getDouble(PIVOT_kD));
+    pivotPID.setI(values.getDouble(PIVOT_kI));
+    pivotPID.setIZone(values.getDouble(I_ZONE));
+
+    
     trapState = new State(getPivotPosition(), 0);
     robotSim = mechSim;
 
@@ -239,10 +260,24 @@ public class PivotSubsystem extends GenericSubsystem {
       previousError = currentError;
       previousTime = currentTime;
     } else {
-      pivotPID.setP(values.getDouble(PIVOT_kP));
-      pivotPID.setD(values.getDouble(PIVOT_kD));
-      pivotPID.setI(values.getDouble(PIVOT_kI));
-      pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
+      if (RobotContainer.getLoggingLevel() == LogLevel.DEBUG) {
+        if (last_kP != values.getDouble(PIVOT_kP))
+          pivotPID.setP(values.getDouble(PIVOT_kP));
+          last_kP = values.getDouble(PIVOT_kP);
+        if (last_kD != values.getDouble(PIVOT_kD))
+          pivotPID.setD(values.getDouble(PIVOT_kD));
+          last_kD = values.getDouble(PIVOT_kD);
+        if (last_kI != values.getDouble(PIVOT_kI))
+          pivotPID.setI(values.getDouble(PIVOT_kI));
+          last_kI = values.getDouble(PIVOT_kI);
+        if (last_IZONE != values.getDouble(I_ZONE))
+          pivotPID.setIZone(values.getDouble(I_ZONE));
+          last_IZONE = values.getDouble(I_ZONE);
+      }
+      if (last_reference != referencePosition) {
+        pivotPID.setReference(referencePosition, CANSparkBase.ControlType.kPosition, 0, feedForward, ArbFFUnits.kVoltage);
+        last_reference = referencePosition;
+      }
     }
     values.set(vals.RUN_REF.name(), true);
     values.set(vals.RUN_SPEED.name(), false);

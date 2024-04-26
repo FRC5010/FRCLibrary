@@ -4,7 +4,9 @@
 
 package frc.robot.FRC5010.drive.pose;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N3;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
@@ -19,7 +21,7 @@ public class SimulatedPose extends GenericPose {
     }
 
     @Override
-    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, double distance) {
+    public void updateVisionMeasurements(Pose2d robotPose, double imageCaptureTime, Vector<N3> stdVector) {
         pose = robotPose;
     }
 
