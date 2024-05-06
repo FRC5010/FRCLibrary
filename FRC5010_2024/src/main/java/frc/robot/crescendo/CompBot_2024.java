@@ -92,6 +92,7 @@ public class CompBot_2024 extends GenericMechanism {
 	private PowerDistribution5010 powerDistribution5010;
 
 	Supplier<Command> autoIntake;
+	Supplier<Command> autoIntakeTeleop;
 	Supplier<Command> autoIntakeAtMax;
 	Supplier<Command> runIntake;
 	Supplier<Command> runIntakeWithPivotAtMax;
@@ -234,6 +235,12 @@ public class CompBot_2024 extends GenericMechanism {
 				drive.getDrivetrain());
 
 		autoIntake = () -> runIntake
+				.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).raceWith(
+						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
+								noteCamera))
+				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
+
+		autoIntakeTeleop = () -> runIntake
 				.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).deadlineWith(
 						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
 								noteCamera))
@@ -556,6 +563,7 @@ public class CompBot_2024 extends GenericMechanism {
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enablePivot()
 				);
+
 		operator.createRightBumper().whileTrue(
 				Commands.run(() -> shooterSubsystem.setShooterReference(Constants.Physical.MANUAL_SHOOTING_SPEED,
 						Constants.Physical.MANUAL_SHOOTING_SPEED)).finallyDo(() -> {
@@ -740,6 +748,8 @@ public class CompBot_2024 extends GenericMechanism {
 				.enableSpinup()
 				.enablePivot()
 				.enableYaw());
+
+		NamedCommands.registerCommand("Terminate if Empty V2", null);
 
 		// NamedCommands.registerCommand("Pivot Shuttle",
 		// spinIntake.get().alongWith(Commands.runOnce(() -> {

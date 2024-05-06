@@ -9,6 +9,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,7 +71,10 @@ public class AutoIntake extends GenericCommand {
     if (currentAngleY > lastAngleY + 5 || !visionSystem.isValidTarget()) {
       currentAngleX = 0;
       currentAngleY = 0;
-      noNoteCounter++;
+      if (DriverStation.isAutonomous()) {
+        noNoteCounter++;
+      }
+      
     } else {
       lastAngleY = currentAngleY;
       noNoteCounter = 0;
