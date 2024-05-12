@@ -17,13 +17,13 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
-import frc.robot.FRC5010.arch.GenericSubsystem;
-import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.motors.PIDController5010;
-import frc.robot.FRC5010.motors.SystemIdentification;
-import frc.robot.FRC5010.motors.PIDController5010.PIDControlType;
-import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
-import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.PIDController5010;
+import org.frc5010.common.motors.SystemIdentification;
+import org.frc5010.common.motors.PIDController5010.PIDControlType;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
+import org.frc5010.common.sensors.encoder.SimulatedEncoder;
 
 public class IntakeSubsystem extends GenericSubsystem {
   private MotorController5010 topIntakeMotor;

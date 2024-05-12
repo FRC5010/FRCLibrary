@@ -11,6 +11,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.frc5010.common.arch.GenericMechanism;
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.arch.PersistedEnums;
+import org.frc5010.common.arch.WpiNetworkTableValuesHelper;
+import org.frc5010.common.constants.RobotConstantsDef;
+import org.frc5010.common.robots.BabySwerve;
+import org.frc5010.common.robots.CurtsLaptopSimulator;
+import org.frc5010.common.robots.DefaultRobot;
+import org.frc5010.common.robots.PracticeBot;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.subsystems.Color;
+import org.frc5010.common.telemetery.WpiDataLogging;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -23,20 +36,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FRC5010.arch.GenericMechanism;
-import frc.robot.FRC5010.arch.Persisted;
-import frc.robot.FRC5010.arch.PersistedEnums;
-import frc.robot.FRC5010.arch.WpiNetworkTableValuesHelper;
-import frc.robot.FRC5010.constants.RobotConstantsDef;
-import frc.robot.FRC5010.robots.BabySwerve;
-import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
-import frc.robot.FRC5010.robots.DefaultRobot;
-import frc.robot.FRC5010.robots.PracticeBot;
-import frc.robot.FRC5010.sensors.Controller;
-import frc.robot.FRC5010.subsystems.Color;
-import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.CompBot_2023_T1G3R;
-import frc.robot.chargedup.KitBot2024;
 import frc.robot.crescendo.CompBot_2024;
 
 /**

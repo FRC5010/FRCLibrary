@@ -6,7 +6,7 @@ package frc.robot.crescendo.commands;
 
 import java.util.function.DoubleSupplier;
 
-import frc.robot.FRC5010.arch.GenericCommand;
+import org.frc5010.common.arch.GenericCommand;
 import frc.robot.crescendo.ClimbSubsystem;
 
 public class RunClimb extends GenericCommand {

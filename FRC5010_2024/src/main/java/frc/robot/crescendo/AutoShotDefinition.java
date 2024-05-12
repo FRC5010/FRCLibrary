@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.FRC5010.Vision.VisionSystem.Rotation;
+import org.frc5010.common.vision.VisionSystem.Rotation;
 
 /** Add your docs here. */
 public enum AutoShotDefinition {

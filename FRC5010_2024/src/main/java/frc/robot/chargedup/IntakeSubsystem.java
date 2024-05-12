@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
-import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
+import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.hardware.MotorModelConstants;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
 
 public class IntakeSubsystem extends SubsystemBase {
   private String intakeState;

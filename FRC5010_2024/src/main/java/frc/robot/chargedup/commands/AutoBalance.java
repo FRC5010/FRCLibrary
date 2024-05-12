@@ -8,9 +8,9 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.FRC5010.arch.GenericCommand;
-import frc.robot.FRC5010.drive.GenericDrivetrain;
-import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import org.frc5010.common.arch.GenericCommand;
+import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.sensors.gyro.GenericGyro;
 
 public class AutoBalance extends GenericCommand {
   /** Creates a new AutoBalance. */

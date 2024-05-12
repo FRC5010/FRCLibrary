@@ -4,7 +4,7 @@
 
 package frc.robot.chargedup.commands;
 
-import frc.robot.FRC5010.arch.GenericCommand;
+import org.frc5010.common.arch.GenericCommand;
 import frc.robot.chargedup.PivotSubsystem;
 
 public class HomePivot extends GenericCommand {

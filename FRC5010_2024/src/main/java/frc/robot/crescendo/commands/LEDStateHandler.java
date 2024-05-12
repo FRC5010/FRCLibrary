@@ -7,8 +7,8 @@ package frc.robot.crescendo.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FRC5010.subsystems.Color;
-import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
+import org.frc5010.common.subsystems.Color;
+import org.frc5010.common.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 
 public class LEDStateHandler extends Command {
