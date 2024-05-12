@@ -191,8 +191,10 @@ public class FeederSubsystem extends GenericSubsystem {
         }
         break;
       case Shooting:
-        if (!isStopBeamBroken()) {
+      if (!isStopBeamBroken() && !isDetectBeamBroken()) {
           noteState = NoteState.Empty;
+        } else if (!isStopBeamBroken() && isDetectBeamBroken()) {
+          noteState = NoteState.Loaded;
         }
     }
     if (ReadyToShoot) {

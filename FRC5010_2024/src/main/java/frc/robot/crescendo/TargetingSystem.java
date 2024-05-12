@@ -68,7 +68,7 @@ public class TargetingSystem extends GenericSubsystem {
     private final String PIVOT_ANGLE = "Pivot Angle";
 
     private final double DEFAULT_TOLERANCE = 0.02;
-    private final double SHOOTER_ANGLE_OFFSET = 4.0;
+    private final double SHOOTER_ANGLE_OFFSET = 0.0;
     private final double DEFAULT_MOVING_TOLERANCE = 0.04;
     private final double INITIAL_TIME_GUESS = 0.5;
     private final double MINIMUM_VELOCITY_THRESHOLD = 0.1;
@@ -139,10 +139,10 @@ public class TargetingSystem extends GenericSubsystem {
         pivotInterpolation.put(3.504684604, 20.67407951);
         pivotInterpolation.put(3.765572428, 23.18393135);
         pivotInterpolation.put(3.991071211, 24.24553108);
-        pivotInterpolation.put(4.241035167, 25.89009056);// 25.91
-        pivotInterpolation.put(4.494075064, 27.17321701);
-        pivotInterpolation.put(4.752376138, 28.12282753);
-        pivotInterpolation.put(5.00374855, 28.88491821);
+        pivotInterpolation.put(4.241035167, 25.1);// 25.91,  25.89009056
+        pivotInterpolation.put(4.494075064, 26.5); // 27.17321701
+        pivotInterpolation.put(4.60, 26.85); // 28.12282753 X:4.752376138
+        // pivotInterpolation.put(5.00374855, 28.88491821);
 
         shuttlePivotInterpolation.put(5.1, -10.0);
         shuttlePivotInterpolation.put(15.0, 0.0);

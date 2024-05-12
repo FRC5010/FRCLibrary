@@ -9,6 +9,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -64,18 +66,21 @@ public class AutoIntake extends GenericCommand {
     double currentAngleX = visionSystem.getAngleX();
     
 
-    if (!visionSystem.isValidTarget()) {
-      noNoteCounter++;
-    } else {
-      noNoteCounter = 0;
-    }
+
 
     if (currentAngleY > lastAngleY + 5 || !visionSystem.isValidTarget()) {
       currentAngleX = 0;
       currentAngleY = 0;
+      if (DriverStation.isAutonomous()) {
+        noNoteCounter++;
+      }
+      
     } else {
       lastAngleY = currentAngleY;
+      noNoteCounter = 0;
     }
+
+    SmartDashboard.putNumber("No Note Counter", noNoteCounter);
 
     double distanceFactor = Math.abs(currentAngleY / 10.0 + 0.0001);
     distanceFactor = Math.min(distanceFactor, 1.0);
@@ -84,7 +89,7 @@ public class AutoIntake extends GenericCommand {
     double xSpeed = currentAngleY * SmartDashboard.getNumber(X_SPEED, DEF_X);
     double ySpeed = currentAngleX * SmartDashboard.getNumber(Y_SPEED, DEF_Y) / distanceFactor;
     double turnSpeed = currentAngleX * SmartDashboard.getNumber(ANGLE_SPEED, DEF_ANGLE) * distanceFactor;
-    xSpeed = 1.00 * Math.sin(-Units.degreesToRadians(currentAngleY));
+    xSpeed = 1.10 * Math.sin(-Units.degreesToRadians(currentAngleY));
     ySpeed = 0.35 * Math.sin(Units.degreesToRadians(currentAngleX));
     turnSpeed = 0.18 * Math.sin(-Units.degreesToRadians(currentAngleX));
 
@@ -105,8 +110,9 @@ public class AutoIntake extends GenericCommand {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void stop(boolean interrupted) {}
-
+  public void stop(boolean interrupted) {
+    SmartDashboard.putNumber("No Note Counter", 0.0);
+  }
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {

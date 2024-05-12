@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.29,
-        "y": 6.9
+        "x": 5.0,
+        "y": 6.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.198198550243255,
-        "y": 6.689787225728298
+        "x": 5.310173697270472,
+        "y": 6.640452511674254
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Long Shot"
     },
     {
       "anchor": {
-        "x": 7.2243606025673595,
-        "y": 6.452980598268889
+        "x": 6.740880404837734,
+        "y": 6.275375627674332
       },
       "prevControl": {
-        "x": 6.237666321486489,
-        "y": 6.699654168539105
+        "x": 6.178464664621638,
+        "y": 6.413512827025654
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,8 +38,8 @@
     "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 135.0000000000001,
+    "velocity": 1.5,
+    "rotation": 160.1447856306789,
     "rotateFast": false
   },
   "reversed": false,

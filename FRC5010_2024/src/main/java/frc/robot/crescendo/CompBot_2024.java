@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -91,6 +92,7 @@ public class CompBot_2024 extends GenericMechanism {
 	private PowerDistribution5010 powerDistribution5010;
 
 	Supplier<Command> autoIntake;
+	Supplier<Command> autoIntakeTeleop;
 	Supplier<Command> autoIntakeAtMax;
 	Supplier<Command> runIntake;
 	Supplier<Command> runIntakeWithPivotAtMax;
@@ -233,6 +235,12 @@ public class CompBot_2024 extends GenericMechanism {
 				drive.getDrivetrain());
 
 		autoIntake = () -> runIntake
+				.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).raceWith(
+						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
+								noteCamera))
+				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
+
+		autoIntakeTeleop = () -> runIntake
 				.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).deadlineWith(
 						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
 								noteCamera))
@@ -275,7 +283,7 @@ public class CompBot_2024 extends GenericMechanism {
 				});
 
 		spinIntake = () -> Commands.startEnd(
-				() -> intakeSubsystem.setReference(-1000, -1000),
+				() -> intakeSubsystem.setReference(-500, -500),
 				() -> intakeSubsystem.setReference(0, 0)).withTimeout(1.5);
 
 		blindShot = () -> Commands.run(() -> feederSubsystem.feederStateMachine(-1.0))
@@ -379,17 +387,20 @@ public class CompBot_2024 extends GenericMechanism {
 						&& climbSubsystem.rightIsAtMin(-0.1))
 
 		));
+		JoystickButton subwooferButton = operator.createXButton();
+
 		// Podium Pivot
-		operator.createXButton().onTrue(Commands.runOnce(
+		subwooferButton.onTrue(Commands.runOnce(
 				() -> {
+					SmartDashboard.putBoolean("X Button", true);
 					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
 					shooterSubsystem.setShooterReference(Constants.Physical.SUBWOOFER_SHOT,
 							Constants.Physical.SUBWOOFER_SHOT);
-				}, pivotSubsystem)).onFalse(Commands.runOnce(() -> {
+				}, pivotSubsystem)).onFalse(Commands.waitSeconds(0.5).beforeStarting(() -> SmartDashboard.putBoolean("X Button", false)).andThen(Commands.runOnce(() -> {
 					shooterSubsystem.setShooterReference(0, 0);
 					feederSubsystem.setFeederReference(0);
 					pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
-				}));
+				}).onlyIf(() -> !subwooferButton.getAsBoolean())));
 
 		// Amp Pivot
 		operator.createYButton().whileTrue(Commands
@@ -423,7 +434,7 @@ public class CompBot_2024 extends GenericMechanism {
 							intakeSubsystem.setReference(0, 0);
 						}));
 		// Feed Note into Shooter
-		operator.createLeftBumper().whileTrue(runFeeder.get());
+		operator.createLeftBumper().whileTrue(runFeeder.get().beforeStarting(Commands.runOnce(() -> SmartDashboard.putBoolean("Left Bumper", true)))).onFalse(Commands.runOnce(() -> SmartDashboard.putBoolean("Left Bumper", false)));
 
 		// Shooter micro adjust
 		operator.createUpPovButton().onTrue(spinIntake.get());
@@ -545,10 +556,22 @@ public class CompBot_2024 extends GenericMechanism {
 		driver.createDownPovButton()
 				.onTrue(zeroClimb.get());
 
-		operator.createRightBumper().onTrue(runIntake.get());
-		operator.createLeftBumper()
-				.whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), false, false).alongWith(spinIntake.get().withTimeout(0.25)));
+
+		operator.createXButton().onTrue(autoIntake.get());		
+		operator.createBButton().onTrue(new PredefinedAutoShot(
+				AutoShotDefinition.RIGHT_SHOT_MID.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+				.enablePivot()
+				);
+
+		operator.createRightBumper().whileTrue(
+				Commands.run(() -> shooterSubsystem.setShooterReference(Constants.Physical.MANUAL_SHOOTING_SPEED,
+						Constants.Physical.MANUAL_SHOOTING_SPEED)).finallyDo(() -> {
+							shooterSubsystem.setShooterReference(0, 0);
+							intakeSubsystem.setReference(0, 0);
+						}));
+		// Feed Note into Shooter
+		operator.createLeftBumper().whileTrue(runFeeder.get().beforeStarting(Commands.runOnce(() -> SmartDashboard.putBoolean("Left Bumper", true)))).onFalse(Commands.runOnce(() -> SmartDashboard.putBoolean("Left Bumper", false)));
 	}
 
 	@Override
@@ -718,6 +741,15 @@ public class CompBot_2024 extends GenericMechanism {
 				.enableSpinup()
 				.enablePivot()
 				.enableYaw());
+
+		NamedCommands.registerCommand("Aim Right Shot Mid", new PredefinedAutoShot(
+				AutoShotDefinition.RIGHT_SHOT_MID.getPose(RobotContainer.getAlliance()), targetingSystem,
+				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
+				.enableSpinup()
+				.enablePivot()
+				.enableYaw());
+
+		NamedCommands.registerCommand("Terminate if Empty V2", null);
 
 		// NamedCommands.registerCommand("Pivot Shuttle",
 		// spinIntake.get().alongWith(Commands.runOnce(() -> {

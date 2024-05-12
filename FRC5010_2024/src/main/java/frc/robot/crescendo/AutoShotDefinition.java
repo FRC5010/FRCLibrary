@@ -28,7 +28,8 @@ public enum AutoShotDefinition {
     LEFT_SPEAKER_SHOT(1.7, 6.30),
     RIGHT_SHOT_LONG(3.10, 2.85),
     SUBWOOFER_SHOT(1.40, 5.55, 180),
-    NOTE_2(2.60, 6.90);
+    NOTE_2(2.60, 6.90),
+    RIGHT_SHOT_MID(1.66, 3.38);
     
 
     private final double x;
