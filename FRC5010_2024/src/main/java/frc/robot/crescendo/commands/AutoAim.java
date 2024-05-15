@@ -4,27 +4,26 @@
 
 package frc.robot.crescendo.commands;
 
-import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
 import org.frc5010.common.arch.GenericCommand;
+import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.commands.JoystickToSwerve;
 import org.frc5010.common.drive.pose.DrivetrainPoseEstimator;
 import org.frc5010.common.drive.swerve.SwerveDrivetrain;
 import org.frc5010.common.mechanisms.Drive;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.sensors.gyro.GenericGyro;
+
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.LogLevel;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.FeederSubsystem;
@@ -123,7 +122,7 @@ public class AutoAim extends GenericCommand {
   public void execute() {
 
     if (Math.abs(robotPose.getCurrentPose().getX() - targetingSystem.getCurrentTarget().getX()) > 5.0) {
-      targetingSystem.setTarget(TargetingSystem.getShuttleTarget(RobotContainer.getAlliance()));
+      targetingSystem.setTarget(TargetingSystem.getShuttleTarget(GenericRobot.getAlliance()));
     }
 
     if (targetingSystem.isAtTargetYaw() && endTime == 0.0) {
@@ -216,7 +215,7 @@ public class AutoAim extends GenericCommand {
     shooterSubsystem.setShooterReference(0, 0);
     targetingSystem.setAccountForMovement(false);
     targetingSystem.setInterpolatingYaw(false);
-    targetingSystem.setTarget(TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()));
+    targetingSystem.setTarget(TargetingSystem.getSpeakerTarget(GenericRobot.getAlliance()));
     endTime = 0.0;
   }
 
