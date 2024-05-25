@@ -30,6 +30,7 @@ import org.frc5010.common.vision.VisionLimeLight;
 import org.frc5010.common.vision.VisionMultiCam;
 import org.frc5010.common.vision.VisionPhotonAprilTagTarget;
 import org.frc5010.common.vision.VisionSystem.Rotation;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -37,6 +38,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -579,16 +581,16 @@ public class CompBot_2024 extends GenericRobot {
 			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 			// drive.getDrivetrain().getPoseEstimator()); // Used to be
 			// 28, 20
-			// visionSystem.addPhotonCamera("Right Camera", 3,
-			// new Transform3d(
-			// new Translation3d(Units.inchesToMeters(11.59),
-			// Units.inchesToMeters(-4.682), // -.12
-			// Units.inchesToMeters(8.256)),
-			// new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
-			// new Rotation3d(0, 0,
-			// Units.degreesToRadians(-25)))), // -20
-			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-			// drive.getDrivetrain().getPoseEstimator());
+			visionSystem.addPhotonCamera("Right Camera", 3,
+			new Transform3d(
+			new Translation3d(Units.inchesToMeters(11.59),
+			Units.inchesToMeters(-4.682), // -.12
+			Units.inchesToMeters(8.256)),
+			new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
+			new Rotation3d(0, 0,
+			Units.degreesToRadians(-25)))), // -20
+			PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+			drive.getDrivetrain().getPoseEstimator());
 			// visionSystem.addPhotonCamera("Left Camera", 2,
 			// new Transform3d(
 			// new Translation3d(Units.inchesToMeters(11.59),
