@@ -63,6 +63,13 @@ public class ChargedUpMech extends GenericMechanism {
 				1, 8,
 				() -> elevatorSubsystem.getExtendPosition(), mechVisual);
 
+		this.intakeSubsystem = new IntakeSubsystem(
+				MotorFactory.NEO(19),
+				MotorFactory.NEO(18),
+				new MotorModelConstants(0, 0, 0),
+				new GenericPID(0.003, 0, 0),
+				new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1),
+				robotMechVisual);
 		this.buttonOperator = buttonOperator;
 		this.ledSubsystem = ledSubsystem;
 		initRealOrSim();
@@ -162,7 +169,6 @@ public class ChargedUpMech extends GenericMechanism {
 					speedLimit = kElevatorMaxSpeedLimit;
 				}));
 
-		if (RobotBase.isSimulation()) {
 			buttonOperator.getButton(8).onTrue(new InstantCommand(() -> {
 				intakeSubsystem.setIntakeCone();
 			}, intakeSubsystem));
@@ -194,7 +200,6 @@ public class ChargedUpMech extends GenericMechanism {
 					.whileTrue(new IntakeSpin(intakeSubsystem,
 							() -> (operator.getRightTrigger() * -1)));
 
-		}
 		buttonOperator.setYAxis(buttonOperator.createYAxis().negate().deadzone(0.05));
 		buttonOperator.setXAxis(buttonOperator.createXAxis().deadzone(0.05)); // The deadzone isnt technically
 
@@ -292,8 +297,10 @@ public class ChargedUpMech extends GenericMechanism {
 
 	@Override
 	public void initAutoCommands() {
-		// NamedCommands.registerCommand("Pivot to Ground", new PivotElevator(pivotSubsystem, ElevatorLevel.ground));
-		// NamedCommands.registerCommand("Pivot to High", new PivotElevator(pivotSubsystem, ElevatorLevel.high));
+		// NamedCommands.registerCommand("Pivot to Ground", new
+		// PivotElevator(pivotSubsystem, ElevatorLevel.ground));
+		// NamedCommands.registerCommand("Pivot to High", new
+		// PivotElevator(pivotSubsystem, ElevatorLevel.high));
 		// NamedCommands.registerCommand("Auto Note Pickup", new InstantCommand(() -> {
 		// }));
 		// NamedCommands.registerCommand("Auto Note Shoot", new InstantCommand(() -> {
