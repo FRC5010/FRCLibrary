@@ -83,6 +83,7 @@ public class CompBot_2024 extends GenericRobot {
 	private LEDStripSegment allLEDs;
 	private TargetingSystem targetingSystem;
 	private PowerDistribution5010 powerDistribution5010;
+	private boolean neverEnabled = true;
 
 	Supplier<Command> autoIntake;
 	Supplier<Command> autoIntakeTeleop;
@@ -611,7 +612,7 @@ public class CompBot_2024 extends GenericRobot {
 			noteCamera.setUpdateValues(true);
 			visionSystem.addLimeLightCamera("top", 5, () -> gyro);
 			VisionLimeLight topLimeLight = ((VisionLimeLight) visionSystem.getCamera("top"));
-			topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() ? topLimeLight.getRobotPoseEstimateM1()
+			topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() && neverEnabled ? topLimeLight.getRobotPoseEstimateM1()
 					: topLimeLight.getRobotPoseEstimateM2());
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
@@ -832,6 +833,7 @@ public class CompBot_2024 extends GenericRobot {
 
 	@Override
 	public Command generateAutoCommand(Command autoCommand) {
+		neverEnabled = false;
 		return drive.generateAutoCommand(autoCommand);
 	}
 }
