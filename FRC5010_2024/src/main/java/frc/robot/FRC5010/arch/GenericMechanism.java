@@ -4,11 +4,14 @@
 
 package frc.robot.FRC5010.arch;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FRC5010.sensors.Controller;
 
@@ -25,6 +28,8 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
     protected ShuffleboardTab shuffleTab;
     protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
     protected String logPrefix = getClass().getSimpleName();
+    private SendableChooser<Command> command;
+
 
     public GenericMechanism(String tabName) {
         this.mechVisual = new Mechanism2d(1, 2);
@@ -79,9 +84,16 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
 
     }
 
-    public abstract void initAutoCommands();
+    public void initAutoCommands() {
+        command = AutoBuilder.buildAutoChooser();
+		if (null != command) {
+			shuffleTab.add("Auto Modes", command).withSize(2, 1);
+		}
+    }
 
-    public abstract Command generateAutoCommand(Command autoCommand);
+    public Command generateAutoCommand(Command autoCommand) {
+        return generateAutoCommand(command.getSelected());
+    };
 
     public void disabledBehavior() {
 

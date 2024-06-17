@@ -832,6 +832,7 @@ public class CompBot_2024 extends GenericMechanism {
 				Commands.idle().until(() -> terminatePath).finallyDo(() -> terminatePath = false));
 		NamedCommands.registerCommand("Terminate Event Marker Trigger", Commands.idle().until(() -> terminatePath));
 
+		super.initAutoCommands();
 	}
 
 	public void disabledBehavior() {
@@ -841,6 +842,6 @@ public class CompBot_2024 extends GenericMechanism {
 	@Override
 	public Command generateAutoCommand(Command autoCommand) {
 		neverEnabled = false;
-		return drive.generateAutoCommand(autoCommand);
+		return drive.generateAutoCommand(super.generateAutoCommand(autoCommand));
 	}
 }

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FRC5010.arch.GenericMechanism;
 import frc.robot.FRC5010.arch.Persisted;
 import frc.robot.FRC5010.arch.PersistedEnums;
@@ -51,7 +52,6 @@ import frc.robot.crescendo.CompBot_2024;
  */
 public class RobotContainer extends GenericMechanism {
 	// The robot's subsystems and commands are defined here...
-	private SendableChooser<Command> command;
 	private Controller driver;
 	private Controller operator;
 	private static Alliance alliance;
@@ -282,8 +282,7 @@ public class RobotContainer extends GenericMechanism {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-
-		return generateAutoCommand(command.getSelected());
+		return robot.generateAutoCommand(Commands.none());
 	}
 
 	@Override
@@ -291,11 +290,6 @@ public class RobotContainer extends GenericMechanism {
 		robot.initAutoCommands();
 
 		// TODO: Figure out Pathplanner Warmup Command
-		
-		command = AutoBuilder.buildAutoChooser();
-		if (null != command) {
-			shuffleTab.add("Auto Modes", command).withSize(2, 1);
-		}
 
 	}
 
@@ -318,10 +312,5 @@ public class RobotContainer extends GenericMechanism {
 
 	public void disabledBehavior() {
 		robot.disabledBehavior();
-	}
-
-	@Override
-	public Command generateAutoCommand(Command autoCommand) {
-		return robot.generateAutoCommand(autoCommand);
 	}
 }
