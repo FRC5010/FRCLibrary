@@ -6,6 +6,9 @@ package frc.robot.FRC5010.robots;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,14 +23,18 @@ public class MaxDemoBoard extends GenericMechanism {
   private MotorController5010 kraken1;
   private MotorController5010 neo1;
   private MotorController5010 neo2;
+  private final DoubleSolenoid m_doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 2);
 
   public MaxDemoBoard(Mechanism2d visual, ShuffleboardTab displayTab) {
     super(visual, displayTab);
     
     // Motor Setup
     kraken1 = MotorFactory.KrakenX60(2);
-    neo1 = MotorFactory.NEO(1);
+    neo1 = MotorFactory.NEO(5);
     neo2 = MotorFactory.NEO(3);
+
+    // Double Solenoid Setup
+    m_doubleSolenoid.set(DoubleSolenoid.Value.kForward);
   }
 
   @Override
@@ -39,6 +46,7 @@ public class MaxDemoBoard extends GenericMechanism {
     driver.createAButton().whileTrue(Commands.run(() -> kraken1.set(0.25)).finallyDo(() -> kraken1.set(0.0)));
     driver.createBButton().whileTrue(Commands.run(() -> neo1.set(0.25)).finallyDo(() -> neo1.set(0.0)));
     driver.createYButton().whileTrue(Commands.run(() -> neo2.set(0.25)).finallyDo(() -> neo2.set(0.0)));
+    driver.createXButton().whileTrue(Commands.runOnce(() -> m_doubleSolenoid.toggle()));
   }
 
   @Override
