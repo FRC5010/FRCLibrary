@@ -54,6 +54,17 @@ public class VisionPhoton extends VisionSystem {
     updateViaNetworkTable(camera, poseEstimator, name);
   }
 
+ /**
+ * Updates the vision system using the network table. If a drivetrain pose estimator is present,
+ * it sets the reference pose or last pose based on the pose strategy. It then retrieves the latest
+ * camera result and checks if there are any targets. If there are, it updates the pose estimator
+ * and calculates the robot pose estimate. It also updates the dashboard with the target ambiguity.
+ * Finally, it updates the raw values with various information about the target and robot pose estimate.
+ *
+ * @param camera the PhotonCamera object used for camera operations
+ * @param poseEstimator the PhotonPoseEstimator object used for pose estimation
+ * @param path the path to the network table
+ */ 
   public void updateViaNetworkTable(
       PhotonCamera camera, PhotonPoseEstimator poseEstimator, String path) {
     if (null != drivetrainPoseEstimator) {

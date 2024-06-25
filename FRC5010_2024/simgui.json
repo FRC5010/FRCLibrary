@@ -4,12 +4,15 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pose/Field": "Field2d",
       "/Shuffleboard/Robot/Auto Modes": "String Chooser",
+      "/Shuffleboard/Vision/Field": "Field2d",
+      "/Shuffleboard/java.lang.Class/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/MoveElevator_ground": "Command",
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
       "/SmartDashboard/Pigeon 2 (v6) [15]": "Gyro",
-      "/SmartDashboard/Robot Visual": "Mechanism2d"
+      "/SmartDashboard/Robot Visual": "Mechanism2d",
+      "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
     },
     "windows": {
       "/Shuffleboard/Pose/Field": {
@@ -43,6 +46,20 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/VisionSystemSim-main/Sim Field": {
+        "bottom": 1476,
+        "cameras": {
+          "style": "Line"
+        },
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
       }
     }
   },
@@ -53,6 +70,12 @@
           "open": true
         },
         "Robot": {
+          "open": true
+        },
+        "Vision": {
+          "Camera PhotonSim": {
+            "open": true
+          },
           "open": true
         },
         "open": true
@@ -81,6 +104,12 @@
             "open": true
           }
         }
+      },
+      "photonvision": {
+        "PhotonSim": {
+          "open": true
+        },
+        "open": true
       }
     }
   },

@@ -84,11 +84,6 @@ public abstract class GenericRobot extends GenericMechanism {
    */
   public void configureButtonBindings() {
     configureButtonBindings(driver, operator);
-    if (driver.isSingleControllerMode()) {
-      // TODO: Add code to handle single driver mode
-    } else {
-      if (RobotBase.isReal()) {}
-    }
   }
 
   public void setupDefaultCommands() {
@@ -108,6 +103,10 @@ public abstract class GenericRobot extends GenericMechanism {
     if (null != command) {
       shuffleTab.add("Auto Modes", command).withSize(2, 1);
     }
+  }
+
+  public Command getAutonomousCommand() {
+	return generateAutoCommand(command.getSelected());
   }
 
   public Alliance determineAllianceColor() {
