@@ -92,7 +92,7 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
     }
 
     public Command generateAutoCommand(Command autoCommand) {
-        return generateAutoCommand(command.getSelected());
+        return command.getSelected();
     };
 
     public void disabledBehavior() {
