@@ -23,7 +23,7 @@ public class MaxDemoBoard extends GenericMechanism {
   private MotorController5010 kraken1;
   private MotorController5010 neo1;
   private MotorController5010 neo2;
-  private final DoubleSolenoid m_doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 2);
+  private final DoubleSolenoid m_doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
 
   public MaxDemoBoard(Mechanism2d visual, ShuffleboardTab displayTab) {
     super(visual, displayTab);

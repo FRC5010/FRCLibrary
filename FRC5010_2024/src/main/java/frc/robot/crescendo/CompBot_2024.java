@@ -526,10 +526,10 @@ public class CompBot_2024 extends GenericMechanism {
 						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), false, false)
 						.alongWith(spinIntake.get().withTimeout(0.25)));
 
-		driver.createBButton().whileTrue(
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), true, true)
-						.alongWith(spinIntake.get().withTimeout(0.25)));
+		// driver.createBButton().whileTrue(
+		// 		new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
+		// 				gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), true, true)
+		// 				.alongWith(spinIntake.get().withTimeout(0.25)));
 
 		// Run Shooter motors
 		driver.createBackButton().whileTrue(runShooter.get()
@@ -545,9 +545,10 @@ public class CompBot_2024 extends GenericMechanism {
 		driver.createLeftPovButton().onTrue(pivotSubsystem.adjustReferenceDown());
 		driver.createRightPovButton().onTrue(pivotSubsystem.adjustReferenceUp());
 
+		// Used for interpolation
 		driver.createRightBumper().whileTrue(
-				Commands.run(() -> shooterSubsystem.setShooterReference(Constants.Physical.MANUAL_SHOOTING_SPEED,
-						Constants.Physical.MANUAL_SHOOTING_SPEED)).finallyDo(() -> {
+				Commands.run(() -> shooterSubsystem.setShooterReference(targetingSystem.getShooterSpeed(),
+						targetingSystem.getShooterSpeed())).finallyDo(() -> {
 							shooterSubsystem.setShooterReference(0, 0);
 							intakeSubsystem.setReference(0, 0);
 						}));
