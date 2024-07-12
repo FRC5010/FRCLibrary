@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericCommand;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.commands.JoystickToSwerve;
-import org.frc5010.common.drive.pose.DrivetrainPoseEstimator;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.swerve.SwerveDrivetrain;
 import org.frc5010.common.mechanisms.Drive;
 import org.frc5010.common.sensors.Controller;
@@ -37,7 +37,7 @@ public class AutoAim extends GenericCommand {
   private String PIVOT_ANGLE_OVERRIDE = "Pivot Angle Override";
   private String SHOOTER_SPEED_OVERRIDE = "Shooter Speed Override";
 
-  DrivetrainPoseEstimator robotPose;
+  DrivePoseEstimator robotPose;
   ShooterSubsystem shooterSubsystem;
   PivotSubsystem pivotSubsystem;
   Drive drive;

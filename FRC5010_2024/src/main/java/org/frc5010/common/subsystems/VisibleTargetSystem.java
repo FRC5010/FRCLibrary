@@ -6,20 +6,34 @@ package org.frc5010.common.subsystems;
 
 import org.frc5010.common.sensors.camera.GenericCamera;
 
-/** Add your docs here. */
+import edu.wpi.first.math.geometry.Transform3d;
+
 public class VisibleTargetSystem extends CameraSystem {
 	boolean hasTargets = false;
+	double targetHeight = 0;
+	double targetPitch = 0;
+	double targetYaw = 0;
 
-	public VisibleTargetSystem(GenericCamera camera) {
+	public VisibleTargetSystem(GenericCamera camera, double targetHeight) {
 		super(camera);
+		this.targetHeight = targetHeight;
 		camera.registerUpdater(() -> hasTargets = camera.hasValidTarget());
-		camera.registerUpdater(() -> camera.getTargetYaw());
-		camera.registerUpdater(() -> camera.getTargetPitch());
+		camera.registerUpdater(() -> targetYaw = camera.getTargetYaw());
+		camera.registerUpdater(() -> targetPitch = camera.getTargetPitch());
 	}
 
+	/**
+	 * A method to get the distance to the target.
+	 *
+	 * @return the distance to the target, or Double.MAX_VALUE if no valid target
+	 */
 	@Override
-	public void updateCameraInfo() {
-		camera.update();
+	public double getDistanceToTarget() {
+		Transform3d camera2Robot = camera.getCameraToRobot();
+		return hasTargets ? (targetHeight - camera2Robot.getTranslation().getZ())
+				/ (Math.tan(Math.toRadians(targetPitch) + camera2Robot.getRotation().getY())
+						* Math.cos(Math.toRadians(targetYaw)))
+				+ camera2Robot.getTranslation().getNorm()
+				: Double.MAX_VALUE;
 	}
-
 }

@@ -4,8 +4,23 @@
 
 package org.frc5010.common.drive;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.constants.DrivePorts;
+import org.frc5010.common.drive.pose.DifferentialPose;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.mechanisms.DriveConstantsDef;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
+import org.frc5010.common.sensors.encoder.SimulatedEncoder;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -19,18 +34,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import java.util.ArrayList;
-import java.util.List;
-import org.frc5010.common.arch.Persisted;
-import org.frc5010.common.constants.DrivePorts;
-import org.frc5010.common.drive.pose.DifferentialPose;
-import org.frc5010.common.drive.pose.DrivetrainPoseEstimator;
-import org.frc5010.common.mechanisms.DriveConstantsDef;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.sensors.encoder.SimulatedEncoder;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.frc5010.common.vision.VisionSystem;
 
 public class DifferentialDrivetrain extends GenericDrivetrain {
   private List<MotorController5010> motorList;
@@ -52,7 +55,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
       MotorController5010 left,
       List<DrivePorts> ports,
       GenericGyro gyro,
-      VisionSystem vision,
+      AprilTagPoseSystem vision,
       Mechanism2d mechVisual) {
     super(mechVisual);
     assert (ports.size() == 4);
@@ -83,7 +86,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     }
 
     setDrivetrainPoseEstimator(
-        new DrivetrainPoseEstimator(
+        new DrivePoseEstimator(
             new DifferentialPose(diffKinematics, gyro, leftEncoder, rightEncoder), vision));
     diffDrive = new DifferentialDrive(left.getMotor(), right.getMotor());
   }

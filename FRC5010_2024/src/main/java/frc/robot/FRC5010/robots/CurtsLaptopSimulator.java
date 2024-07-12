@@ -18,6 +18,7 @@ import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.sensors.camera.PhotonVisionCamera;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.sensors.gyro.NavXGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.CameraSystem;
 import org.frc5010.common.subsystems.DriverDisplaySubsystem;
 import org.frc5010.common.subsystems.VisibleTargetSystem;
@@ -63,11 +64,16 @@ public class CurtsLaptopSimulator extends GenericRobot {
 		swerveConstants.configureSwerve(NEO.MAXRPM, NEO550.MAXRPM);
 
 		VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
+		AprilTagPoseSystem aprilTagPoseSystem = new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
+						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
+
 		CameraSystem cameraSystem = new VisibleTargetSystem(
 				new PhotonVisionCamera("PhotonSim", 0, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
 						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
 								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
-						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()), 0);
 		List<SwervePorts> swervePorts = new ArrayList<>();
 		swervePorts.add(new SwervePorts(1, 2, 0));
 		swervePorts.add(new SwervePorts(7, 8, 1));
@@ -77,7 +83,7 @@ public class CurtsLaptopSimulator extends GenericRobot {
 		GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
 		drive = new Drive(
-				multiVision,
+				aprilTagPoseSystem,
 				gyro,
 				Drive.Type.YAGSL_SWERVE_DRIVE,
 				swervePorts,
@@ -92,7 +98,6 @@ public class CurtsLaptopSimulator extends GenericRobot {
 		// new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
 		// new Rotation3d(0, Units.degreesToRadians(-20), 0)),
 		// PoseStrategy.AVERAGE_BEST_TARGETS, drive.getDrivetrain().getPoseEstimator());
-		driverDiplay = new DriverDisplaySubsystem(drive.getDrivetrain().getPoseEstimator());
 	}
 
 	@Override

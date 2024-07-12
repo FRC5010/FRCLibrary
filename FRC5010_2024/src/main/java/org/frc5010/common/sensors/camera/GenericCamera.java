@@ -22,12 +22,12 @@ public abstract class GenericCamera {
 
 	protected List<Runnable> updaters = new ArrayList<>();
 	protected Transform3d cameraToRobot = new Transform3d();
-	ShuffleboardTab visionTab;
+	protected ShuffleboardTab visionTab;
 	protected ShuffleboardLayout visionLayout;
 	protected boolean updateValues = false;
 	protected AprilTagFieldLayout fieldLayout;
-	private int colIndex;
-	private String name;
+	protected int colIndex;
+	protected String name;
 
 	public GenericCamera(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot) {
 		this.colIndex = colIndex;
@@ -69,6 +69,18 @@ public abstract class GenericCamera {
 	 */
 	public void registerUpdater(Runnable updater) {
 		updaters.add(updater);
+	}
+
+	public String name() {
+		return name;
+	}
+
+	public Transform3d getCameraToRobot() {
+		return cameraToRobot;	
+	}
+
+	public AprilTagFieldLayout getFieldLayout() {
+		return fieldLayout;
 	}
 
 	/**

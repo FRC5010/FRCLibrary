@@ -19,15 +19,16 @@ import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.hardware.KrakenX60;
 import org.frc5010.common.motors.hardware.NEO;
 import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.camera.PhotonVisionCamera;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.Color;
 import org.frc5010.common.subsystems.LEDStripSegment;
 import org.frc5010.common.subsystems.PowerDistribution5010;
 import org.frc5010.common.subsystems.SegmentedLedSystem;
 import org.frc5010.common.vision.AprilTags;
 import org.frc5010.common.vision.VisionLimeLight;
-import org.frc5010.common.vision.VisionMultiCam;
 import org.frc5010.common.vision.VisionPhotonAprilTagTarget;
 import org.frc5010.common.vision.VisionSystem.Rotation;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -71,7 +72,7 @@ public class CompBot_2024 extends GenericRobot {
 	private MotorController5010 innerIntakeMotor;
 	private MotorController5010 outerIntakeMotor;
 
-	private VisionMultiCam visionSystem;
+	private AprilTagPoseSystem visionSystem;
 	private VisionPhotonAprilTagTarget shooterCamera;
 	private VisionLimeLight noteCamera;
 	private GenericGyro gyro;
@@ -134,7 +135,10 @@ public class CompBot_2024 extends GenericRobot {
 		bottomShooterMotor.enableFOC(false);
 		bottomShooterMotor.setCurrentLimit(100);
 
-		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
+		visionSystem = new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
+						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 
 		gyro = new PigeonGyro(13);
 
@@ -582,7 +586,8 @@ public class CompBot_2024 extends GenericRobot {
 			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 			// drive.getDrivetrain().getPoseEstimator()); // Used to be
 			// 28, 20
-			visionSystem.addPhotonCamera("Right Camera", 3,
+			visionSystem.addCamera(new PhotonVisionCamera("Right Camera", 3,
+			AprilTags.aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 			new Transform3d(
 			new Translation3d(Units.inchesToMeters(11.59),
 			Units.inchesToMeters(-4.682), // -.12
@@ -590,8 +595,7 @@ public class CompBot_2024 extends GenericRobot {
 			new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
 			new Rotation3d(0, 0,
 			Units.degreesToRadians(-25)))), // -20
-			PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-			drive.getDrivetrain().getPoseEstimator());
+			() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 			// visionSystem.addPhotonCamera("Left Camera", 2,
 			// new Transform3d(
 			// new Translation3d(Units.inchesToMeters(11.59),
@@ -610,10 +614,11 @@ public class CompBot_2024 extends GenericRobot {
 					null);
 
 			noteCamera.setUpdateValues(true);
-			visionSystem.addLimeLightCamera("top", 5, () -> gyro);
-			VisionLimeLight topLimeLight = ((VisionLimeLight) visionSystem.getCamera("top"));
-			topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() && neverEnabled ? topLimeLight.getRobotPoseEstimateM1()
-					: topLimeLight.getRobotPoseEstimateM2());
+// THIS IS THE LIMELIGHT APRIL TAG CAMERA			
+			//visionSystem.addLimeLightCamera("top", 5, () -> gyro);
+			//VisionLimeLight topLimeLight = ((VisionLimeLight) visionSystem.getCamera("top"));
+			//topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() && neverEnabled ? topLimeLight.getRobotPoseEstimateM1()
+			//		: topLimeLight.getRobotPoseEstimateM2());
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
 					() -> Units.inchesToMeters(15.448),

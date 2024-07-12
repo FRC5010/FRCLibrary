@@ -4,6 +4,12 @@
 
 package org.frc5010.common.drive;
 
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.commands.DefaultDriveCommand;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.sensors.Controller;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,17 +17,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.commands.DefaultDriveCommand;
-import org.frc5010.common.drive.pose.DrivetrainPoseEstimator;
-import org.frc5010.common.sensors.Controller;
 
 /** Add your docs here. */
-public abstract class GenericDrivetrain extends SubsystemBase {
+public abstract class GenericDrivetrain extends GenericSubsystem {
   protected Mechanism2d mechVisual;
-  protected DrivetrainPoseEstimator poseEstimator;
+  protected DrivePoseEstimator poseEstimator;
   protected boolean isFieldOrientedDrive = true;
 
   public GenericDrivetrain(Mechanism2d mechVisual) {
@@ -31,11 +31,11 @@ public abstract class GenericDrivetrain extends SubsystemBase {
         .withPosition(8, 0);
   }
 
-  public void setDrivetrainPoseEstimator(DrivetrainPoseEstimator poseEstimator) {
+  public void setDrivetrainPoseEstimator(DrivePoseEstimator poseEstimator) {
     this.poseEstimator = poseEstimator;
   }
 
-  public DrivetrainPoseEstimator getPoseEstimator() {
+  public DrivePoseEstimator getPoseEstimator() {
     return poseEstimator;
   }
 

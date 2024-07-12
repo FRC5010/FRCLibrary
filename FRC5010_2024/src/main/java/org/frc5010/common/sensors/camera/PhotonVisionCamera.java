@@ -7,6 +7,7 @@ package org.frc5010.common.sensors.camera;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -27,12 +28,12 @@ import frc.robot.Robot;
 /** Add your docs here. */
 public class PhotonVisionCamera extends GenericCamera {
 	static VisionSystemSim visionSim = new VisionSystemSim("main");
+	protected static boolean fieldRegisted = false;
 
 	protected PhotonPoseEstimator poseEstimator;
 	protected PhotonCamera camera;
 	protected PoseStrategy strategy;
 	protected AprilTagFieldLayout fieldLayout;
-	protected Pose2d referencePose = new Pose2d(0, 0, new Rotation2d(0));
 	protected Optional<PhotonTrackedTarget> target = Optional.empty();
 	protected PhotonPipelineResult camResult;
 	protected SimCameraProperties cameraProp = new SimCameraProperties();
@@ -70,14 +71,20 @@ public class PhotonVisionCamera extends GenericCamera {
 
 			cameraSim = new PhotonCameraSim(camera, cameraProp);
 			visionSim.addCamera(cameraSim, cameraToRobot);
-			visionTab.add(visionSim.getDebugField());
+
+			if (!fieldRegisted) {
+				fieldRegisted = true;
+				visionTab.add("Vision Field", visionSim.getDebugField());
+			}
 		}
 	}
 
 	@Override
 	public void update() {
 		camResult = camera.getLatestResult();
-		target = Optional.ofNullable(camResult.getBestTarget());
+		if (camResult.hasTargets()) {
+			target = Optional.ofNullable(camResult.getBestTarget());
+		}
 		if (Robot.isSimulation()) {
 			visionSim.update(poseSupplier.get());
 			visionSim.resetRobotPose(poseSupplier.get());
@@ -91,17 +98,17 @@ public class PhotonVisionCamera extends GenericCamera {
 
 	@Override
 	public double getTargetYaw() {
-		return target.map(t -> t.getYaw()).orElse(0.0);
+		return target.map(t -> t.getYaw()).orElse(Double.MAX_VALUE);
 	}
 
 	@Override
 	public double getTargetPitch() {
-		return target.map(t -> t.getPitch()).orElse(0.0);
+		return target.map(t -> t.getPitch()).orElse(Double.MAX_VALUE);
 	}
 
 	@Override
 	public double getTargetArea() {
-		return target.map(t -> t.getArea()).orElse(0.0);
+		return target.map(t -> t.getArea()).orElse(Double.MAX_VALUE);
 	}
 
 	@Override
@@ -111,14 +118,35 @@ public class PhotonVisionCamera extends GenericCamera {
 
 	@Override
 	public Pose3d getRobotPose() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getRobotPose'");
+		Pose3d robotPoseEst = null;
+		if (null != poseSupplier) {
+			if (strategy == PoseStrategy.CLOSEST_TO_REFERENCE_POSE) {
+				poseEstimator.setReferencePose(poseSupplier.get());
+			}
+			if (strategy == PoseStrategy.CLOSEST_TO_LAST_POSE) {
+				poseEstimator.setLastPose(poseSupplier.get());
+			}
+		}
+		if (target.isPresent()) {
+			Optional<EstimatedRobotPose> result = poseEstimator.update();
+
+			if (result.isPresent()
+					&& result.get().estimatedPose != null
+					&& target.get().getPoseAmbiguity() < 0.5) {
+				robotPoseEst = result.get().estimatedPose;
+			}
+		}
+		return robotPoseEst;
 	}
 
 	@Override
 	public Pose3d getRobotToTargetPose() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getRobotToTargetPose'");
+		Pose3d targetPoseEst = null;
+		if (target.isPresent()) {
+			if (target.get().getFiducialId() != 0) {
+				targetPoseEst = fieldLayout.getTagPose(target.get().getFiducialId()).orElse(null);
+			}
+		}
+		return targetPoseEst;
 	}
-
 }

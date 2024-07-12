@@ -16,15 +16,19 @@ import org.frc5010.common.drive.swerve.SwerveDrivetrain;
 import org.frc5010.common.mechanisms.Drive;
 import org.frc5010.common.motors.hardware.NEO;
 import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.camera.PhotonVisionCamera;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.DriverDisplaySubsystem;
 import org.frc5010.common.subsystems.LedSubsystem;
 import org.frc5010.common.vision.AprilTags;
 import org.frc5010.common.vision.VisionLimeLightSim;
-import org.frc5010.common.vision.VisionSystem;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -56,8 +60,11 @@ public class PracticeBot extends GenericRobot {
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
 
-    VisionSystem multiVision =
-        new VisionLimeLightSim("", 0, AprilTags.aprilTagFieldLayout, new Transform3d());
+    AprilTagPoseSystem multiVision =
+        new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
+						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 
     visionTab.addCamera("DriverCam", "DriverCam", "10.50.10.11").withSize(3, 3);
 

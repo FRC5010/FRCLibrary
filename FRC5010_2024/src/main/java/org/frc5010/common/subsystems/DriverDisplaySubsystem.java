@@ -4,17 +4,18 @@
 
 package org.frc5010.common.subsystems;
 
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.frc5010.common.drive.pose.DrivetrainPoseEstimator;
 
 public class DriverDisplaySubsystem extends SubsystemBase {
   /** Creates a new DriverDisplaySubsystem. */
-  private DrivetrainPoseEstimator poseEstimator;
+  private DrivePoseEstimator poseEstimator;
 
   private String idToStation;
 
-  public DriverDisplaySubsystem(DrivetrainPoseEstimator poseEstimator) {
+  public DriverDisplaySubsystem(DrivePoseEstimator poseEstimator) {
     this.poseEstimator = poseEstimator;
   }
 

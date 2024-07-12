@@ -7,12 +7,32 @@ package org.frc5010.common.drive.swerve;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.commands.JoystickToSwerve;
+import org.frc5010.common.constants.Constants.AutonConstants;
+import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.constants.SwerveConstants;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.drive.pose.YAGSLSwervePose;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -39,24 +59,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.commands.JoystickToSwerve;
-import org.frc5010.common.constants.Constants.AutonConstants;
-import org.frc5010.common.constants.MotorFeedFwdConstants;
-import org.frc5010.common.constants.SwerveConstants;
-import org.frc5010.common.drive.pose.DrivetrainPoseEstimator;
-import org.frc5010.common.drive.pose.YAGSLSwervePose;
-import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.frc5010.common.vision.VisionSystem;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -82,7 +84,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
       GenericGyro gyro,
       SwerveConstants swerveConstants,
       String swerveType,
-      VisionSystem visionSystem) {
+      AprilTagPoseSystem visionSystem) {
     super(mechVisual, gyro, swerveConstants);
 
     this.maximumSpeed = swerveConstants.getkPhysicalMaxSpeedMetersPerSecond();
@@ -150,7 +152,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
                 swerveModuleMap.get(module).setFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
               });
     }
-    poseEstimator = new DrivetrainPoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);
+    poseEstimator = new DrivePoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
 
     SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceColor().toString());

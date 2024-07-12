@@ -4,15 +4,6 @@
 
 package frc.robot.chargedup;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import org.frc5010.common.vision.AprilTags;
-import org.frc5010.common.vision.VisionMultiCam;
-import org.frc5010.common.vision.VisionSystem;
 import org.frc5010.common.arch.GenericMechanism;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.constants.SwerveConstants;
@@ -24,9 +15,17 @@ import org.frc5010.common.sensors.ButtonBoard;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.DriverDisplaySubsystem;
 import org.frc5010.common.subsystems.LedSubsystem;
 import org.frc5010.common.subsystems.PowerDistribution5010;
+
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.chargedup.commands.RunShooter;
 
 /** Add your docs here. */
@@ -37,7 +36,7 @@ public class KitBot2024 extends GenericMechanism {
         private ButtonBoard buttonOperator;
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
-        private VisionSystem visionSystem;
+        private AprilTagPoseSystem visionSystem;
         private ShooterSubsystem shooter;
         private MotorController5010 topShooterMotor;
         private MotorController5010 bottomShooterMotor;
@@ -68,8 +67,7 @@ public class KitBot2024 extends GenericMechanism {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                VisionMultiCam multiVision = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
-                visionSystem = multiVision;
+                visionSystem = new AprilTagPoseSystem();
 
                 // ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
@@ -94,8 +92,8 @@ public class KitBot2024 extends GenericMechanism {
                 // new Translation3d(Units.inchesToMeters(27.75 / 2),
                 // Units.inchesToMeters(2.5),
                 // Units.inchesToMeters(36.75)),
-                multiVision.addLimeLightCamera("kitbot", 4, null);
-                multiVision.setUpdateValues(true);
+                // multiVision.addLimeLightCamera("kitbot", 4, null);
+                // multiVision.setUpdateValues(true);
                 // new Rotation3d(0, 0, Units.degreesToRadians(90))),
                 // PoseStrategy.MULTI_TAG_PNP,
                 // drive.getDrivetrain().getPoseEstimator());

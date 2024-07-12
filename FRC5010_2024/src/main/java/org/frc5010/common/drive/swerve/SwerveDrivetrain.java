@@ -4,10 +4,25 @@
 
 package org.frc5010.common.drive.swerve;
 
+import java.util.function.DoubleSupplier;
+
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.commands.JoystickToSwerve;
+import org.frc5010.common.constants.SwerveConstants;
+import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.drive.pose.SwervePose;
+import org.frc5010.common.mechanisms.DriveConstantsDef;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -19,19 +34,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.function.DoubleSupplier;
-
-import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.arch.Persisted;
-import org.frc5010.common.commands.JoystickToSwerve;
-import org.frc5010.common.constants.SwerveConstants;
-import org.frc5010.common.drive.GenericDrivetrain;
-import org.frc5010.common.drive.pose.DrivetrainPoseEstimator;
-import org.frc5010.common.drive.pose.SwervePose;
-import org.frc5010.common.mechanisms.DriveConstantsDef;
-import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.frc5010.common.vision.VisionSystem;
 
 /** Add your docs here. */
 public class SwerveDrivetrain extends GenericDrivetrain {
@@ -54,7 +56,7 @@ public class SwerveDrivetrain extends GenericDrivetrain {
       GenericSwerveModule backLeft,
       GenericSwerveModule backRight,
       GenericGyro genericGyro,
-      VisionSystem visonSystem,
+      AprilTagPoseSystem visonSystem,
       SwerveConstants swerveConstants) {
     super(mechVisual);
 
@@ -68,7 +70,7 @@ public class SwerveDrivetrain extends GenericDrivetrain {
     this.gyro = genericGyro;
     this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
     poseEstimator =
-        new DrivetrainPoseEstimator(
+        new DrivePoseEstimator(
             new SwervePose(gyro, swerveConstants.getKinematics(), this), visonSystem);
     maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
 

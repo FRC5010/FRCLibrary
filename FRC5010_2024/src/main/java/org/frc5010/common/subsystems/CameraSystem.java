@@ -4,6 +4,7 @@
 
 package org.frc5010.common.subsystems;
 
+import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.sensors.camera.GenericCamera;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,14 +12,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 /** 
  * This class is an abstract class that needs to be implemented by any subclass of CameraSystem. It is responsible for updating the camera information.
  */
-public abstract class CameraSystem extends SubsystemBase {
+public abstract class CameraSystem extends GenericSubsystem {
 	protected GenericCamera camera;
 
 	public CameraSystem(GenericCamera camera) {
 		super();
 		this.camera = camera;
 	}
-
 
 	/**
 	 * This method is called once per scheduler run and it calls the updateCameraInfo() method.
@@ -35,5 +35,7 @@ public abstract class CameraSystem extends SubsystemBase {
 	/**
 	 * This is an abstract method that needs to be implemented by any subclass of CameraSystem. It is responsible for updating the camera information.
 	 */
-	public abstract void updateCameraInfo();
+	public void updateCameraInfo() { camera.update(); }
+
+	public abstract double getDistanceToTarget();
 }

@@ -4,14 +4,9 @@
 
 package org.frc5010.common.mechanisms;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.frc5010.common.arch.GenericMechanism;
 import org.frc5010.common.arch.Persisted;
 import org.frc5010.common.constants.DrivePorts;
@@ -32,11 +27,18 @@ import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.frc5010.common.vision.VisionSystem;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /** Add your docs here. */
 public class Drive extends GenericMechanism {
-  private VisionSystem vision;
+  private AprilTagPoseSystem vision;
   private GenericDrivetrain drivetrain;
   private GenericGyro gyro;
   private Command defaultDriveCommand;
@@ -63,7 +65,7 @@ public class Drive extends GenericMechanism {
   private String driveTrainFolder;
 
   public Drive(
-      VisionSystem visionSystem,
+      AprilTagPoseSystem visionSystem,
       GenericGyro gyro,
       String type,
       List<? extends DrivePorts> drivePorts,

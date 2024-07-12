@@ -21,10 +21,10 @@ import org.frc5010.common.sensors.ButtonBoard;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.DriverDisplaySubsystem;
 import org.frc5010.common.subsystems.LedSubsystem;
 import org.frc5010.common.vision.AprilTags;
-import org.frc5010.common.vision.VisionMultiCam;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -43,7 +43,7 @@ public class CompBot_2023_T1G3R extends GenericRobot {
         private ButtonBoard buttonOperator;
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
-        private VisionMultiCam visionSystem;
+        private AprilTagPoseSystem visionSystem;
 
         public CompBot_2023_T1G3R() {
                 super();
@@ -68,7 +68,7 @@ public class CompBot_2023_T1G3R extends GenericRobot {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                visionSystem = new VisionMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout);
+                visionSystem = new AprilTagPoseSystem();
 
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",
