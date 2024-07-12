@@ -155,7 +155,8 @@ public class TargetingSystem extends GenericSubsystem {
         shuttlePivotInterpolation.put(15.0, 0.0);
 
         shooterInterpolation.put(1.0, Constants.Physical.SUBWOOFER_SHOT);
-        shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
+        // shooterInterpolation.put(5.0, Constants.Physical.TOP_SHOOTING_SPEED);
+        shooterInterpolation.put(3.0, Constants.Physical.MANUAL_SHOOTING_SPEED);
         shuttleShooterInterpolation.put(5.1, Constants.Physical.SHUTTLE_SPEED); // Delete
         shuttleShooterInterpolation.put(12.0, Constants.Physical.SHUTTLE_SPEED_HIGH); // Delete
 
