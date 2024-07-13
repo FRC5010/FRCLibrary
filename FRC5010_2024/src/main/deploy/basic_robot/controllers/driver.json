@@ -1,0 +1,11 @@
+{
+    "name": "driver",
+    "port": 0,
+    "axis": [
+        "driver_left_y.json",
+        "driver_left_x.json",
+        "driver_right_x.json",
+        "driver_left_trigger.json",
+        "driver_right_trigger.json"
+    ]
+}

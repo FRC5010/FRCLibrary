@@ -49,6 +49,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -614,9 +615,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   public Command createDefaultCommand(Controller driverXbox) {
     // System.out.println("brrrrr");
-    DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
-    DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
-    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    DoubleSupplier leftX = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftX.value);
+    DoubleSupplier leftY = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftY.value);
+    DoubleSupplier rightX = () -> driverXbox.getAxisValue(XboxController.Axis.kRightX.value);
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
     return new JoystickToSwerve(
@@ -625,9 +626,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   public Command createDefaultTestCommand(Controller driverXbox) {
-    DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
-    DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
-    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    DoubleSupplier leftX = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftX.value);
+    DoubleSupplier leftY = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftY.value);
+    DoubleSupplier rightX = () -> driverXbox.getAxisValue(XboxController.Axis.kRightX.value);
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
 
     // driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());

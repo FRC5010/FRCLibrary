@@ -14,6 +14,7 @@ import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.Persisted;
 import org.frc5010.common.arch.WpiHelperInterface;
 import org.frc5010.common.arch.WpiNetworkTableValuesHelper;
+import org.frc5010.common.config.RobotParser;
 import org.frc5010.common.telemetery.WpiDataLogging;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -142,59 +143,61 @@ public class RobotContainer implements WpiHelperInterface {
 
 	private void robotFactory() {
 		String whichRobot = whereAmI();
-		if (!startupBypass.get()) {
-			robot = new CompBot_2024();
-			log("Bypassed MAC Address Switch");
-		} else {
-			switch (whichRobot) {
-				case Robots.KIT_BOT_2024: {
-					//robot = new KitBot2024(mechVisual, shuffleTab);
-					robot = new CompBot_2024();
-					break;
-				}
-				case Robots.COMP_BOT_2023: {
-					robot = new CompBot_2023_T1G3R();
-					break;
-				}
-				case Robots.BABY_SWERVE: {
-					robot = new BabySwerve();
-					break;
-				}
-				case Robots.PRACTICE_BOT: {
-					robot = new PracticeBot();
-					break;
-				}
-				case Robots.MAIN_5010_LAPTOP: {
-					robot = new CompBot_2024();
-					// robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
-					break;
-				}
-				case Robots.CURTS_LAPTOP_SIM: {
-					switch (whoAmI.get()) {
-						case "BabySwerve": {
-							robot = new BabySwerve();
-							break;
-						}
-						case "T1G3R": {
-							robot = new CompBot_2023_T1G3R();
-							break;
-						}
-						case "Simulator": {
-							robot = new CurtsLaptopSimulator();
-							break;
-						}
-						default: {
-							robot = new CurtsLaptopSimulator();
-						}
+		try {
+			if (!startupBypass.get()) {
+				robot = new CompBot_2024();
+				log("Bypassed MAC Address Switch");
+			} else {
+				switch (whichRobot) {
+					case Robots.KIT_BOT_2024: {
+						// robot = new KitBot2024(mechVisual, shuffleTab);
+						robot = new CompBot_2024();
+						break;
 					}
-					break;
-				}
-				default: {
-					robot = new DefaultRobot();
-					break;
-				}
+					case Robots.COMP_BOT_2023: {
+						robot = new CompBot_2023_T1G3R();
+						break;
+					}
+					case Robots.BABY_SWERVE: {
+						robot = new BabySwerve();
+						break;
+					}
+					case Robots.PRACTICE_BOT: {
+						robot = new PracticeBot();
+						break;
+					}
+					case Robots.MAIN_5010_LAPTOP: {
+						robot = new CompBot_2024();
+						// robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+						break;
+					}
+					case Robots.CURTS_LAPTOP_SIM: {
+						switch (whoAmI.get()) {
+							case "BabySwerve": {
+								robot = new BabySwerve();
+								break;
+							}
+							case "T1G3R": {
+								robot = new CompBot_2023_T1G3R();
+								break;
+							}
+							default: {
+								robot = new CurtsLaptopSimulator("basic_robot");
+								break;
+							}
+						}
+						break;
+					}
+					default: {
+						robot = new DefaultRobot();
+						break;
+					}
 
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
 		}
 		log(">>>>> MAC ADDRESS: " + whichRobot + "<<<<");
 		log(">>>>>>>>>> Running " + robot.getClass().getSimpleName() + " <<<<<<<<<<");

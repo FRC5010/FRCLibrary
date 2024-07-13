@@ -49,8 +49,8 @@ public class CurtsLaptopSimulator extends GenericRobot {
 	SwerveConstants swerveConstants;
 	private DriverDisplaySubsystem driverDiplay;
 
-	public CurtsLaptopSimulator() {
-		super();
+	public CurtsLaptopSimulator(String directory) {
+		super(directory);
 		swerveConstants = new SwerveConstants(0.76835, 0.635);
 		swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
 		swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
