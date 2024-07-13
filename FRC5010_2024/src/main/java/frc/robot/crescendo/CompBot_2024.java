@@ -708,7 +708,7 @@ public class CompBot_2024 extends GenericMechanism {
 						.beforeStarting(() -> {
 							targetingSystem.setTolerance(0.05);
 							pivotSubsystem.setTolerance(1.5);
-							shooterSubsystem.setTolerance(2.0);
+							shooterSubsystem.setTolerance(1.5);
 						})
 						.finallyDo(() -> {
 							pivotSubsystem
