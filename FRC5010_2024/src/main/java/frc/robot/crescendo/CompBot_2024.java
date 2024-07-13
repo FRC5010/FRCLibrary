@@ -531,6 +531,22 @@ public class CompBot_2024 extends GenericMechanism {
 		// 				gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), true, true)
 		// 				.alongWith(spinIntake.get().withTimeout(0.25)));
 
+		driver.createBButton().whileTrue(new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem, gyro,
+						false, false, false)
+						.deadlineWith(spinIntake.get().withTimeout(0.25))
+						.beforeStarting(() -> {
+							targetingSystem.setTolerance(0.05);
+							pivotSubsystem.setTolerance(1.5);
+							shooterSubsystem.setTolerance(1.5);
+						})
+						.finallyDo(() -> {
+							pivotSubsystem
+									.setReference(pivotSubsystem.HOME_LEVEL);
+							targetingSystem.resetToleranceToDefaults();
+							pivotSubsystem.resetToleranceToDefaults();
+							shooterSubsystem.resetToleranceToDefaults();
+						}));
+
 		// Run Shooter motors
 		driver.createBackButton().whileTrue(runShooter.get()
 				.until(() -> shooterSubsystem.isAtTarget())
@@ -692,12 +708,14 @@ public class CompBot_2024 extends GenericMechanism {
 						.beforeStarting(() -> {
 							targetingSystem.setTolerance(0.05);
 							pivotSubsystem.setTolerance(1.5);
+							shooterSubsystem.setTolerance(2.0);
 						})
 						.finallyDo(() -> {
 							pivotSubsystem
 									.setReference(pivotSubsystem.HOME_LEVEL);
 							targetingSystem.resetToleranceToDefaults();
 							pivotSubsystem.resetToleranceToDefaults();
+							shooterSubsystem.resetToleranceToDefaults();
 						}));
 
 		NamedCommands.registerCommand("Pivot Home",

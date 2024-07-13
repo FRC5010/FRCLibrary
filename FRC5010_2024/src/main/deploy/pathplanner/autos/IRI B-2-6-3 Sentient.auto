@@ -1,0 +1,103 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3374413054104268,
+      "y": 5.559932574410603
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Alternate Blind Shot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note B-2 With Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake at Max"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pivot Home"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IRI Note 2 - 6 Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Pivot Home"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "6 - Center Shot Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Shot Short - 3 Short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot From Right"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Quick Auto Aim"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
