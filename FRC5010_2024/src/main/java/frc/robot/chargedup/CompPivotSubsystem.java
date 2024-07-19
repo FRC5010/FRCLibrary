@@ -23,10 +23,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.motors.hardware.MotorModelConstants;
-import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
+import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.hardware.MotorModelConstants;
+import org.frc5010.common.sensors.encoder.SimulatedEncoder;
 
 public class CompPivotSubsystem extends SubsystemBase {
   /** Creates a new PivotSubsystem. */

@@ -7,35 +7,35 @@ package frc.robot.chargedup;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.frc5010.common.arch.GenericMechanism;
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.commands.DriveToPosition;
+import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.constants.SwerveConstants;
+import org.frc5010.common.constants.SwervePorts;
+import org.frc5010.common.drive.swerve.MK4iSwerveModule;
+import org.frc5010.common.drive.swerve.SwerveDrivetrain;
+import org.frc5010.common.mechanisms.Drive;
+import org.frc5010.common.motors.hardware.NEO;
+import org.frc5010.common.sensors.ButtonBoard;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.sensors.gyro.PigeonGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.frc5010.common.subsystems.DriverDisplaySubsystem;
+import org.frc5010.common.subsystems.LedSubsystem;
+import org.frc5010.common.vision.AprilTags;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.arch.GenericMechanism;
-import frc.robot.FRC5010.commands.DriveToPosition;
-import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
-import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.constants.TranslationConstants;
-import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
-import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.motors.hardware.NEO;
-import frc.robot.FRC5010.sensors.ButtonBoard;
-import frc.robot.FRC5010.sensors.Controller;
-import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
-import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
-import frc.robot.FRC5010.subsystems.LedSubsystem;
 import frc.robot.chargedup.commands.AutoBalance;
 
 /** Add your docs here. */
-public class CompBot_2023_T1G3R extends GenericMechanism {
+public class CompBot_2023_T1G3R extends GenericRobot {
         private SwerveConstants swerveConstants;
         private Drive drive;
         private DriverDisplaySubsystem driverDiplay;
@@ -43,10 +43,10 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
         private ButtonBoard buttonOperator;
         private LedSubsystem ledSubsystem;
         private GenericGyro gyro;
-        private VisionMultiCam visionSystem;
+        private AprilTagPoseSystem visionSystem;
 
-        public CompBot_2023_T1G3R(Mechanism2d visual, ShuffleboardTab displayTab) {
-                super(visual, displayTab);
+        public CompBot_2023_T1G3R() {
+                super();
                 // Needs to be set
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
@@ -68,7 +68,7 @@ public class CompBot_2023_T1G3R extends GenericMechanism {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                visionSystem = new VisionMultiCam("Vision", 1, AprilTags.aprilTagFieldLayout);
+                visionSystem = new AprilTagPoseSystem();
 
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",

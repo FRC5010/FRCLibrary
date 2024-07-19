@@ -6,8 +6,32 @@ package frc.robot.crescendo;
 
 import java.util.function.Supplier;
 
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.commands.JoystickToSwerve;
+import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.constants.SwerveConstants;
+import org.frc5010.common.drive.swerve.MK4iSwerveModule;
+import org.frc5010.common.drive.swerve.SwerveDrivetrain;
+import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
+import org.frc5010.common.mechanisms.Drive;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.MotorFactory;
+import org.frc5010.common.motors.hardware.KrakenX60;
+import org.frc5010.common.motors.hardware.NEO;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.camera.PhotonVisionCamera;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.sensors.gyro.PigeonGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.frc5010.common.subsystems.Color;
+import org.frc5010.common.subsystems.LEDStripSegment;
+import org.frc5010.common.subsystems.PowerDistribution5010;
+import org.frc5010.common.subsystems.SegmentedLedSystem;
+import org.frc5010.common.vision.AprilTags;
+import org.frc5010.common.vision.VisionLimeLight;
+import org.frc5010.common.vision.VisionPhotonAprilTagTarget;
+import org.frc5010.common.vision.VisionSystem.Rotation;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -18,43 +42,13 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.RobotContainer;
-import frc.robot.RobotContainer.LogLevel;
-import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionLimeLight;
-import frc.robot.FRC5010.Vision.VisionMultiCam;
-import frc.robot.FRC5010.Vision.VisionPhotonAprilTagTarget;
-import frc.robot.FRC5010.Vision.VisionSystem.Rotation;
-import frc.robot.FRC5010.arch.GenericMechanism;
-import frc.robot.FRC5010.commands.JoystickToSwerve;
-import frc.robot.FRC5010.constants.MotorFeedFwdConstants;
-import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.drive.swerve.MK4iSwerveModule;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
-import frc.robot.FRC5010.drive.swerve.YAGSLSwerveDrivetrain;
-import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.motors.MotorFactory;
-import frc.robot.FRC5010.motors.hardware.KrakenX60;
-import frc.robot.FRC5010.motors.hardware.NEO;
-import frc.robot.FRC5010.sensors.Controller;
-import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
-import frc.robot.FRC5010.subsystems.Color;
-import frc.robot.FRC5010.subsystems.LEDStripSegment;
-import frc.robot.FRC5010.subsystems.PowerDistribution5010;
-import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.AutoIntake;
@@ -65,7 +59,7 @@ import frc.robot.crescendo.commands.RunPivot;
 import frc.robot.crescendo.commands.RunShooter;
 
 /** Add your docs here. */
-public class CompBot_2024 extends GenericMechanism {
+public class CompBot_2024 extends GenericRobot {
 	private SwerveConstants swerveConstants;
 	private MotorController5010 pivotMotor;
 	private PivotSubsystem pivotSubsystem;
@@ -78,7 +72,7 @@ public class CompBot_2024 extends GenericMechanism {
 	private MotorController5010 innerIntakeMotor;
 	private MotorController5010 outerIntakeMotor;
 
-	private VisionMultiCam visionSystem;
+	private AprilTagPoseSystem visionSystem;
 	private VisionPhotonAprilTagTarget shooterCamera;
 	private VisionLimeLight noteCamera;
 	private GenericGyro gyro;
@@ -109,13 +103,13 @@ public class CompBot_2024 extends GenericMechanism {
 
 	private boolean terminatePath = false;
 
-	public CompBot_2024(Mechanism2d visual, ShuffleboardTab displayTab) {
-		super(visual, displayTab);
+	public CompBot_2024() {
+		super();
 
-		RobotContainer.setLoggingLevel(LogLevel.COMPETITION);
+		GenericRobot.setLoggingLevel(LogLevel.COMPETITION);
 
-		ledSubsystem = new SegmentedLedSystem(0, 34, visual);
-		ledSubsystem.setWholeStripState((Integer i) -> RobotContainer.chooseAllianceColor().getColor8Bit());
+		ledSubsystem = new SegmentedLedSystem(0, 34, mechVisual);
+		ledSubsystem.setWholeStripState((Integer i) -> GenericRobot.chooseAllianceColor().getColor8Bit());
 
 		allLEDs = ledSubsystem.getStrip(ledSubsystem.ALL);
 		allLEDs.chase(false);
@@ -141,7 +135,10 @@ public class CompBot_2024 extends GenericMechanism {
 		bottomShooterMotor.enableFOC(false);
 		bottomShooterMotor.setCurrentLimit(100);
 
-		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
+		visionSystem = new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
+						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 
 		gyro = new PigeonGyro(13);
 
@@ -179,13 +176,13 @@ public class CompBot_2024 extends GenericMechanism {
 				"mk4i_L3_kraken_neo");
 
 		shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, bottomShooterMotor);
-		feederSubsystem = new FeederSubsystem(visual, feederMotor, ledSubsystem);
+		feederSubsystem = new FeederSubsystem(mechVisual, feederMotor, ledSubsystem);
 		intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);
 
 		initRealOrSim();
 
 		targetingSystem = new TargetingSystem(
-				() -> TargetingSystem.getSpeakerTarget(RobotContainer.getAlliance()),
+				() -> TargetingSystem.getSpeakerTarget(GenericRobot.getAlliance()),
 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
 				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera, feederSubsystem, gyro);
 		targetingSystem.useShooterCamera(false);
@@ -485,7 +482,7 @@ public class CompBot_2024 extends GenericMechanism {
 		ledSubsystem.setDefaultCommand(Commands.run(() -> {
 		}, ledSubsystem)
 				.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
-		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
+		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(GenericRobot.chooseAllianceColor());
 	}
 
 	@Override
@@ -519,7 +516,7 @@ public class CompBot_2024 extends GenericMechanism {
 		ledSubsystem.setDefaultCommand(Commands.run(() -> {
 		}, ledSubsystem)
 				.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
-		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(RobotContainer.chooseAllianceColor());
+		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(GenericRobot.chooseAllianceColor());
 
 		driver.createAButton().whileTrue(
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
@@ -577,7 +574,7 @@ public class CompBot_2024 extends GenericMechanism {
 
 		operator.createXButton().onTrue(autoIntake.get());		
 		operator.createBButton().onTrue(new PredefinedAutoShot(
-				AutoShotDefinition.RIGHT_SHOT_MID.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.RIGHT_SHOT_MID.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enablePivot()
 				);
@@ -606,16 +603,16 @@ public class CompBot_2024 extends GenericMechanism {
 			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 			// drive.getDrivetrain().getPoseEstimator()); // Used to be
 			// 28, 20
-			// visionSystem.addPhotonCamera("Right Camera", 3,
-			// new Transform3d(
-			// new Translation3d(Units.inchesToMeters(11.59),
-			// Units.inchesToMeters(-4.682), // -.12
-			// Units.inchesToMeters(8.256)),
-			// new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
-			// new Rotation3d(0, 0,
-			// Units.degreesToRadians(-25)))), // -20
-			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-			// drive.getDrivetrain().getPoseEstimator());
+			visionSystem.addCamera(new PhotonVisionCamera("Right Camera", 3,
+			AprilTags.aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+			new Transform3d(
+			new Translation3d(Units.inchesToMeters(11.59),
+			Units.inchesToMeters(-4.682), // -.12
+			Units.inchesToMeters(8.256)),
+			new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
+			new Rotation3d(0, 0,
+			Units.degreesToRadians(-25)))), // -20
+			() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 			// visionSystem.addPhotonCamera("Left Camera", 2,
 			// new Transform3d(
 			// new Translation3d(Units.inchesToMeters(11.59),
@@ -634,10 +631,11 @@ public class CompBot_2024 extends GenericMechanism {
 					null);
 
 			noteCamera.setUpdateValues(true);
-			visionSystem.addLimeLightCamera("top", 5, () -> gyro);
-			VisionLimeLight topLimeLight = ((VisionLimeLight) visionSystem.getCamera("top"));
-			topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() && neverEnabled ? topLimeLight.getRobotPoseEstimateM1()
-					: topLimeLight.getRobotPoseEstimateM2());
+// THIS IS THE LIMELIGHT APRIL TAG CAMERA			
+			//visionSystem.addLimeLightCamera("top", 5, () -> gyro);
+			//VisionLimeLight topLimeLight = ((VisionLimeLight) visionSystem.getCamera("top"));
+			//topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() && neverEnabled ? topLimeLight.getRobotPoseEstimateM1()
+			//		: topLimeLight.getRobotPoseEstimateM2());
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
 					() -> Units.inchesToMeters(15.448),
@@ -647,13 +645,13 @@ public class CompBot_2024 extends GenericMechanism {
 					"Vision");
 			shooterCamera.cameraRotation(Rotation.DOWN);
 			shooterCamera.setUpdateValues(true);
-			shooterCamera.setTargetTagId(RobotContainer.chooseAllianceColor() == Color.BLUE ? 7 : 4);
+			shooterCamera.setTargetTagId(GenericRobot.chooseAllianceColor() == Color.BLUE ? 7 : 4);
 		}
 	}
 
 	@Override
 	public void initAutoCommands() {
-		allLEDs.setColor(RobotContainer.chooseAllianceColor()).on();
+		allLEDs.setColor(GenericRobot.chooseAllianceColor()).on();
 		drive.initAutoCommands();
 		NamedCommands.registerCommand("Intake Note",
 				runIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding));
@@ -722,48 +720,48 @@ public class CompBot_2024 extends GenericMechanism {
 				Commands.runOnce(() -> pivotSubsystem.setReference(PivotSubsystem.HOME_LEVEL)));
 
 		NamedCommands.registerCommand("Aim Stage Shot Long",
-				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(RobotContainer.getAlliance()),
+				new PredefinedAutoShot(AutoShotDefinition.STAGE_SHOT_LONG.getPose(GenericRobot.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.enableSpinup());
 
 		NamedCommands.registerCommand("Aim Left Shot Long",
-				new PredefinedAutoShot(AutoShotDefinition.LEFT_LONG_SHOT.getPose(RobotContainer.getAlliance()),
+				new PredefinedAutoShot(AutoShotDefinition.LEFT_LONG_SHOT.getPose(GenericRobot.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.enableSpinup()
 						.enablePivot()
 						.enableYaw());
 
 		NamedCommands.registerCommand("Aim Center Shot Long",
-				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_LONG.getPose(RobotContainer.getAlliance()),
+				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_LONG.getPose(GenericRobot.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.enableSpinup());
 
 		NamedCommands.registerCommand("Aim Center Shot Mid",
-				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_MID.getPose(RobotContainer.getAlliance()),
+				new PredefinedAutoShot(AutoShotDefinition.CENTER_SHOT_MID.getPose(GenericRobot.getAlliance()),
 						targetingSystem, pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 						.enableSpinup()
 						.enableYaw());
 
 		NamedCommands.registerCommand("Aim Center Shot Short", new PredefinedAutoShot(
-				AutoShotDefinition.CENTER_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.CENTER_SHOT_SHORT.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot());
 
 		NamedCommands.registerCommand("Aim Center Shot Short NO PIVOT", new PredefinedAutoShot(
-				AutoShotDefinition.CENTER_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.CENTER_SHOT_SHORT.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup());
 
 		NamedCommands.registerCommand("Aim Right Shot Short", new PredefinedAutoShot(
-				AutoShotDefinition.RIGHT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.RIGHT_SHOT_SHORT.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot()
 				.enableYaw());
 
 		NamedCommands.registerCommand("Aim Right Shot Mid", new PredefinedAutoShot(
-				AutoShotDefinition.RIGHT_SHOT_MID.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.RIGHT_SHOT_MID.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot()
@@ -799,39 +797,39 @@ public class CompBot_2024 extends GenericMechanism {
 		}).finallyDo(() -> pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL)));
 
 		NamedCommands.registerCommand("Aim Left Shot Short ", new PredefinedAutoShot(
-				AutoShotDefinition.LEFT_SHOT_SHORT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.LEFT_SHOT_SHORT.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot());
 
 		NamedCommands.registerCommand("Aim Left Speaker Shot", new PredefinedAutoShot(
-				AutoShotDefinition.LEFT_SPEAKER_SHOT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.LEFT_SPEAKER_SHOT.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot()
 				.enableYaw());
 
 		NamedCommands.registerCommand("Aim Right Shot Long", new PredefinedAutoShot(
-				AutoShotDefinition.RIGHT_SHOT_LONG.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.RIGHT_SHOT_LONG.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot()
 				.enableYaw());
 
 		NamedCommands.registerCommand("Aim Note 2", new PredefinedAutoShot(
-				AutoShotDefinition.NOTE_2.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.NOTE_2.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enableYaw());
 
 		NamedCommands.registerCommand("Aim A1 Shot", new PredefinedAutoShot(
-				AutoShotDefinition.A1_SHOT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.A1_SHOT.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot());
 
 		NamedCommands.registerCommand("Aim C8 Shot Until Empty", new PredefinedAutoShot(
-				AutoShotDefinition.C8_SHOT.getPose(RobotContainer.getAlliance()), targetingSystem,
+				AutoShotDefinition.C8_SHOT.getPose(GenericRobot.getAlliance()), targetingSystem,
 				pivotSubsystem, shooterSubsystem, () -> feederSubsystem.getNoteState())
 				.enableSpinup()
 				.enablePivot()

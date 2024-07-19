@@ -7,33 +7,36 @@ package frc.robot.FRC5010.robots;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.constants.SwerveConstants;
+import org.frc5010.common.constants.SwervePorts;
+import org.frc5010.common.drive.swerve.ThriftySwerveModule;
+import org.frc5010.common.mechanisms.Drive;
+import org.frc5010.common.motors.hardware.NEO;
+import org.frc5010.common.motors.hardware.NEO550;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.camera.PhotonVisionCamera;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.sensors.gyro.NavXGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.frc5010.common.vision.AprilTags;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionLimeLightLib;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.arch.GenericMechanism;
-import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.drive.swerve.ThriftySwerveModule;
-import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.motors.hardware.NEO;
-import frc.robot.FRC5010.motors.hardware.NEO550;
-import frc.robot.FRC5010.sensors.Controller;
-import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.NavXGyro;
 
 /** Add your docs here. */
-public class BabySwerve extends GenericMechanism {
+public class BabySwerve extends GenericRobot {
   private SwerveConstants swerveConstants;
-  private VisionSystem vision;
+  private AprilTagPoseSystem vision;
   private Drive drive;
 
-  public BabySwerve(Mechanism2d visual, ShuffleboardTab displayTab) {
-    super(visual, displayTab);
+  public BabySwerve() {
+    super();
     swerveConstants = new SwerveConstants(0.76835, 0.635);
     swerveConstants.setkFrontLeftAbsoluteOffsetRad(0.26);
     swerveConstants.setkFrontRightAbsoluteOffsetRad(-3.14);
@@ -48,7 +51,10 @@ public class BabySwerve extends GenericMechanism {
 
     // VisionPhotonMultiCam multiVision = new VisionPhotonMultiCam("Vision", 1,
     // AprilTags.aprilTagRoomLayout,PoseStrategy.AVERAGE_BEST_TARGETS);
-    vision = new VisionLimeLightLib("orange", 2, AprilTags.aprilTagFieldLayout, new Transform3d());
+    vision = new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
+						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
     /*
      * multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera",
      * new Transform3d( // This describes the vector between the camera lens to the
@@ -67,7 +73,9 @@ public class BabySwerve extends GenericMechanism {
 
     GenericGyro gyro = new NavXGyro(SPI.Port.kMXP);
 
-    drive = new Drive(vision, gyro, Drive.Type.YAGSL_THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants, "");
+    drive =
+        new Drive(
+            vision, gyro, Drive.Type.YAGSL_THRIFTY_SWERVE_DRIVE, swervePorts, swerveConstants, "");
   }
 
   @Override
@@ -81,8 +89,7 @@ public class BabySwerve extends GenericMechanism {
   }
 
   @Override
-  protected void initRealOrSim() {
-  }
+  protected void initRealOrSim() {}
 
   @Override
   public void initAutoCommands() {

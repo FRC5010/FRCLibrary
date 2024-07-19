@@ -4,8 +4,8 @@
 
 package frc.robot.chargedup.commands;
 
-import frc.robot.FRC5010.arch.GenericCommand;
-import frc.robot.FRC5010.subsystems.LedSubsystem;
+import org.frc5010.common.arch.GenericCommand;
+import org.frc5010.common.subsystems.LedSubsystem;
 import frc.robot.chargedup.ElevatorSubsystem;
 import frc.robot.chargedup.IntakeSubsystem;
 

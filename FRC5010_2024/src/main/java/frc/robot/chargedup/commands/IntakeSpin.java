@@ -6,7 +6,7 @@ package frc.robot.chargedup.commands;
 
 import java.util.function.Supplier;
 
-import frc.robot.FRC5010.arch.GenericCommand;
+import org.frc5010.common.arch.GenericCommand;
 import frc.robot.chargedup.IntakeSubsystem;
 
 public class IntakeSpin extends GenericCommand {

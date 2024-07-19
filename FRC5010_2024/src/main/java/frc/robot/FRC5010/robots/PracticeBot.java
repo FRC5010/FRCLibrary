@@ -7,33 +7,36 @@ package frc.robot.FRC5010.robots;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.commands.JoystickToSwerve;
+import org.frc5010.common.constants.SwerveConstants;
+import org.frc5010.common.constants.SwervePorts;
+import org.frc5010.common.drive.swerve.MK4SwerveModule;
+import org.frc5010.common.drive.swerve.SwerveDrivetrain;
+import org.frc5010.common.mechanisms.Drive;
+import org.frc5010.common.motors.hardware.NEO;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.camera.PhotonVisionCamera;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.sensors.gyro.PigeonGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.frc5010.common.subsystems.DriverDisplaySubsystem;
+import org.frc5010.common.subsystems.LedSubsystem;
+import org.frc5010.common.vision.AprilTags;
+import org.frc5010.common.vision.VisionLimeLightSim;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.FRC5010.Vision.AprilTags;
-import frc.robot.FRC5010.Vision.VisionLimeLightSim;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.arch.GenericMechanism;
-import frc.robot.FRC5010.commands.JoystickToSwerve;
-import frc.robot.FRC5010.constants.SwerveConstants;
-import frc.robot.FRC5010.constants.SwervePorts;
-import frc.robot.FRC5010.drive.swerve.MK4SwerveModule;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
-import frc.robot.FRC5010.mechanisms.Drive;
-import frc.robot.FRC5010.motors.hardware.NEO;
-import frc.robot.FRC5010.sensors.Controller;
-import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
-import frc.robot.FRC5010.subsystems.DriverDisplaySubsystem;
-import frc.robot.FRC5010.subsystems.LedSubsystem;
-import frc.robot.chargedup.commands.AutoBalance;
 
 /** Add your docs here. */
-public class PracticeBot extends GenericMechanism {
+public class PracticeBot extends GenericRobot {
   private GenericGyro gyro;
   private SwerveConstants swerveConstants;
   private DriverDisplaySubsystem driverDisplay;
@@ -41,8 +44,8 @@ public class PracticeBot extends GenericMechanism {
   private LedSubsystem ledSubsystem;
   private SwerveDrivetrain swerveDrivetrain;
 
-  public PracticeBot(Mechanism2d visual, ShuffleboardTab displayTab) {
-    super(visual, displayTab);
+  public PracticeBot() {
+    super();
     swerveConstants = new SwerveConstants(Units.inchesToMeters(24.25), Units.inchesToMeters(20.5));
     swerveConstants.setkFrontLeftAbsoluteOffsetRad(2.856);
     swerveConstants.setkFrontRightAbsoluteOffsetRad(2.444 + Math.PI);
@@ -57,7 +60,11 @@ public class PracticeBot extends GenericMechanism {
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
 
-    VisionSystem multiVision = new VisionLimeLightSim("", 0, AprilTags.aprilTagFieldLayout, new Transform3d());
+    AprilTagPoseSystem multiVision =
+        new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
+						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
+								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 
     visionTab.addCamera("DriverCam", "DriverCam", "10.50.10.11").withSize(3, 3);
 
@@ -86,7 +93,9 @@ public class PracticeBot extends GenericMechanism {
 
     gyro = new PigeonGyro(11);
 
-    drive = new Drive(multiVision, gyro, Drive.Type.YAGSL_MK4_SWERVE_DRIVE, swervePorts, swerveConstants, "");
+    drive =
+        new Drive(
+            multiVision, gyro, Drive.Type.YAGSL_MK4_SWERVE_DRIVE, swervePorts, swerveConstants, "");
     ledSubsystem = new LedSubsystem(1, 60);
     // multiVision.setDrivetrainPoseEstimator(drive.getDrivetrain().getPoseEstimator());
 
@@ -102,10 +111,16 @@ public class PracticeBot extends GenericMechanism {
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
-    driver.createYButton()
-        .whileTrue(new AutoBalance(drive.getDrivetrain(), () -> !driver.createStartButton().getAsBoolean(), gyro));
-    driver.createAButton()
-        .whileTrue(new JoystickToSwerve(swerveDrivetrain, () -> 0.5, () -> 0.0, () -> 0.5, () -> true));
+    driver
+        .createAButton()
+        .whileTrue(
+            new JoystickToSwerve(
+                swerveDrivetrain,
+                () -> 0.5,
+                () -> 0.0,
+                () -> 0.5,
+                () -> true,
+                () -> GenericRobot.getAlliance()));
 
     // driver.createBButton().whileTrue(new DriveToPosition((SwerveDrivetrain)
     // drive.getDrivetrain(),
@@ -126,7 +141,9 @@ public class PracticeBot extends GenericMechanism {
     // ledSubsystem, LCR.right));
 
     SwerveDrivetrain swerveDrivetrain = (SwerveDrivetrain) drive.getDrivetrain();
-    driver.createLeftBumper().whileTrue(new RunCommand(() -> swerveDrivetrain.lockWheels(), swerveDrivetrain));
+    driver
+        .createLeftBumper()
+        .whileTrue(new RunCommand(() -> swerveDrivetrain.lockWheels(), swerveDrivetrain));
 
     drive.configureButtonBindings(driver, operator);
   }
@@ -137,8 +154,7 @@ public class PracticeBot extends GenericMechanism {
   }
 
   @Override
-  protected void initRealOrSim() {
-  }
+  protected void initRealOrSim() {}
 
   @Override
   public Command generateAutoCommand(Command autoCommand) {

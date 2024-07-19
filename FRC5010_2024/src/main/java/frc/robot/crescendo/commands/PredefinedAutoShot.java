@@ -15,7 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FRC5010.arch.GenericCommand;
+import org.frc5010.common.arch.GenericCommand;
 import frc.robot.crescendo.Constants;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.PivotSubsystem;

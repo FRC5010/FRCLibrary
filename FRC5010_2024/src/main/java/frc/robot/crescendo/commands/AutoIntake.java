@@ -15,10 +15,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.arch.GenericCommand;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
-import frc.robot.FRC5010.mechanisms.Drive;
+import org.frc5010.common.vision.VisionSystem;
+import org.frc5010.common.arch.GenericCommand;
+import org.frc5010.common.drive.swerve.SwerveDrivetrain;
+import org.frc5010.common.mechanisms.Drive;
 import frc.robot.chargedup.IntakeSubsystem;
 
 public class AutoIntake extends GenericCommand {

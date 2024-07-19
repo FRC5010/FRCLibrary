@@ -6,8 +6,8 @@ package frc.robot;
 
 import com.pathplanner.lib.util.PIDConstants;
 
-import frc.robot.FRC5010.arch.Persisted;
-import frc.robot.FRC5010.mechanisms.DriveConstantsDef;
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.mechanisms.DriveConstantsDef;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide

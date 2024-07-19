@@ -34,10 +34,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.FRC5010.arch.GenericSubsystem;
-import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.motors.SystemIdentification;
-import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.SystemIdentification;
+import org.frc5010.common.sensors.encoder.SimulatedEncoder;
 import frc.robot.RobotContainer.LogLevel;
 
 public class PivotSubsystem extends GenericSubsystem {

@@ -1,0 +1,8 @@
+{
+    "name": "operator",
+    "port": 1,
+    "axis": [
+        "operator_left_y.json",
+        "operator_right_y.json"
+    ]
+}
