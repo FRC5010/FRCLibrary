@@ -55,6 +55,14 @@ public class RobotContainer implements WpiHelperInterface {
 
 	public static LogLevel logLevel = LogLevel.DEBUG;
 
+	// Different power modes for demo and competition
+    public enum PowerMode {
+        DEMO,
+        COMPETITION
+    }
+
+    public static PowerMode powerMode = PowerMode.COMPETITION;
+
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
@@ -79,6 +87,14 @@ public class RobotContainer implements WpiHelperInterface {
 	public static void setLoggingLevel(LogLevel level) {
 		logLevel = level;
 	}
+
+	public static PowerMode getPowerMode() {
+        return powerMode;
+    }
+
+    public static void setPowerMode(PowerMode mode) {
+        powerMode = mode;
+    }
 
 	public static String WHO_AM_I = "WhoAmI";
 	private static Persisted<String> whoAmI = new Persisted<>(WHO_AM_I, "Simulator");

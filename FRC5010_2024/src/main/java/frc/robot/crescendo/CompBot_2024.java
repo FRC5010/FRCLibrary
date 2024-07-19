@@ -49,6 +49,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.PowerMode;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.AutoIntake;
@@ -108,6 +110,8 @@ public class CompBot_2024 extends GenericRobot {
 
 		GenericRobot.setLoggingLevel(LogLevel.COMPETITION);
 
+		RobotContainer.setPowerMode(PowerMode.COMPETITION);
+
 		ledSubsystem = new SegmentedLedSystem(0, 34, mechVisual);
 		ledSubsystem.setWholeStripState((Integer i) -> GenericRobot.chooseAllianceColor().getColor8Bit());
 
@@ -130,10 +134,12 @@ public class CompBot_2024 extends GenericRobot {
 
 		topShooterMotor = (KrakenX60) MotorFactory.KrakenX60(12).invert(true); // OLD RIGHT: -0.29845
 		topShooterMotor.enableFOC(false);
-		topShooterMotor.setCurrentLimit(100);
+		// topShooterMotor.setCurrentLimit(100);
+		configureShooterMotor(topShooterMotor);
 		bottomShooterMotor = (KrakenX60) MotorFactory.KrakenX60(14).invert(true);
 		bottomShooterMotor.enableFOC(false);
-		bottomShooterMotor.setCurrentLimit(100);
+		// bottomShooterMotor.setCurrentLimit(100);
+		configureShooterMotor(bottomShooterMotor);
 
 		visionSystem = new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
 						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
@@ -165,12 +171,14 @@ public class CompBot_2024 extends GenericRobot {
 		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
 				new MotorFeedFwdConstants(0.18096, 2.2915, 0.37156)); // BR
 
-		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
-		swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+		// swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
+		// swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
 
-		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(3);
-		swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
-		swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
+		// swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(3);
+		// swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+		// swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
+
+		configureSwerveConstants();
 
 		drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
 				"mk4i_L3_kraken_neo");
@@ -840,5 +848,30 @@ public class CompBot_2024 extends GenericRobot {
 	public Command generateAutoCommand(Command autoCommand) {
 		neverEnabled = false;
 		return drive.generateAutoCommand(autoCommand);
+	}
+
+	// Reduces power consumption of shooter motors if in demo mode
+	private void configureShooterMotor(KrakenX60 motor) {
+		if (RobotContainer.getPowerMode() == PowerMode.DEMO) {
+			motor.setCurrentLimit(60);
+		} else {
+			motor.setCurrentLimit(100);
+		}
+	}
+
+	// Reduces acceleration and velocity limits if in demo mode
+	private void configureSwerveConstants() {
+		if (RobotContainer.getPowerMode() == PowerMode.DEMO) {
+			swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(3);
+			swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(3);
+			swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(1.5);
+			swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(2.5 * Math.PI);
+		} else {
+			swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
+			swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+			swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(3);
+			swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+		}
+		swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
 	}
 }
