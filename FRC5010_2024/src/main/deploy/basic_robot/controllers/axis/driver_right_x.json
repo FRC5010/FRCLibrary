@@ -1,0 +1,8 @@
+{
+    "channel" : 4,
+    "deadband" : 0.07,
+    "invert" : true,
+    "scale" : 1.0,
+    "curvePower" : 3,
+    "limit" : 1.0
+}

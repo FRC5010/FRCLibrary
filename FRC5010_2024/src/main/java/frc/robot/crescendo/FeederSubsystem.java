@@ -17,17 +17,17 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Robot;
-import frc.robot.FRC5010.arch.GenericSubsystem;
-import frc.robot.FRC5010.constants.GenericPID;
-import frc.robot.FRC5010.motors.MotorController5010;
-import frc.robot.FRC5010.motors.PIDController5010;
-import frc.robot.FRC5010.motors.PIDController5010.PIDControlType;
-import frc.robot.FRC5010.motors.SystemIdentification;
-import frc.robot.FRC5010.motors.hardware.NEO;
-import frc.robot.FRC5010.sensors.encoder.GenericEncoder;
-import frc.robot.FRC5010.sensors.encoder.SimulatedEncoder;
-import frc.robot.FRC5010.subsystems.Color;
-import frc.robot.FRC5010.subsystems.SegmentedLedSystem;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.PIDController5010;
+import org.frc5010.common.motors.PIDController5010.PIDControlType;
+import org.frc5010.common.motors.SystemIdentification;
+import org.frc5010.common.motors.hardware.NEO;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
+import org.frc5010.common.sensors.encoder.SimulatedEncoder;
+import org.frc5010.common.subsystems.Color;
+import org.frc5010.common.subsystems.SegmentedLedSystem;
 import swervelib.math.SwerveMath;
 
 public class FeederSubsystem extends GenericSubsystem {

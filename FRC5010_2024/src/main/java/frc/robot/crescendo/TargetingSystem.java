@@ -21,11 +21,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.FRC5010.Vision.VisionSystem;
-import frc.robot.FRC5010.arch.GenericSubsystem;
-import frc.robot.FRC5010.drive.swerve.SwerveDrivetrain;
-import frc.robot.FRC5010.sensors.gyro.GenericGyro;
-import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
+import org.frc5010.common.vision.VisionSystem;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.drive.swerve.SwerveDrivetrain;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.sensors.gyro.PigeonGyro;
 
 /** Add your docs here. */
 public class TargetingSystem extends GenericSubsystem {

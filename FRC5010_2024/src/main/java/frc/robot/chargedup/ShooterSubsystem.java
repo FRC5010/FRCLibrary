@@ -5,7 +5,7 @@
 package frc.robot.chargedup;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.FRC5010.motors.MotorController5010;
+import org.frc5010.common.motors.MotorController5010;
 
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new Shooter. */
