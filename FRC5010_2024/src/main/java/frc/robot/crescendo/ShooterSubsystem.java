@@ -100,13 +100,13 @@ public class ShooterSubsystem extends GenericSubsystem {
     values.declare(vals.TOP_SHOOTER_KS.name(), 0.3);
     values.declare(vals.TOP_SHOOTER_KA.name(), 0.0002);
     values.declare(vals.TOP_SHOOTER_KD.name(), 0.0);
-    values.declare(vals.TOP_SHOOTER_KI.name(), 0.000001);
+    values.declare(vals.TOP_SHOOTER_KI.name(), 0.00001);
     values.declare(vals.BOTTOM_SHOOTER_KP.name(), 0.0);
     values.declare(vals.BOTTOM_SHOOTER_KV.name(), 0.002);
     values.declare(vals.BOTTOM_SHOOTER_KS.name(), 0.3);
     values.declare(vals.BOTTOM_SHOOTER_KA.name(), 0.0001);
     values.declare(vals.BOTTOM_SHOOTER_KD.name(), 0.0);
-    values.declare(vals.BOTTOM_SHOOTER_KI.name(), 0.000001);
+    values.declare(vals.BOTTOM_SHOOTER_KI.name(), 0.00001);
 
     topFeedFwd = new SimpleMotorFeedforward(values.getDouble(vals.TOP_SHOOTER_KS.name()),
         values.getDouble(vals.TOP_SHOOTER_KV.name()), values.getDouble(vals.TOP_SHOOTER_KA.name()));
@@ -121,13 +121,13 @@ public class ShooterSubsystem extends GenericSubsystem {
 
     topPID.setP(values.getDouble(vals.TOP_SHOOTER_KP.name()));
     topPID.setI(values.getDouble(vals.TOP_SHOOTER_KI.name()));
-    topPID.setIZone(100);
+    topPID.setIZone(200);
     topPID.setD(values.getDouble(vals.TOP_SHOOTER_KD.name()));
     topPID.setTolerance(DEFAULT_TOLERANCE);
 
     bottomPID.setP(values.getDouble(vals.BOTTOM_SHOOTER_KP.name()));
     bottomPID.setI(values.getDouble(vals.BOTTOM_SHOOTER_KI.name()));
-    bottomPID.setIZone(100);
+    bottomPID.setIZone(200);
     bottomPID.setD(values.getDouble(vals.BOTTOM_SHOOTER_KD.name()));
     bottomPID.setTolerance(DEFAULT_TOLERANCE);
 
