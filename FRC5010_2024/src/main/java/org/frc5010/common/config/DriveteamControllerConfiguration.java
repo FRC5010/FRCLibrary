@@ -7,6 +7,7 @@ package org.frc5010.common.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.frc5010.common.config.json.DriveteamControllerAxisJson;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.sensors.Controller.Axis;
 

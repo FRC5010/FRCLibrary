@@ -1,13 +1,5 @@
 package swervelib;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -30,6 +22,13 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.imu.Pigeon2Swerve;
 import swervelib.imu.SwerveIMU;
@@ -102,6 +101,10 @@ public class SwerveDrive
    * Whether to correct heading when driving translationally. Set to true to enable.
    */
   public        boolean                  headingCorrection                               = false;
+  /**
+   * Amount of seconds the duration of the timestep the speeds should be applied for.
+   */
+  private       double                   discretizationdtSeconds                         = 0.02;
   /**
    * Deadband for speeds in heading correction.
    */
@@ -344,6 +347,21 @@ public class SwerveDrive
   }
 
   /**
+   * Tertiary method of controlling the drive base given velocity in both field oriented and robot oriented at the same
+   * time. The inputs are added together so this is not intneded to be used to give the driver both methods of control.
+   *
+   * @param fieldOrientedVelocity The field oriented velocties to use
+   * @param robotOrientedVelocity The robot oriented velocties to use
+   */
+  public void driveFieldOrientedandRobotOriented(ChassisSpeeds fieldOrientedVelocity,
+                                                 ChassisSpeeds robotOrientedVelocity)
+  {
+    ChassisSpeeds TotalVelocties = ChassisSpeeds.fromFieldRelativeSpeeds(fieldOrientedVelocity, getOdometryHeading())
+                                                .plus(robotOrientedVelocity);
+    drive(TotalVelocties);
+  }
+
+  /**
    * Secondary method of controlling the drive base given velocity and adjusting it for field oriented use.
    *
    * @param velocity Velocity of the robot desired.
@@ -465,7 +483,7 @@ public class SwerveDrive
     // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
     if (chassisVelocityCorrection)
     {
-      velocity = ChassisSpeeds.discretize(velocity, 0.02);
+      velocity = ChassisSpeeds.discretize(velocity, discretizationdtSeconds);
     }
 
     // Heading Angular Velocity Deadband, might make a configuration option later.
@@ -486,7 +504,7 @@ public class SwerveDrive
     }
 
     // Display commanded speed for testing
-    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
+    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.INFO)
     {
       SmartDashboard.putString("RobotVelocity", velocity.toString());
     }
@@ -502,7 +520,6 @@ public class SwerveDrive
 
     setRawModuleStates(swerveModuleStates, isOpenLoop);
   }
-
 
   /**
    * Set the maximum speeds for desaturation.
@@ -1123,11 +1140,11 @@ public class SwerveDrive
    * Pushes the Absolute Encoder offsets to the Encoder or Motor Controller, depending on type. Also removes the
    * internal offsets to prevent double offsetting.
    */
-  public void pushOffsetsToControllers()
+  public void pushOffsetsToEncoders()
   {
     for (SwerveModule module : swerveModules)
     {
-      module.pushOffsetsToControllers();
+      module.pushOffsetsToEncoders();
     }
   }
 
@@ -1155,6 +1172,19 @@ public class SwerveDrive
     {
       module.configuration.useCosineCompensator = enabled;
     }
+  }
+
+  /**
+   * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction
+   *
+   * @param enable    Enable chassis velocity correction, which will use
+   *                  {@link ChassisSpeeds#discretize(ChassisSpeeds, double)} with the following.
+   * @param dtSeconds The duration of the timestep the speeds should be applied for.
+   */
+  public void setChassisDiscretization(boolean enable, double dtSeconds)
+  {
+    chassisVelocityCorrection = enable;
+    discretizationdtSeconds = dtSeconds;
   }
 
 }

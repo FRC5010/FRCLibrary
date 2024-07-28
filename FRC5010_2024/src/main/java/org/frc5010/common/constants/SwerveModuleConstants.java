@@ -10,7 +10,6 @@ import java.util.Map;
 /** Add your docs here. */
 public class SwerveModuleConstants {
 
-  private double kWheelDiameterMeters; // = Units.inchesToMeters(3);
   private double kDriveMotorGearRatio; // = 1/5.25;
   private double kTurningMotorGearRatio; // = 1/((5.33) * 10.5); // not 12:1 but 10.5 for gearbox,
   // ultraplanetaries are not nominal
@@ -23,6 +22,10 @@ public class SwerveModuleConstants {
   private boolean encoderInv;
   private Map<String, MotorFeedFwdConstants> driveMotorFF = new HashMap<>();
 
+  public SwerveModuleConstants() {
+	this(0.0, 0.0, false, 0.0, false, false);
+  }
+  
   public SwerveModuleConstants(
       double kWheelDiameterMeters,
       double kDriveMotorGearRatio,
@@ -31,7 +34,6 @@ public class SwerveModuleConstants {
       boolean turningInv,
       boolean encoderInv) {
 
-    this.kWheelDiameterMeters = kWheelDiameterMeters;
     this.kDriveMotorGearRatio = kDriveMotorGearRatio;
     this.drivingInv = drivingInv;
     this.kTurningMotorGearRatio = kTurningMotorGearRatio;
@@ -65,14 +67,6 @@ public class SwerveModuleConstants {
 
   public void setEncoderInv(boolean encoderInv) {
     this.encoderInv = encoderInv;
-  }
-
-  public double getkWheelDiameterMeters() {
-    return kWheelDiameterMeters;
-  }
-
-  public void setkWheelDiameterMeters(double kWheelDiameterMeters) {
-    this.kWheelDiameterMeters = kWheelDiameterMeters;
   }
 
   public double getkDriveMotorGearRatio() {

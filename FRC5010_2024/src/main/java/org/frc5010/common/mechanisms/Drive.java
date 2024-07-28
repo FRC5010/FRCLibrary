@@ -134,19 +134,19 @@ public class Drive extends GenericMechanism {
   private void initializeYAGSLSwerveDrive(String driveTrainFolder) {
     drivetrain =
         new YAGSLSwerveDrivetrain(
-            mechVisual, gyro, (SwerveConstants) driveConstants, driveTrainFolder, vision);
+            mechVisual, driveConstants, ((SwerveConstants)driveConstants).getSwerveModuleConstants().getkTurningMotorGearRatio(), driveTrainFolder, vision);
   }
 
   private void initializeYAGSLMK4SwerveDrive() {
     drivetrain =
         new YAGSLSwerveDrivetrain(
-            mechVisual, gyro, (SwerveConstants) driveConstants, "swervemk4", vision);
+            mechVisual, driveConstants, ((SwerveConstants)driveConstants).getSwerveModuleConstants().getkTurningMotorGearRatio(), "swervemk4", vision);
   }
 
   private void initializeYAGSLThriftySwerveDrive() {
     drivetrain =
         new YAGSLSwerveDrivetrain(
-            mechVisual, gyro, (SwerveConstants) driveConstants, "swervethrifty", vision);
+            mechVisual, driveConstants, ((SwerveConstants)driveConstants).getSwerveModuleConstants().getkTurningMotorGearRatio(), "swervethrifty", vision);
   }
 
   public Command getDefaultCommand() {

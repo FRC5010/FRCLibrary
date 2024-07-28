@@ -109,6 +109,14 @@ public class ADXRS450Swerve extends SwerveIMU
   }
 
   /**
+   * Fetch the gyro rate from the IMU in radians per second. If gyro rate isn't supported returns empty.
+   * @return double of the gyro rate as an {@link Optional}.
+   */
+  public Optional<Double> getRate() {
+	return Optional.of(imu.getRate());
+  }
+
+  /**
    * Get the instantiated IMU object.
    *
    * @return IMU object.

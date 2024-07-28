@@ -1,0 +1,10 @@
+{
+    "directory": "mk4i_L3_kraken_neo",
+    "turningMotorGearRatio": 1.0,
+    "driveModules": [
+        "frontleft.json",
+        "frontright.json",
+        "backleft.json",
+        "backright.json"
+    ]
+}

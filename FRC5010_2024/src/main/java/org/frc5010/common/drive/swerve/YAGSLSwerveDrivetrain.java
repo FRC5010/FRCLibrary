@@ -16,6 +16,7 @@ import java.util.function.DoubleSupplier;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.commands.JoystickToSwerve;
 import org.frc5010.common.constants.Constants.AutonConstants;
+import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
@@ -82,22 +83,22 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   public YAGSLSwerveDrivetrain(
       Mechanism2d mechVisual,
-      GenericGyro gyro,
-      SwerveConstants swerveConstants,
+      GenericDrivetrainConstants constants,
+	  double kTurningMotorGearRatio,
       String swerveType,
       AprilTagPoseSystem visionSystem) {
-    super(mechVisual, gyro, swerveConstants);
+    super(mechVisual, constants);
 
-    this.maximumSpeed = swerveConstants.getkPhysicalMaxSpeedMetersPerSecond();
+    this.maximumSpeed = constants.getkPhysicalMaxSpeedMetersPerSecond();
 
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     // In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     // The encoder resolution per motor revolution is 1 per motor revolution.
     double angleGearRatio =
-        1.0 / swerveConstants.getSwerveModuleConstants().getkTurningMotorGearRatio();
-    double wheelDiameter = swerveConstants.getSwerveModuleConstants().getkWheelDiameterMeters();
+        1.0 / kTurningMotorGearRatio;
+    double wheelDiameter = constants.getWheelDiameter();
     double driveGearRatio =
-        1.0 / swerveConstants.getSwerveModuleConstants().getkDriveMotorGearRatio();
+        1.0 / constants.getkDriveMotorGearRatio();
     double angleConversionFactor =
         SwerveMath.calculateDegreesPerSteeringRotation(angleGearRatio, 1);
 
@@ -122,7 +123,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
       swerveDrive =
           new SwerveParser(swerveJsonDirectory)
-              .createSwerveDrive(maximumSpeed, 360, driveConversionFactor); // Use
+              .createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor); // Use
       // correct
       // angleMotorConversionFactor
       // later
@@ -139,7 +140,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // not seen in real life.
 
     /** 5010 Code */
-    if (swerveConstants.getSwerveModuleConstants().getDriveFeedForward().size() > 0) {
+	SwerveConstants swerveConstants = (SwerveConstants) constants;
+	if (swerveConstants.getSwerveModuleConstants().getDriveFeedForward().size() > 0) {
       Map<String, MotorFeedFwdConstants> motorFFMap =
           swerveConstants.getSwerveModuleConstants().getDriveFeedForward();
       Map<String, SwerveModule> swerveModuleMap = swerveDrive.getModuleMap();
@@ -153,7 +155,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
                 swerveModuleMap.get(module).setFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
               });
     }
-    poseEstimator = new DrivePoseEstimator(new YAGSLSwervePose(gyro, this), visionSystem);
+
+	poseEstimator = new DrivePoseEstimator(new YAGSLSwervePose(null, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
 
     SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceColor().toString());
@@ -648,6 +651,11 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     swerveDrive.resetDriveEncoders();
     swerveDrive.synchronizeModuleEncoders();
   }
+
+  @Override
+  public double getGyroRate() {
+	return swerveDrive.getGyro().getRate().orElse(0.0);
+  } 
 
   public void drive5010(ChassisSpeeds direction) {
     // Thank you to Jared Russell FRC254 for Open Loop Compensation Code

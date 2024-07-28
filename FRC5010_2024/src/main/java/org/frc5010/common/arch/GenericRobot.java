@@ -3,8 +3,10 @@ package org.frc5010.common.arch;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.frc5010.common.config.RobotParser;
+import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.subsystems.Color;
@@ -12,6 +14,7 @@ import org.frc5010.common.telemetery.WpiDataLogging;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -30,6 +33,7 @@ public abstract class GenericRobot extends GenericMechanism {
 	private Map<String, GenericSubsystem> subsystems = new HashMap<>();
 	private Map<String, Controller> controllers = new HashMap<>();
 	private RobotParser parser;
+	private GenericDrivetrainConstants drivetrainConstants = new GenericDrivetrainConstants();
 
 	public enum LogLevel {
 		DEBUG,
@@ -90,6 +94,10 @@ public abstract class GenericRobot extends GenericMechanism {
 
 	public static void setLoggingLevel(LogLevel level) {
 		logLevel = level;
+	}
+
+	public Mechanism2d getMechVisual() {
+		return mechVisual;
 	}
 
 	@Override
@@ -166,5 +174,17 @@ public abstract class GenericRobot extends GenericMechanism {
 
 	public void addSubsystem(String name, GenericSubsystem subsystem) {
 		subsystems.put(name, subsystem);
+	}
+
+	public Supplier<Pose2d> getPoseSupplier() {
+		return () -> new Pose2d();
+	}
+
+	public GenericDrivetrainConstants getDrivetrainConstants() {
+		return drivetrainConstants;
+	}
+
+	public void setDrivetrainConstants(GenericDrivetrainConstants constants) {
+		this.drivetrainConstants = constants;
 	}
 }

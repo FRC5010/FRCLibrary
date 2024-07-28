@@ -10,8 +10,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 /** Add your docs here. */
 public class SwerveConstants extends GenericDrivetrainConstants {
   // public variables
-  private double DRIVETRAIN_TRACKWIDTH_METERS;
-  private double DRIVETRAIN_WHEELBASE_METERS;
 
   private SwerveDriveKinematics kinematics;
 
@@ -42,6 +40,11 @@ public class SwerveConstants extends GenericDrivetrainConstants {
                 -DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
   }
 
+  public SwerveConstants(GenericDrivetrainConstants constants) {
+	 super(constants);
+	 swerveModuleConstants = new SwerveModuleConstants();
+  }
+  
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
   }

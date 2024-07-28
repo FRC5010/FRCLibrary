@@ -4,6 +4,7 @@
 
 package org.frc5010.common.sensors.camera;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -19,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class LimeLightCamera extends GenericCamera {
-	PoseEstimate poseEstimate = null;
+	Optional<PoseEstimate> poseEstimate = Optional.empty();
 	Supplier<GenericGyro> gyroSupplier;
 	BooleanSupplier megatagChooser;
 
@@ -29,37 +30,45 @@ public class LimeLightCamera extends GenericCamera {
 		this.megatagChooser = megatagChooser;
 	}
 
-	protected PoseEstimate getRobotPoseEstimateM1() {
+		public LimeLightCamera(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot) {
+		super("limelight-" + name, colIndex, fieldLayout, cameraToRobot);
+	}
 
-		PoseEstimate poseEstimate = processPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
-		if (null != poseEstimate.pose) {
-			SmartDashboard.putNumber("MT1 Angle", poseEstimate.pose.getRotation().getDegrees());
-			gyroSupplier.get().setAngle(poseEstimate.pose.getRotation().getDegrees());
+	protected Optional<PoseEstimate> getRobotPoseEstimateM1() {
+
+		Optional<PoseEstimate> poseEstimate = processPoseEstimate(
+			Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue(name)));
+		if (poseEstimate.isPresent() && null != poseEstimate.get().pose) {
+			SmartDashboard.putNumber("MT1 Angle", poseEstimate.get().pose.getRotation().getDegrees());
+			gyroSupplier.get().setAngle(poseEstimate.get().pose.getRotation().getDegrees());
 		}
 
 		return poseEstimate;
 	}
 
-	protected PoseEstimate getRobotPoseEstimateM2() {
-		PoseEstimate poseEstimate = processPoseEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name));
-		if (poseEstimate.avgTagDist < 3) {
+	protected Optional<PoseEstimate> getRobotPoseEstimateM2() {
+		Optional<PoseEstimate> poseEstimate = processPoseEstimate(
+				Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name)));
+		if (poseEstimate.isPresent() && poseEstimate.get().avgTagDist < 3) {
 			getRobotPoseEstimateM1();
 		}
 		return poseEstimate;
 	}
 
-	private PoseEstimate processPoseEstimate(PoseEstimate poseEstimate) {
-		Pose2d pose = poseEstimate.pose;
+	private Optional<PoseEstimate> processPoseEstimate(Optional<PoseEstimate> poseEstimate) {
+		if (poseEstimate.isPresent()) {
+			Pose2d pose = poseEstimate.get().pose;
 
-		if (poseEstimate.tagCount == 0) {
-			pose = null;
+			if (poseEstimate.get().tagCount == 0) {
+				pose = null;
+			}
+
+			if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 180) {
+				pose = null;
+			}
+
+			poseEstimate.get().pose = pose;
 		}
-
-		if (null != gyroSupplier && Math.abs(gyroSupplier.get().getRate()) > 180) {
-			pose = null;
-		}
-
-		poseEstimate.pose = pose;
 		return poseEstimate;
 	}
 
@@ -96,12 +105,12 @@ public class LimeLightCamera extends GenericCamera {
 
 	@Override
 	public double getLatency() {
-		return poseEstimate.timestampSeconds;
+		return poseEstimate.map(it -> it.timestampSeconds).orElse(0.0);
 	}
 
 	@Override
 	public Pose3d getRobotPose() {
-		return new Pose3d(poseEstimate.pose);
+		return new Pose3d(poseEstimate.map(it -> it.pose).orElse(null));
 	}
 
 	@Override

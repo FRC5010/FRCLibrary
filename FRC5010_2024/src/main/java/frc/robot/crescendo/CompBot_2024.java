@@ -160,8 +160,9 @@ public class CompBot_2024 extends GenericRobot {
 		// Setup Swerve Constants
 
 		swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3_KRAKEN_NEO);
+		swerveConstants.getSwerveModuleConstants().setkTurningMotorGearRatio(1.0);
 		swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
-		swerveConstants.getSwerveModuleConstants().setkWheelDiameterMeters(0.103386904);
+		swerveConstants.setWheelDiameter(0.103386904);
 		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft",
 				new MotorFeedFwdConstants(0.21848, 2.3118, 0.20314)); // FL
 		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright",

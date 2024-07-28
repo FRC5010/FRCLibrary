@@ -1,0 +1,7 @@
+{
+  "cameras": [
+    "front_center.json",
+    "back_left.json",
+    "back_center.json"
+  ]
+}

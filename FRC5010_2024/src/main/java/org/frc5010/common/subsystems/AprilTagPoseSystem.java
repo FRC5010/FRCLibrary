@@ -35,6 +35,9 @@ public class AprilTagPoseSystem extends CameraSystem {
 	}
 
 	public void addCamera(GenericCamera camera) {
+		if (null == this.camera) {
+			this.camera = camera;
+		}
 		cameras.add(camera);
 		camera.registerUpdater(() -> robotPose3ds.put(camera.name(), camera.getRobotPose()));
 		camera.registerUpdater(() -> targetPose3ds.put(camera.name(), camera.getRobotToTargetPose()));

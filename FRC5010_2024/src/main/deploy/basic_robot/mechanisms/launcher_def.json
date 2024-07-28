@@ -1,0 +1,5 @@
+{
+    "type": "launcher",
+    "name": "Launcher",
+    "settings": "launcher_settings.json"    
+}

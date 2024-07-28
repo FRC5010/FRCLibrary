@@ -98,4 +98,13 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   }
 
   public void resetEncoders() {}
+
+  public Command generateAutoCommand(Command autoCommand) {
+    return autoCommand
+        .beforeStarting(
+            () -> {
+              resetEncoders();
+            })
+        .until(() -> hasIssues());
+  }
 }

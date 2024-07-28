@@ -1,0 +1,13 @@
+{
+    "userConfig": "competition_mode.json",
+    "logLevel": "COMPETITION",
+    "driveType": "YAGSL_SWERVE_DRIVE",
+    "trackWidth": 16.8,
+    "wheelBase": 18.5,
+    "wheelDiameter": 0.103386904,
+    "physicalMaxSpeed": 5.93,
+    "driveMotorGearRatio": 1.0,
+    "mechanismDefinitions": [
+        "launcher_def.json"
+    ]
+}
