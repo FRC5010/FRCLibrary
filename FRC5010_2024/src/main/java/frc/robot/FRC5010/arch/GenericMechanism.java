@@ -4,6 +4,10 @@
 
 package frc.robot.FRC5010.arch;
 
+import org.frc5010.common.arch.WpiHelperInterface;
+import org.frc5010.common.arch.WpiNetworkTableValuesHelper;
+import org.frc5010.common.sensors.Controller;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.util.sendable.Sendable;
@@ -13,7 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FRC5010.sensors.Controller;
+
 
 /**
  * GenericMechanism should be used as the parent class of any mechanism

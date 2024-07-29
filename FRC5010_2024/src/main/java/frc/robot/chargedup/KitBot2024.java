@@ -5,6 +5,7 @@
 package frc.robot.chargedup;
 
 import org.frc5010.common.arch.GenericMechanism;
+import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.swerve.MK4iSwerveModule;
@@ -29,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.chargedup.commands.RunShooter;
 
 /** Add your docs here. */
-public class KitBot2024 extends GenericMechanism {
+public class KitBot2024 extends GenericRobot {
         private SwerveConstants swerveConstants;
         private Drive drive;
         private DriverDisplaySubsystem driverDiplay;
@@ -44,8 +45,8 @@ public class KitBot2024 extends GenericMechanism {
 
         private JoystickButton shootButton;
 
-        public KitBot2024(Mechanism2d visual, ShuffleboardTab displayTab) {
-                super(visual, displayTab);
+        public KitBot2024() {
+                super();
                 swerveConstants = new SwerveConstants(Units.inchesToMeters(22), Units.inchesToMeters(26.5));
 
                 // Baby Swerve values need to be changed

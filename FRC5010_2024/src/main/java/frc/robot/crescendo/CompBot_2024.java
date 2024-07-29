@@ -19,6 +19,7 @@ import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.hardware.KrakenX60;
 import org.frc5010.common.motors.hardware.NEO;
 import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.camera.LimeLightCamera;
 import org.frc5010.common.sensors.camera.PhotonVisionCamera;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
@@ -49,6 +50,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.FRC5010.arch.GenericMechanism;
 import frc.robot.crescendo.FeederSubsystem.NoteState;
 import frc.robot.crescendo.commands.AutoAim;
 import frc.robot.crescendo.commands.AutoIntake;
@@ -135,10 +137,8 @@ public class CompBot_2024 extends GenericRobot {
 		bottomShooterMotor.enableFOC(false);
 		bottomShooterMotor.setCurrentLimit(100);
 
-		visionSystem = new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
-						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
-								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
-						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
+		visionSystem = new AprilTagPoseSystem();
+		visionSystem.addCamera(new LimeLightCamera("top", 5, AprilTags.aprilTagFieldLayout, new Transform3d(), () -> RobotState.isDisabled() && neverEnabled));
 
 		gyro = new PigeonGyro(13);
 
@@ -603,16 +603,16 @@ public class CompBot_2024 extends GenericRobot {
 			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 			// drive.getDrivetrain().getPoseEstimator()); // Used to be
 			// 28, 20
-			visionSystem.addCamera(new PhotonVisionCamera("Right Camera", 3,
-			AprilTags.aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-			new Transform3d(
-			new Translation3d(Units.inchesToMeters(11.59),
-			Units.inchesToMeters(-4.682), // -.12
-			Units.inchesToMeters(8.256)),
-			new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
-			new Rotation3d(0, 0,
-			Units.degreesToRadians(-25)))), // -20
-			() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
+			// visionSystem.addCamera(new PhotonVisionCamera("Right Camera", 3,
+			// AprilTags.aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+			// new Transform3d(
+			// new Translation3d(Units.inchesToMeters(11.59),
+			// Units.inchesToMeters(-4.682), // -.12
+			// Units.inchesToMeters(8.256)),
+			// new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
+			// new Rotation3d(0, 0,
+			// Units.degreesToRadians(-25)))), // -20
+			// () -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 			// visionSystem.addPhotonCamera("Left Camera", 2,
 			// new Transform3d(
 			// new Translation3d(Units.inchesToMeters(11.59),
@@ -636,6 +636,8 @@ public class CompBot_2024 extends GenericRobot {
 			//VisionLimeLight topLimeLight = ((VisionLimeLight) visionSystem.getCamera("top"));
 			//topLimeLight.setPoseEstimationSupplier(() -> RobotState.isDisabled() && neverEnabled ? topLimeLight.getRobotPoseEstimateM1()
 			//		: topLimeLight.getRobotPoseEstimateM2());
+			
+	
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
 					() -> Units.inchesToMeters(15.448),
@@ -849,7 +851,7 @@ public class CompBot_2024 extends GenericRobot {
 				Commands.idle().until(() -> terminatePath).finallyDo(() -> terminatePath = false));
 		NamedCommands.registerCommand("Terminate Event Marker Trigger", Commands.idle().until(() -> terminatePath));
 
-		super.initAutoCommands();
+		
 	}
 
 	public void disabledBehavior() {
@@ -859,6 +861,6 @@ public class CompBot_2024 extends GenericRobot {
 	@Override
 	public Command generateAutoCommand(Command autoCommand) {
 		neverEnabled = false;
-		return drive.generateAutoCommand(super.generateAutoCommand(autoCommand));
+		return drive.generateAutoCommand(autoCommand);
 	}
 }

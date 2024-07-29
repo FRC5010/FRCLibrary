@@ -11,7 +11,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.pathplanner.lib.auto.AutoBuilder;
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.arch.PersistedEnums;
+import org.frc5010.common.arch.WpiNetworkTableValuesHelper;
+import org.frc5010.common.constants.RobotConstantsDef;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.subsystems.Color;
+import org.frc5010.common.telemetery.WpiDataLogging;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -20,23 +27,15 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FRC5010.arch.GenericMechanism;
-import frc.robot.FRC5010.arch.Persisted;
-import frc.robot.FRC5010.arch.PersistedEnums;
-import frc.robot.FRC5010.arch.WpiNetworkTableValuesHelper;
-import frc.robot.FRC5010.constants.RobotConstantsDef;
 import frc.robot.FRC5010.robots.BabySwerve;
 import frc.robot.FRC5010.robots.CurtsLaptopSimulator;
 import frc.robot.FRC5010.robots.DefaultRobot;
 import frc.robot.FRC5010.robots.MaxDemoBoard;
 import frc.robot.FRC5010.robots.PracticeBot;
-import frc.robot.FRC5010.sensors.Controller;
-import frc.robot.FRC5010.subsystems.Color;
-import frc.robot.FRC5010.telemetery.WpiDataLogging;
 import frc.robot.chargedup.CompBot_2023_T1G3R;
 import frc.robot.chargedup.KitBot2024;
 import frc.robot.crescendo.CompBot_2024;
@@ -56,7 +55,7 @@ public class RobotContainer extends GenericMechanism {
 	private Controller operator;
 	private static Alliance alliance;
 	public static Constants constants;
-	private GenericMechanism robot;
+	private GenericRobot robot;
 	private static String MAC_Address = "MAC ADDRESS";
 	private DigitalInput startupBypass;
 
@@ -176,57 +175,57 @@ public class RobotContainer extends GenericMechanism {
 	private void robotFactory() {
 		String whichRobot = whereAmI();
 		if (!startupBypass.get()) {
-			robot = new CompBot_2024(mechVisual, shuffleTab);
+			robot = new CompBot_2024();
 			log("Bypassed MAC Address Switch");
 		} else {
 			switch (whichRobot) {
 				case Robots.KIT_BOT_2024: {
-					robot = new KitBot2024(mechVisual, shuffleTab);
+					robot = new KitBot2024();
 					break;
 				}
 				case Robots.COMP_BOT_2023: {
-					robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+					robot = new CompBot_2023_T1G3R();
 					break;
 				}
 				case Robots.BABY_SWERVE: {
-					robot = new BabySwerve(mechVisual, shuffleTab);
+					robot = new BabySwerve();
 					break;
 				}
 				case Robots.PRACTICE_BOT: {
-					robot = new PracticeBot(mechVisual, shuffleTab);
+					robot = new PracticeBot();
 					break;
 				}
 				case Robots.MAIN_5010_LAPTOP: {
-					robot = new CompBot_2024(mechVisual, shuffleTab);
-					// robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+					robot = new CompBot_2024();
+					// robot = new CompBot_2023_T1G3R();
 					break;
 				}
 				case Robots.CURTS_LAPTOP_SIM: {
 					switch (whoAmI.get()) {
 						case "BabySwerve": {
-							robot = new BabySwerve(mechVisual, shuffleTab);
+							robot = new BabySwerve();
 							break;
 						}
 						case "T1G3R": {
-							robot = new CompBot_2023_T1G3R(mechVisual, shuffleTab);
+							robot = new CompBot_2023_T1G3R();
 							break;
 						}
 						case "Simulator": {
-							robot = new CurtsLaptopSimulator(mechVisual, shuffleTab);
+							robot = new CurtsLaptopSimulator("");
 							break;
 						}
 						default: {
-							robot = new CompBot_2024(mechVisual, shuffleTab);
+							robot = new CompBot_2024();
 						}
 					}
 					break;
 				}
 				case Robots.MAX_DEMO_BOARD: {
-					robot = new MaxDemoBoard(mechVisual, shuffleTab);
+					robot = new MaxDemoBoard();
 					break;
 				}
 				default: {
-					robot = new DefaultRobot(mechVisual, shuffleTab);
+					robot = new DefaultRobot();
 					break;
 				}
 
