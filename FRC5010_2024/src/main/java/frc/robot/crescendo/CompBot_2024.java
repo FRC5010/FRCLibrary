@@ -136,10 +136,10 @@ public class CompBot_2024 extends GenericMechanism {
 
 		topShooterMotor = (KrakenX60) MotorFactory.KrakenX60(12).invert(true); // OLD RIGHT: -0.29845
 		topShooterMotor.enableFOC(false);
-		topShooterMotor.setCurrentLimit(100);
+		topShooterMotor.setCurrentLimit(40);
 		bottomShooterMotor = (KrakenX60) MotorFactory.KrakenX60(14).invert(true);
 		bottomShooterMotor.enableFOC(false);
-		bottomShooterMotor.setCurrentLimit(100);
+		bottomShooterMotor.setCurrentLimit(40);
 
 		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
 
@@ -168,11 +168,11 @@ public class CompBot_2024 extends GenericMechanism {
 		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
 				new MotorFeedFwdConstants(0.18096, 2.2915, 0.37156)); // BR
 
-		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
-		swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
+		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(1);
+		swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(1);
 
-		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(3);
-		swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
+		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.1);
+		swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(1 * Math.PI);
 		swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
 
 		drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
