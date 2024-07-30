@@ -144,7 +144,7 @@ public class CompBot_2024 extends GenericRobot {
 		visionSystem = new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
 						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
 								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
-						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()), AprilTags.aprilTagFieldLayout);
 
 		gyro = new PigeonGyro(13);
 

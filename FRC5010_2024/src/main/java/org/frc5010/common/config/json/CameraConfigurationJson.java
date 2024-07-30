@@ -41,15 +41,21 @@ public class CameraConfigurationJson {
 	/**
 	 * Configures the camera system based on the provided robot.
 	 *
-	 * @param  robot  the GenericRobot instance to configure the camera for
+	 * @param robot the GenericRobot instance to configure the camera for
 	 */
 	public void configureCamera(GenericRobot robot) {
 		GenericCamera camera = null;
 		Transform3d robotToCamera = new Transform3d(new Translation3d(x, y, z),
 				new Rotation3d(roll, pitch, yaw));
+		AprilTagPoseSystem atSystem = (AprilTagPoseSystem) robot.getSubsystem("apriltag");
+		if (atSystem == null) {
+			atSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);
+			robot.addSubsystem("apriltag", atSystem);
+		}
+
 		switch (type) {
 			case "limelight": {
-				camera = new LimeLightCamera(name, column, AprilTags.aprilTagFieldLayout, robotToCamera);
+				camera = new LimeLightCamera(name, column, robotToCamera);
 				break;
 			}
 			case "photonvision": {
@@ -64,11 +70,6 @@ public class CameraConfigurationJson {
 				robot.addSubsystem(name, new VisibleTargetSystem(camera, targetHeight));
 				break;
 			case "apriltag": {
-				AprilTagPoseSystem atSystem = (AprilTagPoseSystem) robot.getSubsystem("apriltag");
-				if (atSystem == null) {
-					atSystem = new AprilTagPoseSystem();
-					robot.addSubsystem("apriltag", atSystem);
-				}
 				atSystem.addCamera(camera);
 				break;
 			}

@@ -68,7 +68,7 @@ public class CompBot_2023_T1G3R extends GenericRobot {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                visionSystem = new AprilTagPoseSystem();
+                visionSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);
 
                 ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",

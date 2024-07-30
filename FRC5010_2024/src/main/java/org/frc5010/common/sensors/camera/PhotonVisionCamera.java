@@ -46,7 +46,7 @@ public class PhotonVisionCamera extends GenericCamera {
 			PoseStrategy strategy,
 			Transform3d cameraToRobot,
 			Supplier<Pose2d> poseSupplier) {
-		super(name, colIndex, fieldLayout, cameraToRobot);
+		super(name, colIndex, cameraToRobot);
 		this.cameraToRobot = cameraToRobot;
 		this.fieldLayout = fieldLayout;
 		this.strategy = strategy;
@@ -117,7 +117,7 @@ public class PhotonVisionCamera extends GenericCamera {
 	}
 
 	@Override
-	public Pose3d getRobotPose() {
+	public Optional<Pose3d> getRobotPose() {
 		Pose3d robotPoseEst = null;
 		if (null != poseSupplier) {
 			if (strategy == PoseStrategy.CLOSEST_TO_REFERENCE_POSE) {
@@ -136,17 +136,17 @@ public class PhotonVisionCamera extends GenericCamera {
 				robotPoseEst = result.get().estimatedPose;
 			}
 		}
-		return robotPoseEst;
+		return Optional.ofNullable(robotPoseEst);
 	}
 
 	@Override
-	public Pose3d getRobotToTargetPose() {
+	public Optional<Pose3d> getRobotToTargetPose() {
 		Pose3d targetPoseEst = null;
 		if (target.isPresent()) {
 			if (target.get().getFiducialId() != 0) {
 				targetPoseEst = fieldLayout.getTagPose(target.get().getFiducialId()).orElse(null);
 			}
 		}
-		return targetPoseEst;
+		return Optional.ofNullable(targetPoseEst);
 	}
 }

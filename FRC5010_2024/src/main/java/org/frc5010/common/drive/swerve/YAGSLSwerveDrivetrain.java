@@ -22,7 +22,6 @@ import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.YAGSLSwervePose;
 import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
