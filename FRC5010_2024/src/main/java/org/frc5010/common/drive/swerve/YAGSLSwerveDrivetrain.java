@@ -654,7 +654,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   @Override
   public double getGyroRate() {
-	return swerveDrive.getGyro().getRate().orElse(0.0);
+	return swerveDrive.getGyro().getRate();
   } 
 
   public void drive5010(ChassisSpeeds direction) {

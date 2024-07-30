@@ -57,10 +57,10 @@ public abstract class SwerveIMU
   public abstract Optional<Translation3d> getAccel();
 
   /**
-   * Fetch the gyro rate from the IMU in radians per second. If gyro rate isn't supported returns empty.
-   * @return double of the gyro rate as an {@link Optional}.
+   * Fetch the rotation rate from the IMU in degrees per second. If rotation rate isn't supported returns empty.
+   * @return {@link Double} of the rotation rate as an {@link Optional}.
    */
-  public abstract Optional<Double> getRate();
+  public abstract double getRate();
 
   /**
    * Get the instantiated IMU object.
