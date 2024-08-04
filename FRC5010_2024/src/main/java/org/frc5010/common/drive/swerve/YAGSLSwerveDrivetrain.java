@@ -158,7 +158,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 	poseEstimator = new DrivePoseEstimator(new YAGSLSwervePose(null, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
 
-    SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceColor().toString());
+    SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceDisplayColor().toString());
     Shuffleboard.getTab("Drive").addBoolean("Has Issues", () -> hasIssues()).withPosition(9, 1);
     if (RobotBase.isSimulation() || useGlass) {
       initGlassWidget();
@@ -194,7 +194,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
           // alliance
           // This will flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-          SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceColor().toString());
+          SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceDisplayColor().toString());
           var alliance = DriverStation.getAlliance();
           return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
         },
