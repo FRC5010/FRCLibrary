@@ -7,8 +7,6 @@ package org.frc5010.common.subsystems;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.sensors.camera.GenericCamera;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 /** 
  * This class is an abstract class that needs to be implemented by any subclass of CameraSystem. It is responsible for updating the camera information.
  */

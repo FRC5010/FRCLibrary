@@ -6,10 +6,10 @@ package org.frc5010.common.sensors.camera;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.frc5010.common.vision.VisionConstants;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -25,14 +25,12 @@ public abstract class GenericCamera {
 	protected ShuffleboardTab visionTab;
 	protected ShuffleboardLayout visionLayout;
 	protected boolean updateValues = false;
-	protected AprilTagFieldLayout fieldLayout;
 	protected int colIndex;
 	protected String name;
 
-	public GenericCamera(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot) {
+	public GenericCamera(String name, int colIndex, Transform3d cameraToRobot) {
 		this.colIndex = colIndex;
 		this.name = name;
-		this.fieldLayout = fieldLayout;
 		this.cameraToRobot = cameraToRobot;
 		visionTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
 		visionLayout = visionTab
@@ -79,10 +77,6 @@ public abstract class GenericCamera {
 		return cameraToRobot;	
 	}
 
-	public AprilTagFieldLayout getFieldLayout() {
-		return fieldLayout;
-	}
-
 	/**
 	 * Removes the specified updater from the list of updaters.
 	 *
@@ -102,7 +96,7 @@ public abstract class GenericCamera {
 
 	public abstract double getLatency();
 
-	public abstract Pose3d getRobotPose();
+	public abstract Optional<Pose3d> getRobotPose();
 
-	public abstract Pose3d getRobotToTargetPose();
+	public abstract Optional<Pose3d> getRobotToTargetPose();
 }

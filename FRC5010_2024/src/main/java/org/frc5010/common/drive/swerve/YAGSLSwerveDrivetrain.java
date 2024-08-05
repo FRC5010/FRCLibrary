@@ -22,7 +22,6 @@ import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.YAGSLSwervePose;
 import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -159,7 +158,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 	poseEstimator = new DrivePoseEstimator(new YAGSLSwervePose(null, this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
 
-    SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceColor().toString());
+    SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceDisplayColor().toString());
     Shuffleboard.getTab("Drive").addBoolean("Has Issues", () -> hasIssues()).withPosition(9, 1);
     if (RobotBase.isSimulation() || useGlass) {
       initGlassWidget();
@@ -195,7 +194,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
           // alliance
           // This will flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-          SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceColor().toString());
+          SmartDashboard.putString("YAGSL Alliance", GenericRobot.chooseAllianceDisplayColor().toString());
           var alliance = DriverStation.getAlliance();
           return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
         },
@@ -654,7 +653,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   @Override
   public double getGyroRate() {
-	return swerveDrive.getGyro().getRate().orElse(0.0);
+	return swerveDrive.getGyro().getRate();
   } 
 
   public void drive5010(ChassisSpeeds direction) {

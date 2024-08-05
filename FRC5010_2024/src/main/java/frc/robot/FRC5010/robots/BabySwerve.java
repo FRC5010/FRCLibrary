@@ -54,7 +54,7 @@ public class BabySwerve extends GenericRobot {
     vision = new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
 						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
 								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
-						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
+						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()), AprilTags.aprilTagFieldLayout);
     /*
      * multiVision.addPhotonCamera("Arducam_OV9281_USB_Camera",
      * new Transform3d( // This describes the vector between the camera lens to the

@@ -19,6 +19,7 @@ import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.DriverDisplaySubsystem;
 import org.frc5010.common.subsystems.LedSubsystem;
 import org.frc5010.common.subsystems.PowerDistribution5010;
+import org.frc5010.common.vision.AprilTags;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -67,7 +68,7 @@ public class KitBot2024 extends GenericMechanism {
                 ledSubsystem.off();
 
                 // Will need to be changed for 2023 field
-                visionSystem = new AprilTagPoseSystem();
+                visionSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);
 
                 // ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
                 // visionTab.addCamera("DriverCam", "DriverCam",

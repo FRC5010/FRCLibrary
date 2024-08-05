@@ -20,17 +20,20 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 
 public class AprilTagPoseSystem extends CameraSystem {
-	protected Map<String, Pose3d> robotPose3ds = new HashMap<>();
-	protected Map<String, Pose3d> targetPose3ds = new HashMap<>();
+	protected Map<String, Optional<Pose3d>> robotPose3ds = new HashMap<>();
+	protected Map<String, Optional<Pose3d>> targetPose3ds = new HashMap<>();
 	protected Map<String, Double> latencies = new HashMap<>();
 	protected List<GenericCamera> cameras = new ArrayList<>();
+	protected AprilTagFieldLayout fieldLayout;
 
-	public AprilTagPoseSystem() {
+	public AprilTagPoseSystem(AprilTagFieldLayout fieldLayout) {
 		super(null);
+		this.fieldLayout = fieldLayout;
 	}
 
-	public AprilTagPoseSystem(GenericCamera camera) {
+	public AprilTagPoseSystem(GenericCamera camera, AprilTagFieldLayout fieldLayout) {
 		super(camera);
+		this.fieldLayout = fieldLayout;
 		addCamera(camera);
 	}
 
@@ -44,7 +47,7 @@ public class AprilTagPoseSystem extends CameraSystem {
 		camera.registerUpdater(() -> latencies.put(camera.name(), camera.getLatency()));
 	}
 
-	public Pose3d getRobotPose3d(String name) {
+	public Optional<Pose3d> getRobotPose3d(String name) {
 		return robotPose3ds.get(name);
 	}
 
@@ -64,11 +67,11 @@ public class AprilTagPoseSystem extends CameraSystem {
 	}
 
 	public AprilTagFieldLayout getFieldLayout() {
-		return camera.getFieldLayout();
+		return fieldLayout;
 	}
 
 	public double getDistanceToTarget(String camera) {
-		return Optional.ofNullable(targetPose3ds.get(camera)).map(it -> it.getTranslation().getNorm()).orElse(Double.MAX_VALUE);
+		return targetPose3ds.get(camera).map(it -> it.getTranslation().getNorm()).orElse(Double.MAX_VALUE);
 	}
 
 	@Override

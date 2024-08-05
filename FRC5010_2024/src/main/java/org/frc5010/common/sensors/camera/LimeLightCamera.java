@@ -12,7 +12,6 @@ import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.vision.LimelightHelpers;
 import org.frc5010.common.vision.LimelightHelpers.PoseEstimate;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -24,14 +23,14 @@ public class LimeLightCamera extends GenericCamera {
 	Supplier<GenericGyro> gyroSupplier;
 	BooleanSupplier megatagChooser;
 
-	public LimeLightCamera(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot,
+	public LimeLightCamera(String name, int colIndex, Transform3d cameraToRobot,
 			BooleanSupplier megatagChooser) {
-		super("limelight-" + name, colIndex, fieldLayout, cameraToRobot);
+		super("limelight-" + name, colIndex, cameraToRobot);
 		this.megatagChooser = megatagChooser;
 	}
 
-		public LimeLightCamera(String name, int colIndex, AprilTagFieldLayout fieldLayout, Transform3d cameraToRobot) {
-		super("limelight-" + name, colIndex, fieldLayout, cameraToRobot);
+		public LimeLightCamera(String name, int colIndex, Transform3d cameraToRobot) {
+		super("limelight-" + name, colIndex, cameraToRobot);
 	}
 
 	protected Optional<PoseEstimate> getRobotPoseEstimateM1() {
@@ -109,12 +108,12 @@ public class LimeLightCamera extends GenericCamera {
 	}
 
 	@Override
-	public Pose3d getRobotPose() {
-		return new Pose3d(poseEstimate.map(it -> it.pose).orElse(null));
+	public Optional<Pose3d> getRobotPose() {
+		return Optional.ofNullable(new Pose3d(poseEstimate.map(it -> it.pose).orElse(null)));
 	}
 
 	@Override
-	public Pose3d getRobotToTargetPose() {
-		return null;
+	public Optional<Pose3d> getRobotToTargetPose() {
+		return Optional.empty();
 	}
 }

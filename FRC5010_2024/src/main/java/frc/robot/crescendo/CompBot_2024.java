@@ -114,7 +114,7 @@ public class CompBot_2024 extends GenericRobot {
 		RobotContainer.setPowerMode(PowerMode.COMPETITION);
 
 		ledSubsystem = new SegmentedLedSystem(0, 34, mechVisual);
-		ledSubsystem.setWholeStripState((Integer i) -> GenericRobot.chooseAllianceColor().getColor8Bit());
+		ledSubsystem.setWholeStripState((Integer i) -> GenericRobot.chooseAllianceDisplayColor().getColor8Bit());
 
 		allLEDs = ledSubsystem.getStrip(ledSubsystem.ALL);
 		allLEDs.chase(false);
@@ -494,7 +494,7 @@ public class CompBot_2024 extends GenericRobot {
 		ledSubsystem.setDefaultCommand(Commands.run(() -> {
 		}, ledSubsystem)
 				.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
-		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(GenericRobot.chooseAllianceColor());
+		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(GenericRobot.chooseAllianceDisplayColor());
 	}
 
 	@Override
@@ -528,7 +528,7 @@ public class CompBot_2024 extends GenericRobot {
 		ledSubsystem.setDefaultCommand(Commands.run(() -> {
 		}, ledSubsystem)
 				.finallyDo(() -> ledSubsystem.getStrip(ledSubsystem.ALL).rainbow()));
-		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(GenericRobot.chooseAllianceColor());
+		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(GenericRobot.chooseAllianceDisplayColor());
 
 		driver.createAButton().whileTrue(
 				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
@@ -638,13 +638,13 @@ public class CompBot_2024 extends GenericRobot {
 					"Vision");
 			shooterCamera.cameraRotation(Rotation.DOWN);
 			shooterCamera.setUpdateValues(true);
-			shooterCamera.setTargetTagId(GenericRobot.chooseAllianceColor() == Color.BLUE ? 7 : 4);
+			shooterCamera.setTargetTagId(GenericRobot.chooseAllianceDisplayColor() == Color.BLUE ? 7 : 4);
 		}
 	}
 
 	@Override
 	public void initAutoCommands() {
-		allLEDs.setColor(GenericRobot.chooseAllianceColor()).on();
+		allLEDs.setColor(GenericRobot.chooseAllianceDisplayColor()).on();
 		drive.initAutoCommands();
 		NamedCommands.registerCommand("Intake Note",
 				runIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding));

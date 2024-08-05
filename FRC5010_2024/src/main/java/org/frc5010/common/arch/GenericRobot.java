@@ -34,6 +34,7 @@ public abstract class GenericRobot extends GenericMechanism {
 	private Map<String, Controller> controllers = new HashMap<>();
 	private RobotParser parser;
 	private GenericDrivetrainConstants drivetrainConstants = new GenericDrivetrainConstants();
+	Supplier<Pose2d> poseSupplier = () -> new Pose2d();
 
 	public enum LogLevel {
 		DEBUG,
@@ -68,7 +69,9 @@ public abstract class GenericRobot extends GenericMechanism {
 
 		// Setup controllers
 		driver = new Controller(Controller.JoystickPorts.ZERO.ordinal());
+		controllers.put("driver", driver);
 		operator = new Controller(Controller.JoystickPorts.ONE.ordinal());
+		controllers.put("operator", operator);
 		if (!operator.isPluggedIn()) {
 			operator = driver;
 			driver.setSingleControllerMode(true);
@@ -156,7 +159,7 @@ public abstract class GenericRobot extends GenericMechanism {
 		return color.orElse(Alliance.Blue);
 	}
 
-	public static Color chooseAllianceColor() {
+	public static Color chooseAllianceDisplayColor() {
 		Optional<Alliance> allianceColor = DriverStation.getAlliance();
 		if (allianceColor.isPresent()) {
 			return allianceColor.get() == Alliance.Red ? Color.RED : Color.BLUE;
@@ -172,12 +175,20 @@ public abstract class GenericRobot extends GenericMechanism {
 		controllers.put(name, controller);
 	}
 
+	public Controller getController(String name) {
+		return controllers.get(name);
+	}
+
 	public void addSubsystem(String name, GenericSubsystem subsystem) {
 		subsystems.put(name, subsystem);
 	}
 
+	public void setPoseSupplier(Supplier<Pose2d> poseSupplier) {
+		this.poseSupplier = poseSupplier;
+	}
+
 	public Supplier<Pose2d> getPoseSupplier() {
-		return () -> new Pose2d();
+		return poseSupplier;
 	}
 
 	public GenericDrivetrainConstants getDrivetrainConstants() {

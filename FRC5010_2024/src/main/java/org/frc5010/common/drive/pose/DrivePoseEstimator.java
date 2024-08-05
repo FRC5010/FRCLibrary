@@ -6,6 +6,7 @@ package org.frc5010.common.drive.pose;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.vision.AprilTags;
@@ -89,14 +90,14 @@ public class DrivePoseEstimator {
 			boolean visionUpdated = false;
 			for (String camera : cameras) {
 				SmartDashboard.putBoolean(camera, false);
-				Pose3d robotPose = vision.getRobotPose3d(camera);
+				Optional<Pose3d> robotPose = vision.getRobotPose3d(camera);
 				double poseDistance = vision.getDistanceToTarget(camera);
-				if (null != robotPose) {
+				if (robotPose.isPresent()) {
 					double imageCaptureTime = vision.getLatency(camera);
 					visionUpdated = true;
 					SmartDashboard.putBoolean(camera, true);
 					poseTracker.updateVisionMeasurements(
-							robotPose.toPose2d(), imageCaptureTime, vision.getStdVector(poseDistance));
+							robotPose.get().toPose2d(), imageCaptureTime, vision.getStdVector(poseDistance));
 				}
 			}
 			SmartDashboard.putBoolean("April Tag Pose Updating", visionUpdated);
