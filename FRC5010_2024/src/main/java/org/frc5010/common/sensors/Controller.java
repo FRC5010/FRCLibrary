@@ -314,7 +314,11 @@ public class Controller {
 	}
 
 	public double getAxisValue(int channel) {
-		return axisMap.get(channel).get();
+		Axis axis = axisMap.get(channel);
+		if (null == axis) {
+			return 0.0;
+		}
+		return axis.get();
 	}
 
 	public double getLeftYAxis() {

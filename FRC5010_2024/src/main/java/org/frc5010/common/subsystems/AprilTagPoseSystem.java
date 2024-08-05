@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.swing.text.html.Option;
+
 import org.frc5010.common.sensors.camera.GenericCamera;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -48,7 +50,11 @@ public class AprilTagPoseSystem extends CameraSystem {
 	}
 
 	public Optional<Pose3d> getRobotPose3d(String name) {
-		return robotPose3ds.get(name);
+		Optional<Pose3d> pose3d = robotPose3ds.get(name);
+		if (null == pose3d) {
+			return Optional.empty();
+		}
+		return pose3d;
 	}
 
 	public Double getLatency(String name) {
@@ -71,7 +77,10 @@ public class AprilTagPoseSystem extends CameraSystem {
 	}
 
 	public double getDistanceToTarget(String camera) {
-		return targetPose3ds.get(camera).map(it -> it.getTranslation().getNorm()).orElse(Double.MAX_VALUE);
+		if (targetPose3ds.containsKey(camera)) {
+			return targetPose3ds.get(camera).map(it -> it.getTranslation().getNorm()).orElse(Double.MAX_VALUE);
+		}
+		return 0.0;
 	}
 
 	@Override

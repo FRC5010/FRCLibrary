@@ -147,7 +147,7 @@ public class CompBot_2024 extends GenericRobot {
 		// 						new Rotation3d(0, Units.degreesToRadians(-20), 0)),
 		// 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 
-		visionSystem = new AprilTagPoseSystem();
+		visionSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);
 
 		gyro = new PigeonGyro(13);
 
@@ -598,16 +598,7 @@ public class CompBot_2024 extends GenericRobot {
 			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 			// drive.getDrivetrain().getPoseEstimator()); // Used to be
 			// 28, 20
-			visionSystem.addCamera(new PhotonVisionCamera("Right Camera", 3,
-			AprilTags.aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-			new Transform3d(
-			new Translation3d(Units.inchesToMeters(11.59),
-			Units.inchesToMeters(-4.682), // -.12
-			Units.inchesToMeters(8.256)),
-			new Rotation3d(0, Units.degreesToRadians(-30), 0).rotateBy( // -28
-			new Rotation3d(0, 0,
-			Units.degreesToRadians(-25)))), // -20
-			() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
+			
 			// visionSystem.addPhotonCamera("Left Camera", 2,
 			// new Transform3d(
 			// new Translation3d(Units.inchesToMeters(11.59),
@@ -627,7 +618,7 @@ public class CompBot_2024 extends GenericRobot {
 
 			noteCamera.setUpdateValues(true);
 // THIS IS THE LIMELIGHT APRIL TAG CAMERA			
-			visionSystem.addCamera(new LimeLightCamera("top", 5, AprilTags.aprilTagFieldLayout, new Transform3d(), 
+			visionSystem.addCamera(new LimeLightCamera("top", 5, new Transform3d(), 
 			() -> RobotState.isDisabled() && neverEnabled));
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
