@@ -168,11 +168,11 @@ public class CompBot_2024 extends GenericMechanism {
 		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
 				new MotorFeedFwdConstants(0.18096, 2.2915, 0.37156)); // BR
 
-		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(1);
-		swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(1);
+		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(2.5);
+		swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(3);
 
-		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(.1);
-		swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(1 * Math.PI);
+		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(0.5);
+		swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(2 * Math.PI);
 		swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
 
 		drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
