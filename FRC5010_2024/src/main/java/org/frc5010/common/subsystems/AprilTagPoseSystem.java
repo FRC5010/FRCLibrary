@@ -48,7 +48,7 @@ public class AprilTagPoseSystem extends CameraSystem {
 	}
 
 	public Optional<Pose3d> getRobotPose3d(String name) {
-		return robotPose3ds.get(name);
+		return Optional.ofNullable(robotPose3ds.get(name)).orElse(Optional.empty());
 	}
 
 	public Double getLatency(String name) {
@@ -71,7 +71,9 @@ public class AprilTagPoseSystem extends CameraSystem {
 	}
 
 	public double getDistanceToTarget(String camera) {
-		return targetPose3ds.get(camera).map(it -> it.getTranslation().getNorm()).orElse(Double.MAX_VALUE);
+		return Optional.ofNullable(targetPose3ds.get(camera))
+				.map(it -> it.get().getTranslation().getNorm())
+				.orElse(Double.MAX_VALUE);
 	}
 
 	@Override
