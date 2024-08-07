@@ -23,21 +23,21 @@ public class LimeLightCamera extends GenericCamera {
 	Supplier<GenericGyro> gyroSupplier;
 	BooleanSupplier megatagChooser;
 
-	public LimeLightCamera(String name, int colIndex, Transform3d cameraToRobot,
+	public LimeLightCamera(String name, int colIndex,
 			BooleanSupplier megatagChooser) {
-		super("limelight-" + name, colIndex, cameraToRobot);
+		super("limelight-" + name, colIndex, new Transform3d());
 		this.megatagChooser = megatagChooser;
 	}
 
-		public LimeLightCamera(String name, int colIndex, Transform3d cameraToRobot) {
-		super("limelight-" + name, colIndex, cameraToRobot);
+		public LimeLightCamera(String name, int colIndex) {
+		super("limelight-" + name, colIndex, new Transform3d());
 	}
 
 	protected Optional<PoseEstimate> getRobotPoseEstimateM1() {
 
 		Optional<PoseEstimate> poseEstimate = processPoseEstimate(
 			Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue(name)));
-		if (poseEstimate.isPresent() && null != poseEstimate.get().pose) {
+		if (poseEstimate.isPresent() && null != poseEstimate.get().pose && null != gyroSupplier) {
 			SmartDashboard.putNumber("MT1 Angle", poseEstimate.get().pose.getRotation().getDegrees());
 			gyroSupplier.get().setAngle(poseEstimate.get().pose.getRotation().getDegrees());
 		}
@@ -115,5 +115,10 @@ public class LimeLightCamera extends GenericCamera {
 	@Override
 	public Optional<Pose3d> getRobotToTargetPose() {
 		return Optional.empty();
+	}
+
+	public LimeLightCamera setGyroSupplier(Supplier<GenericGyro> gyroSupplier) {
+		this.gyroSupplier = gyroSupplier;
+		return this;
 	}
 }

@@ -618,8 +618,8 @@ public class CompBot_2024 extends GenericRobot {
 
 			noteCamera.setUpdateValues(true);
 // THIS IS THE LIMELIGHT APRIL TAG CAMERA			
-			visionSystem.addCamera(new LimeLightCamera("top", 5, new Transform3d(), 
-			() -> RobotState.isDisabled() && neverEnabled));
+			visionSystem.addCamera(new LimeLightCamera("top", 5, 
+			() -> RobotState.isDisabled() && neverEnabled).setGyroSupplier(() -> gyro));
 
 			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
 					() -> Units.inchesToMeters(15.448),
