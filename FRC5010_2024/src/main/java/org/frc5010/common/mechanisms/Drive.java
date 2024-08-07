@@ -31,6 +31,7 @@ import org.frc5010.common.subsystems.AprilTagPoseSystem;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -208,10 +209,10 @@ public class Drive extends GenericMechanism {
                   drivetrain));
     }
     // Put commands that can be both real and simulation afterwards
-
-    driver.setLeftXAxis(driver.createLeftXAxis().negate().deadzone(0.08));
-    driver.setLeftYAxis(driver.createLeftYAxis().negate().deadzone(0.08));
-    driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.08));
+  
+    driver.setAxis(XboxController.Axis.kLeftX.value, driver.createLeftXAxis().negate().deadzone(0.08));
+    driver.setAxis(XboxController.Axis.kLeftY.value, driver.createLeftYAxis().negate().deadzone(0.08));
+    driver.setAxis(XboxController.Axis.kRightX.value, driver.createRightXAxis().negate().deadzone(0.08));
   }
 
   public GenericDrivetrain getDrivetrain() {
