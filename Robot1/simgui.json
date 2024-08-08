@@ -1,0 +1,29 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Unsorted/Set Robot State": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        ".metadata": {
+          "open": true
+        }
+      },
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "shuffleboard@1": {
+      "open": true
+    },
+    "visible": true
+  }
+}
