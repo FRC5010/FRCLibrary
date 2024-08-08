@@ -3,8 +3,8 @@ package frc.robot.deprecated;
 
 // WPI Includes
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.robot.ShuffleBoardSingleton;
-import frc.robot.ShuffleBoardSingleton.ShuffleboardUpdateRate;
+import frc.robot.shuffleboardWrapper.ShuffleBoardSingleton;
+import frc.robot.shuffleboardWrapper.ShuffleBoardSingleton.ShuffleboardUpdateRate;
 import edu.wpi.first.networktables.GenericEntry;
 
 public class ShuffleboardWrapper<Type>

@@ -2,8 +2,7 @@ package frc.robot.shuffleboardWrapper;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import frc.robot.ShuffleBoardSingleton;
-import frc.robot.ShuffleBoardSingleton.ShuffleboardUpdateRate;
+import frc.robot.shuffleboardWrapper.ShuffleBoardSingleton.ShuffleboardUpdateRate;
 
 public class ShuffleboardBoolean
 {

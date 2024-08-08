@@ -1,11 +1,9 @@
 
-package frc.robot;
+package frc.robot.shuffleboardWrapper;
 
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.shuffleboardWrapper.ShuffleboardBoolean;
-import frc.robot.shuffleboardWrapper.ShuffleboardLong;
 
 public class ShuffleBoardSingleton {
 

@@ -5,10 +5,7 @@ package frc.robot.shuffleboardWrapper;
 // WPI Imports
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-
-// 5010 Common Imports
-import frc.robot.ShuffleBoardSingleton;
-import frc.robot.ShuffleBoardSingleton.ShuffleboardUpdateRate;
+import frc.robot.shuffleboardWrapper.ShuffleBoardSingleton.ShuffleboardUpdateRate;
 import frc.robot.units.Time;
 
 public class ShuffleboardTime extends Time {

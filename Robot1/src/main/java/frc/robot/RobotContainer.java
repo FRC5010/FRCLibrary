@@ -5,9 +5,9 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.ShuffleBoardSingleton.ShuffleboardUpdateRate;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.shuffleboardWrapper.ShuffleBoardSingleton.ShuffleboardUpdateRate;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
