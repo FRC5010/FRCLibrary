@@ -198,6 +198,7 @@ public class RobotContainer implements WpiHelperInterface {
 								break;
 							}
 							default: {
+							//	robot = new CompBot_2024();
 								robot = new CurtsLaptopSimulator("basic_robot");
 								break;
 							}
