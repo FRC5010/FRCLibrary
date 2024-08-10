@@ -1,7 +1,7 @@
 {
     "fileName": "frc5010Lib.json",
     "name": "FRC5010Lib",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "frcYear": "2024",
     "uuid": "c4806740-d6a1-4e9a-94ea-37bb03557c01",
     "mavenUrls": [
@@ -12,7 +12,7 @@
         {
             "groupId": "org.frc5010",
             "artifactId": "frc5010lib-java",
-            "version": "0.0.5"
+            "version": "0.0.6"
         }
     ],
     "jniDependencies": [],

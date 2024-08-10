@@ -5,7 +5,7 @@
 package frc.robot.FRC5010.robots;
 
 import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.config.DrivetrainConfiguration;
+import org.frc5010.common.config.json.DrivetrainPropertiesJson;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.sensors.Controller;
@@ -29,7 +29,7 @@ public class CurtsLaptopSimulator extends GenericRobot {
 
 	public CurtsLaptopSimulator(String directory) {
 		super(directory);
-		drivetrain = (GenericDrivetrain) getSubsystem(DrivetrainConfiguration.DRIVE_TRAIN);
+		drivetrain = (GenericDrivetrain) getSubsystem(DrivetrainPropertiesJson.DRIVE_TRAIN);
 	}
 
 	@Override
