@@ -23,7 +23,6 @@ import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.DriverDisplaySubsystem;
 import org.frc5010.common.subsystems.LedSubsystem;
 import org.frc5010.common.vision.AprilTags;
-import org.frc5010.common.vision.VisionLimeLightSim;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.math.geometry.Rotation3d;
