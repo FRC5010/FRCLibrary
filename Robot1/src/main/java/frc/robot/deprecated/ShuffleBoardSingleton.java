@@ -1,5 +1,5 @@
 
-package frc.robot.shuffleboardWrapper;
+package frc.robot.deprecated;
 
 import java.util.ArrayList;
 

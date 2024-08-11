@@ -1,6 +1,6 @@
 
 // Package
-package frc.robot.units;
+package org.frc5010.common.units;
 
 public class Time {
     public enum TimeUnit

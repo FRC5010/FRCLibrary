@@ -4,22 +4,21 @@
 
 package frc.robot;
 
+import org.frc5010.common.telemetry.DisplayAngle;
+import org.frc5010.common.telemetry.DisplayBoolean;
+import org.frc5010.common.telemetry.DisplayDouble;
+import org.frc5010.common.telemetry.DisplayFloat;
+import org.frc5010.common.telemetry.DisplayLength;
+import org.frc5010.common.telemetry.DisplayLong;
+import org.frc5010.common.telemetry.DisplayString;
+import org.frc5010.common.telemetry.DisplayTime;
+import org.frc5010.common.units.Angle.AngleUnit;
+import org.frc5010.common.units.Length.LengthUnit;
+import org.frc5010.common.units.Time.TimeUnit;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.shuffleboardWrapper.ShuffleBoardSingleton;
-import frc.robot.shuffleboardWrapper.ShuffleboardAngle;
-import frc.robot.shuffleboardWrapper.ShuffleboardBoolean;
-import frc.robot.shuffleboardWrapper.ShuffleboardDouble;
-import frc.robot.shuffleboardWrapper.ShuffleboardFloat;
-import frc.robot.shuffleboardWrapper.ShuffleboardLength;
-import frc.robot.shuffleboardWrapper.ShuffleboardLong;
-import frc.robot.shuffleboardWrapper.ShuffleboardString;
-import frc.robot.shuffleboardWrapper.ShuffleboardTime;
-import frc.robot.shuffleboardWrapper.ShuffleBoardSingleton.ShuffleboardUpdateRate;
-import frc.robot.units.Angle.AngleUnit;
-import frc.robot.units.Length.LengthUnit;
-import frc.robot.units.Time.TimeUnit;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -33,23 +32,25 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   public final String TAB = "Test";
+  public final String INPUT_TABLE = "Test/Input";
+  public final String OUTPUT_TABLE = "Test/Output";
 
-  ShuffleboardLong inputLong = new ShuffleboardLong(0, "Input Long", TAB, ShuffleboardUpdateRate.SLOW);
-  ShuffleboardLong outputLong = new ShuffleboardLong(0, "Output Long", TAB, ShuffleboardUpdateRate.NONE);
-  ShuffleboardDouble inputDouble = new ShuffleboardDouble(0.0, "Input Double", TAB, ShuffleboardUpdateRate.SLOW);
-  ShuffleboardDouble outputDouble = new ShuffleboardDouble(0.0, "Output Double", TAB, ShuffleboardUpdateRate.NONE);
-  ShuffleboardFloat inputFloat = new ShuffleboardFloat(0, "Input Float", TAB, ShuffleboardUpdateRate.SLOW);
-  ShuffleboardFloat outputFloat = new ShuffleboardFloat(0, "Output Float", TAB, ShuffleboardUpdateRate.NONE);
-  ShuffleboardBoolean inputBoolean = new ShuffleboardBoolean(false, "Input Boolean", TAB, ShuffleboardUpdateRate.SLOW);
-  ShuffleboardBoolean outputBoolean = new ShuffleboardBoolean(false, "Output Boolean", TAB, ShuffleboardUpdateRate.NONE);
-  ShuffleboardString inputString = new ShuffleboardString("none", "Input String", TAB, ShuffleboardUpdateRate.SLOW);
-  ShuffleboardString outputString = new ShuffleboardString("none", "Output String", TAB, ShuffleboardUpdateRate.NONE);
-  ShuffleboardLength inputLength = new ShuffleboardLength(LengthUnit.METER, 0.0, "Input Length", TAB, ShuffleboardUpdateRate.SLOW);
-  ShuffleboardLength outputLength = new ShuffleboardLength(LengthUnit.YARD, 0.0, "Output Length", TAB, ShuffleboardUpdateRate.NONE);
-  ShuffleboardTime inputTime = new ShuffleboardTime(TimeUnit.SECOND, 0.0, "Input Time", TAB, ShuffleboardUpdateRate.SLOW);
-  ShuffleboardTime outputTime = new ShuffleboardTime(TimeUnit.MILLISECOND, 0.0, "Output Time", TAB, ShuffleboardUpdateRate.NONE);
-  ShuffleboardAngle inputAngle = new ShuffleboardAngle(AngleUnit.TURN, 0.0, "Input Angle", TAB, ShuffleboardUpdateRate.SLOW);
-  ShuffleboardAngle outputAngle = new ShuffleboardAngle(AngleUnit.DEGREE, 0.0, "Output Angle", TAB, ShuffleboardUpdateRate.NONE);
+  DisplayAngle inputAngle = new DisplayAngle(AngleUnit.TURN, 0.0, "Input Angle", INPUT_TABLE);
+  DisplayAngle outputAngle = new DisplayAngle(AngleUnit.DEGREE, 0.0, "Output Angle", OUTPUT_TABLE);
+  DisplayBoolean inputBoolean = new DisplayBoolean(false, "Input Boolean", INPUT_TABLE);
+  DisplayBoolean outputBoolean = new DisplayBoolean(false, "Output Boolean", OUTPUT_TABLE);
+  DisplayDouble inputDouble = new DisplayDouble(0.0, "Input Double", INPUT_TABLE);
+  DisplayDouble outputDouble = new DisplayDouble(0.0, "Output Double", OUTPUT_TABLE);
+  DisplayFloat inputFloat = new DisplayFloat(0, "Input Float", INPUT_TABLE);
+  DisplayFloat outputFloat = new DisplayFloat(0, "Output Float", OUTPUT_TABLE);
+  DisplayLength inputLength = new DisplayLength(LengthUnit.FOOT, 0.0, "Input Length", INPUT_TABLE);
+  DisplayLength outputLength = new DisplayLength(LengthUnit.METER, 0.0, "Output Length", OUTPUT_TABLE);
+  DisplayLong inputLong = new DisplayLong(0, "Input Long", INPUT_TABLE);
+  DisplayLong outputLong = new DisplayLong(0, "Output Long", OUTPUT_TABLE);
+  DisplayString inputString = new DisplayString("default", "Input String", INPUT_TABLE);
+  DisplayString outputString = new DisplayString("default", "Output String", OUTPUT_TABLE);
+  DisplayTime inputTime = new DisplayTime(TimeUnit.SECOND, 0.0, "Input Time", INPUT_TABLE);
+  DisplayTime outputTime = new DisplayTime(TimeUnit.MILLISECOND, 0.0, "Output Time", OUTPUT_TABLE);
 
   int count = 0;
 
@@ -62,7 +63,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    ShuffleBoardSingleton.getInstance().initialize(this);
   }
 
   /**
@@ -78,15 +78,15 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-
-    outputLong.setValue(inputLong.getValue());
+    
+    outputAngle.setAngle(inputAngle);
+    outputBoolean.setValue(inputBoolean.getValue());
     outputDouble.setValue(inputDouble.getValue());
     outputFloat.setValue(inputFloat.getValue());
-    outputBoolean.setValue(inputBoolean.getValue());
+    outputLength.setLength(inputLength);
+    outputLong.setValue(inputLong.getValue());
     outputString.setValue(inputString.getValue());
-    outputLength.setYards(inputLength.multiply(2.0).getYards());
-    outputTime.setTime(inputTime.divide(2.0));
-    outputAngle.setAngle(inputAngle.multiply(2.0));
+    outputTime.setTime(inputTime);
 
     CommandScheduler.getInstance().run();
   }
