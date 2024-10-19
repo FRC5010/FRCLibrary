@@ -1,0 +1,13 @@
+{
+    "name": "orange",
+    "use": "target",
+    "type": "limelight",
+    "column": 0,
+    "x": 0.15,
+    "y": 0.05,
+    "z": 0.2,
+    "roll": 0,
+    "pitch": -10,
+    "yaw": 0,
+    "targetHeight": 0.02
+}

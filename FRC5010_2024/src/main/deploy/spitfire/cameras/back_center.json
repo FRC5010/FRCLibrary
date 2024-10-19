@@ -2,13 +2,12 @@
     "name": "shooter",
     "use": "target",
     "type": "photonvision",
-    "strategy": "AVERAGE_BEST_TARGETS",
     "column": 0,
-    "x": 0,
+    "x": -0.25,
     "y": 0,
-    "z": 0,
+    "z": 0.25,
     "roll": 0,
-    "pitch": 0,
-    "yaw": 0,
-    "targetHeight": 0
+    "pitch": 20,
+    "yaw": 180,
+    "targetFiducialIds": [4, 7]
 }

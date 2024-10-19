@@ -6,10 +6,14 @@
       "/Shuffleboard/Pose/Pose Field": "Field2d",
       "/Shuffleboard/Vision/Vision Field": "Field2d",
       "/Shuffleboard/java.lang.Class/Auto Modes": "String Chooser",
+      "/SmartDashboard/AutoAim": "Command",
+      "/SmartDashboard/AutoIntake": "Command",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
+      "/SmartDashboard/PredefinedAutoShot": "Command",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
+      "/SmartDashboard/RunIntake": "Command",
       "/SmartDashboard/SD Field": "Field2d",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
     },
@@ -24,10 +28,17 @@
         "window": {
           "visible": true
         }
+      },
+      "/Shuffleboard/java.lang.Class/Auto Modes": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Visual": {
+        "window": {
+          "visible": true
+        }
       }
     }
-  },
-  "NetworkTables Info": {
-    "visible": true
   }
 }

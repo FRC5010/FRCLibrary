@@ -145,14 +145,6 @@ public class RunIntake extends GenericCommand {
       if (velocity < 0 && RobotContainer.getLoggingLevel() == LogLevel.COMPETITION) {
         pivotSubsystem.setReference(intakeAngle);
       }
-      // feederStopFlag = true;
-      // if (feederSubsystem.isBeamBroken()) {
-      // feederSubsystem.setFeederSpeed(0.0);
-      // feederSubsystem.setNoteState(FeederSubsystem.NoteState.Holding);
-      // } else {
-      // feederSubsystem.setFeederSpeed(Math.signum(velocity) *
-      // feederSpeed.getAsDouble());
-      // }
 
       // Just need to do this if welocity is != 0
       CommandScheduler.getInstance().schedule(selectorCommand);

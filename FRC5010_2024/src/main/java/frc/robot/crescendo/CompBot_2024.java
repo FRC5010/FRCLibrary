@@ -8,19 +8,15 @@ import java.util.function.Supplier;
 
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.commands.JoystickToSwerve;
-import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.config.json.DrivetrainPropertiesJson;
 import org.frc5010.common.constants.SwerveConstants;
-import org.frc5010.common.drive.swerve.MK4iSwerveModule;
 import org.frc5010.common.drive.swerve.SwerveDrivetrain;
 import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
-import org.frc5010.common.mechanisms.Drive;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.hardware.KrakenX60;
-import org.frc5010.common.motors.hardware.NEO;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.sensors.camera.LimeLightCamera;
-import org.frc5010.common.sensors.camera.PhotonVisionCamera;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
@@ -28,19 +24,14 @@ import org.frc5010.common.subsystems.Color;
 import org.frc5010.common.subsystems.LEDStripSegment;
 import org.frc5010.common.subsystems.PowerDistribution5010;
 import org.frc5010.common.subsystems.SegmentedLedSystem;
+import org.frc5010.common.subsystems.VisibleTargetSystem;
 import org.frc5010.common.vision.AprilTags;
 import org.frc5010.common.vision.VisionLimeLight;
 import org.frc5010.common.vision.VisionPhotonAprilTagTarget;
 import org.frc5010.common.vision.VisionSystem.Rotation;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -76,13 +67,13 @@ public class CompBot_2024 extends GenericRobot {
 	private MotorController5010 outerIntakeMotor;
 
 	private AprilTagPoseSystem visionSystem;
-	private VisionPhotonAprilTagTarget shooterCamera;
-	private VisionLimeLight noteCamera;
+	private VisibleTargetSystem shooterCamera;
+	private VisibleTargetSystem noteCamera;
 	private GenericGyro gyro;
 	private ClimbSubsystem climbSubsystem;
 	private MotorController5010 leftClimbMotor;
 	private MotorController5010 rightClimbMotor;
-	private Drive drive;
+	private SwerveDrivetrain drivetrain;
 	private SegmentedLedSystem ledSubsystem;
 	private LEDStripSegment allLEDs;
 	private TargetingSystem targetingSystem;
@@ -107,7 +98,7 @@ public class CompBot_2024 extends GenericRobot {
 	private boolean terminatePath = false;
 
 	public CompBot_2024() {
-		super();
+		super("spitfire");
 
 		GenericRobot.setLoggingLevel(LogLevel.COMPETITION);
 
@@ -147,8 +138,9 @@ public class CompBot_2024 extends GenericRobot {
 		// 						new Rotation3d(0, Units.degreesToRadians(-20), 0)),
 		// 				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()));
 
-		visionSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);
-
+		visionSystem = (AprilTagPoseSystem)subsystems.get("apriltag");
+		noteCamera = (VisibleTargetSystem)subsystems.get("orange");
+		shooterCamera = (VisibleTargetSystem)subsystems.get("shooter");
 		gyro = new PigeonGyro(13);
 
 		// visionSystem.addLimeLightCameraAngle("orange", 0.3556, -10, 0, 1, null);
@@ -157,36 +149,9 @@ public class CompBot_2024 extends GenericRobot {
 
 		climbSubsystem = new ClimbSubsystem(leftClimbMotor, rightClimbMotor, gyro,
 				mechVisual);
-		swerveConstants = new SwerveConstants(Units.inchesToMeters(Constants.Physical.TRACK_WIDTH_INCHES),
-				Units.inchesToMeters(Constants.Physical.WHEEL_BASE_INCHES));
 
-		// Setup Swerve Constants
-
-		swerveConstants.setSwerveModuleConstants(MK4iSwerveModule.MK4I_L3_KRAKEN_NEO);
-		swerveConstants.getSwerveModuleConstants().setkTurningMotorGearRatio(1.0);
-		swerveConstants.configureSwerve(KrakenX60.MAXRPM, NEO.MAXRPM);
-		swerveConstants.setWheelDiameter(0.103386904);
-		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontleft",
-				new MotorFeedFwdConstants(0.21848, 2.3118, 0.20314)); // FL
-		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("frontright",
-				new MotorFeedFwdConstants(0.18434, 2.3018, 0.30992)); // FR
-		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backleft",
-				new MotorFeedFwdConstants(0.19542, 2.2924, 0.35934)); // BL
-		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
-				new MotorFeedFwdConstants(0.18096, 2.2915, 0.37156)); // BR
-
-		// swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(6);
-		// swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(6);
-
-		// swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(3);
-		// swerveConstants.setkTeleDriveMaxAngularAccelerationUnitsPerSecond(5 * Math.PI);
-		// swerveConstants.setkPhysicalMaxSpeedMetersPerSecond(5.93);
-
-		configureSwerveConstants();
-
-		drive = new Drive(visionSystem, gyro, Drive.Type.YAGSL_SWERVE_DRIVE, null, swerveConstants,
-				"mk4i_L3_kraken_neo");
-
+		drivetrain = (YAGSLSwerveDrivetrain)subsystems.get(DrivetrainPropertiesJson.DRIVE_TRAIN);
+		
 		shooterSubsystem = new ShooterSubsystem(mechVisual, topShooterMotor, bottomShooterMotor);
 		feederSubsystem = new FeederSubsystem(mechVisual, feederMotor, ledSubsystem);
 		intakeSubsystem = new IntakeSubsystem(outerIntakeMotor, innerIntakeMotor, mechVisual);
@@ -195,8 +160,8 @@ public class CompBot_2024 extends GenericRobot {
 
 		targetingSystem = new TargetingSystem(
 				() -> TargetingSystem.getSpeakerTarget(GenericRobot.getAlliance()),
-				() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose3d(),
-				(SwerveDrivetrain) drive.getDrivetrain(), shooterCamera, feederSubsystem, gyro);
+				() -> drivetrain.getPoseEstimator().getCurrentPose3d(),
+				drivetrain, shooterCamera, feederSubsystem, gyro);
 		targetingSystem.useShooterCamera(false);
 	}
 
@@ -214,7 +179,9 @@ public class CompBot_2024 extends GenericRobot {
 
 		operator.setLeftTrigger(operator.createLeftTrigger());
 		operator.setRightTrigger(operator.createRightTrigger());
-		drive.configureButtonBindings(driver, operator);
+		
+
+		drivetrain.configureButtonBindings(driver, operator);
 
 		/* >>>>>>>>>>>>>>>>>>>> Common Commands <<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 		// runIntake = () -> new RunIntake(() -> -0.75, () -> 0.5, intakeSubsystem,
@@ -241,18 +208,18 @@ public class CompBot_2024 extends GenericRobot {
 								pivotSubsystem, shooterSubsystem,
 								null, pivotSubsystem.MAX_INTAKE_ANGLE));
 
-		stopDrivetrain = () -> Commands.runOnce(() -> drive.getDrivetrain().drive(new ChassisSpeeds()),
-				drive.getDrivetrain());
+		stopDrivetrain = () -> Commands.runOnce(() -> drivetrain.drive(new ChassisSpeeds()),
+				drivetrain);
 
 		autoIntake = () -> runIntake
 				.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).raceWith(
-						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
+						new AutoIntake(drivetrain,
 								noteCamera))
 				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
 
 		autoIntakeTeleop = () -> runIntake
 				.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding).deadlineWith(
-						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
+						new AutoIntake(drivetrain,
 								noteCamera))
 				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
 
@@ -260,7 +227,7 @@ public class CompBot_2024 extends GenericRobot {
 				.andThen(() -> runIntake
 						.get())
 				.until(() -> feederSubsystem.getNoteState() == NoteState.Holding).deadlineWith(
-						new AutoIntake((SwerveDrivetrain) drive.getDrivetrain(),
+						new AutoIntake(drivetrain,
 								noteCamera))
 				.andThen(stopDrivetrain.get()); // @TODO: Fix Feeder Spinning after Command End
 
@@ -340,8 +307,8 @@ public class CompBot_2024 extends GenericRobot {
 		JoystickButton autoaimButton = driver.createAButton();
 
 		autoaimButton.whileTrue(
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), false, false)
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drivetrain, targetingSystem,
+						gyro, () -> (JoystickToSwerve) drivetrain.getDefaultCommand(), false, false)
 						.alongWith(spinIntake.get().withTimeout(0.25)))
 				.onFalse(Commands.waitSeconds(0.05).beforeStarting(() -> feederSubsystem.setShotReadyness(false))
 						.andThen(
@@ -469,7 +436,7 @@ public class CompBot_2024 extends GenericRobot {
 
 	@Override
 	public void setupDefaultCommands(Controller driver, Controller operator) {
-		drive.setupDefaultCommands(driver, operator);
+		drivetrain.setupDefaultCommands(driver, operator);
 
 		pivotSubsystem.setDefaultCommand(new RunPivot(
 				() -> (operator.getRightTrigger() - operator.getLeftTrigger()) * 0.5, pivotSubsystem));
@@ -503,9 +470,9 @@ public class CompBot_2024 extends GenericRobot {
 		shooterSubsystem.removeDefaultCommand();
 		intakeSubsystem.removeDefaultCommand();
 
-		drive.setupTestDefaultCommands(driver, operator);
-		driver.createYButton().whileTrue(((YAGSLSwerveDrivetrain) drive.getDrivetrain()).sysIdDriveMotorCommand());
-		driver.createXButton().whileTrue(((YAGSLSwerveDrivetrain) drive.getDrivetrain()).sysIdAngleMotorCommand());
+		drivetrain.setupTestDefaultCommands(driver, operator);
+		driver.createYButton().whileTrue(((YAGSLSwerveDrivetrain) drivetrain).sysIdDriveMotorCommand());
+		driver.createXButton().whileTrue(((YAGSLSwerveDrivetrain) drivetrain).sysIdAngleMotorCommand());
 
 		// driver.createStartButton().whileTrue(feederSubsystem.getFeederSysIdRoutineCommand());
 		// // driver.createXButton().whileTrue(pivotSubsystem.getSysIdCommand());
@@ -531,13 +498,13 @@ public class CompBot_2024 extends GenericRobot {
 		ledSubsystem.getStrip(ledSubsystem.ALL).setColor(GenericRobot.chooseAllianceDisplayColor());
 
 		driver.createAButton().whileTrue(
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), false, false)
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drivetrain, targetingSystem,
+						gyro, () -> (JoystickToSwerve) drivetrain.getDefaultCommand(), false, false)
 						.alongWith(spinIntake.get().withTimeout(0.25)));
 
 		driver.createBButton().whileTrue(
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem,
-						gyro, () -> (JoystickToSwerve) drive.getDefaultCommand(), true, true)
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drivetrain, targetingSystem,
+						gyro, () -> (JoystickToSwerve) drivetrain.getDefaultCommand(), true, true)
 						.alongWith(spinIntake.get().withTimeout(0.25)));
 
 		// Run Shooter motors
@@ -609,34 +576,27 @@ public class CompBot_2024 extends GenericRobot {
 			// Units.degreesToRadians(30)))), // 20
 			// PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
 			// drive.getDrivetrain().getPoseEstimator());
-			noteCamera = new VisionLimeLight("orange", 1,
-					AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo),
-					new Transform3d(Units.inchesToMeters(-12.342), Units.inchesToMeters(-2.58),
-							Units.inchesToMeters(14.264),
-							new Rotation3d(0, 0, Units.degreesToRadians(180))),
-					null);
+			
 
-			noteCamera.setUpdateValues(true);
 // THIS IS THE LIMELIGHT APRIL TAG CAMERA			
-			visionSystem.addCamera(new LimeLightCamera("top", 5, 
-			() -> RobotState.isDisabled() && neverEnabled).setGyroSupplier(() -> gyro));
-
-			shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
-					() -> Units.inchesToMeters(15.448),
-					() -> 25,
-					() -> Units.inchesToMeters(10.454),
-					AprilTags.aprilTagFieldLayout.getTagPose(4).get().getZ(), 4, AprilTags.aprilTagFieldLayout,
-					"Vision");
-			shooterCamera.cameraRotation(Rotation.DOWN);
-			shooterCamera.setUpdateValues(true);
-			shooterCamera.setTargetTagId(GenericRobot.chooseAllianceDisplayColor() == Color.BLUE ? 7 : 4);
+			// visionSystem.addCamera(new LimeLightCamera("top", 5, 
+			// () -> RobotState.isDisabled() && neverEnabled).setGyroSupplier(() -> gyro));
 		}
+		// shooterCamera = new VisionPhotonAprilTagTarget("Shooter Camera",
+		// 		() -> Units.inchesToMeters(15.448),
+		// 		() -> 25,
+		// 		() -> Units.inchesToMeters(10.454),
+		// 		AprilTags.aprilTagFieldLayout.getTagPose(4).get().getZ(), 4, AprilTags.aprilTagFieldLayout,
+		// 		"Vision");
+		// shooterCamera.cameraRotation(Rotation.DOWN);
+		// shooterCamera.setUpdateValues(true);
+		// shooterCamera.setTargetTagId(GenericRobot.chooseAllianceDisplayColor() == Color.BLUE ? 7 : 4);
 	}
 
 	@Override
 	public void initAutoCommands() {
 		allLEDs.setColor(GenericRobot.chooseAllianceDisplayColor()).on();
-		drive.initAutoCommands();
+		drivetrain.setAutoBuilder();
 		NamedCommands.registerCommand("Intake Note",
 				runIntake.get().until(() -> feederSubsystem.getNoteState() == NoteState.Holding));
 
@@ -659,14 +619,14 @@ public class CompBot_2024 extends GenericRobot {
 		NamedCommands.registerCommand("Auto Intake At Max", autoIntakeAtMax.get());
 
 		NamedCommands.registerCommand("Auto Aim",
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem, gyro,
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drivetrain, targetingSystem, gyro,
 						false, false, false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
 						.alongWith(spinIntake.get().withTimeout(0.25))
 						.finallyDo(() -> pivotSubsystem
 								.setReference(pivotSubsystem.HOME_LEVEL)));
 
 		NamedCommands.registerCommand("Auto Aim With Drive",
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem, gyro,
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drivetrain, targetingSystem, gyro,
 						true, false, false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty).alongWith(spinIntake.get().withTimeout(0.25)));
 
 		NamedCommands.registerCommand("Blind Shot",
@@ -684,7 +644,7 @@ public class CompBot_2024 extends GenericRobot {
 		NamedCommands.registerCommand("Stop Shooter", stopShooter.get());
 
 		NamedCommands.registerCommand("Quick Auto Aim",
-				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drive, targetingSystem, gyro,
+				new AutoAim(pivotSubsystem, shooterSubsystem, feederSubsystem, drivetrain, targetingSystem, gyro,
 						false, false, false).until(() -> feederSubsystem.getNoteState() == NoteState.Empty)
 						.deadlineWith(spinIntake.get().withTimeout(0.25))
 						.beforeStarting(() -> {
@@ -821,11 +781,11 @@ public class CompBot_2024 extends GenericRobot {
 				.onlyIf(() -> feederSubsystem.getNoteState() == NoteState.Empty));
 
 		NamedCommands.registerCommand("Terminate if No Note",
-				Commands.runOnce(() -> terminatePath = true).onlyIf(() -> !noteCamera.isValidTarget()));
+				Commands.runOnce(() -> terminatePath = true).onlyIf(noteCamera.hasAValidTarget().negate()));
 
 		NamedCommands.registerCommand("Terminate Once Note",
-				Commands.idle().until(() -> noteCamera.isValidTarget())
-						.finallyDo(() -> terminatePath = noteCamera.isValidTarget()));
+				Commands.idle().until(noteCamera.hasAValidTarget())
+						.finallyDo(() -> terminatePath = noteCamera.hasValidTarget()));
 
 		NamedCommands.registerCommand("Terminate Path Trigger",
 				Commands.idle().until(() -> terminatePath).finallyDo(() -> terminatePath = false));
@@ -840,7 +800,7 @@ public class CompBot_2024 extends GenericRobot {
 	@Override
 	public Command generateAutoCommand(Command autoCommand) {
 		neverEnabled = false;
-		return drive.generateAutoCommand(autoCommand);
+		return drivetrain.generateAutoCommand(autoCommand);
 	}
 
 	// Reduces power consumption of shooter motors if in demo mode

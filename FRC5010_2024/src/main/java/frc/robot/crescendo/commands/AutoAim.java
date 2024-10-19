@@ -40,7 +40,6 @@ public class AutoAim extends GenericCommand {
   DrivePoseEstimator robotPose;
   ShooterSubsystem shooterSubsystem;
   PivotSubsystem pivotSubsystem;
-  Drive drive;
   SwerveDrivetrain drivetrain;
   Transform3d targetPose;
   TargetingSystem targetingSystem;
@@ -61,15 +60,14 @@ public class AutoAim extends GenericCommand {
   /** Creates a new AutoAim. */
 
   public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem,
-      Drive drive,
+	  SwerveDrivetrain drivetrain,
       TargetingSystem targetSystem, GenericGyro gyro, Supplier<JoystickToSwerve> driveCommand,
       boolean accountForMovement, boolean interpolatingYaw) {
 
-    drivetrain = (SwerveDrivetrain) drive.getDrivetrain();
+    this.drivetrain = drivetrain;
     this.robotPose = drivetrain.getPoseEstimator();
     this.pivotSubsystem = pivotSubsystem;
     this.shooterSubsystem = shooterSubsystem;
-    this.drive = drive;
     this.targetingSystem = targetSystem;
     this.driveCommand = driveCommand;
     this.feederSubsystem = feederSubsystem;
@@ -79,15 +77,14 @@ public class AutoAim extends GenericCommand {
   }
 
   public AutoAim(PivotSubsystem pivotSubsystem, ShooterSubsystem shooterSubsystem, FeederSubsystem feederSubsystem,
-      Drive drive,
+      SwerveDrivetrain drivetrain,
       TargetingSystem targetSystem, GenericGyro gyro, boolean useAutoDrive, boolean accountForMovement,
       boolean interpolatingYaw) {
     this.useAutoDrive = useAutoDrive;
-    drivetrain = (SwerveDrivetrain) drive.getDrivetrain();
+    this.drivetrain = drivetrain;
     this.robotPose = drivetrain.getPoseEstimator();
     this.pivotSubsystem = pivotSubsystem;
     this.shooterSubsystem = shooterSubsystem;
-    this.drive = drive;
     this.targetingSystem = targetSystem;
     this.feederSubsystem = feederSubsystem;
     this.gyro = gyro;
@@ -170,7 +167,7 @@ public class AutoAim extends GenericCommand {
     shooterSubsystem.setShooterReference(shootingSpeed, shootingSpeed);
 
     if (!useAutoDrive && driveCommand == null) {
-      drive.getDrivetrain().drive(new ChassisSpeeds(0, 0, turnSpeed * ((SwerveDrivetrain) drive.getDrivetrain())
+      drivetrain.drive(new ChassisSpeeds(0, 0, turnSpeed * ((SwerveDrivetrain) drivetrain)
           .getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond()));
     }
 

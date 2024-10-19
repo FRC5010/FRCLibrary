@@ -14,7 +14,6 @@ import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.Persisted;
 import org.frc5010.common.arch.WpiHelperInterface;
 import org.frc5010.common.arch.WpiNetworkTableValuesHelper;
-import org.frc5010.common.config.RobotParser;
 import org.frc5010.common.telemetery.WpiDataLogging;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -198,8 +197,8 @@ public class RobotContainer implements WpiHelperInterface {
 								break;
 							}
 							default: {
-							//	robot = new CompBot_2024();
-								robot = new CurtsLaptopSimulator("basic_robot");
+								robot = new CompBot_2024();
+							//	robot = new CurtsLaptopSimulator("basic_robot");
 								break;
 							}
 						}

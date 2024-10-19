@@ -1,0 +1,13 @@
+{
+    "name": "backleft",
+    "use": "apriltag",
+    "type": "limelight",
+    "strategy": "AVERAGE_BEST_TARGETS",
+    "column": 0,
+    "x": -0.35,
+    "y": -0.25,
+    "z": 0.5,
+    "roll": 0,
+    "pitch": 20,
+    "yaw": 180
+}

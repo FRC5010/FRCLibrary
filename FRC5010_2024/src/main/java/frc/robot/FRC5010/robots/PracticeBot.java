@@ -16,7 +16,7 @@ import org.frc5010.common.drive.swerve.SwerveDrivetrain;
 import org.frc5010.common.mechanisms.Drive;
 import org.frc5010.common.motors.hardware.NEO;
 import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.sensors.camera.PhotonVisionCamera;
+import org.frc5010.common.sensors.camera.PhotonVisionPoseCamera;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
@@ -60,7 +60,7 @@ public class PracticeBot extends GenericRobot {
     ShuffleboardTab visionTab = Shuffleboard.getTab("Drive");
 
     AprilTagPoseSystem multiVision =
-        new AprilTagPoseSystem(new PhotonVisionCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
+        new AprilTagPoseSystem(new PhotonVisionPoseCamera("PhotonATSim", 2, AprilTags.aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS,
 						new Transform3d(new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(16.75)),
 								new Rotation3d(0, Units.degreesToRadians(-20), 0)),
 						() -> drive.getDrivetrain().getPoseEstimator().getCurrentPose()), AprilTags.aprilTagFieldLayout);

@@ -4,26 +4,18 @@
 
 package frc.robot.crescendo.commands;
 
-import edu.wpi.first.math.MathUsageId;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
+import org.frc5010.common.arch.GenericCommand;
+import org.frc5010.common.drive.swerve.SwerveDrivetrain;
+import org.frc5010.common.subsystems.VisibleTargetSystem;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
-import org.frc5010.common.vision.VisionSystem;
-import org.frc5010.common.arch.GenericCommand;
-import org.frc5010.common.drive.swerve.SwerveDrivetrain;
-import org.frc5010.common.mechanisms.Drive;
-import frc.robot.chargedup.IntakeSubsystem;
 
 public class AutoIntake extends GenericCommand {
   SwerveDrivetrain drive;
-  VisionSystem visionSystem;
+  VisibleTargetSystem visionSystem;
   double lastAngleY;
   double noNoteCounter = 0;
   private final double NO_NOTE_THRESHOLD = 60;
@@ -38,7 +30,7 @@ public class AutoIntake extends GenericCommand {
 
 
   /** Creates a new AutoIntake. */
-  public AutoIntake(SwerveDrivetrain drive, VisionSystem vision) {
+  public AutoIntake(SwerveDrivetrain drive, VisibleTargetSystem vision) {
     this.drive = drive;
     this.visionSystem = vision;
 
@@ -55,20 +47,20 @@ public class AutoIntake extends GenericCommand {
   // Called when the command is initially scheduled.
   @Override
   public void init() {
-    lastAngleY = visionSystem.getAngleY();
+    lastAngleY = visionSystem.getTargetPitch();
     noNoteCounter = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double currentAngleY = visionSystem.getAngleY();
-    double currentAngleX = visionSystem.getAngleX();
+    double currentAngleY = visionSystem.getTargetPitch();
+    double currentAngleX = visionSystem.getTargetYaw();
     
 
 
 
-    if (currentAngleY > lastAngleY + 5 || !visionSystem.isValidTarget()) {
+    if (currentAngleY > lastAngleY + 5 || !visionSystem.hasValidTarget()) {
       currentAngleX = 0;
       currentAngleY = 0;
       if (DriverStation.isAutonomous()) {
