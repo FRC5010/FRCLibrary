@@ -56,7 +56,7 @@ public class ClimbSubsystem extends GenericSubsystem {
   // NetworkTable names
 
   private final String MAX_EXTENSION = "Max Extension";
-  private final double MAX_EXTENSION_DEFAULT = 195.0;
+  private final double MAX_EXTENSION_DEFAULT = 210.0;
   private final String SAFE_LIMIT = "Safe Limit";
   private final double SAFE_LIMIT_DEFAULT = 75.0;
   private final String CURRENT_THRESHOLD = "Climb Current Threshold";

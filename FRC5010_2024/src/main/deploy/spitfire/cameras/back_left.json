@@ -1,5 +1,5 @@
 {
-    "name": "backleft",
+    "name": "top",
     "use": "apriltag",
     "type": "limelight",
     "strategy": "AVERAGE_BEST_TARGETS",

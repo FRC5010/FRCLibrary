@@ -649,7 +649,8 @@ public class CompBot_2024 extends GenericRobot {
 						.deadlineWith(spinIntake.get().withTimeout(0.25))
 						.beforeStarting(() -> {
 							targetingSystem.setTolerance(0.05);
-							pivotSubsystem.setTolerance(1.5);
+							pivotSubsystem.setTolerance(1.0);
+							shooterSubsystem.setTolerance(3.0);
 						})
 						.finallyDo(() -> {
 							pivotSubsystem
