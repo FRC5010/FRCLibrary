@@ -136,10 +136,10 @@ public class CompBot_2024 extends GenericMechanism {
 
 		topShooterMotor = (KrakenX60) MotorFactory.KrakenX60(12).invert(true); // OLD RIGHT: -0.29845
 		topShooterMotor.enableFOC(false);
-		topShooterMotor.setCurrentLimit(40);
+		topShooterMotor.setCurrentLimit(80);
 		bottomShooterMotor = (KrakenX60) MotorFactory.KrakenX60(14).invert(true);
 		bottomShooterMotor.enableFOC(false);
-		bottomShooterMotor.setCurrentLimit(40);
+		bottomShooterMotor.setCurrentLimit(80);
 
 		visionSystem = new VisionMultiCam("Vision", 0, AprilTags.aprilTagFieldLayout);
 
@@ -168,7 +168,7 @@ public class CompBot_2024 extends GenericMechanism {
 		swerveConstants.getSwerveModuleConstants().addDriveMotorFF("backright",
 				new MotorFeedFwdConstants(0.18096, 2.2915, 0.37156)); // BR
 
-		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(2.5);
+		swerveConstants.setkTeleDriveMaxSpeedMetersPerSecond(3);
 		swerveConstants.setkTeleDriveMaxAngularSpeedRadiansPerSecond(3);
 
 		swerveConstants.setkTeleDriveMaxAccelerationUnitsPerSecond(0.5);
@@ -404,17 +404,17 @@ public class CompBot_2024 extends GenericMechanism {
 				}).onlyIf(() -> !subwooferButton.getAsBoolean())));
 
 		// Amp Pivot
-		operator.createYButton().whileTrue(Commands
-				.runOnce(() -> {
-					pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL);
-					shooterSubsystem.setShooterReference(Constants.Physical.AMP_SHOOTING_SPEED,
-							Constants.Physical.AMP_SHOOTING_SPEED);
-				}).alongWith(spinIntake.get())
+		// operator.createYButton().whileTrue(Commands
+		// 		.runOnce(() -> {
+		// 			pivotSubsystem.setReference(pivotSubsystem.AMP_LEVEL);
+		// 			shooterSubsystem.setShooterReference(Constants.Physical.AMP_SHOOTING_SPEED,
+		// 					Constants.Physical.AMP_SHOOTING_SPEED);
+		// 		}).alongWith(spinIntake.get())
 
-		).onFalse(Commands.runOnce(() -> {
-			pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
-			shooterSubsystem.setShooterReference(0, 0);
-		}));
+		// ).onFalse(Commands.runOnce(() -> {
+		// 	pivotSubsystem.setReference(pivotSubsystem.HOME_LEVEL);
+		// 	shooterSubsystem.setShooterReference(0, 0);
+		// }));
 
 		// Trap Pivot
 		operator.createBButton().onTrue(spinIntake.get().alongWith(Commands.runOnce(

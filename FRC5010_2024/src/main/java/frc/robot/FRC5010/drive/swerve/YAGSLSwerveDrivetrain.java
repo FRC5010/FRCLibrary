@@ -26,6 +26,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -61,6 +62,7 @@ import frc.robot.FRC5010.drive.pose.DrivetrainPoseEstimator;
 import frc.robot.FRC5010.drive.pose.YAGSLSwervePose;
 import frc.robot.FRC5010.sensors.Controller;
 import frc.robot.FRC5010.sensors.gyro.GenericGyro;
+import frc.robot.FRC5010.sensors.gyro.PigeonGyro;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -84,6 +86,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   /** 5010 Code */
   private DoubleSupplier angleSpeedSupplier = null;
+
+  private LinearFilter accelerationXFilter = LinearFilter.movingAverage(10);
+  private LinearFilter accelerationYFilter = LinearFilter.movingAverage(10);
 
   public YAGSLSwerveDrivetrain(Mechanism2d mechVisual, GenericGyro gyro, SwerveConstants swerveConstants,
       String swerveType, VisionSystem visionSystem) {
@@ -583,6 +588,18 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // swerveDrive.getModulePositions()[2].distanceMeters);
     // SmartDashboard.putNumber("Right Back",
     // swerveDrive.getModulePositions()[3].distanceMeters);
+    double accelX = swerveDrive.getAccel().get().getX();
+    double accelY = swerveDrive.getAccel().get().getY();
+    accelX = accelerationXFilter.calculate(accelX);
+    accelY = accelerationYFilter.calculate(accelY);
+    SmartDashboard.putNumber("IMU Acceleration X", accelX);
+    SmartDashboard.putNumber("IMU Acceleration Y", accelY);
+    double velX = swerveDrive.getRobotVelocity().vxMetersPerSecond;
+    double velY = swerveDrive.getRobotVelocity().vyMetersPerSecond;
+    SmartDashboard.putNumber("Robot Velocity X", accelX);
+    SmartDashboard.putNumber("Robot Velocity Y", accelY);
+    SmartDashboard.putBoolean("Trust X Odometry", false);
+    SmartDashboard.putBoolean("Trust Y Odometery", false);
     poseEstimator.update();
     hasIssues();
     if (RobotBase.isSimulation() || useGlass) {

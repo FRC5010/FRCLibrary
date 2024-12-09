@@ -40,7 +40,7 @@ public class SwerveDrivetrain extends GenericDrivetrain {
 
     protected GenericSwerveModule frontLeft, frontRight, backLeft, backRight;
 
-    private GenericGyro gyro;
+    protected GenericGyro gyro;
 
     private SwerveConstants swerveConstants;
 
